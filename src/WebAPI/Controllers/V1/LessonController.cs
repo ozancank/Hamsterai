@@ -1,0 +1,143 @@
+using Asp.Versioning;
+using Business.Features.Lessons.Commands.Groups;
+using Business.Features.Lessons.Commands.Lessons;
+using Business.Features.Lessons.Models.Groups;
+using Business.Features.Lessons.Models.Lessons;
+using Business.Features.Lessons.Queries.Groups;
+using Business.Features.Lessons.Queries.Lessons;
+
+namespace WebAPI.Controllers.V1;
+
+[ApiController]
+[Route(ApiVersioningConfig.ControllerRouteWithoutApi)]
+[ApiVersion("1")]
+public class LessonController() : BaseController
+{
+    #region Lesson
+
+    [HttpGet("GetLessonById/{id}")]
+    public async Task<IActionResult> GetLessonById([FromRoute] byte id)
+    {
+        var query = new GetLessonByIdQuery { Id = id };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpGet("GetLessons")]
+    public async Task<IActionResult> GetLessons([FromQuery] PageRequest model)
+    {
+        var query = new GetLessonsQuery { PageRequest = model };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("GetLessonsDynamic")]
+    public async Task<IActionResult> GetLessonsDynamic([FromQuery] PageRequest model, [FromBody] Dynamic dynamic)
+    {
+        var query = new GetLessonsByDynamicQuery { PageRequest = model, Dynamic = dynamic };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("AddLesson")]
+    public async Task<IActionResult> AddLesson([FromBody] AddLessonModel model)
+    {
+        var command = new AddLessonCommand { AddLessonModel = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("UpdateLesson")]
+    public async Task<IActionResult> UpdateLesson([FromBody] UpdateLessonModel model)
+    {
+        var command = new UpdateLessonCommand { UpdateLessonModel = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("PassiveLesson")]
+    public async Task<IActionResult> PassiveLesson([FromBody] byte lessonId)
+    {
+        var command = new PassiveLessonCommand { Id = lessonId };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("ActiveLesson")]
+    public async Task<IActionResult> ActiveLesson([FromBody] byte lessonId)
+    {
+        var command = new ActiveLessonCommand { Id = lessonId };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    #endregion Lesson
+
+    #region Group
+
+    [HttpGet("GetGroupById/{id}")]
+    public async Task<IActionResult> GetGroupById([FromRoute] byte id)
+    {
+        var query = new GetGroupByIdQuery { Id = id };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("GetGroups")]
+    public async Task<IActionResult> GetGroups([FromQuery] PageRequest model)
+    {
+        var query = new GetGroupsQuery { PageRequest = model };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("GetGroupsDynamic")]
+    public async Task<IActionResult> GetGroupsDynamic([FromQuery] PageRequest model, [FromBody] Dynamic dynamic)
+    {
+        var query = new GetGroupsByDynamicQuery { PageRequest = model, Dynamic = dynamic };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("AddGroup")]
+    public async Task<IActionResult> AddGroup([FromBody] AddGroupModel model)
+    {
+        var command = new AddGroupCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("AddLessonInGroup")]
+    public async Task<IActionResult> AddLessonInGroup([FromBody] AddLessonInGroupModel model)
+    {
+        var command = new AddLessonInGroupCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("UpdateGroup")]
+    public async Task<IActionResult> UpdateGroup([FromBody] UpdateGroupModel model)
+    {
+        var command = new UpdateGroupCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("PassiveGroup")]
+    public async Task<IActionResult> PassiveGroup([FromBody] byte groupId)
+    {
+        var command = new PassiveGroupCommand { Id = groupId };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("ActiveGroup")]
+    public async Task<IActionResult> ActiveGroup([FromBody] byte groupId)
+    {
+        var command = new ActiveGroupCommand { Id = groupId };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    #endregion Group
+}

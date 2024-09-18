@@ -1,0 +1,48 @@
+﻿using AutoMapper.EquivalencyExpression;
+using Business.Behaviors;
+using DataAccess;
+using Infrastructure;
+using Infrastructure.Notification.Firebase;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using OCK.Core.Logging.Serilog;
+using System.Reflection;
+
+namespace Business;
+
+public static class BusinessServiceRegistration
+{
+    public static IServiceCollection AddBusinessServices(this IServiceCollection services)
+    {
+        services.AddAutoMapper(x =>
+        {
+            x.AddCollectionMappers();
+        }, Assembly.GetExecutingAssembly());
+        services.AddSubClassesOfType(Assembly.GetExecutingAssembly(), typeof(IBusinessRule));
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehavior<,>));
+        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Caching.CachingBehavior<,>));
+        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Caching.CacheRemovingBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Logging.LoggingBehavior<,>));
+        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Performance.PerformanceBehavior<,>));
+        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Transaction.TransactionScopeBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Validation.RequestValidationBehavior<,>));
+
+        services.AddSingleton<LoggerServiceBase, MSSqlServerLogger>();
+        services.AddSingleton<OCK.Core.Mailing.IMailService, OCK.Core.Mailing.MailKitImplementations.MailKitMailService>();
+        services.AddSingleton<Infrastructure.Notification.INotificationApi, FirebaseApi>();
+
+        services.AddScoped<Services.AuthService.IAuthService, Services.AuthService.AuthManager>();
+        services.AddScoped<Services.CommonService.ICommonService, Services.CommonService.CommonManager>();
+        services.AddScoped<Services.EmailService.IEmailService, Services.EmailService.EmailManager>();
+        services.AddScoped<Services.NotificationService.INotificationService, Services.NotificationService.NotificationManager>();
+        services.AddScoped<Services.QuestionService.IQuestionService, Services.QuestionService.QuestionManager>();
+        services.AddScoped<Services.UserService.IUserService, Services.UserService.UserManager>();
+
+        services.AddDALServices();
+        services.AddInfrastructureServices();
+        return services;
+    }
+}
