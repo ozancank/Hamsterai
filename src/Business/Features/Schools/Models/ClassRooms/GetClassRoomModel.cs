@@ -1,8 +1,8 @@
-﻿using Business.Features.Schools.Models.School;
+﻿using Business.Features.Schools.Models.Schools;
 using Business.Features.Students.Models;
 using Business.Features.Teachers.Models;
 
-namespace Business.Features.Schools.Models.ClassRoom;
+namespace Business.Features.Schools.Models.ClassRooms;
 
 public sealed class GetClassRoomModel : IResponseModel
 {

@@ -16,7 +16,9 @@ public static class DALServiceRegistration
             //options.UseSqlServer(ServiceTools.Configuration.GetConnectionString("HamsteraiConnectionString"),
             //    o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
             //);
-            options.UseNpgsql(ServiceTools.Configuration.GetConnectionString("HamsteraiConnectionString"));
+            options.UseNpgsql(ServiceTools.Configuration.GetConnectionString("HamsteraiConnectionString"),
+                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+        );
             if (Debugger.IsAttached) options.EnableSensitiveDataLogging();
         }, ServiceLifetime.Scoped);
 

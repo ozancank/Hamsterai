@@ -12,7 +12,7 @@ public class AddSimilarCommand : IRequest<GetSimilarModel>, ISecuredRequest<User
     public AddSimilarModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [];
-    public string[] HidePropertyNames { get; } = [];
+    public string[] HidePropertyNames { get; } = ["Model.QuestionPictureBase64"];
 }
 
 public class AddSimilarCommandHandler(IMapper mapper,

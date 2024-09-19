@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using OCK.Core.Caching;
 using OCK.Core.Caching.Microsoft;
 using OCK.Core.Exceptions;
+using OCK.Core.Logging.Serilog;
 using OCK.Core.Security.Encryption;
 using OCK.Core.Security.JWT;
 using OCK.Core.Utilities;
@@ -97,6 +98,8 @@ await app.ConfigureExceptionHandling(opt =>
 {
     var detail = app.Configuration.GetValue<string>("DevPass") == "OCK";
     opt.UseExceptionDetails = detail;
+    opt.UseLogger();
+
 });
 
 //app.UseMiddleware<LicenceMiddleware>();

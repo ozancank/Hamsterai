@@ -30,7 +30,7 @@ public static class BusinessServiceRegistration
         //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Transaction.TransactionScopeBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Validation.RequestValidationBehavior<,>));
 
-        services.AddSingleton<LoggerServiceBase, MSSqlServerLogger>();
+                services.AddSingleton<LoggerServiceBase, PostgreSqlLogger>();
         services.AddSingleton<OCK.Core.Mailing.IMailService, OCK.Core.Mailing.MailKitImplementations.MailKitMailService>();
         services.AddSingleton<Infrastructure.Notification.INotificationApi, FirebaseApi>();
 

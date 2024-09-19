@@ -1,8 +1,7 @@
-﻿namespace Business.Features.Schools.Models.School;
+﻿namespace Business.Features.Schools.Models.Schools;
 
-public class UpdateSchoolModel : IRequestModel
+public class AddSchoolModel : IRequestModel
 {
-    public int Id { get; set; }
     public string Name { get; set; }
     public string TaxNumber { get; set; }
     public string Address { get; set; }

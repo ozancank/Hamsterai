@@ -48,7 +48,10 @@
 
 	<ItemGroup>
 	  <Folder Include="Features\Auths\Dtos\" />
-	  <Folder Include="Features\Questions\Queries\Similars\" />
+	  <Folder Include="Features\Schools\Queries\ClassRooms\" />
+	  <Folder Include="Features\Schools\Commands\ClassRooms\" />
+	  <Folder Include="Features\Schools\Commands\Schools\" />
+	  <Folder Include="Features\Students\NewFolder\" />
 	  <Folder Include="Features\Users\Dtos\" />
 	</ItemGroup>
 

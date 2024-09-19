@@ -1,6 +1,6 @@
 ﻿using Business.Features.Users.Models.User;
 
-namespace Business.Features.Schools.Models.School;
+namespace Business.Features.Schools.Models.Schools;
 
 public sealed class GetSchoolModel : IResponseModel
 {

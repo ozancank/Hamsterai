@@ -1,6 +1,6 @@
 ﻿namespace Business.Features.Questions.Models.Questions;
 
-public class SimilarQuestionRequestModel : IRequestModel
+public class SimilarRequestModel : IRequestModel
 {
     public byte LessonId { get; set; } = 0;
     public DateTime? StartDate { get; set; } = null;

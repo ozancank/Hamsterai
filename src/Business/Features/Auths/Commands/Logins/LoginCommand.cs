@@ -21,7 +21,7 @@ public class LoginCommandHandler(IUserDal userDal,
 {
     public async Task<TokenModel> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        request.LoginModel.UserName = request.LoginModel.UserName!.ToLower();
+        request.LoginModel.UserName = request.LoginModel.UserName.ToLower();
 
         Expression<Func<User, bool>> predicate = request.WebLogin
             ? x => x.UserName == request.LoginModel.UserName && x.Type != UserTypes.Student

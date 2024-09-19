@@ -12,7 +12,7 @@ public class AddQuestionCommand : IRequest<GetQuestionModel>, ISecuredRequest<Us
     public AddQuestionModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [];
-    public string[] HidePropertyNames { get; } = [];
+    public string[] HidePropertyNames { get; } = ["Model.QuestionPictureBase64"];
 }
 
 public class AddQuestionCommandHandler(IMapper mapper,
