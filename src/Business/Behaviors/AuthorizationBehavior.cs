@@ -25,7 +25,7 @@ public class AuthorizationBehavior<TRequest, TResponse>(IHttpContextAccessor htt
         if (Delegates.ControlUserStatus != null)
         {
             var id = Convert.ToInt64(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "-9999");
-            if (!(await Delegates.ControlUserStatus.Invoke(id))) throw new AuthenticationException(Strings.AuthorizationDenied);
+            if (!await Delegates.ControlUserStatusAsync.Invoke(id)) throw new AuthenticationException(Strings.AuthorizationDenied);
         }
 
         if (!isAuthenticated) throw new AuthorizationException(Strings.AuthorizationDenied);

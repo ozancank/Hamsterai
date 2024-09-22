@@ -52,7 +52,6 @@
 	  <Folder Include="Features\Schools\Commands\ClassRooms\" />
 	  <Folder Include="Features\Schools\Commands\Schools\" />
 	  <Folder Include="Features\Students\NewFolder\" />
-	  <Folder Include="Features\Users\Dtos\" />
 	</ItemGroup>
 
 </Project>

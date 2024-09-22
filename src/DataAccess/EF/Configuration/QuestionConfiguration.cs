@@ -20,8 +20,13 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
         builder.Property(e => e.Status).HasColumnName("Status").HasColumnOrder(11).IsRequired();
         builder.Property(e => e.AnswerPictureFileName).HasColumnName("AnswerPictureFileName").HasDefaultValue("").HasColumnOrder(12).IsRequired();
         builder.Property(e => e.AnswerPictureExtension).HasColumnName("AnswerPictureExtension").HasMaxLength(10).HasDefaultValue("").HasColumnOrder(13).IsRequired();
+        builder.Property(e => e.IsRead).HasColumnName("IsRead").HasDefaultValue(false).HasColumnOrder(14).IsRequired();
+        builder.Property(e => e.SendForQuiz).HasColumnName("SendForQuiz").HasDefaultValue(false).HasColumnOrder(15).IsRequired();
+        builder.Property(e => e.TryCount).HasColumnName("TryCount").HasDefaultValue((byte)0).HasColumnOrder(16).IsRequired();
+        builder.Property(e => e.GainId).HasColumnName("GainId").HasColumnOrder(17);
 
         builder.HasOne(x => x.User).WithMany(x => x.Questions).HasForeignKey(x => x.CreateUser).HasPrincipalKey(x => x.Id);
         builder.HasOne(x => x.Lesson).WithMany(x => x.Questions).HasForeignKey(x => x.LessonId).HasPrincipalKey(x => x.Id);
+        builder.HasOne(x => x.Gain).WithMany(x => x.Questions).HasForeignKey(x => x.GainId).HasPrincipalKey(x => x.Id);
     }
 }

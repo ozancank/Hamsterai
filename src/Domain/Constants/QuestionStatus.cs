@@ -6,4 +6,5 @@ public enum QuestionStatus : byte
     Waiting = 1,
     Answered = 2,
     Error = 3,
+    SendAgain = 4,
 }

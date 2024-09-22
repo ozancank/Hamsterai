@@ -98,6 +98,9 @@ public struct Strings
     public const string UserWrongScreens = "Ekran atamasında yanlışlık var.";
     public const string PasswordCodeExpired = "Şifre sıfırlama kodunun süresi doldu.";
     public const string UserTypeNotAllowed = "Kullanıcı tipine izin verilmiyor.";
+    public const string UserDeniedPassiveForAdmin = "Admin kullanıcısı pasif yapılamaz.";
+
+    public const string ModelBusy = "Model meşgul!";
 }
 
 //public const string _customerAdded = "Müşteri kayıt edildi.";

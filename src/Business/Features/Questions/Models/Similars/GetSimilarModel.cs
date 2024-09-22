@@ -15,6 +15,10 @@ public class GetSimilarModel : IResponseModel
     public string ResponseAnswerFileName { get; set; }
     public string ResponseAnswerExtension { get; set; }
     public QuestionStatus Status { get; set; }
-
+    public bool IsRead { get; set; }
+    public int TryCount { get; set; }
+    public int? GainId { get; set; }
+    
     public string LessonName { get; set; }
+    public string GainName { get; set; }
 }

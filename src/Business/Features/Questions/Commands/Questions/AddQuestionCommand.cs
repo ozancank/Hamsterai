@@ -1,4 +1,5 @@
-﻿using Business.Features.Questions.Models.Questions;
+﻿using Business.Features.Lessons.Rules;
+using Business.Features.Questions.Models.Questions;
 using Business.Services.CommonService;
 using Infrastructure.AI;
 using MediatR;
@@ -18,29 +19,47 @@ public class AddQuestionCommand : IRequest<GetQuestionModel>, ISecuredRequest<Us
 public class AddQuestionCommandHandler(IMapper mapper,
                                        IQuestionDal questionDal,
                                        ICommonService commonService,
+                                       ILessonDal lessonDal,
                                        IQuestionApi questionApi) : IRequestHandler<AddQuestionCommand, GetQuestionModel>
 {
     public async Task<GetQuestionModel> Handle(AddQuestionCommand request, CancellationToken cancellationToken)
     {
         var fileName = await commonService.PictureConvert(request.Model.QuestionPictureBase64, request.Model.QuestionPictureFileName, AppOptions.QuestionPictureFolderPath);
+        var date = DateTime.Now;
 
-        var question = mapper.Map<Question>(request.Model);
-        question.Id = Guid.NewGuid();
-        question.IsActive = true;
-        question.CreateUser = question.UpdateUser = commonService.HttpUserId;
-        question.CreateDate = question.UpdateDate = DateTime.Now;
-        question.QuestionPictureBase64 = request.Model.QuestionPictureBase64;
-        question.QuestionPictureFileName = fileName.Item1;
-        question.QuestionPictureExtension = fileName.Item2;
-        question.AnswerText = string.Empty;
-        question.AnswerPictureFileName = string.Empty;
-        question.AnswerPictureExtension = string.Empty;
-        question.Status = QuestionStatus.Waiting;
+        var lessonName = await lessonDal.GetAsync(
+            predicate: x => x.Id == request.Model.LessonId,
+            enableTracking: false,
+            selector: x => x.Name,
+            cancellationToken: cancellationToken);
+        await LessonRules.LessonShouldExists(lessonName);
+
+        var question = new Question
+        {
+            Id = Guid.NewGuid(),
+            CreateDate = date,
+            CreateUser = commonService.HttpUserId,
+            UpdateDate = date,
+            UpdateUser = commonService.HttpUserId,
+            IsActive = true,
+            LessonId = request.Model.LessonId,
+            QuestionPictureBase64 = request.Model.QuestionPictureBase64,
+            QuestionPictureFileName = fileName.Item1,
+            QuestionPictureExtension = fileName.Item2,
+            AnswerText = string.Empty,
+            AnswerPictureFileName = string.Empty,
+            AnswerPictureExtension = string.Empty,
+            Status = QuestionStatus.Waiting,
+            IsRead = false,
+            SendForQuiz = false,
+            TryCount = 0,
+            GainId = null
+        };
 
         var added = await questionDal.AddAsyncCallback(question);
         var result = mapper.Map<GetQuestionModel>(added);
 
-        _ = questionApi.AskQuestionOcrImage(question.QuestionPictureBase64, result.Id);
+        _ = questionApi.AskQuestionOcrImage(question.QuestionPictureBase64, result.Id, lessonName.Trim());
 
         return result;
     }

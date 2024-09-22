@@ -5,6 +5,7 @@ using Domain.Entities.Core;
 namespace Business.Features.Users.Rules;
 
 public class UserRules(IUserDal userDal,
+                       IUserOperationClaimDal userOperationClaimDal,
                        ICommonService commonService) : IBusinessRule
 {
     internal static Task UserShouldExists(User user)
@@ -132,5 +133,12 @@ public class UserRules(IUserDal userDal,
 
         if (!control) throw new BusinessException(Strings.UserTypeNotAllowed);
         return Task.CompletedTask;
+    }
+
+    internal async Task UserCanNotPassiveAtAdminUser(User user)
+    {
+        if (user.Id is 1 or 2) throw new BusinessException(Strings.UserDeniedPassiveForAdmin);
+        if (user.UserOperationClaims.Select(x => x.OperationClaim!.Name).Contains(OperationClaims.Admin)) throw new BusinessException(Strings.UserDeniedPassiveForAdmin);
+        if (await userOperationClaimDal.IsExistsAsync(predicate: x => x.UserId == user.Id && x.OperationClaimId == 1)) throw new BusinessException(Strings.UserDeniedPassiveForAdmin);
     }
 }

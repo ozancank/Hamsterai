@@ -23,6 +23,7 @@ public class PassiveUserCommandHandler(IUserDal userDal,
         var user = await userDal.GetAsync(predicate: userService.GetPredicateForUser(x => x.Id == request.Id), cancellationToken: cancellationToken);
         await UserRules.UserShouldExistsAndActive(user);
         await userRules.UserTypeAllowed(user.Type, user.Id);
+        await userRules.UserCanNotPassiveAtAdminUser(user);
 
         user.IsActive = false;
 

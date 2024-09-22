@@ -18,6 +18,7 @@ public class HamsteraiDbContext : DbContext
     #endregion Core
 
     public DbSet<ClassRoom> ClassRooms { get; set; }
+    public DbSet<Gain> Gains { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<LessonGroup> LessonGroups { get; set; }

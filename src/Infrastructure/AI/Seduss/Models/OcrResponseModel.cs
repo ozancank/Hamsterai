@@ -2,7 +2,7 @@
 
 namespace Infrastructure.AI.Seduss.Models;
 
-public class OcrModel : IModel
+public class OcrResponseModel : IResponseModel
 {
     public string Text { get; set; }
 }

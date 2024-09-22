@@ -3,6 +3,7 @@ using System;
 using DataAccess.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.EF.Migrations
 {
     [DbContext(typeof(HamsteraiDbContext))]
-    partial class HamsteraiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240921081018_AddLessonGroupData")]
+    partial class AddLessonGroupData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -572,61 +575,6 @@ namespace DataAccess.EF.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Entities.Gain", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("Id")
-                        .HasColumnOrder(0);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreateDate")
-                        .HasColumnOrder(3);
-
-                    b.Property<long>("CreateUser")
-                        .HasColumnType("bigint")
-                        .HasColumnName("CreateUser")
-                        .HasColumnOrder(2);
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("IsActive")
-                        .HasColumnOrder(1);
-
-                    b.Property<byte>("LessonId")
-                        .HasColumnType("smallint")
-                        .HasColumnName("LessonId")
-                        .HasColumnOrder(7);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("citext")
-                        .HasColumnName("Name")
-                        .HasColumnOrder(6);
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("UpdateDate")
-                        .HasColumnOrder(5);
-
-                    b.Property<long>("UpdateUser")
-                        .HasColumnType("bigint")
-                        .HasColumnName("UpdateUser")
-                        .HasColumnOrder(4);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LessonId");
-
-                    b.HasIndex("Name", "LessonId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Gains_1");
-
-                    b.ToTable("Gains", (string)null);
-                });
-
             modelBuilder.Entity("Domain.Entities.Group", b =>
                 {
                     b.Property<byte>("Id")
@@ -951,9 +899,9 @@ namespace DataAccess.EF.Migrations
                             Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec2"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)1,
+                            GroupId = (byte)3,
                             IsActive = true,
-                            LessonId = (byte)3,
+                            LessonId = (byte)1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -962,9 +910,9 @@ namespace DataAccess.EF.Migrations
                             Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec3"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)2,
+                            GroupId = (byte)4,
                             IsActive = true,
-                            LessonId = (byte)4,
+                            LessonId = (byte)2,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -973,9 +921,9 @@ namespace DataAccess.EF.Migrations
                             Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec4"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)2,
+                            GroupId = (byte)5,
                             IsActive = true,
-                            LessonId = (byte)5,
+                            LessonId = (byte)2,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -984,9 +932,9 @@ namespace DataAccess.EF.Migrations
                             Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec5"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)2,
+                            GroupId = (byte)6,
                             IsActive = true,
-                            LessonId = (byte)6,
+                            LessonId = (byte)2,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -995,9 +943,9 @@ namespace DataAccess.EF.Migrations
                             Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec6"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)2,
+                            GroupId = (byte)7,
                             IsActive = true,
-                            LessonId = (byte)7,
+                            LessonId = (byte)2,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1006,9 +954,9 @@ namespace DataAccess.EF.Migrations
                             Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec7"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)1,
+                            GroupId = (byte)8,
                             IsActive = true,
-                            LessonId = (byte)8,
+                            LessonId = (byte)1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1017,9 +965,9 @@ namespace DataAccess.EF.Migrations
                             Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec8"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)1,
+                            GroupId = (byte)9,
                             IsActive = true,
-                            LessonId = (byte)9,
+                            LessonId = (byte)1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1028,9 +976,9 @@ namespace DataAccess.EF.Migrations
                             Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec9"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)1,
+                            GroupId = (byte)10,
                             IsActive = true,
-                            LessonId = (byte)10,
+                            LessonId = (byte)1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1039,9 +987,9 @@ namespace DataAccess.EF.Migrations
                             Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedeca"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)1,
+                            GroupId = (byte)11,
                             IsActive = true,
-                            LessonId = (byte)11,
+                            LessonId = (byte)1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         });
@@ -1161,22 +1109,10 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("CreateUser")
                         .HasColumnOrder(2);
 
-                    b.Property<int?>("GainId")
-                        .HasColumnType("integer")
-                        .HasColumnName("GainId")
-                        .HasColumnOrder(17);
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("IsActive")
                         .HasColumnOrder(1);
-
-                    b.Property<bool>("IsRead")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsRead")
-                        .HasColumnOrder(14);
 
                     b.Property<byte>("LessonId")
                         .HasColumnType("smallint")
@@ -1202,24 +1138,10 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("QuestionPictureFileName")
                         .HasColumnOrder(8);
 
-                    b.Property<bool>("SendForQuiz")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("SendForQuiz")
-                        .HasColumnOrder(15);
-
                     b.Property<byte>("Status")
                         .HasColumnType("smallint")
                         .HasColumnName("Status")
                         .HasColumnOrder(11);
-
-                    b.Property<byte>("TryCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((byte)0)
-                        .HasColumnName("TryCount")
-                        .HasColumnOrder(16);
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp without time zone")
@@ -1234,8 +1156,6 @@ namespace DataAccess.EF.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreateUser");
-
-                    b.HasIndex("GainId");
 
                     b.HasIndex("LessonId");
 
@@ -1382,22 +1302,10 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("CreateUser")
                         .HasColumnOrder(2);
 
-                    b.Property<int?>("GainId")
-                        .HasColumnType("integer")
-                        .HasColumnName("GainId")
-                        .HasColumnOrder(20);
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("IsActive")
                         .HasColumnOrder(1);
-
-                    b.Property<bool>("IsRead")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsRead")
-                        .HasColumnOrder(17);
 
                     b.Property<byte>("LessonId")
                         .HasColumnType("smallint")
@@ -1461,24 +1369,10 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("ResponseQuestionFileName")
                         .HasColumnOrder(11);
 
-                    b.Property<bool>("SendForQuiz")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("SendForQuiz")
-                        .HasColumnOrder(18);
-
                     b.Property<byte>("Status")
                         .HasColumnType("smallint")
                         .HasColumnName("Status")
                         .HasColumnOrder(16);
-
-                    b.Property<int>("TryCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("TryCount")
-                        .HasColumnOrder(19);
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp without time zone")
@@ -1493,8 +1387,6 @@ namespace DataAccess.EF.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreateUser");
-
-                    b.HasIndex("GainId");
 
                     b.HasIndex("LessonId");
 
@@ -2060,17 +1952,6 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Gain", b =>
-                {
-                    b.HasOne("Domain.Entities.Lesson", "Lesson")
-                        .WithMany("Gains")
-                        .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Lesson");
-                });
-
             modelBuilder.Entity("Domain.Entities.LessonGroup", b =>
                 {
                     b.HasOne("Domain.Entities.Group", "Group")
@@ -2120,17 +2001,11 @@ namespace DataAccess.EF.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Gain", "Gain")
-                        .WithMany("Questions")
-                        .HasForeignKey("GainId");
-
                     b.HasOne("Domain.Entities.Lesson", "Lesson")
                         .WithMany("Questions")
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Gain");
 
                     b.Navigation("Lesson");
 
@@ -2145,17 +2020,11 @@ namespace DataAccess.EF.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Gain", "Gain")
-                        .WithMany("SimilarQuestions")
-                        .HasForeignKey("GainId");
-
                     b.HasOne("Domain.Entities.Lesson", "Lesson")
                         .WithMany("SimilarQuestions")
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Gain");
 
                     b.Navigation("Lesson");
 
@@ -2253,13 +2122,6 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("UserOperationClaims");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Gain", b =>
-                {
-                    b.Navigation("Questions");
-
-                    b.Navigation("SimilarQuestions");
-                });
-
             modelBuilder.Entity("Domain.Entities.Group", b =>
                 {
                     b.Navigation("LessonGroups");
@@ -2267,8 +2129,6 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("Domain.Entities.Lesson", b =>
                 {
-                    b.Navigation("Gains");
-
                     b.Navigation("LessonGroups");
 
                     b.Navigation("Questions");

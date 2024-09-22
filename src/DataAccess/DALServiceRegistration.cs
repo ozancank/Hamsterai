@@ -23,6 +23,7 @@ public static class DALServiceRegistration
         }, ServiceLifetime.Scoped);
 
         services.AddScoped<IClassRoomDal, ClassRoomDal>();
+        services.AddScoped<IGainDal, GainDal>();
         services.AddScoped<IGroupDal, GroupDal>();
         services.AddScoped<ILessonDal, LessonDal>();
         services.AddScoped<ILessonGroupDal, LessonGroupDal>();

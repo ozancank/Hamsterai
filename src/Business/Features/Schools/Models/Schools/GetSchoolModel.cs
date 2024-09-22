@@ -18,6 +18,7 @@ public sealed class GetSchoolModel : IResponseModel
     public string AuthorizedPhone { get; set; }
     public string AuthorizedEmail { get; set; }
     public DateTime LicenseEndDate { get; set; }
+    public int UserCount { get; set; }
     public int TeacherCount { get; set; }
     public int StudentCount { get; set; }
 

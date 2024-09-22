@@ -9,7 +9,7 @@ public class MappingProfiles : Profile
     public MappingProfiles()
     {
         CreateMap<User, GetUserModel>()
-            .ForMember(x => x.OperationClaims, opt => opt.MapFrom(c => c.UserOperationClaims.Select(o => o.OperationClaim!.Name).ToList()))
+            .ForMember(dest => dest.OperationClaims, opt => opt.MapFrom(src => src.UserOperationClaims.Select(o => o.OperationClaim!.Name).ToList()))
             .ForMember(dest => dest.ProfileFileName, opt => opt.MapFrom(src => src.ProfileUrl));
 
         CreateMap<IPaginate<GetUserModel>, PageableModel<GetUserModel>>();

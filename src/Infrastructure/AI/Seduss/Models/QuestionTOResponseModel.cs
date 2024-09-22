@@ -2,8 +2,10 @@
 
 namespace Infrastructure.AI.Seduss.Models;
 
-public class QuestionOcrModel : IModel
+public class QuestionTOResponseModel : IResponseModel
 {
     public string Soru_OCR { get; set; }
     public string Cevap_Text { get; set; }
+    public string Kazanim { get; set; }
+    public string Cevap { get; set; }
 }

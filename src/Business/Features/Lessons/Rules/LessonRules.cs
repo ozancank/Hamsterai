@@ -4,6 +4,12 @@ namespace Business.Features.Lessons.Rules;
 
 public class LessonRules(ILessonDal lessonDal) : IBusinessRule
 {
+    internal static Task LessonShouldExists(object model)
+    {
+        if (model == null) throw new BusinessException(Strings.DynamicNotFound, Strings.Lesson);
+        return Task.CompletedTask;
+    }
+
     internal static Task LessonShouldExists(GetLessonModel model)
     {
         if (model == null) throw new BusinessException(Strings.DynamicNotFound, Strings.Lesson);

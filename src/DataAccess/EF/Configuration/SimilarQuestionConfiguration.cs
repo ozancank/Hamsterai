@@ -23,8 +23,13 @@ public class SimilarQuestionConfiguration : IEntityTypeConfiguration<SimilarQues
         builder.Property(e => e.ResponseAnswerFileName).HasColumnName("ResponseAnswerFileName").HasColumnOrder(14).IsRequired();
         builder.Property(e => e.ResponseAnswerExtension).HasColumnName("ResponseAnswerExtension").HasMaxLength(10).HasColumnOrder(15).IsRequired();
         builder.Property(e => e.Status).HasColumnName("Status").HasColumnOrder(16).IsRequired();
+        builder.Property(e => e.IsRead).HasColumnName("IsRead").HasDefaultValue(false).HasColumnOrder(17).IsRequired();
+        builder.Property(e => e.SendForQuiz).HasColumnName("SendForQuiz").HasDefaultValue(false).HasColumnOrder(18).IsRequired();
+        builder.Property(e => e.TryCount).HasColumnName("TryCount").HasDefaultValue((byte)0).HasColumnOrder(19).IsRequired();
+        builder.Property(e => e.GainId).HasColumnName("GainId").HasColumnOrder(20);
 
         builder.HasOne(x => x.User).WithMany(x => x.SimilarQuestions).HasForeignKey(x => x.CreateUser).HasPrincipalKey(x => x.Id);
         builder.HasOne(x => x.Lesson).WithMany(x => x.SimilarQuestions).HasForeignKey(x => x.LessonId).HasPrincipalKey(x => x.Id);
+        builder.HasOne(x => x.Gain).WithMany(x => x.SimilarQuestions).HasForeignKey(x => x.GainId).HasPrincipalKey(x => x.Id);
     }
 }

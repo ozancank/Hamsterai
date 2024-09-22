@@ -13,7 +13,12 @@ public class Question : BaseEntity<Guid>
     public string AnswerPictureFileName { get; set; }
     public string AnswerPictureExtension { get; set; }
     public QuestionStatus Status { get; set; }
+    public bool IsRead { get; set; }
+    public bool SendForQuiz { get; set; }
+    public byte TryCount { get; set; }
+    public int? GainId { get; set; }
 
     public virtual User User { get; set; }
     public virtual Lesson Lesson { get; set; }
+    public virtual Gain Gain { get; set; }
 }

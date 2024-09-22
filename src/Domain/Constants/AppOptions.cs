@@ -7,7 +7,10 @@ public class AppOptions
     public static string AnswerPicturePath { get; set; }
     public static string SimilarQuestionPicturePath { get; set; }
     public static string SimilarAnswerPicturePath { get; set; }
-    public static string AIApi { get; set; }
+    public static int AITryCount { get; set; }
+    public static int AITrySecond { get; set; }
+    public static string AIApiOriginal { get; set; }
+    public static string AIApiLite { get; set; }
     public static string ForgetPasswordUrl { get; set; }
 
     public static string ProfilePictureFolderPath { get; set; }

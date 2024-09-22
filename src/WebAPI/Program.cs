@@ -18,6 +18,7 @@ using OCK.Core.Security.JWT;
 using OCK.Core.Utilities;
 using OCK.Core.Versioning;
 using System.Diagnostics;
+using WebAPI;
 using static Infrastructure.Constants.InfrastructureDelegates;
 using static OCK.Core.Constants.Delegates;
 
@@ -52,9 +53,6 @@ builder.Services.AddCustomApiVersioning(x =>
     x.AddUrlSegmentApiVersionReader();
     x.EnableVersionedApiExplorer = true;
 });
-
-SwaggerAndToken(builder);
-
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("AllowEveryThing", builder =>
@@ -63,12 +61,16 @@ builder.Services.AddCors(opt =>
     });
 });
 
+builder.Services.AddHostedService<SenderHostedService>();
+
+SwaggerAndToken(builder);
+
+
 ServiceTools.Create(builder);
 builder.Services.AddBusinessServices();
 ServiceTools.Create(builder);
 
-ControlUserStatus = ServiceTools.GetService<IUserService>().UserStatus;
-UpdateQuestion = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
+ControlUserStatusAsync = ServiceTools.GetService<IUserService>().UserStatus;
 UpdateQuestionOcr = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
 UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
 UpdateSimilarQuestionAnswer = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;

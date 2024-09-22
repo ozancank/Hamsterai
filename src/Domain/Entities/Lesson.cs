@@ -11,6 +11,7 @@ public class Lesson : BaseEntity<byte>
     public virtual ICollection<LessonGroup> LessonGroups { get; set; }
     public virtual ICollection<Question> Questions { get; set; }
     public virtual ICollection<SimilarQuestion> SimilarQuestions { get; set; }
+    public virtual ICollection<Gain> Gains { get; set; }
 
     public Lesson() : base()
     {
@@ -18,6 +19,7 @@ public class Lesson : BaseEntity<byte>
         LessonGroups = [];
         Questions = [];
         SimilarQuestions = [];
+        Gains = [];
     }
 
     public Lesson(byte id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate, string name, byte sortNo)
@@ -29,5 +31,6 @@ public class Lesson : BaseEntity<byte>
         LessonGroups = [];
         Questions = [];
         SimilarQuestions = [];
+        Gains = [];
     }
 }

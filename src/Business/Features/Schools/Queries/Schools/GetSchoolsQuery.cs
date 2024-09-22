@@ -22,6 +22,7 @@ public class GetSchoolsQueryHandler(IMapper mapper,
             enableTracking: false,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
+            include: x => x.Include(u => u.Users),
             orderBy: x => x.OrderBy(x => x.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
