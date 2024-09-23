@@ -3,6 +3,7 @@ using Business.Features.Lessons.Commands.Groups;
 using Business.Features.Lessons.Commands.Lessons;
 using Business.Features.Lessons.Models.Groups;
 using Business.Features.Lessons.Models.Lessons;
+using Business.Features.Lessons.Queries.Gains;
 using Business.Features.Lessons.Queries.Groups;
 using Business.Features.Lessons.Queries.Lessons;
 
@@ -56,17 +57,17 @@ public class LessonController() : BaseController
     }
 
     [HttpPost("PassiveLesson")]
-    public async Task<IActionResult> PassiveLesson([FromBody] byte lessonId)
+    public async Task<IActionResult> PassiveLesson([FromBody] byte gainId)
     {
-        var command = new PassiveLessonCommand { Id = lessonId };
+        var command = new PassiveLessonCommand { Id = gainId };
         var result = await Mediator.Send(command);
         return Ok(result);
     }
 
     [HttpPost("ActiveLesson")]
-    public async Task<IActionResult> ActiveLesson([FromBody] byte lessonId)
+    public async Task<IActionResult> ActiveLesson([FromBody] byte gainId)
     {
-        var command = new ActiveLessonCommand { Id = lessonId };
+        var command = new ActiveLessonCommand { Id = gainId };
         var result = await Mediator.Send(command);
         return Ok(result);
     }
@@ -140,4 +141,32 @@ public class LessonController() : BaseController
     }
 
     #endregion Group
+
+    #region Gain
+
+    [HttpGet("GetGainById/{id}")]
+    public async Task<IActionResult> GetGainById([FromRoute] byte id)
+    {
+        var query = new GetGainByIdQuery { Id = id };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpGet("GetGains")]
+    public async Task<IActionResult> GetGains([FromQuery] PageRequest model)
+    {
+        var query = new GetGainsQuery { PageRequest = model };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("GetGainsDynamic")]
+    public async Task<IActionResult> GetGainsDynamic([FromQuery] PageRequest model, [FromBody] Dynamic dynamic)
+    {
+        var query = new GetGainsByDynamicQuery { PageRequest = model, Dynamic = dynamic };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    #endregion Gain
 }

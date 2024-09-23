@@ -87,6 +87,36 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
                 Email = "ogrenci6@mail.com",
                 ClassRoomId = 3,
             },
+            new Student(7, true, 2, new DateTime(2000, 1, 1), 2, new DateTime(2000, 1, 1))
+            {
+                Name = "Ozan Can",
+                Surname = "Kösemez",
+                StudentNo = "007",
+                TcNo = "12312312399",
+                Phone = "5069151010",
+                Email = "ozancank@gmail.com",
+                ClassRoomId = 1,
+            },
+            new Student(8, true, 2, new DateTime(2000, 1, 1), 2, new DateTime(2000, 1, 1))
+            {
+                Name = "Alican",
+                Surname = "Kesen",
+                StudentNo = "008",
+                TcNo = "12312312388",
+                Phone = "5313914388",
+                Email = "942alicankesen@gmail.com",
+                ClassRoomId = 1,
+            },
+            new Student(9, true, 2, new DateTime(2000, 1, 1), 2, new DateTime(2000, 1, 1))
+            {
+                Name = "Eyüp",
+                Surname = "Balcan",
+                StudentNo = "009",
+                TcNo = "12312312377",
+                Phone = "5550593005",
+                Email = "balcan1905@gmail.com",
+                ClassRoomId = 1,
+            }
         ]);
     }
 }

@@ -1,8 +1,10 @@
 ﻿using Business.Features.Questions.Models.Similars;
+using Business.Services.CommonService;
 
 namespace Business.Features.Questions.Rules;
 
-public class SimilarRules : IBusinessRule
+public class SimilarRules(ISimilarQuestionDal similarQuestionDal,
+                          ICommonService commonService) : IBusinessRule
 {
     internal static Task SimilarQuestionShouldExists(GetSimilarModel model)
     {
@@ -10,9 +12,20 @@ public class SimilarRules : IBusinessRule
         return Task.CompletedTask;
     }
 
-    internal static Task SimilarQuestionShouldExists(SimilarQuestion SimilarQuestion)
+    internal static Task SimilarQuestionShouldExists(Similar similar)
     {
-        if (SimilarQuestion == null) throw new BusinessException(Strings.DynamicNotFound, Strings.SimilarQuestion);
+        if (similar == null) throw new BusinessException(Strings.DynamicNotFound, Strings.SimilarQuestion);
         return Task.CompletedTask;
+    }
+
+    internal async Task SimilarLimitControl(byte lessonId)
+    {
+        var count = await similarQuestionDal.CountOfRecordAsync(
+                    enableTracking: false,
+                    predicate: x => x.LessonId == lessonId
+                                    && x.CreateUser == commonService.HttpUserId
+                                    && x.Status != QuestionStatus.Error);
+
+        if (count >= AppOptions.QuestionLimitForStudent) throw new BusinessException(Strings.SimilarLimitForStudent);
     }
 }

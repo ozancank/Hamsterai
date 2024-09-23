@@ -1,5 +1,5 @@
 ﻿namespace DataAccess.Abstract;
 
-public interface ISimilarQuestionDal : ISyncRepository<SimilarQuestion>, IAsyncRepository<SimilarQuestion>
+public interface ISimilarQuestionDal : ISyncRepository<Similar>, IAsyncRepository<Similar>
 {
 }

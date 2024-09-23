@@ -19,7 +19,7 @@ public class User : Security.User
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
     public virtual ICollection<Question> Questions { get; set; }
     public virtual ICollection<PasswordToken> PasswordTokens { get; set; }
-    public virtual ICollection<SimilarQuestion> SimilarQuestions { get; set; }
+    public virtual ICollection<Similar> SimilarQuestions { get; set; }
     public virtual ICollection<NotificationDeviceToken> NotificationDeviceTokens { get; set; }
 
     public User() : base()

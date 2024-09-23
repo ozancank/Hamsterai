@@ -76,6 +76,7 @@ public struct Strings
     public const string Title = "Ünvan";
     public const string Header = "Başlık";
     public const string Message = "Mesaj";
+    public const string Gain = "Kazanım";
 
     public const string FileNameExtension = "Dosya adı içerisinde nokta olmalı ve uzantı belirtilmelidir.";
 
@@ -101,6 +102,9 @@ public struct Strings
     public const string UserDeniedPassiveForAdmin = "Admin kullanıcısı pasif yapılamaz.";
 
     public const string ModelBusy = "Model meşgul!";
+    public const string QuestionLimitForStudent = "Bu ders için günlük soru limitinize ulaştınız.";
+    public const string SimilarLimitForStudent = "Bu ders için günlük benzer soru limitinize ulaştınız.";
+    public const string OldPasswordWrong = "Eski şifre yanlış girildi.";
 }
 
 //public const string _customerAdded = "Müşteri kayıt edildi.";

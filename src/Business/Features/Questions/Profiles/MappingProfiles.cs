@@ -11,7 +11,7 @@ public class MappingProfiles : Profile
 
         CreateMap<Question, GetQuestionModel>()
             .ForMember(dest => dest.LessonName, opt => opt.MapFrom(src => src.Lesson.Name))
-            .ForMember(dest => dest.GainName, opt => opt.MapFrom(src => src.Gain.IfNullEmptyString(x => x.Name)));
+            .ForMember(dest => dest.GainName, opt => opt.MapFrom(src => src.Gain.Name));
         CreateMap<IPaginate<GetQuestionModel>, PageableModel<GetQuestionModel>>();
 
         CreateMap<AddQuestionModel, Question>();
@@ -20,12 +20,12 @@ public class MappingProfiles : Profile
 
         #region SimilarQuestion
 
-        CreateMap<SimilarQuestion, GetSimilarModel>()
+        CreateMap<Similar, GetSimilarModel>()
             .ForMember(dest => dest.LessonName, opt => opt.MapFrom(src => src.Lesson.Name))
-            .ForMember(dest => dest.GainName, opt => opt.MapFrom(src => src.Gain.IfNullEmptyString(x => x.Name)));
+            .ForMember(dest => dest.GainName, opt => opt.MapFrom(src => src.Gain.Name));
         CreateMap<IPaginate<GetSimilarModel>, PageableModel<GetSimilarModel>>();
 
-        CreateMap<AddSimilarModel, SimilarQuestion>();
+        CreateMap<AddSimilarModel, Similar>();
 
         #endregion SimilarQuestion
     }

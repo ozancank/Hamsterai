@@ -74,7 +74,7 @@ public class UserController() : BaseController
     [HttpPost("PasswordChangeByUser")]
     public async Task<IActionResult> PasswordChangeByUser([FromBody] UpdateUserPasswordModel userPasswordDto)
     {
-        var command = new PasswordChangeByUserCommand { Password = userPasswordDto.Password };
+        var command = new PasswordChangeByUserCommand { OldPassword = userPasswordDto.OldPassword, Password = userPasswordDto.Password };
         var result = await Mediator.Send(command);
         return Ok(result);
     }

@@ -17,6 +17,7 @@ public class Question : BaseEntity<Guid>
     public bool SendForQuiz { get; set; }
     public byte TryCount { get; set; }
     public int? GainId { get; set; }
+    public char? RightOption { get; set; }
 
     public virtual User User { get; set; }
     public virtual Lesson Lesson { get; set; }

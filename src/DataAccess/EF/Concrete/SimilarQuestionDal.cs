@@ -1,5 +1,5 @@
 ﻿namespace DataAccess.EF.Concrete;
 
-public class SimilarQuestionDal(HamsteraiDbContext context) : EfRepositoryBase<SimilarQuestion, HamsteraiDbContext>(context), ISimilarQuestionDal
+public class SimilarQuestionDal(HamsteraiDbContext context) : EfRepositoryBase<Similar, HamsteraiDbContext>(context), ISimilarQuestionDal
 {
 }

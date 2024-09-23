@@ -1,5 +1,6 @@
 ﻿using Business.Features.Lessons.Rules;
 using Business.Features.Questions.Models.Similars;
+using Business.Features.Questions.Rules;
 using Business.Services.CommonService;
 using Infrastructure.AI;
 using MediatR;
@@ -12,7 +13,7 @@ public class AddSimilarCommand : IRequest<GetSimilarModel>, ISecuredRequest<User
 {
     public AddSimilarModel Model { get; set; }
 
-    public UserTypes[] Roles { get; } = [];
+    public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.Student];
     public string[] HidePropertyNames { get; } = ["Model.QuestionPictureBase64"];
 }
 
@@ -20,10 +21,13 @@ public class AddSimilarCommandHandler(IMapper mapper,
                                       ISimilarQuestionDal similarQuestionDal,
                                       ICommonService commonService,
                                       ILessonDal lessonDal,
-                                      IQuestionApi questionApi) : IRequestHandler<AddSimilarCommand, GetSimilarModel>
+                                      IQuestionApi questionApi,
+                                      SimilarRules similarRules) : IRequestHandler<AddSimilarCommand, GetSimilarModel>
 {
     public async Task<GetSimilarModel> Handle(AddSimilarCommand request, CancellationToken cancellationToken)
     {
+        await similarRules.SimilarLimitControl(request.Model.LessonId);
+
         var fileName = await commonService.PictureConvert(request.Model.QuestionPictureBase64, "question.png", AppOptions.QuestionPictureFolderPath);
 
         var lessonName = await lessonDal.GetAsync(
@@ -32,31 +36,45 @@ public class AddSimilarCommandHandler(IMapper mapper,
             selector: x => x.Name,
             cancellationToken: cancellationToken);
         await LessonRules.LessonShouldExists(lessonName);
+        var date = DateTime.Now;
 
-        var question = mapper.Map<SimilarQuestion>(request.Model);
-        question.Id = Guid.NewGuid();
-        question.IsActive = true;
-        question.CreateUser = question.UpdateUser = commonService.HttpUserId;
-        question.CreateDate = question.UpdateDate = DateTime.Now;
-        question.QuestionPicture = request.Model.QuestionPictureBase64;
-        question.QuestionPictureFileName = fileName.Item1;
-        question.QuestionPictureExtension = fileName.Item2;
-        question.ResponseQuestion = string.Empty;
-        question.ResponseQuestionFileName = string.Empty;
-        question.ResponseQuestionExtension = string.Empty;
-        question.ResponseAnswer = string.Empty;
-        question.ResponseAnswerFileName = string.Empty;
-        question.ResponseAnswerExtension = string.Empty;
-        question.Status = QuestionStatus.Waiting;
-        question.IsRead = false;
-        question.SendForQuiz = false;
-        question.TryCount = 0;
-        question.GainId = null;
+        var question = new Similar
+        {
+            Id = Guid.NewGuid(),
+            IsActive = true,
+            CreateUser = commonService.HttpUserId,
+            UpdateUser = commonService.HttpUserId,
+            CreateDate = date,
+            UpdateDate = date,
+            LessonId = request.Model.LessonId,
+            QuestionPicture = request.Model.QuestionPictureBase64,
+            QuestionPictureFileName = fileName.Item1,
+            QuestionPictureExtension = fileName.Item2,
+            ResponseQuestion = string.Empty,
+            ResponseQuestionFileName = string.Empty,
+            ResponseQuestionExtension = string.Empty,
+            ResponseAnswer = string.Empty,
+            ResponseAnswerFileName = string.Empty,
+            ResponseAnswerExtension = string.Empty,
+            Status = QuestionStatus.Waiting,
+            IsRead = false,
+            SendForQuiz = false,
+            TryCount = 0,
+            GainId = null,
+            RightOption = null,
+        };
+
 
         var added = await similarQuestionDal.AddAsyncCallback(question);
         var result = mapper.Map<GetSimilarModel>(added);
 
-        _ = questionApi.GetSimilarQuestion(request.Model.QuestionPictureBase64, result.Id, lessonName);
+        _ = questionApi.GetSimilarQuestion(new()
+        {
+            Id = result.Id,
+            Base64 = question.QuestionPicture,
+            LessonName = lessonName,
+            UserId = question.CreateUser
+        });
 
         return result;
     }

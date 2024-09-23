@@ -1,8 +1,8 @@
 ﻿namespace DataAccess.EF.Configuration;
 
-public class SimilarQuestionConfiguration : IEntityTypeConfiguration<SimilarQuestion>
+public class SimilarQuestionConfiguration : IEntityTypeConfiguration<Similar>
 {
-    public void Configure(EntityTypeBuilder<SimilarQuestion> builder)
+    public void Configure(EntityTypeBuilder<Similar> builder)
     {
         builder.ToTable("SimilarQuestions");
         builder.Property(e => e.Id).HasColumnName("Id").ValueGeneratedNever().HasColumnOrder(0).IsRequired();
@@ -27,6 +27,7 @@ public class SimilarQuestionConfiguration : IEntityTypeConfiguration<SimilarQues
         builder.Property(e => e.SendForQuiz).HasColumnName("SendForQuiz").HasDefaultValue(false).HasColumnOrder(18).IsRequired();
         builder.Property(e => e.TryCount).HasColumnName("TryCount").HasDefaultValue((byte)0).HasColumnOrder(19).IsRequired();
         builder.Property(e => e.GainId).HasColumnName("GainId").HasColumnOrder(20);
+        builder.Property(e => e.RightOption).HasColumnName("RightOption").HasMaxLength(1).HasColumnOrder(21);
 
         builder.HasOne(x => x.User).WithMany(x => x.SimilarQuestions).HasForeignKey(x => x.CreateUser).HasPrincipalKey(x => x.Id);
         builder.HasOne(x => x.Lesson).WithMany(x => x.SimilarQuestions).HasForeignKey(x => x.LessonId).HasPrincipalKey(x => x.Id);

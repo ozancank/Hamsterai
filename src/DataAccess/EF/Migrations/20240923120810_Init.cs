@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -90,6 +91,29 @@ namespace DataAccess.EF.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Schools", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Gains",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CreateUser = table.Column<long>(type: "bigint", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdateUser = table.Column<long>(type: "bigint", nullable: false),
+                    UpdateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Name = table.Column<string>(type: "citext", maxLength: 50, nullable: false),
+                    LessonId = table.Column<byte>(type: "smallint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Gains", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Gains_Lessons_LessonId",
+                        column: x => x.LessonId,
+                        principalTable: "Lessons",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -257,11 +281,23 @@ namespace DataAccess.EF.Migrations
                     QuestionPictureFileName = table.Column<string>(type: "citext", nullable: false),
                     QuestionPictureExtension = table.Column<string>(type: "citext", maxLength: 10, nullable: false),
                     AnswerText = table.Column<string>(type: "citext", nullable: false),
-                    Status = table.Column<byte>(type: "smallint", nullable: false)
+                    Status = table.Column<byte>(type: "smallint", nullable: false),
+                    AnswerPictureFileName = table.Column<string>(type: "citext", nullable: false, defaultValue: ""),
+                    AnswerPictureExtension = table.Column<string>(type: "citext", maxLength: 10, nullable: false, defaultValue: ""),
+                    IsRead = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    SendForQuiz = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    TryCount = table.Column<byte>(type: "smallint", nullable: false, defaultValue: (byte)0),
+                    GainId = table.Column<int>(type: "integer", nullable: true),
+                    RightOption = table.Column<char>(type: "character(1)", maxLength: 1, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Questions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Questions_Gains_GainId",
+                        column: x => x.GainId,
+                        principalTable: "Gains",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Questions_Lessons_LessonId",
                         column: x => x.LessonId,
@@ -319,11 +355,21 @@ namespace DataAccess.EF.Migrations
                     ResponseAnswer = table.Column<string>(type: "citext", nullable: false),
                     ResponseAnswerFileName = table.Column<string>(type: "citext", nullable: false),
                     ResponseAnswerExtension = table.Column<string>(type: "citext", maxLength: 10, nullable: false),
-                    Status = table.Column<byte>(type: "smallint", nullable: false)
+                    Status = table.Column<byte>(type: "smallint", nullable: false),
+                    IsRead = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    SendForQuiz = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    TryCount = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    GainId = table.Column<int>(type: "integer", nullable: true),
+                    RightOption = table.Column<char>(type: "character(1)", maxLength: 1, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SimilarQuestions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SimilarQuestions_Gains_GainId",
+                        column: x => x.GainId,
+                        principalTable: "Gains",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_SimilarQuestions_Lessons_LessonId",
                         column: x => x.LessonId,
@@ -463,8 +509,17 @@ namespace DataAccess.EF.Migrations
                 columns: new[] { "Id", "CreateDate", "CreateUser", "IsActive", "Name", "SortNo", "UpdateDate", "UpdateUser" },
                 values: new object[,]
                 {
-                    { (byte)1, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, true, "Türkçe", (byte)1, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
-                    { (byte)2, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, true, "Matematik", (byte)2, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L }
+                    { (byte)1, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, true, "Türk Dili ve Edebiyatı", (byte)1, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { (byte)2, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, true, "Matematik", (byte)2, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { (byte)3, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, true, "İngilizce", (byte)3, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { (byte)4, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, true, "Fizik", (byte)4, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { (byte)5, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, true, "Kimya", (byte)5, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { (byte)6, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, true, "Biyoloji", (byte)6, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { (byte)7, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, true, "Geometri", (byte)7, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { (byte)8, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, true, "Tarih", (byte)8, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { (byte)9, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, true, "Coğrafya", (byte)9, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { (byte)10, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, true, "Felsefe", (byte)10, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { (byte)11, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, true, "Din Kültürü ve Ahlak Bilgisi", (byte)11, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L }
                 });
 
             migrationBuilder.InsertData(
@@ -503,7 +558,16 @@ namespace DataAccess.EF.Migrations
                 values: new object[,]
                 {
                     { new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec0"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, (byte)1, true, (byte)1, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
-                    { new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec1"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, (byte)2, true, (byte)2, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L }
+                    { new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec1"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, (byte)2, true, (byte)2, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec2"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, (byte)1, true, (byte)3, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec3"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, (byte)2, true, (byte)4, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec4"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, (byte)2, true, (byte)5, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec5"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, (byte)2, true, (byte)6, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec6"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, (byte)2, true, (byte)7, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec7"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, (byte)1, true, (byte)8, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec8"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, (byte)1, true, (byte)9, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec9"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, (byte)1, true, (byte)10, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedeca"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, (byte)1, true, (byte)11, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L }
                 });
 
             migrationBuilder.InsertData(
@@ -533,7 +597,10 @@ namespace DataAccess.EF.Migrations
                     { 8L, 3, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "ogrenci3@mail.com", true, false, "Öğrenci 3", new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 }, new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 }, "5000000008", null, 1, "Kullanıcı", (byte)4, "Öğrenci3" },
                     { 9L, 4, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "ogrenci4@mail.com", true, false, "Öğrenci 4", new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 }, new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 }, "5000000009", null, 1, "Kullanıcı", (byte)4, "Öğrenci4" },
                     { 10L, 5, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "ogrenci5@mail.com", true, false, "Öğrenci 5", new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 }, new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 }, "5000000010", null, 1, "Kullanıcı", (byte)4, "Öğrenci5" },
-                    { 11L, 6, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "ogrenci6@mail.com", true, false, "Öğrenci 6", new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 }, new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 }, "5000000011", null, 1, "Kullanıcı", (byte)4, "Öğrenci6" }
+                    { 11L, 6, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "ogrenci6@mail.com", true, false, "Öğrenci 6", new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 }, new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 }, "5000000011", null, 1, "Kullanıcı", (byte)4, "Öğrenci6" },
+                    { 12L, 7, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "ozancank@gmail.com", true, false, "Ozan Can", new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 }, new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 }, "5069151010", null, 1, "Kösemez", (byte)4, "ozancank@gmail.com" },
+                    { 13L, 8, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "942alicankesen@gmail.com", true, false, "Alican", new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 }, new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 }, "5313914388", null, 1, "Kesen", (byte)4, "942alicankesen@gmail.com" },
+                    { 14L, 9, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "balcan1905@gmail.com", true, false, "Eyüp", new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 }, new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 }, "5550593005", null, 1, "Balcan", (byte)4, "balcan1905@gmail.com" }
                 });
 
             migrationBuilder.InsertData(
@@ -546,7 +613,10 @@ namespace DataAccess.EF.Migrations
                     { 3, 2, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, "ogrenci3@mail.com", true, "Öğrenci 3", "5000000008", "003", "Kullanıcı", "55555555555", new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
                     { 4, 2, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, "ogrenci4@mail.com", true, "Öğrenci 4", "5000000009", "004", "Kullanıcı", "66666666666", new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
                     { 5, 3, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, "ogrenci5@mail.com", true, "Öğrenci 5", "5000000010", "005", "Kullanıcı", "77777777777", new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
-                    { 6, 3, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, "ogrenci6@mail.com", true, "Öğrenci 6", "5000000011", "006", "Kullanıcı", "88888888888", new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L }
+                    { 6, 3, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, "ogrenci6@mail.com", true, "Öğrenci 6", "5000000011", "006", "Kullanıcı", "88888888888", new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { 7, 1, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, "ozancank@gmail.com", true, "Ozan Can", "5069151010", "007", "Kösemez", "12312312399", new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { 8, 1, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, "942alicankesen@gmail.com", true, "Alican", "5313914388", "008", "Kesen", "12312312388", new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L },
+                    { 9, 1, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L, "balcan1905@gmail.com", true, "Eyüp", "5550593005", "009", "Balcan", "12312312377", new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 2L }
                 });
 
             migrationBuilder.InsertData(
@@ -581,6 +651,17 @@ namespace DataAccess.EF.Migrations
                 column: "SchoolId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Gains_1",
+                table: "Gains",
+                columns: new[] { "Name", "LessonId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Gains_LessonId",
+                table: "Gains",
+                column: "LessonId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LessonGroups_1",
                 table: "LessonGroups",
                 columns: new[] { "GroupId", "LessonId" },
@@ -613,6 +694,11 @@ namespace DataAccess.EF.Migrations
                 column: "CreateUser");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Questions_GainId",
+                table: "Questions",
+                column: "GainId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Questions_LessonId",
                 table: "Questions",
                 column: "LessonId");
@@ -638,6 +724,11 @@ namespace DataAccess.EF.Migrations
                 name: "IX_SimilarQuestions_CreateUser",
                 table: "SimilarQuestions",
                 column: "CreateUser");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SimilarQuestions_GainId",
+                table: "SimilarQuestions",
+                column: "GainId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SimilarQuestions_LessonId",
@@ -785,7 +876,7 @@ namespace DataAccess.EF.Migrations
                 name: "Groups");
 
             migrationBuilder.DropTable(
-                name: "Lessons");
+                name: "Gains");
 
             migrationBuilder.DropTable(
                 name: "Teachers");
@@ -795,6 +886,9 @@ namespace DataAccess.EF.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Lessons");
 
             migrationBuilder.DropTable(
                 name: "Students");

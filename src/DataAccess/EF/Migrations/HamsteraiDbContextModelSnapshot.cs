@@ -523,6 +523,57 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
+                            Id = 12L,
+                            ConnectionId = 7,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "ozancank@gmail.com",
+                            IsActive = true,
+                            MustPasswordChange = false,
+                            Name = "Ozan Can",
+                            PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
+                            PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
+                            Phone = "5069151010",
+                            SchoolId = 1,
+                            Surname = "Kösemez",
+                            Type = (byte)4,
+                            UserName = "ozancank@gmail.com"
+                        },
+                        new
+                        {
+                            Id = 13L,
+                            ConnectionId = 8,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "942alicankesen@gmail.com",
+                            IsActive = true,
+                            MustPasswordChange = false,
+                            Name = "Alican",
+                            PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
+                            PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
+                            Phone = "5313914388",
+                            SchoolId = 1,
+                            Surname = "Kesen",
+                            Type = (byte)4,
+                            UserName = "942alicankesen@gmail.com"
+                        },
+                        new
+                        {
+                            Id = 14L,
+                            ConnectionId = 9,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "balcan1905@gmail.com",
+                            IsActive = true,
+                            MustPasswordChange = false,
+                            Name = "Eyüp",
+                            PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
+                            PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
+                            Phone = "5550593005",
+                            SchoolId = 1,
+                            Surname = "Balcan",
+                            Type = (byte)4,
+                            UserName = "balcan1905@gmail.com"
+                        },
+                        new
+                        {
                             Id = 15L,
                             CreateDate = new DateTime(2024, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "kazimyildirimeng@gmail.com",
@@ -754,7 +805,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            Name = "Türk Dili ve Edebiyatı",
+                            Name = "Türkçe",
                             SortNo = (byte)1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -787,7 +838,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            Name = "Fizik",
+                            Name = "Fen Bilimleri",
                             SortNo = (byte)4,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -798,7 +849,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            Name = "Kimya",
+                            Name = "Fizik",
                             SortNo = (byte)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -809,7 +860,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            Name = "Biyoloji",
+                            Name = "Kimya",
                             SortNo = (byte)6,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -820,7 +871,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            Name = "Geometri",
+                            Name = "Biyoloji",
                             SortNo = (byte)7,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -831,7 +882,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            Name = "Tarih",
+                            Name = "Edebiyat",
                             SortNo = (byte)8,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -842,7 +893,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            Name = "Coğrafya",
+                            Name = "Tarih",
                             SortNo = (byte)9,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -853,7 +904,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            Name = "Felsefe",
+                            Name = "Coğrafya",
                             SortNo = (byte)10,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -864,8 +915,19 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            Name = "Din Kültürü ve Ahlak Bilgisi",
+                            Name = "Felsefe",
                             SortNo = (byte)11,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = (byte)12,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            Name = "Din Kültürü",
+                            SortNo = (byte)12,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         });
@@ -1202,6 +1264,12 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("QuestionPictureFileName")
                         .HasColumnOrder(8);
 
+                    b.Property<char?>("RightOption")
+                        .HasMaxLength(1)
+                        .HasColumnType("character(1)")
+                        .HasColumnName("RightOption")
+                        .HasColumnOrder(18);
+
                     b.Property<bool>("SendForQuiz")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -1365,7 +1433,7 @@ namespace DataAccess.EF.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Entities.SimilarQuestion", b =>
+            modelBuilder.Entity("Domain.Entities.Similar", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -1460,6 +1528,12 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("citext")
                         .HasColumnName("ResponseQuestionFileName")
                         .HasColumnOrder(11);
+
+                    b.Property<char?>("RightOption")
+                        .HasMaxLength(1)
+                        .HasColumnType("character(1)")
+                        .HasColumnName("RightOption")
+                        .HasColumnOrder(21);
 
                     b.Property<bool>("SendForQuiz")
                         .ValueGeneratedOnAdd()
@@ -1692,6 +1766,54 @@ namespace DataAccess.EF.Migrations
                             StudentNo = "006",
                             Surname = "Kullanıcı",
                             TcNo = "88888888888",
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ClassRoomId = 1,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            Email = "ozancank@gmail.com",
+                            IsActive = true,
+                            Name = "Ozan Can",
+                            Phone = "5069151010",
+                            StudentNo = "007",
+                            Surname = "Kösemez",
+                            TcNo = "12312312399",
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ClassRoomId = 1,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            Email = "942alicankesen@gmail.com",
+                            IsActive = true,
+                            Name = "Alican",
+                            Phone = "5313914388",
+                            StudentNo = "008",
+                            Surname = "Kesen",
+                            TcNo = "12312312388",
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ClassRoomId = 1,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            Email = "balcan1905@gmail.com",
+                            IsActive = true,
+                            Name = "Eyüp",
+                            Phone = "5550593005",
+                            StudentNo = "009",
+                            Surname = "Balcan",
+                            TcNo = "12312312377",
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         });
@@ -2137,7 +2259,7 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.Entities.SimilarQuestion", b =>
+            modelBuilder.Entity("Domain.Entities.Similar", b =>
                 {
                     b.HasOne("Domain.Entities.Core.User", "User")
                         .WithMany("SimilarQuestions")

@@ -1,4 +1,4 @@
-﻿namespace Business.Features.Lessons.Models.Gain;
+﻿namespace Business.Features.Lessons.Models.Gains;
 
 public class GetGainModel : IResponseModel
 {

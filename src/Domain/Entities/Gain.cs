@@ -9,7 +9,7 @@ public class Gain : BaseEntity<int>
 
     public virtual Lesson Lesson { get; set; }
     public virtual ICollection<Question> Questions { get; set; }
-    public virtual ICollection<SimilarQuestion> SimilarQuestions { get; set; }
+    public virtual ICollection<Similar> SimilarQuestions { get; set; }
 
     public Gain()
     {

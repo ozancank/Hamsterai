@@ -2,7 +2,6 @@
 using Business.Behaviors;
 using DataAccess;
 using Infrastructure;
-using Infrastructure.Notification.Firebase;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using OCK.Core.Logging.Serilog;
@@ -32,7 +31,6 @@ public static class BusinessServiceRegistration
 
         services.AddSingleton<LoggerServiceBase, PostgreSqlLogger>();
         services.AddSingleton<OCK.Core.Mailing.IMailService, OCK.Core.Mailing.MailKitImplementations.MailKitMailService>();
-        services.AddSingleton<Infrastructure.Notification.INotificationApi, FirebaseApi>();
 
         services.AddScoped<Services.AuthService.IAuthService, Services.AuthService.AuthManager>();
         services.AddScoped<Services.CommonService.ICommonService, Services.CommonService.CommonManager>();

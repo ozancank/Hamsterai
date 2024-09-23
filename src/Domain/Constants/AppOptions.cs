@@ -12,6 +12,8 @@ public class AppOptions
     public static string AIApiOriginal { get; set; }
     public static string AIApiLite { get; set; }
     public static string ForgetPasswordUrl { get; set; }
+    public static int QuestionLimitForStudent { get; set; }
+    public static int SimilarLimitForStudent { get; set; }
 
     public static string ProfilePictureFolderPath { get; set; }
     public static string QuestionPictureFolderPath { get; set; }

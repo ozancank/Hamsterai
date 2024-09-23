@@ -1,5 +1,6 @@
 ﻿using Business.Features.Lessons.Rules;
 using Business.Features.Questions.Models.Questions;
+using Business.Features.Questions.Rules;
 using Business.Services.CommonService;
 using Infrastructure.AI;
 using MediatR;
@@ -12,7 +13,7 @@ public class AddQuestionCommand : IRequest<GetQuestionModel>, ISecuredRequest<Us
 {
     public AddQuestionModel Model { get; set; }
 
-    public UserTypes[] Roles { get; } = [];
+    public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.Student];
     public string[] HidePropertyNames { get; } = ["Model.QuestionPictureBase64"];
 }
 
@@ -20,10 +21,13 @@ public class AddQuestionCommandHandler(IMapper mapper,
                                        IQuestionDal questionDal,
                                        ICommonService commonService,
                                        ILessonDal lessonDal,
-                                       IQuestionApi questionApi) : IRequestHandler<AddQuestionCommand, GetQuestionModel>
+                                       IQuestionApi questionApi,
+                                       QuestionRules questionRules) : IRequestHandler<AddQuestionCommand, GetQuestionModel>
 {
     public async Task<GetQuestionModel> Handle(AddQuestionCommand request, CancellationToken cancellationToken)
     {
+        await questionRules.QuestionLimitControl(request.Model.LessonId);
+
         var fileName = await commonService.PictureConvert(request.Model.QuestionPictureBase64, request.Model.QuestionPictureFileName, AppOptions.QuestionPictureFolderPath);
         var date = DateTime.Now;
 
@@ -53,13 +57,20 @@ public class AddQuestionCommandHandler(IMapper mapper,
             IsRead = false,
             SendForQuiz = false,
             TryCount = 0,
-            GainId = null
+            GainId = null,
+            RightOption = null
         };
 
         var added = await questionDal.AddAsyncCallback(question);
         var result = mapper.Map<GetQuestionModel>(added);
 
-        _ = questionApi.AskQuestionOcrImage(question.QuestionPictureBase64, result.Id, lessonName.Trim());
+        _ = questionApi.AskQuestionOcrImage(new()
+        {
+            Id = result.Id,
+            Base64 = question.QuestionPictureBase64,
+            LessonName = lessonName,
+            UserId = question.CreateUser
+        });
 
         return result;
     }

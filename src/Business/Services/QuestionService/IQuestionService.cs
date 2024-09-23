@@ -1,4 +1,5 @@
-﻿using Infrastructure.AI.Seduss.Models;
+﻿using Infrastructure.AI.Seduss.Dtos;
+using Infrastructure.AI.Seduss.Models;
 
 namespace Business.Services.QuestionService;
 
@@ -6,15 +7,15 @@ public interface IQuestionService : IBusinessService
 {
     #region Question
 
-    Task<bool> UpdateAnswer(QuestionTOResponseModel model, Guid questionId, QuestionStatus status);
+    Task<bool> UpdateAnswer(QuestionTOResponseModel model, UpdateQuestionDto dto);
 
-    Task<bool> UpdateAnswer(QuestionITOResponseModel model, Guid questionId, QuestionStatus status);
+    Task<bool> UpdateAnswer(QuestionITOResponseModel model, UpdateQuestionDto dto);
 
     #endregion Question
 
     #region SimilarQuestion
 
-    Task<bool> UpdateSimilarAnswer(SimilarResponseModel model, Guid questionId, QuestionStatus status);
+    Task<bool> UpdateSimilarAnswer(SimilarResponseModel model, UpdateQuestionDto dto);
 
     #endregion SimilarQuestion
 

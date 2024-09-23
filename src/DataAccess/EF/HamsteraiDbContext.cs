@@ -6,6 +6,7 @@ namespace DataAccess.EF;
 
 public class HamsteraiDbContext : DbContext
 {
+    private static bool IsMigration = false;
     protected IConfiguration Configuration { get; set; }
 
     #region Core
@@ -26,7 +27,7 @@ public class HamsteraiDbContext : DbContext
     public DbSet<PasswordToken> PasswordTokens { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<School> Schools { get; set; }
-    public DbSet<SimilarQuestion> SimilarQuestions { get; set; }
+    public DbSet<Similar> SimilarQuestions { get; set; }
     public DbSet<Student> Students { get; set; }
     public DbSet<Teacher> Teachers { get; set; }
     public DbSet<TeacherClassRoom> TeacherClassRooms { get; set; }
@@ -36,7 +37,11 @@ public class HamsteraiDbContext : DbContext
         : base(options)
     {
         Configuration = configuration;
-        Database.Migrate();
+        if (!IsMigration)
+        {
+            Database.Migrate();
+            IsMigration = true;
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -70,7 +75,6 @@ public class HamsteraiDbContext : DbContext
     //{
     //    public DateTimeToDateTimeUtc() : base(c => DateTime.SpecifyKind(c, DateTimeKind.Utc), c => c)
     //    {
-
     //    }
     //}
 
@@ -127,6 +131,7 @@ public class HamsteraiDbContext : DbContext
 
     //}
 }
+
 /*
  *
     if (IsMigration())

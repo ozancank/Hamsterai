@@ -61,6 +61,8 @@ builder.Services.AddCors(opt =>
     });
 });
 
+
+//if (!builder.Environment.IsDevelopment())
 builder.Services.AddHostedService<SenderHostedService>();
 
 SwaggerAndToken(builder);
@@ -163,6 +165,8 @@ app.Run();
 
 static void SwaggerAndToken(WebApplicationBuilder builder)
 {
+    builder.Services.AddSwaggerGenNewtonsoftSupport();
+
     builder.Services.AddSwaggerGen(opt =>
     {
         opt.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());

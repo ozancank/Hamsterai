@@ -1,4 +1,4 @@
-﻿using Business.Features.Lessons.Models.Gain;
+﻿using Business.Features.Lessons.Models.Gains;
 using Business.Features.Lessons.Models.Lessons;
 
 namespace Business.Features.Lessons.Profiles;

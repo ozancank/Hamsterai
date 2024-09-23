@@ -10,10 +10,11 @@ namespace Business.Features.Users.Commands.Password;
 
 public class PasswordChangeByUserCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
+    public string OldPassword { get; set; }
     public string Password { get; set; }
 
     public UserTypes[] Roles { get; } = [];
-    public string[] HidePropertyNames { get; } = ["Password"];
+    public string[] HidePropertyNames { get; } = ["OldPassword", "Password"];
 }
 
 public class PasswordChangeByUserCommandHandler(IUserDal userDal,
@@ -26,6 +27,7 @@ public class PasswordChangeByUserCommandHandler(IUserDal userDal,
         var user = await userDal.GetAsync(predicate: userService.GetPredicateForUser(x => x.Id == commonService.HttpUserId), cancellationToken: cancellationToken);
 
         await UserRules.UserShouldExistsAndActive(user);
+        await UserRules.PasswordShouldVerifiedWhenPasswordChange(user, request.OldPassword);
         await userRules.UserTypeAllowed(user.Type, user.Id);
 
         HashingHelper.CreatePasswordHash(request.Password!, out byte[] passwordHash, out byte[] passwordSalt);

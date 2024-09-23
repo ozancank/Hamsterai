@@ -3,7 +3,7 @@ using Domain.Entities.Core;
 
 namespace Domain.Entities;
 
-public class SimilarQuestion : BaseEntity<Guid>
+public class Similar : BaseEntity<Guid>
 {
     public byte LessonId { get; set; }
     public string QuestionPicture { get; set; }
@@ -20,6 +20,7 @@ public class SimilarQuestion : BaseEntity<Guid>
     public bool SendForQuiz { get; set; }
     public int TryCount { get; set; }
     public int? GainId { get; set; }
+    public char? RightOption { get; set; }
 
     public virtual User User { get; set; }
     public virtual Lesson Lesson { get; set; }

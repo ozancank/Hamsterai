@@ -45,4 +45,8 @@
 	  <None Include="D:\Hamsterai\DataAccess\.editorconfig" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="EF\Migrations\" />
+	</ItemGroup>
+
 </Project>

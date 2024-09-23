@@ -1,8 +1,4 @@
-﻿using Infrastructure.AI;
-using Infrastructure.AI.Seduss;
-using Infrastructure.Time;
-using Infrastructure.Time.WorldTimeApi;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure;
 
@@ -11,8 +7,9 @@ public static class InfrastructureServiceRegistration
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         //services.AddScoped<ILicenceApi, LicenceApi>();
-        services.AddScoped<ITimeApi, WorldTimeApi>();
-        services.AddTransient<IQuestionApi, SedussApi>();
+        services.AddScoped<Time.ITimeApi, Time.WorldTimeApi.WorldTimeApi>();
+        services.AddTransient<AI.IQuestionApi, AI.Seduss.SedussApi>();
+        services.AddSingleton<Notification.INotificationApi, Notification.Firebase.FirebaseApi>();
 
         return services;
     }
