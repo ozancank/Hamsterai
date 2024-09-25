@@ -9,7 +9,7 @@ namespace Business.Features.Users.Commands.Users;
 
 public class UpdateUserCommand : IRequest<GetUserModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public UpdateUserModel UpdateUserModel { get; set; }
+    public UpdateUserModel Model { get; set; }
     public UserTypes[] Roles { get; } = [];
     public string[] HidePropertyNames { get; } = ["UpdateUserModel.Password", "UpdateUserModel.ProfilePictureBase64"];
 }
@@ -21,26 +21,32 @@ public class UpdateUserCommandHandler(IMapper mapper,
 {
     public async Task<GetUserModel> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await userDal.GetAsync(predicate: x => x.Id == request.UpdateUserModel.Id, cancellationToken: cancellationToken);
+        var user = await userDal.GetAsync(predicate: x => x.Id == request.Model.Id, cancellationToken: cancellationToken);
 
         await UserRules.UserShouldExistsAndActive(user);
-        await userRules.UserNameCanNotBeDuplicated(request.UpdateUserModel.UserName);
-        await userRules.UserEmailCanNotBeDuplicated(request.UpdateUserModel.Email);
-        await userRules.UserPhoneCanNotBeDuplicated(request.UpdateUserModel.Phone);
+        await userRules.UserNameCanNotBeDuplicated(request.Model.UserName);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email);
+        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone);
         await userRules.UserTypeAllowed(user.Type, user.Id);
 
-        var path = await commonService.PictureConvert(request.UpdateUserModel.ProfilePictureBase64, request.UpdateUserModel.ProfilePictureFileName, AppOptions.ProfilePictureFolderPath);
-        if (path.Item1.IsNotEmpty()) request.UpdateUserModel.ProfileUrl = path.Item1;
+        var date = DateTime.Now;
+        if (request.Model.ProfilePictureFileName.IsNotEmpty() && request.Model.ProfilePictureBase64.IsNotEmpty())
+        {
+            var extension = Path.GetExtension(request.Model.ProfilePictureFileName);
+            var fileName = $"P_{request.Model.Id}_{Guid.NewGuid()}{extension}";
+            await commonService.PictureConvert(request.Model.ProfilePictureBase64, request.Model.ProfilePictureFileName, AppOptions.ProfilePictureFolderPath);
+            request.Model.ProfileUrl = fileName;
+        }
 
-        user.UserName = request.UpdateUserModel.UserName?.Trim();
-        user.Name = request.UpdateUserModel.Name;
-        user.Surname = request.UpdateUserModel.Surname;
-        user.Phone = request.UpdateUserModel.Phone;
-        user.ProfileUrl = request.UpdateUserModel.ProfileUrl;
-        user.Email = request.UpdateUserModel.Email;
-        user.Type = Enum.Parse<UserTypes>($"{request.UpdateUserModel.Type}");
-        user.ConnectionId = request.UpdateUserModel.ConnectionId;
-        user.SchoolId = request.UpdateUserModel.SchoolId;
+        user.UserName = request.Model.UserName?.Trim();
+        user.Name = request.Model.Name;
+        user.Surname = request.Model.Surname;
+        user.Phone = request.Model.Phone;
+        user.ProfileUrl = request.Model.ProfileUrl;
+        user.Email = request.Model.Email;
+        user.Type = Enum.Parse<UserTypes>($"{request.Model.Type}");
+        user.ConnectionId = request.Model.ConnectionId;
+        user.SchoolId = request.Model.SchoolId;
 
         await userDal.UpdateAsync(user);
         var result = mapper.Map<GetUserModel>(user);

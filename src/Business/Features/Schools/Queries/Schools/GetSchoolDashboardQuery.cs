@@ -36,6 +36,8 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
 
         await SchoolRules.SchoolShouldExists(school);
 
+        var result = new GetSchoolDashboardModel();
+
         var users = await userDal.GetListAsync(
             enableTracking: false,
             predicate: x => x.SchoolId == commonService.HttpSchoolId && x.IsActive,
@@ -45,7 +47,6 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
             },
             cancellationToken: cancellationToken);
 
-        var result = new GetSchoolDashboardModel();
         result.SchoolId = commonService.HttpSchoolId.Value;
         result.UserId = commonService.HttpUserId;
         result.SchoolName = school.Name;
@@ -80,13 +81,10 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
                                                           .SelectMany(x => x.User.School.ClassRooms.Where(c => c.IsActive && c.Students.Any(s => s.IsActive && s.Id == x.User.ConnectionId)))
                                                           .GroupBy(c => new { c.No, c.Branch })
                                                           .Select(x => new { Key = $"{x.Key.No}-{x.Key.Branch}", Count = x.Count() })
-                                                          .ToDictionaryAsync(x => x.Key, x => x.Count);
+                                                          .ToDictionaryAsync(x => x.Key, x => x.Count, cancellationToken: cancellationToken);
 
         result.TotalUserCount = result.TotalTeacherCount + result.TotalStudentCount;
         result.TotalQuestionCount = result.SendQuestionCount + result.SendSimilarCount;
-
-
-
 
         return result;
     }

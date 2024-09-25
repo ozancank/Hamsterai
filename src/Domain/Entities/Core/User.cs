@@ -21,6 +21,7 @@ public class User : Security.User
     public virtual ICollection<PasswordToken> PasswordTokens { get; set; }
     public virtual ICollection<Similar> SimilarQuestions { get; set; }
     public virtual ICollection<NotificationDeviceToken> NotificationDeviceTokens { get; set; }
+    public virtual ICollection<Quiz> Quizzes { get; set; }
 
     public User() : base()
     {

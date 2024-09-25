@@ -28,9 +28,6 @@ public class AddQuestionCommandHandler(IMapper mapper,
     {
         await questionRules.QuestionLimitControl(request.Model.LessonId);
 
-        var fileName = await commonService.PictureConvert(request.Model.QuestionPictureBase64, request.Model.QuestionPictureFileName, AppOptions.QuestionPictureFolderPath);
-        var date = DateTime.Now;
-
         var lessonName = await lessonDal.GetAsync(
             predicate: x => x.Id == request.Model.LessonId,
             enableTracking: false,
@@ -38,18 +35,25 @@ public class AddQuestionCommandHandler(IMapper mapper,
             cancellationToken: cancellationToken);
         await LessonRules.LessonShouldExists(lessonName);
 
+        var id = Guid.NewGuid();
+        var date = DateTime.Now;
+        var userId = commonService.HttpUserId;
+        var extension = Path.GetExtension(request.Model.QuestionPictureFileName);
+        var fileName = $"Q_{userId}_{request.Model.LessonId}_{id}{extension}";
+        await commonService.PictureConvert(request.Model.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath);
+
         var question = new Question
         {
-            Id = Guid.NewGuid(),
+            Id = id,
             CreateDate = date,
-            CreateUser = commonService.HttpUserId,
+            CreateUser = userId,
             UpdateDate = date,
-            UpdateUser = commonService.HttpUserId,
+            UpdateUser = userId,
             IsActive = true,
             LessonId = request.Model.LessonId,
             QuestionPictureBase64 = request.Model.QuestionPictureBase64,
-            QuestionPictureFileName = fileName.Item1,
-            QuestionPictureExtension = fileName.Item2,
+            QuestionPictureFileName = fileName,
+            QuestionPictureExtension = extension,
             AnswerText = string.Empty,
             AnswerPictureFileName = string.Empty,
             AnswerPictureExtension = string.Empty,
@@ -76,17 +80,19 @@ public class AddQuestionCommandHandler(IMapper mapper,
     }
 }
 
-public class AddQuestionCommandValidator : AbstractValidator<AddQuestionModel>
+public class AddQuestionCommandValidator : AbstractValidator<AddQuestionCommand>
 {
     public AddQuestionCommandValidator()
     {
         RuleFor(x => x).NotEmpty().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.LessonId).InclusiveBetween((byte)1, (byte)255).WithMessage(Strings.DynamicBetween, [Strings.Lesson, "1", "255"]);
+        RuleFor(x => x.Model).NotEmpty().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.QuestionPictureBase64).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Question]);
+        RuleFor(x => x.Model.LessonId).InclusiveBetween((byte)1, (byte)255).WithMessage(Strings.DynamicBetween, [Strings.Lesson, "1", "255"]);
 
-        RuleFor(x => x.QuestionPictureFileName).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.FileName]);
-        RuleFor(x => x.QuestionPictureFileName).Must(x => x.Contains('.')).WithMessage(Strings.FileNameExtension);
+        RuleFor(x => x.Model.QuestionPictureBase64).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Question]);
+
+        RuleFor(x => x.Model.QuestionPictureFileName).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.FileName]);
+        RuleFor(x => x.Model.QuestionPictureFileName).Must(x => x.Contains('.')).WithMessage(Strings.FileNameExtension);
     }
 }

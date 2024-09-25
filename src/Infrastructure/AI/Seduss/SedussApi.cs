@@ -10,6 +10,7 @@ namespace Infrastructure.AI.Seduss;
 public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
 {
     private static readonly JsonSerializerOptions _options = new() { PropertyNameCaseInsensitive = true };
+    private const double _apiTimeoutMinute = 10;
 
     public async Task<QuestionTOResponseModel> AskQuestionOcr(QuestionApiModel model)
     {
@@ -17,6 +18,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
         try
         {
             using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
 
             var request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiLite}/Model_Available");
             var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
@@ -26,15 +28,15 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
 
             if (!available)
             {
-                answer = new QuestionTOResponseModel { Soru_OCR = model.Base64 };
+                answer = new QuestionTOResponseModel { QuestionText = model.Base64 };
                 await InfrastructureDelegates.UpdateQuestionOcr.Invoke(answer, new(model.Id, QuestionStatus.SendAgain, model.UserId));
                 return answer;
             }
 
-            var data = new SedussRequestModel
+            var data = new QuestionRequestModel
             {
-                Content = model.Base64,
-                Ders = model.LessonName?.Trim().ToLower() ?? string.Empty
+                QuestionImage = model.Base64,
+                LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
             request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiOriginal}/Soru_TO")
@@ -48,7 +50,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
             content = await response.Content.ReadAsStringAsync();
             answer = JsonSerializer.Deserialize<QuestionTOResponseModel>(content, _options);
 
-            answer.Cevap = answer.Cevap.Trim("Cevap", ":", ")", "-").ToUpper();
+            answer.RightOption = answer.RightOption.Trim("Cevap", ":", ")", "-").ToUpper();
 
             if (InfrastructureDelegates.UpdateQuestionOcr != null)
 
@@ -74,6 +76,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
         try
         {
             using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
 
             var request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiOriginal}/Model_Available");
             var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
@@ -83,15 +86,15 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
 
             if (!available)
             {
-                answer = new QuestionITOResponseModel { Soru_OCR = model.Base64 };
+                answer = new QuestionITOResponseModel { QuestionText = model.Base64 };
                 await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.SendAgain, model.UserId));
                 return answer;
             }
 
-            var data = new SedussRequestModel
+            var data = new QuestionRequestModel
             {
-                Content = model.Base64,
-                Ders = model.LessonName?.Trim().ToLower() ?? string.Empty
+                QuestionImage = model.Base64,
+                LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
             request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiOriginal}/Soru_ITO")
@@ -104,7 +107,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
 
             content = await response.Content.ReadAsStringAsync();
             answer = JsonSerializer.Deserialize<QuestionITOResponseModel>(content, _options);
-            answer.Cevap = answer.Cevap.Trim("Cevap", ":", ")", "-").ToUpper();
+            answer.RightOption = answer.RightOption.Trim("Cevap", ":", ")", "-").ToUpper();
 
             if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
                 await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId));
@@ -129,6 +132,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
         try
         {
             using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
 
             var request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiLite}/Model_Available");
             var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
@@ -138,15 +142,15 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
 
             if (!available)
             {
-                similar = new SimilarResponseModel { Soru_OCR = model.Base64 };
+                similar = new SimilarResponseModel { QuestionText = model.Base64 };
                 await InfrastructureDelegates.UpdateSimilarQuestionAnswer.Invoke(similar, new UpdateQuestionDto(model.Id, QuestionStatus.SendAgain, model.UserId));
                 return similar;
             }
 
-            var data = new SedussRequestModel
+            var data = new QuestionRequestModel
             {
-                Content = model.Base64,
-                Ders = model.LessonName?.Trim().ToLower() ?? string.Empty
+                QuestionImage = model.Base64,
+                LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
             request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiLite}/Benzer")
@@ -159,7 +163,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
 
             content = await response.Content.ReadAsStringAsync();
             similar = JsonSerializer.Deserialize<SimilarResponseModel>(content, _options);
-            similar.Cevap = similar.Cevap.Trim("Cevap", ":", ")", "-").ToUpper();
+            similar.RightOption = similar.RightOption.Trim("Cevap", ":", ")", "-").ToUpper();
 
             if (InfrastructureDelegates.UpdateSimilarQuestionAnswer != null)
                 await InfrastructureDelegates.UpdateSimilarQuestionAnswer.Invoke(similar, new(model.Id, QuestionStatus.Answered, model.UserId));
@@ -176,6 +180,52 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
         {
             await EndChat();
         }
+    }
+
+    public async Task<QuizResponseModel> GetQuizQuestions(QuizApiModel model)
+    {
+        var similars = new QuizResponseModel
+        {
+            Questions = []
+        };
+
+        try
+        {
+            using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiLite}/Model_Available");
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            var available = Convert.ToBoolean(content);
+
+            if (!available) return similars;
+
+            var data = new QuizRequestModel
+            {
+                QuestionImages = model.QuestionImages,
+                LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
+            };
+
+            request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiLite}/Multi_Benzer")
+            {
+                Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
+            };
+
+            response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+
+            content = await response.Content.ReadAsStringAsync();
+            similars = JsonSerializer.Deserialize<QuizResponseModel>(content, _options);
+            similars.Questions.ForEach(x => x.RightOption = x.RightOption.IsNotEmpty() ? x.RightOption.Trim("Cevap", ":", ")", "-").ToUpper() : throw new Exception(Strings.DynamicNotEmpty.Format(Strings.RightOption)));
+        }
+        finally
+        {
+            await EndChat();
+        }
+
+        return similars;
     }
 
     private async Task EndChat()

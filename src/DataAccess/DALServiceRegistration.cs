@@ -22,23 +22,26 @@ public static class DALServiceRegistration
             if (Debugger.IsAttached) options.EnableSensitiveDataLogging();
         }, ServiceLifetime.Scoped);
 
+        services.AddScoped<IOperationClaimDal, OperationClaimDal>();
+        services.AddScoped<IRefreshTokenDal, RefreshTokenDal>();
+        services.AddScoped<IUserDal, UserDal>();
+        services.AddScoped<IUserOperationClaimDal, UserOperationClaimDal>();
+
         services.AddScoped<IClassRoomDal, ClassRoomDal>();
         services.AddScoped<IGainDal, GainDal>();
         services.AddScoped<IGroupDal, GroupDal>();
         services.AddScoped<ILessonDal, LessonDal>();
         services.AddScoped<ILessonGroupDal, LessonGroupDal>();
         services.AddScoped<INotificationDeviceTokenDal, NotificationDeviceTokenDal>();
-        services.AddScoped<IOperationClaimDal, OperationClaimDal>();
         services.AddScoped<IPasswordTokenDal, PasswordTokenDal>();
         services.AddScoped<IQuestionDal, QuestionDal>();
-        services.AddScoped<IRefreshTokenDal, RefreshTokenDal>();
+        services.AddScoped<IQuizDal, QuizDal>();
+        services.AddScoped<IQuizQuestionDal, QuizQuestionDal>();
         services.AddScoped<ISchoolDal, SchoolDal>();
         services.AddScoped<ISimilarQuestionDal, SimilarQuestionDal>();
         services.AddScoped<IStudentDal, StudentDal>();
         services.AddScoped<ITeacherClassRoomDal, TeacherClassRoomDal>();
         services.AddScoped<ITeacherDal, TeacherDal>();
-        services.AddScoped<IUserDal, UserDal>();
-        services.AddScoped<IUserOperationClaimDal, UserOperationClaimDal>();
 
         services.AddCoreServices();
         return services;

@@ -42,12 +42,13 @@ public class SchoolController : BaseController
         return Ok(result);
     }
 
-    //[HttpPost("GetSchoolsDynamic")]
-    //public async Task<IActionResult> GetSchoolsDynamic([FromQuery] PageRequestModel model, [FromBody] DynamicModel dynamicModel)
-    //{
-    //    var result = await SchoolService.GetSchoolsByDynamic(model, dynamicModel);
-    //    return Ok(result);
-    //}
+    [HttpPost("GetSchoolsDynamic")]
+    public async Task<IActionResult> GetSchoolsDynamic([FromQuery] PageRequest model, [FromBody] Dynamic dynamicModel)
+    {
+        var command = new GetSchoolsByDynamicQuery { PageRequest = model, Dynamic = dynamicModel };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
 
     //[HttpPost("AddSchool")]
     //public async Task<IActionResult> AddSchool([FromBody] AddSchoolModel model)

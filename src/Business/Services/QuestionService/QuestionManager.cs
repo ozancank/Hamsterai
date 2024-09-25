@@ -24,17 +24,17 @@ public class QuestionManager(ICommonService commonService,
             include: x => x.Include(u => u.Lesson));
         await QuestionRules.QuestionShouldExists(data);
 
-        var gain = await gainService.GetOrAddGain(new(model?.Kazanim, data.LessonId, data.CreateUser));
+        var gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser));
 
         data.UpdateDate = DateTime.Now;
-        data.QuestionPictureBase64 = model?.Soru_OCR ?? string.Empty;
-        data.AnswerText = model?.Cevap_Text ?? string.Empty;
+        data.QuestionPictureBase64 = model?.QuestionText ?? string.Empty;
+        data.AnswerText = model?.AnswerText ?? string.Empty;
         data.AnswerPictureFileName = string.Empty;
         data.AnswerPictureExtension = string.Empty;
         data.Status = dto.Status;
         data.TryCount = dto.Status == QuestionStatus.SendAgain ? data.TryCount++ : data.TryCount;
         data.GainId = gain?.Id;
-        data.RightOption = model?.Cevap.FirstOrDefault();
+        data.RightOption = model?.RightOption.FirstOrDefault();
 
         await questionDal.UpdateAsync(data);
 
@@ -51,18 +51,22 @@ public class QuestionManager(ICommonService commonService,
             include: x => x.Include(u => u.Lesson));
         await QuestionRules.QuestionShouldExists(data);
 
-        var gain = await gainService.GetOrAddGain(new(model?.Kazanim, data.LessonId, data.CreateUser));
-        var filnename = await commonService.PictureConvert(model?.Cevap_Image, "response.png", AppOptions.AnswerPictureFolderPath);
+        var gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser));
+
+        var date = DateTime.Now;
+        var extension = ".png";
+        var fileName = $"A_{dto.UserId}_{data.LessonId}_{dto.QuestionId}{extension}";
+        await commonService.PictureConvert(model?.AnswerImage, fileName, AppOptions.AnswerPictureFolderPath);
 
         data.UpdateDate = DateTime.Now;
-        data.QuestionPictureBase64 = model?.Soru_OCR ?? string.Empty;
-        data.AnswerText = model?.Cevap_Text ?? string.Empty;
-        data.AnswerPictureFileName = filnename.Item1;
-        data.AnswerPictureExtension = filnename.Item2;
+        data.QuestionPictureBase64 = model?.QuestionText ?? string.Empty;
+        data.AnswerText = model?.AnswerText ?? string.Empty;
+        data.AnswerPictureFileName = fileName;
+        data.AnswerPictureExtension = extension;
         data.Status = dto.Status;
         data.TryCount = dto.Status == QuestionStatus.SendAgain ? data.TryCount++ : data.TryCount;
         data.GainId = gain?.Id;
-        data.RightOption = model?.Cevap.FirstOrDefault();
+        data.RightOption = model?.RightOption.FirstOrDefault();
 
         await questionDal.UpdateAsync(data);
 
@@ -83,23 +87,28 @@ public class QuestionManager(ICommonService commonService,
             include: x => x.Include(u => u.Lesson));
         await SimilarRules.SimilarQuestionShouldExists(data);
 
-        var gain = await gainService.GetOrAddGain(new(model?.Kazanim, data.LessonId, data.CreateUser));
+        var gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser));
 
-        var questionFileName = await commonService.PictureConvert(model?.Benzer_Image, "question.png", AppOptions.SimilarQuestionPictureFolderPath);
-        var answerFileName = await commonService.PictureConvert(model?.Cevap_Image, "answer.png", AppOptions.SimilarAnswerPictureFolderPath);
+        var date = DateTime.Now;
+        var extension = ".png";
+        var fileName = $"{dto.UserId}_{data.LessonId}_{dto.QuestionId}{extension}";
+        var questionFileName = $"SQ_{fileName}";
+        var answerFileName = $"SA_{fileName}";
+        await commonService.PictureConvert(model?.SimilarImage, questionFileName, AppOptions.SimilarQuestionPictureFolderPath);
+        await commonService.PictureConvert(model?.AnswerImage, answerFileName, AppOptions.SimilarAnswerPictureFolderPath);
 
-        data.UpdateDate = DateTime.Now;
-        data.QuestionPicture = model?.Soru_OCR ?? string.Empty;
-        data.ResponseQuestion = model?.Benzer_Soru_Text ?? string.Empty;
-        data.ResponseQuestionFileName = questionFileName.Item1;
-        data.ResponseQuestionExtension = questionFileName.Item2;
-        data.ResponseAnswer = model?.Cevap_Text ?? string.Empty;
-        data.ResponseAnswerFileName = answerFileName.Item1;
-        data.ResponseAnswerExtension = answerFileName.Item2;
+        data.UpdateDate = date;
+        data.QuestionPicture = model?.QuestionText ?? string.Empty;
+        data.ResponseQuestion = model?.SimilarQuestionText ?? string.Empty;
+        data.ResponseQuestionFileName = questionFileName;
+        data.ResponseQuestionExtension = extension;
+        data.ResponseAnswer = model?.AnswerText ?? string.Empty;
+        data.ResponseAnswerFileName = answerFileName;
+        data.ResponseAnswerExtension = extension;
         data.Status = dto.Status;
         data.TryCount = dto.Status == QuestionStatus.SendAgain ? data.TryCount++ : data.TryCount;
         data.GainId = gain?.Id;
-        data.RightOption = model?.Cevap.FirstOrDefault();
+        data.RightOption = model?.RightOption.FirstOrDefault();
 
         await similarQuestionDal.UpdateAsync(data);
 
@@ -151,4 +160,13 @@ public class QuestionManager(ICommonService commonService,
             });
         }
     }
+
+    #region Quiz
+
+    public Task<bool> AddQuiz(List<string> questions)
+    {
+        throw new NotImplementedException();
+    }
+
+    #endregion Quiz
 }

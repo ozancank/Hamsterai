@@ -1,0 +1,9 @@
+﻿using OCK.Core.Interfaces;
+
+namespace Infrastructure.AI;
+
+public class QuizApiModel : IRequestModel
+{
+    public List<string> QuestionImages { get; set; }
+    public string LessonName { get; set; }
+}

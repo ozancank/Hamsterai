@@ -3,11 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace Infrastructure.AI.Seduss.Models;
 
-public class SedussRequestModel : IRequestModel
+public class QuizRequestModel : IRequestModel
 {
     [JsonPropertyName("content")]
-    public string Content { get; set; }
+    public List<string> QuestionImages { get; set; }
+
 
     [JsonPropertyName("ders")]
-    public string Ders { get; set; }
+    public string LessonName { get; set; }
 }

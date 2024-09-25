@@ -1,8 +1,10 @@
 ﻿using OCK.Core.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace Infrastructure.AI.Seduss.Models;
 
 public class OcrResponseModel : IResponseModel
 {
-    public string Text { get; set; }
+    [JsonPropertyName("text")]
+    public string QuestionText { get; set; }
 }

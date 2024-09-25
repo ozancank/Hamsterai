@@ -77,6 +77,9 @@ public struct Strings
     public const string Header = "Başlık";
     public const string Message = "Mesaj";
     public const string Gain = "Kazanım";
+    public const string Quiz = "Test";
+    public const string RightOption = "Doğru Cevap";
+    public const string Status = "Durum";
 
     public const string FileNameExtension = "Dosya adı içerisinde nokta olmalı ve uzantı belirtilmelidir.";
 

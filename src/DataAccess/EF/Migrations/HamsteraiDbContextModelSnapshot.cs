@@ -1310,6 +1310,201 @@ namespace DataAccess.EF.Migrations
                     b.ToTable("Questions", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.Quiz", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(100)
+                        .HasColumnType("citext")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<byte>("CorrectCount")
+                        .HasColumnType("smallint")
+                        .HasColumnName("CorrectCount")
+                        .HasColumnOrder(10);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<byte>("EmptyCount")
+                        .HasColumnType("smallint")
+                        .HasColumnName("EmptyCount")
+                        .HasColumnOrder(12);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<byte>("LessonId")
+                        .HasColumnType("smallint")
+                        .HasColumnName("LessonId")
+                        .HasColumnOrder(7);
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("smallint")
+                        .HasColumnName("Status")
+                        .HasColumnOrder(9);
+
+                    b.Property<double>("SuccessRate")
+                        .HasColumnType("double precision")
+                        .HasColumnName("SuccessRate")
+                        .HasColumnOrder(13);
+
+                    b.Property<int>("TimeSecond")
+                        .HasColumnType("integer")
+                        .HasColumnName("TimeSecond")
+                        .HasColumnOrder(8);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UserId")
+                        .HasColumnOrder(6);
+
+                    b.Property<byte>("WrongCount")
+                        .HasColumnType("smallint")
+                        .HasColumnName("WrongCount")
+                        .HasColumnOrder(11);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Quizzes", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.QuizQuestion", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(100)
+                        .HasColumnType("citext")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("citext")
+                        .HasColumnName("Answer")
+                        .HasColumnOrder(11);
+
+                    b.Property<char?>("AnswerOption")
+                        .HasMaxLength(1)
+                        .HasColumnType("character(1)")
+                        .HasColumnName("AnswerOption")
+                        .HasColumnOrder(15);
+
+                    b.Property<string>("AnswerPictureExtension")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("citext")
+                        .HasColumnName("AnswerPictureExtension")
+                        .HasColumnOrder(13);
+
+                    b.Property<string>("AnswerPictureFileName")
+                        .IsRequired()
+                        .HasColumnType("citext")
+                        .HasColumnName("AnswerPictureFileName")
+                        .HasColumnOrder(12);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("GainId")
+                        .HasColumnType("integer")
+                        .HasColumnName("GainId")
+                        .HasColumnOrder(17);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<byte>("OptionCount")
+                        .HasColumnType("smallint")
+                        .HasColumnName("OptionCount")
+                        .HasColumnOrder(16);
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasColumnType("citext")
+                        .HasColumnName("Question")
+                        .HasColumnOrder(8);
+
+                    b.Property<string>("QuestionPictureExtension")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("citext")
+                        .HasColumnName("QuestionPictureExtension")
+                        .HasColumnOrder(10);
+
+                    b.Property<string>("QuestionPictureFileName")
+                        .IsRequired()
+                        .HasColumnType("citext")
+                        .HasColumnName("QuestionPictureFileName")
+                        .HasColumnOrder(9);
+
+                    b.Property<string>("QuizId")
+                        .IsRequired()
+                        .HasColumnType("citext")
+                        .HasColumnName("QuizId")
+                        .HasColumnOrder(7);
+
+                    b.Property<char>("RightOption")
+                        .HasMaxLength(1)
+                        .HasColumnType("character(1)")
+                        .HasColumnName("RightOption")
+                        .HasColumnOrder(14);
+
+                    b.Property<byte>("SortNo")
+                        .HasColumnType("smallint")
+                        .HasColumnName("SortNo")
+                        .HasColumnOrder(6);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GainId");
+
+                    b.HasIndex("QuizId");
+
+                    b.ToTable("QuizQuestions", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.School", b =>
                 {
                     b.Property<int>("Id")
@@ -2259,6 +2454,44 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Quiz", b =>
+                {
+                    b.HasOne("Domain.Entities.Lesson", "Lesson")
+                        .WithMany("Quizzes")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Core.User", "User")
+                        .WithMany("Quizzes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.QuizQuestion", b =>
+                {
+                    b.HasOne("Domain.Entities.Gain", "Gain")
+                        .WithMany("QuizQuestions")
+                        .HasForeignKey("GainId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Quiz", "Quiz")
+                        .WithMany("QuizQuestions")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Gain");
+
+                    b.Navigation("Quiz");
+                });
+
             modelBuilder.Entity("Domain.Entities.Similar", b =>
                 {
                     b.HasOne("Domain.Entities.Core.User", "User")
@@ -2368,6 +2601,8 @@ namespace DataAccess.EF.Migrations
 
                     b.Navigation("Questions");
 
+                    b.Navigation("Quizzes");
+
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("SimilarQuestions");
@@ -2378,6 +2613,8 @@ namespace DataAccess.EF.Migrations
             modelBuilder.Entity("Domain.Entities.Gain", b =>
                 {
                     b.Navigation("Questions");
+
+                    b.Navigation("QuizQuestions");
 
                     b.Navigation("SimilarQuestions");
                 });
@@ -2395,9 +2632,16 @@ namespace DataAccess.EF.Migrations
 
                     b.Navigation("Questions");
 
+                    b.Navigation("Quizzes");
+
                     b.Navigation("SimilarQuestions");
 
                     b.Navigation("TeacherLessons");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Quiz", b =>
+                {
+                    b.Navigation("QuizQuestions");
                 });
 
             modelBuilder.Entity("Domain.Entities.School", b =>

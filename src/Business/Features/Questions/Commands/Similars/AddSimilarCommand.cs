@@ -28,15 +28,19 @@ public class AddSimilarCommandHandler(IMapper mapper,
     {
         await similarRules.SimilarLimitControl(request.Model.LessonId);
 
-        var fileName = await commonService.PictureConvert(request.Model.QuestionPictureBase64, "question.png", AppOptions.QuestionPictureFolderPath);
-
         var lessonName = await lessonDal.GetAsync(
             predicate: x => x.Id == request.Model.LessonId,
             enableTracking: false,
             selector: x => x.Name,
             cancellationToken: cancellationToken);
         await LessonRules.LessonShouldExists(lessonName);
+
+        var id = Guid.NewGuid();
         var date = DateTime.Now;
+        var userId = commonService.HttpUserId;
+        var extension = Path.GetExtension(request.Model.QuestionPictureFileName);
+        var fileName = $"Q_{userId}_{request.Model.LessonId}_{id}{extension}";
+        await commonService.PictureConvert(request.Model.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath);
 
         var question = new Similar
         {
@@ -48,8 +52,8 @@ public class AddSimilarCommandHandler(IMapper mapper,
             UpdateDate = date,
             LessonId = request.Model.LessonId,
             QuestionPicture = request.Model.QuestionPictureBase64,
-            QuestionPictureFileName = fileName.Item1,
-            QuestionPictureExtension = fileName.Item2,
+            QuestionPictureFileName = fileName,
+            QuestionPictureExtension = extension,
             ResponseQuestion = string.Empty,
             ResponseQuestionFileName = string.Empty,
             ResponseQuestionExtension = string.Empty,
@@ -63,7 +67,6 @@ public class AddSimilarCommandHandler(IMapper mapper,
             GainId = null,
             RightOption = null,
         };
-
 
         var added = await similarQuestionDal.AddAsyncCallback(question);
         var result = mapper.Map<GetSimilarModel>(added);
@@ -80,17 +83,19 @@ public class AddSimilarCommandHandler(IMapper mapper,
     }
 }
 
-public class AddSimilarCommandValidator : AbstractValidator<AddSimilarModel>
+public class AddSimilarCommandValidator : AbstractValidator<AddSimilarCommand>
 {
     public AddSimilarCommandValidator()
     {
         RuleFor(x => x).NotEmpty().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.LessonId).InclusiveBetween((byte)1, (byte)255).WithMessage(Strings.DynamicBetween, [Strings.Lesson, "1", "255"]);
+        RuleFor(x => x.Model).NotEmpty().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.QuestionPictureBase64).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Question]);
+        RuleFor(x => x.Model.LessonId).InclusiveBetween((byte)1, (byte)255).WithMessage(Strings.DynamicBetween, [Strings.Lesson, "1", "255"]);
 
-        RuleFor(x => x.QuestionPictureFileName).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.FileName]);
-        RuleFor(x => x.QuestionPictureFileName).Must(x => x.Contains('.')).WithMessage(Strings.FileNameExtension);
+        RuleFor(x => x.Model.QuestionPictureBase64).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Question]);
+
+        RuleFor(x => x.Model.QuestionPictureFileName).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.FileName]);
+        RuleFor(x => x.Model.QuestionPictureFileName).Must(x => x.Contains('.')).WithMessage(Strings.FileNameExtension);
     }
 }

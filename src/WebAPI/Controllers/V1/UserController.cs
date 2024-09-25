@@ -50,7 +50,7 @@ public class UserController() : BaseController
     [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] AddUserModel addUser)
     {
-        var command = new AddUserCommand { AddLessonModel = addUser };
+        var command = new AddUserCommand { Model = addUser };
         var result = await Mediator.Send(command);
         return Ok(result);
     }
@@ -58,7 +58,7 @@ public class UserController() : BaseController
     [HttpPost("UpdateUser")]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserModel model)
     {
-        var command = new UpdateUserCommand { UpdateUserModel = model };
+        var command = new UpdateUserCommand { Model = model };
         var result = await Mediator.Send(command);
         return Ok(result);
     }

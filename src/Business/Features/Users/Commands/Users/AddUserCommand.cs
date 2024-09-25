@@ -11,7 +11,7 @@ namespace Business.Features.Users.Commands.Users;
 
 public class AddUserCommand : IRequest<GetUserModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public AddUserModel AddLessonModel { get; set; }
+    public AddUserModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher];
     public string[] HidePropertyNames { get; } = ["AddUserModel.Password", "AddUserModel.ProfilePictureBase64"];
 }
@@ -23,35 +23,42 @@ public class AddUserCommandHandler(IMapper mapper,
 {
     public async Task<GetUserModel> Handle(AddUserCommand request, CancellationToken cancellationToken)
     {
-        request.AddLessonModel!.UserName = request.AddLessonModel.UserName!.Trim().ToLower();
-        request.AddLessonModel.Password = request.AddLessonModel.Password!.Trim();
+        request.Model!.UserName = request.Model.UserName!.Trim().ToLower();
+        request.Model.Password = request.Model.Password!.Trim();
 
-        await userRules.UserNameCanNotBeDuplicated(request.AddLessonModel.UserName);
-        await userRules.UserEmailCanNotBeDuplicated(request.AddLessonModel.Email);
-        await userRules.UserPhoneCanNotBeDuplicated(request.AddLessonModel.Phone);
-        await userRules.UserTypeAllowed(request.AddLessonModel.Type);
+        await userRules.UserNameCanNotBeDuplicated(request.Model.UserName);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email);
+        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone);
+        await userRules.UserTypeAllowed(request.Model.Type);
 
-        var path = await commonService.PictureConvert(request.AddLessonModel.ProfilePictureBase64, request.AddLessonModel.ProfilePictureFileName, AppOptions.ProfilePictureFolderPath);
-        if (path.Item1.IsNotEmpty()) request.AddLessonModel.ProfileUrl = path.Item1;
+        var id = await userDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
+        var date = DateTime.Now;
+        if (request.Model.ProfilePictureFileName.IsNotEmpty() && request.Model.ProfilePictureBase64.IsNotEmpty())
+        {
+            var extension = Path.GetExtension(request.Model.ProfilePictureFileName);
+            var fileName = $"P_{id}_{Guid.NewGuid()}{extension}";
+            await commonService.PictureConvert(request.Model.ProfilePictureBase64, request.Model.ProfilePictureFileName, AppOptions.ProfilePictureFolderPath);
+            request.Model.ProfileUrl = fileName;
+        }
 
-        HashingHelper.CreatePasswordHash(request.AddLessonModel.Password, out byte[] passwordHash, out byte[] passwordSalt);
+        HashingHelper.CreatePasswordHash(request.Model.Password, out byte[] passwordHash, out byte[] passwordSalt);
         var user = new User
         {
-            Id = await userDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken),
-            UserName = request.AddLessonModel.UserName?.Trim(),
+            Id = id,
+            UserName = request.Model.UserName?.Trim(),
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
             MustPasswordChange = false,
-            CreateDate = DateTime.Now,
+            CreateDate = date,
             IsActive = true,
-            Name = request.AddLessonModel.Name,
-            Surname = request.AddLessonModel.Surname,
-            Phone = request.AddLessonModel.Phone?.Trim(),
-            ProfileUrl = request.AddLessonModel.ProfileUrl?.Trim(),
-            Email = request.AddLessonModel.Email?.Trim(),
-            Type = Enum.Parse<UserTypes>($"{request.AddLessonModel.Type}"),
-            ConnectionId = request.AddLessonModel.ConnectionId,
-            SchoolId = request.AddLessonModel.SchoolId,
+            Name = request.Model.Name,
+            Surname = request.Model.Surname,
+            Phone = request.Model.Phone?.Trim(),
+            ProfileUrl = request.Model.ProfileUrl,
+            Email = request.Model.Email?.Trim(),
+            Type = Enum.Parse<UserTypes>($"{request.Model.Type}"),
+            ConnectionId = request.Model.ConnectionId,
+            SchoolId = request.Model.SchoolId,
         };
 
         await userDal.AddAsync(user);

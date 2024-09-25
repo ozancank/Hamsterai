@@ -1,11 +1,19 @@
 ﻿using OCK.Core.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace Infrastructure.AI.Seduss.Models;
 
 public class QuestionTOResponseModel : IResponseModel
 {
-    public string Soru_OCR { get; set; }
-    public string Cevap_Text { get; set; }
-    public string Kazanim { get; set; }
-    public string Cevap { get; set; }
+    [JsonPropertyName("Soru_OCR")]
+    public string QuestionText { get; set; }
+
+    [JsonPropertyName("Cevap_Text")]
+    public string AnswerText { get; set; }
+
+    [JsonPropertyName("Kazanim")]
+    public string GainName { get; set; }
+
+    [JsonPropertyName("Cevap")]
+    public string RightOption { get; set; }
 }

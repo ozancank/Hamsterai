@@ -16,16 +16,14 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor) : ICommonSe
         int.TryParse(httpContextAccessor.HttpContext.User.Claims
             .FirstOrDefault(x => x.Type == ClaimTypes.SchoolId)?.Value, out int schoolId) ? schoolId : null;
 
-    public async Task<(string, string)> PictureConvert(string base64, string fileName, string folder)
+    public async Task<string> PictureConvert(string base64, string fileName, string folder)
     {
-        if (base64.IsEmpty() || fileName.IsEmpty()) return await Task.FromResult((string.Empty, string.Empty));
+        if (base64.IsEmpty() || fileName.IsEmpty()) return await Task.FromResult(string.Empty);
 
         await UserRules.PictureShouldAllowedType(fileName);
-        var extension = Path.GetExtension(fileName).ToLowerInvariant();
-        var newFileName = Guid.NewGuid().ToString() + extension;
         var filePath = Path.Combine(folder, fileName);
         var imageBytes = Convert.FromBase64String(base64);
         await File.WriteAllBytesAsync(filePath, imageBytes);
-        return (newFileName, extension);
+        return filePath;
     }
 }

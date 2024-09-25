@@ -12,7 +12,6 @@ using Microsoft.OpenApi.Models;
 using OCK.Core.Caching;
 using OCK.Core.Caching.Microsoft;
 using OCK.Core.Exceptions;
-using OCK.Core.Logging.Serilog;
 using OCK.Core.Security.Encryption;
 using OCK.Core.Security.JWT;
 using OCK.Core.Utilities;
@@ -22,146 +21,115 @@ using WebAPI;
 using static Infrastructure.Constants.InfrastructureDelegates;
 using static OCK.Core.Constants.Delegates;
 
-//var isService = !(Debugger.IsAttached || args.Contains("--console"));
-
-//ServiceInstall();
-
 var builder = WebApplication.CreateBuilder(args);
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-//if (isService && RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) builder.Host.UseSystemd();
-//else if (isService && RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) builder.Host.UseWindowsService();
 
-builder.Configuration.GetSection("AppOptions").Get<Domain.Constants.AppOptions>();
-Domain.Constants.AppOptions.CreateFolder();
+SetAppOptions(builder);
 
-builder.Services.AddSingleton(FirebaseApp.Create(new FirebaseAdmin.AppOptions()
-{
-    Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hamster-private-key.json")),
-}));
+Services(builder);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddHealthChecks();
-builder.Services.AddMemoryCache();
-builder.Services.AddHttpClient();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddSingleton<Stopwatch>();
-builder.Services.AddSingleton<ITokenHelper, JwtHelper>();
-builder.Services.AddSingleton<ICacheManager, MemoryCacheManager>();
-builder.Services.AddCustomApiVersioning(x =>
-{
-    x.AddUrlSegmentApiVersionReader();
-    x.EnableVersionedApiExplorer = true;
-});
-builder.Services.AddCors(opt =>
-{
-    opt.AddPolicy("AllowEveryThing", builder =>
-    {
-        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-    });
-});
+Delegates();
 
-
-//if (!builder.Environment.IsDevelopment())
-builder.Services.AddHostedService<SenderHostedService>();
-
-SwaggerAndToken(builder);
-
-
-ServiceTools.Create(builder);
-builder.Services.AddBusinessServices();
-ServiceTools.Create(builder);
-
-ControlUserStatusAsync = ServiceTools.GetService<IUserService>().UserStatus;
-UpdateQuestionOcr = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
-UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
-UpdateSimilarQuestionAnswer = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
-
-#region Middleware
 var app = builder.Build();
-
-app.UseCors("AllowEveryThing");
-
-if (!app.Environment.IsDevelopment())
-    app.UseMiddleware<HeaderAuthMiddleware>([Strings.XApiKey, Strings.SwaggerPath, Strings.Domain]);
-
-app.UseSwagger();
-
-app.UseSwaggerUI(c =>
-{
-    c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None); // Dokümantasyon genişlemesi kapalı
-    c.DefaultModelRendering(Swashbuckle.AspNetCore.SwaggerUI.ModelRendering.Example); // Modellerin render edilmesi 'example' ile sınırlı
-    c.DisplayRequestDuration();// İstek süresinin gösterilmesi
-    c.ConfigObject.AdditionalItems["syntaxHighlight"] = new Dictionary<string, object>
-    {
-        ["activated"] = false // Renklendirme kapalı
-    };
-});
-
-await app.ConfigureExceptionHandling(opt =>
-{
-    var detail = app.Configuration.GetValue<string>("DevPass") == "OCK";
-    opt.UseExceptionDetails = detail;
-    opt.UseLogger();
-
-});
-
-//app.UseMiddleware<LicenceMiddleware>();
-
-app.UseHealthChecks("/IsAlive", new HealthCheckOptions
-{
-    ResponseWriter = async (context, report) =>
-    {
-        await context.Response.WriteAsync(report.Status.ToString());
-    }
-});
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(Domain.Constants.AppOptions.ProfilePictureFolderPath),
-    RequestPath = "/ProfilePicture"
-});
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(Domain.Constants.AppOptions.QuestionPictureFolderPath),
-    RequestPath = "/QuestionPicture"
-});
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(Domain.Constants.AppOptions.AnswerPictureFolderPath),
-    RequestPath = "/AnswerPicture"
-});
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(Domain.Constants.AppOptions.SimilarQuestionPictureFolderPath),
-    RequestPath = "/SimilarQuestionPicture"
-});
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(Domain.Constants.AppOptions.SimilarAnswerPictureFolderPath),
-    RequestPath = "/SimilarAnswerPicture"
-});
-
-app.UseRequestId();
-
-app.UseAuthentication();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-Console.WriteLine("API çalışıyor...");
-Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
-Console.WriteLine(Directory.GetCurrentDirectory());
-
+await Middlewares(builder, app);
 app.Run();
-#endregion Middleware
 
-#region Swagger
+static void SetAppOptions(WebApplicationBuilder builder)
+{
+    AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+    builder.Configuration.GetSection("AppOptions").Get<Domain.Constants.AppOptions>();
+    Domain.Constants.AppOptions.CreateFolder();
+}
+
+static void Services(WebApplicationBuilder builder)
+{
+    builder.Services.AddSingleton(FirebaseApp.Create(new FirebaseAdmin.AppOptions()
+    {
+        Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hamster-private-key.json")),
+    }));
+
+    builder.Services.AddControllers();
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddHealthChecks();
+    builder.Services.AddMemoryCache();
+    builder.Services.AddHttpClient();
+    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddSingleton<Stopwatch>();
+    builder.Services.AddSingleton<ITokenHelper, JwtHelper>();
+    builder.Services.AddSingleton<ICacheManager, MemoryCacheManager>();
+    builder.Services.AddCustomApiVersioning(x =>
+    {
+        x.AddUrlSegmentApiVersionReader();
+        x.EnableVersionedApiExplorer = true;
+    });
+    builder.Services.AddCors(opt =>
+    {
+        opt.AddPolicy("AllowEveryThing", builder =>
+        {
+            builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        });
+    });
+    //if (!builder.Environment.IsDevelopment())
+    builder.Services.AddHostedService<SenderHostedService>();
+    builder.Services.AddHostedService<QuizHostedService>();
+
+    SwaggerAndToken(builder);
+
+    ServiceTools.Create(builder);
+    builder.Services.AddBusinessServices();
+    ServiceTools.Create(builder);
+}
+
+static async Task Middlewares(WebApplicationBuilder builder, WebApplication app)
+{
+    app.UseCors("AllowEveryThing");
+
+    if (!app.Environment.IsDevelopment())
+        app.UseMiddleware<HeaderAuthMiddleware>([Strings.XApiKey, Strings.SwaggerPath, Strings.Domain]);
+
+    app.UseSwagger();
+
+    app.UseSwaggerUI(c =>
+    {
+        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None); // Dokümantasyon genişlemesi kapalı
+        c.DefaultModelRendering(Swashbuckle.AspNetCore.SwaggerUI.ModelRendering.Example); // Modellerin render edilmesi 'example' ile sınırlı
+        c.DisplayRequestDuration();// İstek süresinin gösterilmesi
+        c.ConfigObject.AdditionalItems["syntaxHighlight"] = new Dictionary<string, object>
+        {
+            ["activated"] = false // Renklendirme kapalı
+        };
+    });
+
+    await app.ConfigureExceptionHandling(opt =>
+    {
+        var detail = app.Configuration.GetValue<string>("DevPass") == "OCK";
+        opt.UseExceptionDetails = detail;
+        opt.UseLogger();
+    });
+
+    //app.UseMiddleware<LicenceMiddleware>();
+
+    app.UseHealthChecks("/IsAlive", new HealthCheckOptions
+    {
+        ResponseWriter = async (context, report) =>
+        {
+            await context.Response.WriteAsync(report.Status.ToString());
+        }
+    });
+
+    StaticFiles(app);
+
+    app.UseRequestId();
+
+    app.UseAuthentication();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    Console.WriteLine("API çalışıyor...");
+    Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
+    Console.WriteLine(Directory.GetCurrentDirectory());
+}
 
 static void SwaggerAndToken(WebApplicationBuilder builder)
 {
@@ -232,66 +200,33 @@ static void SwaggerAndToken(WebApplicationBuilder builder)
         });
 }
 
-#endregion Swagger
-
-#region Service
-/*
-void ServiceInstall()
+static void StaticFiles(WebApplication app)
 {
-    if (!isService) return;
-    if (args.Length == 0) return;
-    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
-
-    string[] commands = ["--install", "-i", "--uninstall", "-u", "--stop", "-s", "--restart", "-r"];
-    if (!args.Any(x => commands.Contains(x, StringComparer.OrdinalIgnoreCase))) return;
-
-    var batFilePath = (args[0].ToLowerInvariant()) switch
+    var staticFilePaths = new Dictionary<string, string>
     {
-        "--install" or "-i" => "Install.bat",
-        "--stop" or "-s" => "Stop.bat",
-        "--restart" or "-r" => "Restart.bat",
-        "--uninstall" or "-u" => "Uninstall.bat",
-        _ => string.Empty
+        { "/ProfilePicture", Domain.Constants.AppOptions.ProfilePictureFolderPath },
+        { "/QuestionPicture", Domain.Constants.AppOptions.QuestionPictureFolderPath },
+        { "/AnswerPicture", Domain.Constants.AppOptions.AnswerPictureFolderPath },
+        { "/SimilarQuestionPicture", Domain.Constants.AppOptions.SimilarQuestionPictureFolderPath },
+        { "/SimilarAnswerPicture", Domain.Constants.AppOptions.SimilarAnswerPictureFolderPath },
+        { "/QuizQuestionPicture", Domain.Constants.AppOptions.QuizQuestionPictureFolderPath },
+        { "/QuizAnswerPicture", Domain.Constants.AppOptions.QuizAnswerPictureFolderPath }
     };
 
-    var directory = AppDomain.CurrentDomain.BaseDirectory;
-    Console.WriteLine(directory);
-    if (string.IsNullOrWhiteSpace(batFilePath)) Environment.Exit(0);
-    var tempBatFilePath = Path.GetTempFileName() + ".bat";
-
-    using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Web.API.Batchs.{batFilePath}"))
+    foreach (var path in staticFilePaths)
     {
-        if (stream == null) Environment.Exit(0);
-        using var reader = new StreamReader(stream);
-        File.WriteAllText(tempBatFilePath, reader.ReadToEnd().Replace("#ServicePath#", directory));
-    }
-
-    try
-    {
-        var process = new Process
+        app.UseStaticFiles(new StaticFileOptions
         {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = "cmd.exe",
-                Arguments = $"/c \"cd /d {directory} && {tempBatFilePath}\"",
-                Verb = "runas",
-                UseShellExecute = true,
-                //CreateNoWindow = true
-            }
-        };
-
-        process.Start();
-        process.WaitForExit();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine(ex.Message);
-    }
-    finally
-    {
-        if (File.Exists(tempBatFilePath)) File.Delete(tempBatFilePath);
-        Environment.Exit(0);
+            FileProvider = new PhysicalFileProvider(path.Value),
+            RequestPath = path.Key
+        });
     }
 }
-*/
-#endregion
+
+static void Delegates()
+{
+    ControlUserStatusAsync = ServiceTools.GetService<IUserService>().UserStatus;
+    UpdateQuestionOcr = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
+    UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
+    UpdateSimilarQuestionAnswer = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
+}

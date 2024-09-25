@@ -20,4 +20,11 @@ public interface IQuestionService : IBusinessService
     #endregion SimilarQuestion
 
     Task SendForStatusSendAgain(CancellationToken cancellationToken);
+
+    #region Quiz
+
+    Task<bool> AddQuiz(List<string> questions);
+
+    #endregion Quiz
+
 }

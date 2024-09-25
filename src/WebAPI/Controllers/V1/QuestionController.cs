@@ -55,6 +55,14 @@ public class QuestionController() : BaseController
         return Ok(result);
     }
 
+    [HttpPost("IsReadQuestion")]
+    public async Task<IActionResult> IsReadQuestion([FromBody] Guid questionId)
+    {
+        var command = new UpdateQuestionIsReadCommand { Id = questionId };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
     #endregion Question
 
     #region SimilarQuestion
@@ -95,6 +103,14 @@ public class QuestionController() : BaseController
     public async Task<IActionResult> ActiveSimilarQuestion([FromBody] Guid similarQuestionId)
     {
         var command = new ActiveSimilarCommand { QuestionId = similarQuestionId };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("IsReadSimilarQuestion")]
+    public async Task<IActionResult> IsReadSimilarQuestion([FromBody] Guid similarQuestionId)
+    {
+        var command = new UpdateSimilarIsReadCommand { Id = similarQuestionId };
         var result = await Mediator.Send(command);
         return Ok(result);
     }

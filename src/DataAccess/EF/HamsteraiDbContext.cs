@@ -26,6 +26,8 @@ public class HamsteraiDbContext : DbContext
     public DbSet<NotificationDeviceToken> NotificationDeviceTokens { get; set; }
     public DbSet<PasswordToken> PasswordTokens { get; set; }
     public DbSet<Question> Questions { get; set; }
+    public DbSet<Quiz> Quizzes { get; set; }
+    public DbSet<QuizQuestion> QuizQuestions { get; set; }
     public DbSet<School> Schools { get; set; }
     public DbSet<Similar> SimilarQuestions { get; set; }
     public DbSet<Student> Students { get; set; }
