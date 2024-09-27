@@ -1,6 +1,7 @@
 ﻿using Business.Features.Schools.Models.Schools;
 using Business.Features.Schools.Rules;
 using Business.Services.CommonService;
+using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
@@ -73,7 +74,6 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
                                                       .GroupBy(x => x.Group.Name)
                                                       .Select(x => new { x.Key, Count = x.Count() })
                                                       .ToDictionaryAsync(x => x.Key, x => x.Count, cancellationToken);
-
         result.SendQuestionByClassRoom = await questionDal.Query().AsNoTracking()
                                                           .Include(x => x.User).ThenInclude(x => x.School).ThenInclude(x => x.ClassRooms).ThenInclude(x => x.Students)
                                                           .Where(x => x.User.IsActive && x.User.School.Id == school.Id && x.User.Type == UserTypes.Student)
@@ -82,9 +82,35 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
                                                           .GroupBy(c => new { c.No, c.Branch })
                                                           .Select(x => new { Key = $"{x.Key.No}-{x.Key.Branch}", Count = x.Count() })
                                                           .ToDictionaryAsync(x => x.Key, x => x.Count, cancellationToken: cancellationToken);
+        result.SendSimilarByLesson = await similarQuestionDal.Query().AsNoTracking()
+                                                             .Include(x => x.Lesson)
+                                                             .Include(x => x.User)
+                                                             .Where(x => x.User.IsActive && x.Lesson.IsActive && x.User.SchoolId == school.Id)
+                                                             .GroupBy(x => x.Lesson.Name)
+                                                             .Select(x => new { x.Key, Count = x.Count() })
+                                                             .ToDictionaryAsync(x => x.Key, x => x.Count, cancellationToken);
+        result.SendSimilarByGroup = await similarQuestionDal.Query().AsNoTracking()
+                                                            .Include(x => x.Lesson).ThenInclude(x => x.LessonGroups).ThenInclude(x => x.Group)
+                                                            .Include(x => x.User)
+                                                            .Where(x => x.User.IsActive && x.Lesson.IsActive && x.Lesson.LessonGroups.Any(g => g.IsActive && g.Group.IsActive) && x.User.SchoolId == school.Id)
+                                                            .SelectMany(x => x.Lesson.LessonGroups.Where(g => g.IsActive && g.Group.IsActive))
+                                                            .GroupBy(x => x.Group.Name)
+                                                            .Select(x => new { x.Key, Count = x.Count() })
+                                                            .ToDictionaryAsync(x => x.Key, x => x.Count, cancellationToken);
+        result.SendSimilarByClassRoom = await similarQuestionDal.Query().AsNoTracking()
+                                                                .Include(x => x.User).ThenInclude(x => x.School).ThenInclude(x => x.ClassRooms).ThenInclude(x => x.Students)
+                                                                .Where(x => x.User.IsActive && x.User.School.Id == school.Id && x.User.Type == UserTypes.Student)
+                                                                .Where(x => x.User.School.ClassRooms.Any(c => c.IsActive && c.Students.Any(s => s.IsActive && s.Id == x.User.ConnectionId)))
+                                                                .SelectMany(x => x.User.School.ClassRooms.Where(c => c.IsActive && c.Students.Any(s => s.IsActive && s.Id == x.User.ConnectionId)))
+                                                                .GroupBy(c => new { c.No, c.Branch })
+                                                                .Select(x => new { Key = $"{x.Key.No}-{x.Key.Branch}", Count = x.Count() })
+                                                                .ToDictionaryAsync(x => x.Key, x => x.Count, cancellationToken: cancellationToken);
 
         result.TotalUserCount = result.TotalTeacherCount + result.TotalStudentCount;
         result.TotalQuestionCount = result.SendQuestionCount + result.SendSimilarCount;
+        result.TotalQuestionByLesson = result.SendQuestionByLesson.Concat(result.SendSimilarByLesson).GroupBy(x => x.Key).ToDictionary(x => x.Key, x => x.Sum(s => s.Value));
+        result.TotalQuestionByGroup = result.SendQuestionByGroup.Concat(result.SendSimilarByGroup).GroupBy(x => x.Key).ToDictionary(x => x.Key, x => x.Sum(s => s.Value));
+        result.TotalQuestionByClassRoom = result.SendQuestionByClassRoom.Concat(result.SendSimilarByClassRoom).GroupBy(x => x.Key).ToDictionary(x => x.Key, x => x.Sum(s => s.Value));
 
         return result;
     }

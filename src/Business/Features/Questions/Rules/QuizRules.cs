@@ -1,4 +1,4 @@
-﻿using Business.Features.Questions.Models.Quiz;
+﻿using Business.Features.Questions.Models.Quizzes;
 using Infrastructure.AI.Seduss.Models;
 
 namespace Business.Features.Questions.Rules;

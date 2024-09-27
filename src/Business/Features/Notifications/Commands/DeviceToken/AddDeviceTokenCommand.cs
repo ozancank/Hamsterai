@@ -29,7 +29,7 @@ public class AddDeviceTokenpCommandHandler(IMapper mapper,
         if (token != null)
         {
             token.DeviceToken = request.Model.DeviceToken;
-            var updated = await deviceTokenDal.UpdateAsyncCallback(token);
+            var updated = await deviceTokenDal.UpdateAsyncCallback(token, cancellationToken: cancellationToken);
             result = mapper.Map<DeviceTokenModel>(updated);
         }
         else
@@ -39,7 +39,7 @@ public class AddDeviceTokenpCommandHandler(IMapper mapper,
             entity.UserId = commonService.HttpUserId;
             entity.CreateDate = DateTime.Now;
             entity.IsActive = true;
-            var added = await deviceTokenDal.AddAsyncCallback(entity);
+            var added = await deviceTokenDal.AddAsyncCallback(entity, cancellationToken: cancellationToken);
             result = mapper.Map<DeviceTokenModel>(added);
         }
 

@@ -1,6 +1,7 @@
 ﻿using Business.Features.Users.Models.User;
 using Business.Features.Users.Rules;
 using Business.Services.UserService;
+using DataAccess.Abstract.Core;
 using MediatR;
 
 namespace Business.Features.Users.Queries.Users;

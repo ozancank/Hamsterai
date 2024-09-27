@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Core;
+﻿using DataAccess.Abstract.Core;
+using Domain.Entities.Core;
 using OCK.Core.Security.JWT;
 using System.Security.Claims;
 using Security = OCK.Core.Security.Entities;

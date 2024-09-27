@@ -2,10 +2,12 @@
 root = true
 
 # C# files
-[Migrations/*.cs]
+[/**/Migrations/*.cs]
 generated_code = true
 dotnet_analyzer_diagnostic.severity = none
+dotnet_analyzer_diagnostic.category-CodeQuality.severity = none
 
-[EF/Migrations/*.cs]]
+[/**/EF/Migrations/*.cs]]
 generated_code = true
 dotnet_analyzer_diagnostic.severity = none
+dotnet_analyzer_diagnostic.category-CodeQuality.severity = none

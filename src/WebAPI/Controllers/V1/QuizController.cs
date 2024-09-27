@@ -1,8 +1,7 @@
 using Asp.Versioning;
-using Business.Features.Questions.Commands.Quizs;
-using Business.Features.Questions.Models.Quiz;
-using Business.Features.Questions.Models.Similars;
-using Business.Features.Questions.Queries.Quiz;
+using Business.Features.Questions.Commands.Quizzes;
+using Business.Features.Questions.Models.Quizzes;
+using Business.Features.Questions.Queries.Quizzes;
 
 namespace WebAPI.Controllers.V1;
 
@@ -44,7 +43,7 @@ public class QuizController : BaseController
     }
 
     [HttpPost("UpdateQuizStarted")]
-    public async Task<IActionResult> UpdateQuizStarted([FromBody] string quizId)
+    public async Task<IActionResult> UpdateQuizStarted([FromQuery] string quizId)
     {
         var command = new UpdateQuizStartedCommand { Id = quizId };
         var result = await Mediator.Send(command);

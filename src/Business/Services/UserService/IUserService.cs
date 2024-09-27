@@ -13,5 +13,5 @@ public interface IUserService : IBusinessService
 
     Task<User> PassiveUser(User user);
 
-    Task<bool> UserStatus(long id);
+    Task<bool> UserStatusAndLicense(long id);
 }

@@ -1,0 +1,62 @@
+﻿using Business.Features.Students.Models;
+
+namespace Business.Features.Students.Rules;
+
+public class StudentRules(IStudentDal studentDal) : IBusinessRule
+{
+    internal static Task StudentShouldExists(object student)
+    {
+        if (student == null) throw new BusinessException(Strings.DynamicNotFound, Strings.Student);
+        return Task.CompletedTask;
+    }
+
+    internal static Task StudentShouldExists(GetStudentModel studentModel)
+    {
+        if (studentModel == null) throw new BusinessException(Strings.DynamicNotFound, Strings.Student);
+        return Task.CompletedTask;
+    }
+
+    internal static Task StudentShouldExists(Student student)
+    {
+        if (student == null) throw new BusinessException(Strings.DynamicNotFound, Strings.Student);
+        return Task.CompletedTask;
+    }
+
+    internal async Task StudentShouldExists(int id)
+    {
+        var exists = await studentDal.IsExistsAsync(x => x.Id == id, enableTracking: false);
+        if (exists) throw new BusinessException(Strings.DynamicNotFound, Strings.Student);
+    }
+
+    internal async Task StudentNoCanNotBeDuplicated(string no, int? studentId = null)
+    {
+        no = no.Trim();
+        var student = await studentDal.GetAsync(predicate: x => x.StudentNo == no, enableTracking: false);
+        if (studentId == null && student != null) throw new BusinessException(Strings.DynamicExists, no);
+        if (studentId != null && student != null && student.Id != studentId) throw new BusinessException(Strings.DynamicExists, no);
+    }
+
+    internal async Task StudentTcNoCanNotBeDuplicated(string tcNo, int? studentId = null)
+    {
+        tcNo = tcNo.Trim();
+        var student = await studentDal.GetAsync(predicate: x => x.TcNo == tcNo, enableTracking: false);
+        if (studentId == null && student != null) throw new BusinessException(Strings.DynamicExists, tcNo);
+        if (studentId != null && student != null && student.Id != studentId) throw new BusinessException(Strings.DynamicExists, tcNo);
+    }
+
+    internal async Task StudentEmailCanNotBeDuplicated(string email, int? studentId = null)
+    {
+        email = email.Trim();
+        var student = await studentDal.GetAsync(predicate: x => x.Email == email, enableTracking: false);
+        if (studentId == null && student != null) throw new BusinessException(Strings.DynamicExists, email);
+        if (studentId != null && student != null && student.Id != studentId) throw new BusinessException(Strings.DynamicExists, email);
+    }
+
+    internal async Task StudentPhoneCanNotBeDuplicated(string phone, int? studentId = null)
+    {
+        phone = phone.Trim();
+        var student = await studentDal.GetAsync(predicate: x => x.Phone == phone, enableTracking: false);
+        if (studentId == null && student != null) throw new BusinessException(Strings.DynamicExists, phone);
+        if (studentId != null && student != null && student.Id != studentId) throw new BusinessException(Strings.DynamicExists, phone);
+    }
+}

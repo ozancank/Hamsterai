@@ -29,7 +29,7 @@ public class AddGroupCommandHandler(IMapper mapper,
         group.CreateUser = group.UpdateUser = commonService.HttpUserId;
         group.CreateDate = group.UpdateDate = DateTime.Now;
 
-        var added = await groupDal.AddAsyncCallback(group);
+        var added = await groupDal.AddAsyncCallback(group, cancellationToken: cancellationToken);
         var result = mapper.Map<GetGroupModel>(added);
         return result;
     }

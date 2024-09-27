@@ -1,5 +1,6 @@
 ﻿using Business.Features.Users.Models.User;
 using Business.Services.CommonService;
+using DataAccess.Abstract.Core;
 using Domain.Entities.Core;
 using OCK.Core.Security.HashingHelper;
 
@@ -65,7 +66,7 @@ public class UserRules(IUserDal userDal,
 
     internal async Task UserPhoneCanNotBeDuplicated(string phone, long? userId = null)
     {
-        phone = phone.Trim().ToLower();
+        phone = phone.TrimForPhone();
         var user = await userDal.GetAsync(predicate: x => x.Phone == phone, enableTracking: false);
         if (userId == null && user != null) throw new BusinessException(Strings.DynamicExists, Strings.Phone);
         if (userId != null && user != null && user.Id != userId) throw new BusinessException(Strings.DynamicExists, Strings.Phone);
@@ -148,5 +149,11 @@ public class UserRules(IUserDal userDal,
         var control = HashingHelper.VerifyPasswordHash(oldPassword, user.PasswordHash, user.PasswordSalt);
         if (!control) throw new AuthenticationException(Strings.OldPasswordWrong);
         return Task.CompletedTask;
+    }
+
+    internal static async Task LicenceIsValid(DateTime licenceDate)
+    {
+        if (licenceDate.Date <= DateTime.Now.Date) throw new BusinessException(Strings.LicenceExpired);
+        await Task.CompletedTask;
     }
 }

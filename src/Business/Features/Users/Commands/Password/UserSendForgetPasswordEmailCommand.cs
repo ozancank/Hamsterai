@@ -1,5 +1,6 @@
 ﻿using Business.Features.Users.Rules;
 using Business.Services.EmailService;
+using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Logging;
 
@@ -25,7 +26,7 @@ public class UserSendForgetPasswordEmailCommandHandler(IUserDal userDal,
 
         await UserRules.UserShouldExistsAndActive(user);
 
-        if (user.PasswordTokens.Count != 0) await passwordTokenDal.DeleteRangeAsync(user.PasswordTokens);
+        if (user.PasswordTokens.Count != 0) await passwordTokenDal.DeleteRangeAsync(user.PasswordTokens, cancellationToken);
 
         var passwordToken = new PasswordToken
         {
@@ -36,7 +37,7 @@ public class UserSendForgetPasswordEmailCommandHandler(IUserDal userDal,
             Expried = DateTime.Now.AddHours(1)
         };
 
-        await passwordTokenDal.AddAsync(passwordToken);
+        await passwordTokenDal.AddAsync(passwordToken, cancellationToken: cancellationToken);
 
         var link = $"{AppOptions.ForgetPasswordUrl}/{passwordToken.Token}";
 

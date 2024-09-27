@@ -29,7 +29,7 @@ public class UpdateLessonCommandHandler(IMapper mapper,
         lesson.UpdateUser = commonService.HttpUserId;
         lesson.UpdateDate = DateTime.Now;
 
-        var updated = await lessonDal.UpdateAsyncCallback(lesson);
+        var updated = await lessonDal.UpdateAsyncCallback(lesson, cancellationToken: cancellationToken);
         var result = mapper.Map<GetLessonModel>(updated);
         return result;
     }

@@ -68,7 +68,7 @@ public class AddSimilarCommandHandler(IMapper mapper,
             RightOption = null,
         };
 
-        var added = await similarQuestionDal.AddAsyncCallback(question);
+        var added = await similarQuestionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
         var result = mapper.Map<GetSimilarModel>(added);
 
         _ = questionApi.GetSimilarQuestion(new()

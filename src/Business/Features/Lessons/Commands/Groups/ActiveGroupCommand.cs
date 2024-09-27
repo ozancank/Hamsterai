@@ -26,7 +26,7 @@ public class ActiveGroupCommandHandler(IGroupDal groupDal,
         group.UpdateDate = DateTime.Now;
         group.IsActive = true;
 
-        await groupDal.UpdateAsync(group);
+        await groupDal.UpdateAsync(group, cancellationToken: cancellationToken);
         return true;
     }
 }

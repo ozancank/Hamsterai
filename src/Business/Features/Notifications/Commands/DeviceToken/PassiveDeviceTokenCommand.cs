@@ -23,7 +23,7 @@ public class PassiveDeviceTokenDeviceTokenHandler(INotificationDeviceTokenDal de
             token.IsActive = false;
         }
 
-        await deviceTokenDal.UpdateRangeAsync(tokens);
+        await deviceTokenDal.UpdateRangeAsync(tokens, cancellationToken: cancellationToken);
         return true;
     }
 }

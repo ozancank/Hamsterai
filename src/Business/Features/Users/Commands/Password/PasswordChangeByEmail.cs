@@ -1,4 +1,5 @@
 ﻿using Business.Features.Users.Rules;
+using DataAccess.Abstract.Core;
 using Domain.Entities.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
@@ -40,13 +41,13 @@ public class PasswordChangeByEmailCommandHandler(IUserDal userDal,
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
             user.MustPasswordChange = false;
-            await userDal.UpdateAsync(user);
+            await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
             return true;
         }
         finally
         {
             if (user != null)
-                await passwordTokenDal.DeleteRangeAsync(user.PasswordTokens);
+                await passwordTokenDal.DeleteRangeAsync(user.PasswordTokens, cancellationToken);
         }
     }
 }

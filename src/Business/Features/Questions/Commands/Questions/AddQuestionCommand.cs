@@ -65,7 +65,7 @@ public class AddQuestionCommandHandler(IMapper mapper,
             RightOption = null
         };
 
-        var added = await questionDal.AddAsyncCallback(question);
+        var added = await questionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
         var result = mapper.Map<GetQuestionModel>(added);
 
         _ = questionApi.AskQuestionOcrImage(new()

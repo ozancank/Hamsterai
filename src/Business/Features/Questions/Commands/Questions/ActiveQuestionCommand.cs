@@ -26,7 +26,7 @@ public class ActiveQuestionCommandHandler(IQuestionDal questionDal,
         question.UpdateUser = commonService.HttpUserId;
         question.UpdateDate = DateTime.Now;
 
-        await questionDal.UpdateAsync(question);
+        await questionDal.UpdateAsync(question, cancellationToken: cancellationToken);
 
         return true;
     }

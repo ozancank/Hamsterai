@@ -267,7 +267,7 @@ namespace DataAccess.EF.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(250)
                         .HasColumnType("citext")
                         .HasColumnName("Name")
                         .HasColumnOrder(7);
@@ -303,7 +303,7 @@ namespace DataAccess.EF.Migrations
 
                     b.Property<string>("Surname")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(250)
                         .HasColumnType("citext")
                         .HasColumnName("Surname")
                         .HasColumnOrder(8);
@@ -315,7 +315,7 @@ namespace DataAccess.EF.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(250)
                         .HasColumnType("citext")
                         .HasColumnName("UserName")
                         .HasColumnOrder(3);

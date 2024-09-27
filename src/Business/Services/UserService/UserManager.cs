@@ -1,4 +1,7 @@
-﻿using Business.Services.CommonService;
+﻿using Business.Features.Schools.Rules;
+using Business.Features.Users.Rules;
+using Business.Services.CommonService;
+using DataAccess.Abstract.Core;
 using Domain.Entities.Core;
 using LinqKit;
 using System.Linq.Expressions;
@@ -7,6 +10,7 @@ namespace Business.Services.UserService;
 
 public class UserManager(IUserDal userDal,
                          IMapper mapper,
+                         ISchoolDal schoolDal,
                          ICommonService commonService) : IUserService
 {
     public async Task<User> GetUserById(long id, bool tracking = false)
@@ -56,9 +60,25 @@ public class UserManager(IUserDal userDal,
         return result;
     }
 
-    public async Task<bool> UserStatus(long id)
+    public async Task<bool> UserStatusAndLicense(long id)
     {
-        var result = await userDal.IsExistsAsync(predicate: x => x.Id == id && x.IsActive);
+        var userType = commonService.HttpUserType;
+        var schoolId = commonService.HttpSchoolId;
+
+        bool result = false;
+
+        if (schoolId != null && userType is UserTypes.School or UserTypes.Teacher or UserTypes.Student)
+        {
+            var school = await schoolDal.GetAsync(
+                enableTracking: false,
+                predicate: x => x.Id == id,
+                selector: x => new { x.LicenseEndDate, x.IsActive });
+
+            await UserRules.LicenceIsValid(school.LicenseEndDate);
+            await SchoolRules.SchoolShouldExists(school.IsActive);
+        }
+
+        result = await userDal.IsExistsAsync(predicate: x => x.Id == id && x.IsActive, enableTracking: false);
         return result;
     }
 }

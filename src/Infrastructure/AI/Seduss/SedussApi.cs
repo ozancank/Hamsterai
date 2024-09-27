@@ -2,6 +2,7 @@
 using Infrastructure.AI.Seduss.Dtos;
 using Infrastructure.AI.Seduss.Models;
 using Infrastructure.Constants;
+using OCK.Core.Exceptions.CustomExceptions;
 using System.Text;
 using System.Text.Json;
 
@@ -58,11 +59,11 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
 
             return answer;
         }
-        catch
+        catch (Exception ex)
         {
             if (InfrastructureDelegates.UpdateQuestionOcr != null)
                 await InfrastructureDelegates.UpdateQuestionOcr.Invoke(answer, new(model.Id, QuestionStatus.Error, model.UserId));
-            throw;
+            throw (ExternalApiException)ex;
         }
         finally
         {
@@ -114,11 +115,11 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
 
             return answer;
         }
-        catch
+        catch (Exception ex)
         {
             if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
                 await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.Error, model.UserId));
-            throw;
+            throw (ExternalApiException)ex;
         }
         finally
         {
@@ -170,11 +171,11 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
 
             return similar;
         }
-        catch
+        catch (Exception ex)
         {
             if (InfrastructureDelegates.UpdateSimilarQuestionAnswer != null)
                 await InfrastructureDelegates.UpdateSimilarQuestionAnswer.Invoke(similar, new(model.Id, QuestionStatus.Error, model.UserId));
-            throw;
+            throw (ExternalApiException)ex;
         }
         finally
         {
@@ -218,7 +219,11 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
 
             content = await response.Content.ReadAsStringAsync();
             similars = JsonSerializer.Deserialize<QuizResponseModel>(content, _options);
-            similars.Questions.ForEach(x => x.RightOption = x.RightOption.IsNotEmpty() ? x.RightOption.Trim("Cevap", ":", ")", "-").ToUpper() : throw new Exception(Strings.DynamicNotEmpty.Format(Strings.RightOption)));
+            similars.Questions.ForEach(x => x.RightOption = x.RightOption.IsNotEmpty() ? x.RightOption.Trim("Cevap", ":", ")", "-").ToUpper() : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption)));
+        }
+        catch (Exception ex)
+        {
+            throw (ExternalApiException)ex;
         }
         finally
         {

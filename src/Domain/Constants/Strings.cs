@@ -16,6 +16,7 @@ public struct Strings
     public const string AuthorizationDenied = "Bu işlem için yetkiniz bulunmamaktadır.";
 
     public const string DynamicNotEmpty = "{0} girilmesi zorunludur.";
+    public const string DynamicLength = "{0} {1} karakter olmalıdır.";
     public const string DynamicMinLength = "{0} en az {1} karakter olmalıdır.";
     public const string DynamicMaxLength = "{0} en fazla {1} karakter olmalıdır.";
     public const string DynamicGratherThan = "{0} {1} büyük olmalıdır.";
@@ -80,6 +81,15 @@ public struct Strings
     public const string Quiz = "Test";
     public const string RightOption = "Doğru Cevap";
     public const string Status = "Durum";
+    public const string ClassRoom = "Sınıf";
+    public const string No = "No";
+    public const string Number = "Numara";
+    public const string OfNumber = "Numarası";
+    public const string Branch = "Şube";
+    public const string OfBranch = "Şubesi";
+    public const string Teacher = "Öğretmen";
+    public const string Identity = "Kimlik";
+    public const string Student = "Öğrenci";
 
     public const string FileNameExtension = "Dosya adı içerisinde nokta olmalı ve uzantı belirtilmelidir.";
 
@@ -108,94 +118,9 @@ public struct Strings
     public const string QuestionLimitForStudent = "Bu ders için günlük soru limitinize ulaştınız.";
     public const string SimilarLimitForStudent = "Bu ders için günlük benzer soru limitinize ulaştınız.";
     public const string OldPasswordWrong = "Eski şifre yanlış girildi.";
+    public const string LicenceExpired = "Lisans süresi doldu. Lütfen firma ile iletişime geçiniz.";
+    public const string WrongClassRoomIds = "Sınıf id'leri yanlış girildi.";
+    public const string ClassRoomsNotNull = "Sınıflar belirtilmelidir.";
+    public const string WrongLessonIds = "Ders id'leri yanlış girildi.";
+    public const string LessonsNotNull = "Dersler belirtilmelidir.";
 }
-
-//public const string _customerAdded = "Müşteri kayıt edildi.";
-//public const string _customerUpdated = "Müşteri kaydı güncellendi.";
-//public const string _customerPassived = "Müşteri kaydı pasif yapıldı.";
-//public const string _customerActived = "Müşteri kaydı aktif yapıldı.";
-//public const string _customerTitleNotEmpty = "Ünvan girilmesi zorunludur.";
-//public const string _customerTitleMinimumLength = "Ünvan en az 5 karakter olmalıdır.";
-//public const string _customerTitleMaximumLength = "Ünvan en fazla 127 karakter olmalıdır.";
-//public const string _customerTaxOfficeNotEmpty = "Vergi dairesi girilmesi zorunludur.";
-//public const string _customerTaxOfficeMinimumLength = "Vergi dairesi en az 5 karakter olmalıdır.";
-//public const string _customerTaxOfficeMaximumLength = "Vergi dairesi en fazla 50 karakter olmalıdır.";
-//public const string _customerTaxNumberNotEmpty = "Vergi numarası girilmesi zorunludur.";
-//public const string _customerTaxNumberOnlyDigit = "Vergi numarası sadece rakam olmalıdır.";
-//public const string _customerTaxNumberMinimumLength = "Vergi numarası en az 10 karakter olmalıdır.";
-//public const string _customerTaxNumberMaximumLength = "Vergi numarası en fazla 11 karakter olmalıdır.";
-//public const string _customerEmailWrongFormat = "Email bilgisi mail formatında olmalıdır.";
-//public const string _customerEmailMinimumLength = "Email en az 6 karakter olmalıdır.";
-//public const string _customerEmailMaximumLength = "Email en fazla 100 karakter olmalıdır.";
-//public const string _customerPhoneOnlyDigit = "Telefon sadece rakam olmalıdır.";
-//public const string _customerPhoneLength = "Telefon 10 karakter olmalıdır.";
-//public const string _customerMikroCodeMaximumLength = "Mikro kodu en fazla 25 karakter olmalıdır.";
-//public const string _customerNotFound = "Müşteri kaydı bulunamadı.";
-//public const string _customerNotFoundActive = "Müşteri kaydı bulunamadı veya aktif değil";
-//public const string _customerExistsTitle = "Ünvan mevcut. Pasif durumda olabilir.";
-//public const string _customerExistsTaxNumber = "Vergi No mevcut. Pasif durumda olabilir.";
-//public const string _customerExistsEmail = "Email mevcut. Pasif durumda olabilir.";
-//public const string _customerExistsPhone = "Telefon mevcut. Pasif durumda olabilir.";
-//public const string _customerExistsMikroCode = "Mikro kodu mevcut. Pasif durumda olabilir.";
-
-//public const string _inventoryAdded = "Envanter kayıt edildi.";
-//public const string _inventoryUpdated = "Envanter kaydı güncellendi.";
-//public const string _inventoryPassived = "Envanter kaydı pasif yapıldı.";
-//public const string _inventoryActived = "Envanter kaydı aktif yapıldı.";
-//public const string _inventoryNameNotEmpty = "Envanter adı girilmesi zorunludur.";
-//public const string _inventoryNameMinimumLength = "Envanter adı en az 2 karakter olmalıdır.";
-//public const string _inventoryNameMaximumLength = "Envanter adı en fazla 50 karakter olmalıdır.";
-//public const string _inventoryNotFound = "Envanter kaydı bulunamadı.";
-//public const string _inventoryNotFoundActive = "Envanter kaydı bulunamadı veya aktif değil";
-//public const string _inventoryExistsName = "Envanter adı mevcut. Pasif durumda olabilir.";
-
-//public const string _inventoryInfoAdded = "Envanter bilgisi kayıt edildi.";
-//public const string _inventoryInfoUpdated = "Envanter bilgisi güncellendi.";
-//public const string _inventoryInfoPassived = "Envanter bilgisi pasif yapıldı.";
-//public const string _inventoryInfoActived = "Envanter bilgisi aktif yapıldı.";
-//public const string _inventoryInfoNameNotEmpty = "Envanter bilgisi adı girilmesi zorunludur.";
-//public const string _inventoryInfoNameMinimumLength = "Envanter bilgisi adı en az 2 karakter olmalıdır.";
-//public const string _inventoryInfoNameMaximumLength = "Envanter bilgisi adı en fazla 50 karakter olmalıdır.";
-//public const string _inventoryInfoNotFound = "Envanter bilgisi kaydı bulunamadı.";
-//public const string _inventoryInfoNotFoundActive = "Envanter bilgisi kaydı bulunamadı veya aktif değil";
-//public const string _inventoryInfoExistsName = "Envanter bilgisi mevcut. Pasif durumda olabilir.";
-
-//public const string _customerInventoryBrandMinimumLength = "Marka en az 2 karakter olmalıdır.";
-//public const string _customerInventoryBrandMaximumLength = "Marka en fazla 50 karakter olmalıdır.";
-//public const string _customerInventoryModelMinimumLength = "Model en az 2 karakter olmalıdır.";
-//public const string _customerInventoryModelMaximumLength = "Model en fazla 50 karakter olmalıdır.";
-
-//public const string _customerInventoryInfoValueNotEmpty = "Envanter verisi girilmesi zorunludur.";
-//public const string _customerInventoryInfoValueMinimumLength = "Envanter verisi en az 1 karakter olmalıdır.";
-//public const string _customerInventoryInfoValueMaximumLength = "Envanter verisi en fazla 250 karakter olmalıdır.";
-//public const string _employeeEmailWrongFormat = "Email bilgisi mail formatında olmalıdır.";
-//public const string _employeeEmailMinimumLength = "Email en az 6 karakter olmalıdır.";
-//public const string _employeeEmailMaximumLength = "Email en fazla 100 karakter olmalıdır.";
-//public const string _employeeMobileOnlyDigit = "Cep telefonu sadece rakam olmalıdır.";
-//public const string _employeeMobileLength = "Cep telefonu 10 karakter olmalıdır.";
-//public const string _employeeNotFound = "Personel kaydı bulunamadı.";
-//public const string _employeeNotFoundActive = "Personel kaydı bulunamadı veya aktif değil";
-//public const string _employeeExistsEmail = "Email mevcut. Pasif durumda olabilir.";
-//public const string _employeeExistsMobile = "Cep telefonu mevcut. Pasif durumda olabilir.";
-//public const string _employeeDeniedEditForOwnRecord = "Personel kendi kaydını değiştiremez.";
-
-//public const string _employeeeAdded = "Personel kayıt edildi.";
-//public const string _employeeUpdated = "Personel kaydı güncellendi.";
-//public const string _employeePassived = "Personel kaydı pasif yapıldı.";
-//public const string _employeeActived = "Personel kaydı aktif yapıldı.";
-
-//public const string _userAdd = "Kullanıcı kayıt edildi.";
-//public const string _userPasswordChanged = "Kullanıcı şifresi değiştirildi.";
-//public const string _userAssignClaim = "Kullanıcı yetkisi güncellendi.";
-//public const string _userPassive = "Kullanıcı kaydı pasif yapıldı.";
-//public const string _userActive = "Kullanıcı kaydı aktif yapıldı.";
-//public const string _userPasswordMinimumCharacter = "Şifre en az 8 karakter olmalıdır.";
-//public const string _userPasswordNumber = "Şifre içerisinde en az 1 adet sayı bulunmalıdır.";
-//public const string _userPasswordLetter = "Şifre içerisinde en az 1 harf bulunmalıdır.";
-//public const string _userPasswordChangeHimSelf = "Sadece oturum açan kullanıcı hesabın şifresi değiştirilebilir.";
-//public const string _ipAddressNotEmpty = "Ip adresi boş olamaz.";
-//public const string _refreshTokenNotFound = "Yenileme tokenı bulunamadı.";
-//public const string _invalidRefreshToken = "Geçersiz yenileme tokenı.";
-
-//public const string _priorityMinimumValue = "Sıra numarası sıfırdan büyük olmalıdır.";
-//public const string _priorityUpdate = "Sıra numarası güncellendi.";

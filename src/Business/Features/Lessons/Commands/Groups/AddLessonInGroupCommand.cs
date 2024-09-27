@@ -29,7 +29,7 @@ public class AddLessonInGroupCommandHandler(ILessonDal lessonDal,
             include: x => x.Include(u => u.LessonGroups).ThenInclude(u => u.Lesson),
             cancellationToken: cancellationToken);
 
-        await lessonGroupDal.DeleteRangeAsync(group.LessonGroups);
+        await lessonGroupDal.DeleteRangeAsync(group.LessonGroups, cancellationToken);
 
         var date = DateTime.Now;
 
@@ -57,7 +57,7 @@ public class AddLessonInGroupCommandHandler(ILessonDal lessonDal,
                 });
             }
 
-            await lessonGroupDal.AddRangeAsync(entities);
+            await lessonGroupDal.AddRangeAsync(entities, cancellationToken: cancellationToken);
         }
         return true;
     }

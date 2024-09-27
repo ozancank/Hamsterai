@@ -1,4 +1,4 @@
-﻿using Business.Features.Questions.Models.Quiz;
+﻿using Business.Features.Questions.Models.Quizzes;
 
 namespace Business.Features.Questions.Profiles;
 

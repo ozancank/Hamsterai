@@ -44,13 +44,13 @@
 	  <None Update="Templates\ForgetPassword.html">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
+	  <None Update="Templates\Test.docx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Folder Include="Features\Auths\Dtos\" />
-	  <Folder Include="Features\Schools\Queries\ClassRooms\" />
-	  <Folder Include="Features\Schools\Commands\ClassRooms\" />
-	  <Folder Include="Features\Schools\Commands\Schools\" />
 	</ItemGroup>
 
 </Project>

@@ -1,4 +1,6 @@
-﻿using DataAccess.EF.Concrete;
+﻿using DataAccess.Abstract.Core;
+using DataAccess.EF.Concrete;
+using DataAccess.EF.Concrete.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OCK.Core;
@@ -42,6 +44,7 @@ public static class DALServiceRegistration
         services.AddScoped<IStudentDal, StudentDal>();
         services.AddScoped<ITeacherClassRoomDal, TeacherClassRoomDal>();
         services.AddScoped<ITeacherDal, TeacherDal>();
+        services.AddScoped<ITeacherLessonDal, TeacherLessonDal>();
 
         services.AddCoreServices();
         return services;

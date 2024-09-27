@@ -17,6 +17,7 @@ public class AppOptions
     public static int QuestionLimitForStudent { get; set; }
     public static int SimilarLimitForStudent { get; set; }
     public static int QuizMinimumQuestionLimit { get; set; }
+    public static string DefaultPassword { get; set; }
 
     public static string ProfilePictureFolderPath { get; set; }
     public static string QuestionPictureFolderPath { get; set; }
@@ -25,7 +26,6 @@ public class AppOptions
     public static string SimilarAnswerPictureFolderPath { get; set; }
     public static string QuizQuestionPictureFolderPath { get; set; }
     public static string QuizAnswerPictureFolderPath { get; set; }
-
 
     public static void CreateFolder()
     {

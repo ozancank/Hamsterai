@@ -23,7 +23,7 @@ public class ActiveDeviceTokenHandler(INotificationDeviceTokenDal deviceTokenDal
             token.IsActive = true;
         }
 
-        await deviceTokenDal.UpdateRangeAsync(tokens);
+        await deviceTokenDal.UpdateRangeAsync(tokens, cancellationToken: cancellationToken);
         return true;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Business.Features.Users.Rules;
 using Business.Services.UserService;
+using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
@@ -25,7 +26,7 @@ public class ActiveUserCommandHandler(IUserDal userDal,
         await userRules.UserTypeAllowed(user.Type, user.Id);
         user.IsActive = true;
 
-        await userDal.UpdateAsync(user);
+        await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
         return true;
     }
 }

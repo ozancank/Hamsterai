@@ -26,7 +26,7 @@ public class PassiveLessonCommandHandler(ILessonDal lessonDal,
         lesson.UpdateDate = DateTime.Now;
         lesson.IsActive = false;
 
-        await lessonDal.UpdateAsync(lesson);
+        await lessonDal.UpdateAsync(lesson, cancellationToken: cancellationToken);
         return true;
     }
 }

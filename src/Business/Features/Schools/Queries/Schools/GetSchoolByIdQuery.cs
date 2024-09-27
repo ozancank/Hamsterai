@@ -11,7 +11,7 @@ public class GetSchoolByIdQuery : IRequest<GetSchoolModel>, ISecuredRequest<User
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 
-    public UserTypes[] Roles { get; } = [];
+    public UserTypes[] Roles { get; } = [UserTypes.Administator];
 }
 
 public class GetSchoolByIdQueryHandler(IMapper mapper,

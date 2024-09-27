@@ -26,7 +26,7 @@ public class ActiveLessonCommandHandler(ILessonDal lessonDal,
         lesson.UpdateDate = DateTime.Now;
         lesson.IsActive = true;
 
-        await lessonDal.UpdateAsync(lesson);
+        await lessonDal.UpdateAsync(lesson, cancellationToken: cancellationToken);
         return true;
     }
 }

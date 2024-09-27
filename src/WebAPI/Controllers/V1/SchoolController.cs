@@ -1,5 +1,13 @@
 using Asp.Versioning;
+using Business.Features.Schools.Commands.ClassRooms;
+using Business.Features.Schools.Commands.Schools;
+using Business.Features.Schools.Commands.Teachers;
+using Business.Features.Schools.Models.ClassRooms;
+using Business.Features.Schools.Models.Schools;
+using Business.Features.Schools.Models.Teachers;
+using Business.Features.Schools.Queries.ClassRooms;
 using Business.Features.Schools.Queries.Schools;
+using Business.Features.Schools.Queries.Teachers;
 
 namespace WebAPI.Controllers.V1;
 
@@ -50,33 +58,181 @@ public class SchoolController : BaseController
         return Ok(result);
     }
 
-    //[HttpPost("AddSchool")]
-    //public async Task<IActionResult> AddSchool([FromBody] AddSchoolModel model)
-    //{
-    //    var result = await SchoolService.AddSchool(model);
-    //    return Ok(result);
-    //}
+    [HttpPost("AddSchool")]
+    public async Task<IActionResult> AddSchool([FromBody] AddSchoolModel model)
+    {
+        var command = new AddSchoolCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
 
-    //[HttpPost("UpdateSchool")]
-    //public async Task<IActionResult> UpdateSchool([FromBody] UpdateSchoolModel model)
-    //{
-    //    var result = await SchoolService.UpdateSchool(model);
-    //    return Ok(result);
-    //}
+    [HttpPost("UpdateSchool")]
+    public async Task<IActionResult> UpdateSchool([FromBody] UpdateSchoolModel model)
+    {
+        var command = new UpdateSchoolCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
 
-    //[HttpPost("PassiveSchool")]
-    //public async Task<IActionResult> PassiveSchool([FromBody] int SchoolId)
-    //{
-    //    await SchoolService.PassiveSchool(SchoolId);
-    //    return Ok();
-    //}
+    [HttpPost("PassiveSchool")]
+    public async Task<IActionResult> PassiveSchool([FromBody] int schoolId)
+    {
+        var command = new PassiveSchoolCommand { Id = schoolId };
+        await Mediator.Send(command);
+        return Ok();
+    }
 
-    //[HttpPost("ActiveSchool")]
-    //public async Task<IActionResult> ActiveSchool([FromBody] int SchoolId)
-    //{
-    //    await SchoolService.ActiveSchool(SchoolId);
-    //    return Ok();
-    //}
+    [HttpPost("ActiveSchool")]
+    public async Task<IActionResult> ActiveSchool([FromBody] int schoolId)
+    {
+        var command = new ActiveSchoolCommand { Id = schoolId };
+        await Mediator.Send(command);
+        return Ok();
+    }
 
     #endregion School
+
+    #region ClassRoom
+
+    [HttpGet("GetClassRoomById/{id}")]
+    public async Task<IActionResult> GetClassRoomById([FromRoute] int id)
+    {
+        var command = new GetClassRoomByIdQuery { Id = id };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpGet("GetClassRooms")]
+    public async Task<IActionResult> GetClassRooms([FromQuery] PageRequest model)
+    {
+        var command = new GetClassRoomsQuery { PageRequest = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("GetClassRoomsDynamic")]
+    public async Task<IActionResult> GetClassRoomsDynamic([FromQuery] PageRequest model, [FromBody] Dynamic dynamicModel)
+    {
+        var command = new GetClassRoomsByDynamicQuery { PageRequest = model, Dynamic = dynamicModel };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("AddClassRoom")]
+    public async Task<IActionResult> AddClassRoom([FromBody] AddClassRoomModel model)
+    {
+        var command = new AddClassRoomCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("UpdateClassRoom")]
+    public async Task<IActionResult> UpdateClassRoom([FromBody] UpdateClassRoomModel model)
+    {
+        var command = new UpdateClassRoomCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("PassiveClassRoom")]
+    public async Task<IActionResult> PassiveClassRoom([FromBody] int classRoomId)
+    {
+        var command = new PassiveClassRoomCommand { Id = classRoomId };
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    [HttpPost("ActiveClassRoom")]
+    public async Task<IActionResult> ActiveClassRoom([FromBody] int classRoomId)
+    {
+        var command = new ActiveClassRoomCommand { Id = classRoomId };
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    #endregion ClassRoom
+
+    #region Teacher
+
+    [HttpGet("GetTeacherById/{id}")]
+    public async Task<IActionResult> GetTeacherById([FromRoute] byte id)
+    {
+        var command = new GetTeacherByIdQuery { Id = id };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpGet("GetTeacherForDashboard")]
+    public async Task<IActionResult> GetTeacherForDashboard()
+    {
+        var command = new GetTeacherDashboardQuery();
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpGet("GetTeachers")]
+    public async Task<IActionResult> GetTeachers([FromQuery] PageRequest model)
+    {
+        var command = new GetTeachersQuery { PageRequest = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("GetTeachersDynamic")]
+    public async Task<IActionResult> GetTeachersDynamic([FromQuery] PageRequest model, [FromBody] Dynamic dynamicModel)
+    {
+        var command = new GetTeachersByDynamicQuery { PageRequest = model, Dynamic = dynamicModel };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("AddTeacher")]
+    public async Task<IActionResult> AddTeacher([FromBody] AddTeacherModel model)
+    {
+        var command = new AddTeacherCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("UpdateTeacher")]
+    public async Task<IActionResult> UpdateTeacher([FromBody] UpdateTeacherModel model)
+    {
+        var command = new UpdateTeacherCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("PassiveTeacher")]
+    public async Task<IActionResult> PassiveTeacher([FromBody] int teacherId)
+    {
+        var command = new PassiveTeacherCommand { Id = teacherId };
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    [HttpPost("ActiveTeacher")]
+    public async Task<IActionResult> ActiveTeacher([FromBody] int teacherId)
+    {
+        var command = new ActiveTeacherCommand { Id = teacherId };
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    [HttpPost("AssignClassRoom")]
+    public async Task<IActionResult> AssignClassRoom([FromBody] AssignTeacherClassRoomModel model)
+    {
+        var command = new AssignClassRoomCommand { Id = model.TeacherId, ClassRoomIds = model.ClassRoomIds };
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    [HttpPost("AssignLesson")]
+    public async Task<IActionResult> AssignLesson([FromBody] AssignTeacherLessonModel model)
+    {
+        var command = new AssignLessonCommand { Id = model.TeacherId, LessonIds = model.LessonIds };
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    #endregion Teacher
 }

@@ -1,6 +1,7 @@
 ﻿using Business.Features.Users.Models.User;
 using Business.Features.Users.Rules;
 using Business.Services.CommonService;
+using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
@@ -48,7 +49,7 @@ public class UpdateUserCommandHandler(IMapper mapper,
         user.ConnectionId = request.Model.ConnectionId;
         user.SchoolId = request.Model.SchoolId;
 
-        await userDal.UpdateAsync(user);
+        await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
         var result = mapper.Map<GetUserModel>(user);
         return result;
     }

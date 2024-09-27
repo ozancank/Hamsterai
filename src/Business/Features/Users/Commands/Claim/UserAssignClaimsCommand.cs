@@ -1,4 +1,5 @@
 ﻿using Business.Features.Users.Rules;
+using DataAccess.Abstract.Core;
 using Domain.Entities.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
@@ -31,7 +32,7 @@ public class UserAssignClaimsCommandHandler(IUserDal userDal,
         await userRules.UserCanNotEditAtAdminUser(request.Id);
         await UserRules.AdminCanNotAssignClaim(request.AssignRoles);
 
-        await userOperationClaimDal.DeleteRangeAsync(user.UserOperationClaims);
+        await userOperationClaimDal.DeleteRangeAsync(user.UserOperationClaims, cancellationToken);
 
         if (request.AssignRoles != null && request.AssignRoles.Length != 0)
         {
@@ -48,7 +49,7 @@ public class UserAssignClaimsCommandHandler(IUserDal userDal,
             {
                 var id = await userOperationClaimDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
                 claim.Id = id;
-                await userOperationClaimDal.AddAsync(claim);
+                await userOperationClaimDal.AddAsync(claim, cancellationToken: cancellationToken);
             }
         }
 

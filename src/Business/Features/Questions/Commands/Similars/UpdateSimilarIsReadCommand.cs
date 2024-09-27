@@ -27,7 +27,7 @@ public class UpdateSimilarIsReadCommandHandler(ISimilarQuestionDal similarDal,
         similar.UpdateUser = commonService.HttpUserId;
         similar.UpdateDate = DateTime.Now;
 
-        await similarDal.UpdateAsync(similar);
+        await similarDal.UpdateAsync(similar, cancellationToken: cancellationToken);
         return true;
     }
 }

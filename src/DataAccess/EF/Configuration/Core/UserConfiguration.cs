@@ -11,13 +11,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(e => e.Id);
         builder.Property(e => e.CreateDate).HasColumnName("CreateDate").HasColumnOrder(1).IsRequired();
         builder.Property(e => e.IsActive).HasColumnName("IsActive").HasColumnOrder(2).IsRequired();
-        builder.Property(e => e.UserName).HasColumnName("UserName").HasMaxLength(100).HasColumnOrder(3).IsRequired();
+        builder.Property(e => e.UserName).HasColumnName("UserName").HasMaxLength(250).HasColumnOrder(3).IsRequired();
         builder.HasIndex(e => e.UserName).HasDatabaseName("UK_Users_UserName").IsUnique();
         builder.Property(e => e.PasswordSalt).HasColumnName("PasswordSalt").HasColumnOrder(4).IsRequired();
         builder.Property(e => e.PasswordHash).HasColumnName("PasswordHash").HasColumnOrder(5).IsRequired();
         builder.Property(e => e.MustPasswordChange).HasColumnName("MustPasswordChange").HasColumnOrder(6).IsRequired();
-        builder.Property(e => e.Name).HasColumnName("Name").HasMaxLength(100).HasColumnOrder(7).IsRequired();
-        builder.Property(e => e.Surname).HasColumnName("Surname").HasMaxLength(100).HasColumnOrder(8).IsRequired();
+        builder.Property(e => e.Name).HasColumnName("Name").HasMaxLength(250).HasColumnOrder(7).IsRequired();
+        builder.Property(e => e.Surname).HasColumnName("Surname").HasMaxLength(250).HasColumnOrder(8).IsRequired();
         builder.Property(e => e.Phone).HasColumnName("Phone").HasMaxLength(15).HasColumnOrder(9).IsRequired();
         builder.HasIndex(e => e.Phone).HasDatabaseName("UK_Users_Phone").IsUnique();
         builder.Property(e => e.ProfileUrl).HasColumnName("ProfileUrl").HasColumnOrder(10);

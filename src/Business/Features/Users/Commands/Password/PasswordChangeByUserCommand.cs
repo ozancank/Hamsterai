@@ -1,6 +1,7 @@
 ﻿using Business.Features.Users.Rules;
 using Business.Services.CommonService;
 using Business.Services.UserService;
+using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
@@ -35,7 +36,7 @@ public class PasswordChangeByUserCommandHandler(IUserDal userDal,
         user.PasswordSalt = passwordSalt;
         user.MustPasswordChange = false;
 
-        var updatedUser = await userDal.UpdateAsyncCallback(user);
+        var updatedUser = await userDal.UpdateAsyncCallback(user, cancellationToken: cancellationToken);
         return updatedUser != null;
     }
 }

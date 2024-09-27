@@ -1,6 +1,7 @@
 ﻿using Business.Features.Users.Models.User;
 using Business.Features.Users.Rules;
 using Business.Services.CommonService;
+using DataAccess.Abstract.Core;
 using Domain.Entities.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
