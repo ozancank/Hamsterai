@@ -20,10 +20,22 @@ public class SimilarRules(ISimilarQuestionDal similarQuestionDal,
 
     internal async Task SimilarLimitControl(byte lessonId)
     {
+        if (commonService.HttpUserType == UserTypes.Administator) return;
         var count = await similarQuestionDal.CountOfRecordAsync(
                     enableTracking: false,
                     predicate: x => x.LessonId == lessonId
                                     && x.CreateUser == commonService.HttpUserId
+                                    && x.Status != QuestionStatus.Error);
+
+        if (count >= AppOptions.QuestionLimitForStudent) throw new BusinessException(Strings.SimilarLimitForStudentAndLesson);
+    }
+
+    internal async Task SimilarLimitControl()
+    {
+        if (commonService.HttpUserType == UserTypes.Administator) return;
+        var count = await similarQuestionDal.CountOfRecordAsync(
+                    enableTracking: false,
+                    predicate: x => x.CreateUser == commonService.HttpUserId
                                     && x.Status != QuestionStatus.Error);
 
         if (count >= AppOptions.QuestionLimitForStudent) throw new BusinessException(Strings.SimilarLimitForStudent);

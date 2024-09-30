@@ -1,5 +1,4 @@
-﻿using Business.Features.Questions.Commands.Questions;
-using Business.Features.Questions.Models.Questions;
+﻿using Business.Features.Questions.Models.Questions;
 using Business.Services.CommonService;
 
 namespace Business.Features.Questions.Rules;
@@ -21,10 +20,22 @@ public class QuestionRules(IQuestionDal questionDal,
 
     internal async Task QuestionLimitControl(byte lessonId)
     {
+        if (commonService.HttpUserType == UserTypes.Administator) return;
         var count = await questionDal.CountOfRecordAsync(
                     enableTracking: false,
                     predicate: x => x.LessonId == lessonId
                                     && x.CreateUser == commonService.HttpUserId
+                                    && x.Status != QuestionStatus.Error);
+
+        if (count >= AppOptions.QuestionLimitForStudent) throw new BusinessException(Strings.QuestionLimitForStudentAndLesson);
+    }
+
+    internal async Task QuestionLimitControl()
+    {
+        if (commonService.HttpUserType == UserTypes.Administator) return;
+        var count = await questionDal.CountOfRecordAsync(
+                    enableTracking: false,
+                    predicate: x => x.CreateUser == commonService.HttpUserId
                                     && x.Status != QuestionStatus.Error);
 
         if (count >= AppOptions.QuestionLimitForStudent) throw new BusinessException(Strings.QuestionLimitForStudent);

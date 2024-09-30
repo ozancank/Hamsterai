@@ -3,14 +3,16 @@ using Business.Features.Questions.Rules;
 using Business.Services.CommonService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
+using OCK.Core.Pipelines.Logging;
 
 namespace Business.Features.Questions.Commands.Quizzes;
 
-public class UpdateQuizCommand : IRequest<GetQuizModel>, ISecuredRequest<UserTypes>
+public class UpdateQuizCommand : IRequest<GetQuizModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
     public UpdateQuizModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Student];
+    public string[] HidePropertyNames { get; } = [];
 }
 
 public class UpdateQuizCommandHandler(IMapper mapper,
@@ -87,7 +89,7 @@ public class UpdateQuizCommandValidator : AbstractValidator<UpdateQuizCommand>
 
         RuleFor(x => x.Model.QuizId).NotEmpty().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.Model.TimeSecond).GreaterThanOrEqualTo(0).WithMessage(Strings.DynamicGratherThanOrEquals, ["0"]);
+        RuleFor(x => x.Model.TimeSecond).GreaterThanOrEqualTo(0).WithMessage(Strings.DynamicGratherThanOrEquals, [Strings.Second, "0"]);
 
         RuleFor(x => x.Model.Status).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Status]);
     }

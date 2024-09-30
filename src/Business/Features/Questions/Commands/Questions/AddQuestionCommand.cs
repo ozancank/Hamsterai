@@ -26,7 +26,7 @@ public class AddQuestionCommandHandler(IMapper mapper,
 {
     public async Task<GetQuestionModel> Handle(AddQuestionCommand request, CancellationToken cancellationToken)
     {
-        await questionRules.QuestionLimitControl(request.Model.LessonId);
+        await questionRules.QuestionLimitControl();
 
         var lessonName = await lessonDal.GetAsync(
             predicate: x => x.Id == request.Model.LessonId,

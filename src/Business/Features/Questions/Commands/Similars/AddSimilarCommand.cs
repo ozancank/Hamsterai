@@ -26,7 +26,7 @@ public class AddSimilarCommandHandler(IMapper mapper,
 {
     public async Task<GetSimilarModel> Handle(AddSimilarCommand request, CancellationToken cancellationToken)
     {
-        await similarRules.SimilarLimitControl(request.Model.LessonId);
+        await similarRules.SimilarLimitControl();
 
         var lessonName = await lessonDal.GetAsync(
             predicate: x => x.Id == request.Model.LessonId,

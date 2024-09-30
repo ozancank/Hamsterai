@@ -2,14 +2,17 @@
 using Business.Services.CommonService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
+using OCK.Core.Pipelines.Logging;
 
 namespace Business.Features.Questions.Commands.Quizzes;
 
-public class UpdateQuizStartedCommand : IRequest<bool>, ISecuredRequest<UserTypes>
+public class UpdateQuizStartedCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
     public string Id { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Student];
+
+    public string[] HidePropertyNames { get; } = [];
 }
 
 public class UpdateQuizStartedCommandHandler(ICommonService commonService,

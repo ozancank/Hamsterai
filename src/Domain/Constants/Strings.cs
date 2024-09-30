@@ -35,6 +35,13 @@ public struct Strings
     public const string DynamicLessonQuestionAnswered = "{0} dersinin sorusu çözüldü.";
     public const string DynamicLessonQuestionPrepared = "{0} dersinin benzer sorusu hazırlandı.";
 
+    public const string Second = "Saniye";
+    public const string Minute = "Dakika";
+    public const string Hour = "Saat";
+    public const string Day = "Gün";
+    public const string Week = "Hafta";
+    public const string Month = "Ay";
+    public const string Year = "Yıl";
     public const string User = "Kullanıcı";
     public const string Name = "İsim";
     public const string OfName = "İsmi";
@@ -115,12 +122,15 @@ public struct Strings
     public const string UserDeniedPassiveForAdmin = "Admin kullanıcısı pasif yapılamaz.";
 
     public const string ModelBusy = "Model meşgul!";
-    public const string QuestionLimitForStudent = "Bu ders için günlük soru limitinize ulaştınız.";
-    public const string SimilarLimitForStudent = "Bu ders için günlük benzer soru limitinize ulaştınız.";
+    public const string QuestionLimitForStudentAndLesson = "Bu ders için günlük soru limitinize ulaştınız.";
+    public const string SimilarLimitForStudentAndLesson = "Bu ders için günlük benzer soru limitinize ulaştınız.";
+    public const string QuestionLimitForStudent = "Bu günlük soru limitinize ulaştınız.";
+    public const string SimilarLimitForStudent = "Bu günlük benzer soru limitinize ulaştınız.";
     public const string OldPasswordWrong = "Eski şifre yanlış girildi.";
     public const string LicenceExpired = "Lisans süresi doldu. Lütfen firma ile iletişime geçiniz.";
     public const string WrongClassRoomIds = "Sınıf id'leri yanlış girildi.";
     public const string ClassRoomsNotNull = "Sınıflar belirtilmelidir.";
     public const string WrongLessonIds = "Ders id'leri yanlış girildi.";
     public const string LessonsNotNull = "Dersler belirtilmelidir.";
+
 }

@@ -12,6 +12,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
 {
     private static readonly JsonSerializerOptions _options = new() { PropertyNameCaseInsensitive = true };
     private const double _apiTimeoutMinute = 10;
+    private static readonly string[] _answersOptions = ["A", "B", "C", "D", "E"];
 
     public async Task<QuestionTOResponseModel> AskQuestionOcr(QuestionApiModel model)
     {
@@ -219,7 +220,15 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
 
             content = await response.Content.ReadAsStringAsync();
             similars = JsonSerializer.Deserialize<QuizResponseModel>(content, _options);
-            similars.Questions.ForEach(x => x.RightOption = x.RightOption.IsNotEmpty() ? x.RightOption.Trim("Cevap", ":", ")", "-").ToUpper() : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption)));
+            similars.Questions.ForEach(x =>
+            {                
+                x.RightOption = x.RightOption.IsNotEmpty()
+                    ? x.RightOption.Trim("Cevap", ":", ")", "-").ToUpper()
+                    : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
+
+                if(_answersOptions.Contains(x.RightOption, StringComparer.OrdinalIgnoreCase)) 
+                    throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
+            });
         }
         catch (Exception ex)
         {
