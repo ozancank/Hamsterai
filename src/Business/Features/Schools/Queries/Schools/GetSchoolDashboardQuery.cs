@@ -48,7 +48,7 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
             },
             cancellationToken: cancellationToken);
 
-        result.SchoolId = commonService.HttpSchoolId.Value;
+        result.SchoolId = school.Id;
         result.UserId = commonService.HttpUserId;
         result.SchoolName = school.Name;
         result.LicenceEndDate = school.LicenseEndDate;

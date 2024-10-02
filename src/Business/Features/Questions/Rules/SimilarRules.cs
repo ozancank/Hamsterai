@@ -27,7 +27,7 @@ public class SimilarRules(ISimilarQuestionDal similarQuestionDal,
                                     && x.CreateUser == commonService.HttpUserId
                                     && x.Status != QuestionStatus.Error);
 
-        if (count >= AppOptions.QuestionLimitForStudent) throw new BusinessException(Strings.SimilarLimitForStudentAndLesson);
+        if (count >= AppOptions.SimilarLimitForStudent) throw new BusinessException(Strings.SimilarLimitForStudentAndLesson);
     }
 
     internal async Task SimilarLimitControl()
@@ -38,6 +38,6 @@ public class SimilarRules(ISimilarQuestionDal similarQuestionDal,
                     predicate: x => x.CreateUser == commonService.HttpUserId
                                     && x.Status != QuestionStatus.Error);
 
-        if (count >= AppOptions.QuestionLimitForStudent) throw new BusinessException(Strings.SimilarLimitForStudent);
+        if (count >= AppOptions.SimilarLimitForStudent) throw new BusinessException(Strings.SimilarLimitForStudent);
     }
 }

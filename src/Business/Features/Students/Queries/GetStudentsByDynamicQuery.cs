@@ -1,5 +1,6 @@
 ﻿using Business.Features.Students.Models;
 using Business.Services.CommonService;
+using Domain.Entities;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
@@ -10,7 +11,7 @@ public class GetStudentsByDynamicQuery : IRequest<PageableModel<GetStudentModel>
     public PageRequest PageRequest { get; set; }
     public Dynamic Dynamic { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public UserTypes[] Roles { get; } = [UserTypes.School];
 }
 
 public class GetStudentsByDynamicQueryHandler(IMapper mapper,
@@ -21,6 +22,7 @@ public class GetStudentsByDynamicQueryHandler(IMapper mapper,
     {
         request.PageRequest ??= new PageRequest();
         request.Dynamic ??= new Dynamic();
+        var schoolId = commonService.HttpSchoolId ?? 0;
 
         var students = await studentDal.GetPageListAsyncAutoMapperByDynamic<GetStudentModel>(
             dynamic: request.Dynamic,
@@ -28,7 +30,7 @@ public class GetStudentsByDynamicQueryHandler(IMapper mapper,
             enableTracking: false,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
-            predicate: x => x.ClassRoom.SchoolId == commonService.HttpSchoolId.Value,
+            predicate: x => x.ClassRoom.SchoolId == schoolId,
             include: x => x.Include(u => u.ClassRoom).Include(u => u.Teachers),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

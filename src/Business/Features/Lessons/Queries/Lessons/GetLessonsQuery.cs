@@ -20,6 +20,7 @@ public class GetLessonsQueryHandler(IMapper mapper,
             enableTracking: false,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
+            predicate: x => x.IsActive,
             include: x => x.Include(u => u.TeacherLessons).ThenInclude(u => u.Teacher)
                            .Include(u => u.LessonGroups).ThenInclude(u => u.Group),
             orderBy: x => x.OrderBy(x => x.SortNo),

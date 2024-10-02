@@ -22,13 +22,13 @@ public class UpdateClassRoomCommandHandler(IMapper mapper,
     public async Task<GetClassRoomModel> Handle(UpdateClassRoomCommand request, CancellationToken cancellationToken)
     {
         request.Model.Branch = request.Model.Branch.Trim().ToUpper();
-
+        
         var classRoom = await classRoomDal.GetAsync(x => x.Id == request.Model.Id, cancellationToken: cancellationToken);
 
         await classRoomRules.ClassRoomNoAndBranchAndSchoolIdCanNotBeDuplicated(request.Model.No, request.Model.Branch, request.Model.SchoolId, classRoom.Id);
 
         mapper.Map(request.Model, classRoom);
-        classRoom.UpdateUser = commonService.HttpSchoolId.Value;
+        classRoom.UpdateUser = commonService.HttpUserId;
         classRoom.UpdateDate = DateTime.Now;
 
         var added = await classRoomDal.AddAsyncCallback(classRoom, cancellationToken: cancellationToken);

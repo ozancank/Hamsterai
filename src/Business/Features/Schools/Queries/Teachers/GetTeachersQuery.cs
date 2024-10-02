@@ -19,12 +19,13 @@ public class GetTeachersQueryHandler(IMapper mapper,
     public async Task<PageableModel<GetTeacherModel>> Handle(GetTeachersQuery request, CancellationToken cancellationToken)
     {
         request.PageRequest ??= new PageRequest();
+        var schoolId = commonService.HttpSchoolId ?? 0;
 
         var teachers = await teacherDal.GetPageListAsyncAutoMapper<GetTeacherModel>(
             enableTracking: false,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
-            predicate: x => x.SchoolId == commonService.HttpSchoolId.Value,
+            predicate: x => x.SchoolId == schoolId,
             include: x => x.Include(u => u.School).Include(u => u.TeacherLessons).Include(u => u.TeacherLessons),
             orderBy: x => x.OrderBy(x => x.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,

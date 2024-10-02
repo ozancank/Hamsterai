@@ -10,7 +10,7 @@ public class TeacherMappingProfiles : Profile
             .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.School.Name))
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.Name} {src.Surname}"))
             .ForMember(dest => dest.Lessons, opt => opt.MapFrom(src => src.TeacherLessons.Select(x => x.Lesson)))
-            .ForMember(dest => dest.ClassRooms, opt => opt.MapFrom(src => src.TeacherClassRooms.Select(x => x.ClassRoom)));        
+            .ForMember(dest => dest.ClassRooms, opt => opt.MapFrom(src => src.TeacherClassRooms.Select(x => x.ClassRoom)));
         CreateMap<IPaginate<GetTeacherModel>, PageableModel<GetTeacherModel>>();
 
         CreateMap<AddTeacherModel, Teacher>();

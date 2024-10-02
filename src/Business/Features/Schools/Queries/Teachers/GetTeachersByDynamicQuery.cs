@@ -10,7 +10,7 @@ public class GetTeachersByDynamicQuery : IRequest<PageableModel<GetTeacherModel>
     public PageRequest PageRequest { get; set; }
     public Dynamic Dynamic { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public UserTypes[] Roles { get; } = [UserTypes.School];
 }
 
 public class GetTeachersByDynamicQueryHandler(IMapper mapper,
@@ -21,6 +21,7 @@ public class GetTeachersByDynamicQueryHandler(IMapper mapper,
     {
         request.PageRequest ??= new PageRequest();
         request.Dynamic ??= new Dynamic();
+        var schoolId = commonService.HttpSchoolId ?? 0;
 
         var teachers = await teacherDal.GetPageListAsyncAutoMapperByDynamic<GetTeacherModel>(
             dynamic: request.Dynamic,
@@ -28,7 +29,7 @@ public class GetTeachersByDynamicQueryHandler(IMapper mapper,
             enableTracking: false,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
-            predicate: x => x.SchoolId == commonService.HttpSchoolId.Value,
+            predicate: x => x.SchoolId == schoolId,
             include: x => x.Include(u => u.School).Include(u => u.TeacherLessons).Include(u => u.TeacherLessons),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

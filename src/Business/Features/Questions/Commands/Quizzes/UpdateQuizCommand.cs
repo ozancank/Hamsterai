@@ -55,7 +55,7 @@ public class UpdateQuizCommandHandler(IMapper mapper,
         var transaction = await quizDal.CreateTransactionAsync(cancellationToken: cancellationToken);
         try
         {
-            await quizQuestionDal.UpdateRangeAsync(questions, cancellationToken: cancellationToken);
+            await quizQuestionDal.UpdateRangeAsync([.. questions], cancellationToken: cancellationToken);
             await quizDal.UpdateAsync(quiz, cancellationToken: cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);

@@ -56,7 +56,7 @@ public class QuestionController() : BaseController
     }
 
     [HttpPost("IsReadQuestion")]
-    public async Task<IActionResult> IsReadQuestion([FromBody] Guid questionId)
+    public async Task<IActionResult> IsReadQuestion([FromQuery] Guid questionId)
     {
         var command = new UpdateQuestionIsReadCommand { Id = questionId };
         var result = await Mediator.Send(command);
