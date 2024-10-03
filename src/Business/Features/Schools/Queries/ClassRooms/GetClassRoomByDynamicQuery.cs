@@ -24,7 +24,7 @@ public class GetClassRoomsByDynamicQueryHandler(IMapper mapper,
 
         var classRooms = await classRoomDal.GetPageListAsyncAutoMapperByDynamic<GetClassRoomModel>(
             dynamic: request.Dynamic,
-            predicate: x => x.School.Id == commonService.HttpSchoolId,
+            predicate: x => commonService.HttpUserType == UserTypes.Administator || x.School.Id == commonService.HttpSchoolId,
             defaultOrderColumnName: x => x.CreateDate,
             enableTracking: false,
             configurationProvider: mapper.ConfigurationProvider,

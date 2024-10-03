@@ -10,11 +10,15 @@ public class SenderHostedService(IServiceProvider serviceProvider) : BackgroundS
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            await Task.Delay(AppOptions.AITrySecond * 1000, stoppingToken);
+            try
+            {
+                await Task.Delay(AppOptions.AITrySecond * 1000, stoppingToken);
 
-            using var scope = serviceProvider.CreateScope();
-            var questionService = scope.ServiceProvider.GetRequiredService<IQuestionService>();
-            await questionService.SendForStatusSendAgain(stoppingToken);
+                using var scope = serviceProvider.CreateScope();
+                var questionService = scope.ServiceProvider.GetRequiredService<IQuestionService>();
+                await questionService.SendForStatusSendAgain(stoppingToken);
+            }
+            catch { }
         }
     }
 }

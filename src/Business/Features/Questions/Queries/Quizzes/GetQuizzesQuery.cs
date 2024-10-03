@@ -26,7 +26,7 @@ public class GetQuizzesQueryHandler(IMapper mapper,
         if (request.Model.EndDate == null) request.Model.EndDate = DateTime.Today;
 
         var quizzes = await quizDal.GetPageListAsyncAutoMapper<GetQuizListModel>(
-            predicate: x => x.CreateUser == commonService.HttpUserId && x.IsActive
+            predicate: x => x.UserId == commonService.HttpUserId && x.IsActive
                             && (request.Model.LessonId <= 0 || x.LessonId == request.Model.LessonId)
                             && x.CreateDate.Date >= request.Model.StartDate.Value.Date
                             && x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddSeconds(-1),

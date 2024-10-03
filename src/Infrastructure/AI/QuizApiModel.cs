@@ -6,4 +6,5 @@ public class QuizApiModel : IRequestModel
 {
     public List<string> QuestionImages { get; set; }
     public string LessonName { get; set; }
+    public long UserId { get; set; }
 }

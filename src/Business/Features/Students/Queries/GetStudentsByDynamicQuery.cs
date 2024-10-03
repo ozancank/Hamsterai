@@ -30,7 +30,7 @@ public class GetStudentsByDynamicQueryHandler(IMapper mapper,
             enableTracking: false,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
-            predicate: x => x.ClassRoom.SchoolId == schoolId,
+            predicate: x => commonService.HttpUserType == UserTypes.Administator || x.ClassRoom.SchoolId == schoolId,
             include: x => x.Include(u => u.ClassRoom).Include(u => u.Teachers),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

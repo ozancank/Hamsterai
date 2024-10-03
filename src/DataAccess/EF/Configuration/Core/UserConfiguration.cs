@@ -176,7 +176,36 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Administator,
                 SchoolId=null,
                 ConnectionId=null
-            }
+            },
+            //16 Ahmet Çelik
+            //17 Göksel Gündüz
+            new(18,"kazim1",passwordSalt3,passwordHash3,false,new DateTime(2024,09,14),true){
+                Name="Kazım",
+                Surname="Yıldırım",
+                Phone="54136952281",
+                Email="kazimyildirimeng1@gmail.com",
+                Type=UserTypes.Administator,
+                SchoolId=null,
+                ConnectionId=null
+            },
+            new(19,"kazim2",passwordSalt3,passwordHash3,false,new DateTime(2024,09,14),true){
+                Name="Kazım",
+                Surname="Yıldırım",
+                Phone="54136952282",
+                Email="kazimyildirimeng2@gmail.com",
+                Type=UserTypes.Administator,
+                SchoolId=null,
+                ConnectionId=null
+            },
+            new(20,"kazim3",passwordSalt3,passwordHash3,false,new DateTime(2024,09,14),true){
+                Name="Kazım",
+                Surname="Yıldırım",
+                Phone="54136952283",
+                Email="kazimyildirimeng3@gmail.com",
+                Type=UserTypes.Administator,
+                SchoolId=null,
+                ConnectionId=null
+            },
         ]);
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Business.Features.Students.Models;
 
-public class GetStudenGainsModel : IResponseModel
+public class GetStudentGainsModel : IResponseModel
 {
     public Dictionary<string, int> ForLessons { get; set; }
     public Dictionary<string, int> ForGains { get; set; }

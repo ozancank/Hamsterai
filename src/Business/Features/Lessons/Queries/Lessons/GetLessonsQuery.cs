@@ -1,4 +1,5 @@
 ﻿using Business.Features.Lessons.Models.Lessons;
+using Business.Services.CommonService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
@@ -12,15 +13,17 @@ public class GetLessonsQuery : IRequest<PageableModel<GetLessonModel>>, ISecured
 }
 
 public class GetLessonsQueryHandler(IMapper mapper,
-                                    ILessonDal lessonDal) : IRequestHandler<GetLessonsQuery, PageableModel<GetLessonModel>>
+                                    ILessonDal lessonDal,
+                                    ICommonService commonService) : IRequestHandler<GetLessonsQuery, PageableModel<GetLessonModel>>
 {
     public async Task<PageableModel<GetLessonModel>> Handle(GetLessonsQuery request, CancellationToken cancellationToken)
     {
+        long[] userIds = [18, 19, 20];
         var lesson = await lessonDal.GetPageListAsyncAutoMapper<GetLessonModel>(
             enableTracking: false,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
-            predicate: x => x.IsActive,
+            predicate: x => userIds.Contains(commonService.HttpUserId) || x.IsActive,
             include: x => x.Include(u => u.TeacherLessons).ThenInclude(u => u.Teacher)
                            .Include(u => u.LessonGroups).ThenInclude(u => u.Group),
             orderBy: x => x.OrderBy(x => x.SortNo),

@@ -1,4 +1,5 @@
-﻿using Infrastructure.AI.Seduss.Dtos;
+﻿using Business.Features.Questions.Models.Quizzes;
+using Infrastructure.AI.Seduss.Dtos;
 using Infrastructure.AI.Seduss.Models;
 
 namespace Business.Services.QuestionService;
@@ -23,8 +24,9 @@ public interface IQuestionService : IBusinessService
 
     #region Quiz
 
-    Task<bool> AddQuiz(List<string> questions);
+    Task<string> AddQuiz(AddQuizModel model, CancellationToken cancellationToken);
+
+    Task<bool> AddQuiz(CancellationToken cancellationToken);
 
     #endregion Quiz
-
 }

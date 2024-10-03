@@ -22,7 +22,7 @@ public class GetClassRoomsQueryHandler(IMapper mapper,
 
         var classRooms = await classRoomDal.GetPageListAsyncAutoMapper<GetClassRoomModel>(
             enableTracking: false,
-            predicate: x => x.School.Id == commonService.HttpSchoolId,
+            predicate: x => commonService.HttpUserType == UserTypes.Administator || x.School.Id == commonService.HttpSchoolId,
             include: x => x.Include(u => u.School),
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,

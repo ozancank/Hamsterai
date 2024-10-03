@@ -17,11 +17,11 @@ public class UpdateStudentCommand : IRequest<GetStudentModel>, ISecuredRequest<U
 }
 
 public class UpdateStudentCommandHandler(IMapper mapper,
-                                     IStudentDal studentDal,
-                                     ICommonService commonService,
-                                     IUserDal userDal,
-                                     UserRules userRules,
-                                     StudentRules studentRules) : IRequestHandler<UpdateStudentCommand, GetStudentModel>
+                                         IStudentDal studentDal,
+                                         ICommonService commonService,
+                                         IUserDal userDal,
+                                         UserRules userRules,
+                                         StudentRules studentRules) : IRequestHandler<UpdateStudentCommand, GetStudentModel>
 {
     public async Task<GetStudentModel> Handle(UpdateStudentCommand request, CancellationToken cancellationToken)
     {

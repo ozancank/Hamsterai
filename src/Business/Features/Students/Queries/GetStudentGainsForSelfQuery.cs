@@ -5,7 +5,7 @@ using OCK.Core.Pipelines.Authorization;
 
 namespace Business.Features.Students.Queries;
 
-public class GetStudentGainsForSelfQuery : IRequest<GetStudenGainsModel>, ISecuredRequest<UserTypes>
+public class GetStudentGainsForSelfQuery : IRequest<GetStudentGainsModel>, ISecuredRequest<UserTypes>
 {
     public UserTypes[] Roles { get; } = [UserTypes.Student];
 }
@@ -13,11 +13,11 @@ public class GetStudentGainsForSelfQuery : IRequest<GetStudenGainsModel>, ISecur
 public class GetGainsForStudentIdQueryHandler(ICommonService commonService,
                                               IQuestionDal questionDal,
                                               IQuizQuestionDal quizQuestionDal,
-                                              ISimilarQuestionDal similarQuestionDal) : IRequestHandler<GetStudentGainsForSelfQuery, GetStudenGainsModel>
+                                              ISimilarQuestionDal similarQuestionDal) : IRequestHandler<GetStudentGainsForSelfQuery, GetStudentGainsModel>
 {
-    public async Task<GetStudenGainsModel> Handle(GetStudentGainsForSelfQuery request, CancellationToken cancellationToken)
+    public async Task<GetStudentGainsModel> Handle(GetStudentGainsForSelfQuery request, CancellationToken cancellationToken)
     {
-        var result = new GetStudenGainsModel();
+        var result = new GetStudentGainsModel();
         var userId = commonService.HttpUserId;
 
         var questions = await questionDal.GetListAsync(

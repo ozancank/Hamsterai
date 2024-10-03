@@ -14,15 +14,27 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
     private const double _apiTimeoutMinute = 10;
     private static readonly string[] _answersOptions = ["A", "B", "C", "D", "E"];
 
+    private static string BaseUrl(long userId)
+    {
+        return userId switch
+        {
+            18 => AppOptions.AI8B70B,
+            19 => AppOptions.AI8BGPT4o,
+            20 => AppOptions.AI8B,
+            _ => AppOptions.AIApiBaz
+        };
+    }
+
     public async Task<QuestionTOResponseModel> AskQuestionOcr(QuestionApiModel model)
     {
+        var baseUrl = BaseUrl(model.UserId);
         QuestionTOResponseModel answer = null;
         try
         {
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiLite}/Model_Available");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
             var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
@@ -41,7 +53,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
                 LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
-            request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiOriginal}/Soru_TO")
+            request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Soru_TO")
             {
                 Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
             };
@@ -68,19 +80,20 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
         }
         finally
         {
-            await EndChat();
+            await EndChat(baseUrl);
         }
     }
 
     public async Task<QuestionITOResponseModel> AskQuestionOcrImage(QuestionApiModel model)
     {
+        var baseUrl = BaseUrl(model.UserId);
         QuestionITOResponseModel answer = null;
         try
         {
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiOriginal}/Model_Available");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
             var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
@@ -99,7 +112,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
                 LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
-            request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiOriginal}/Soru_ITO")
+            request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Soru_ITO")
             {
                 Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"),
             };
@@ -124,19 +137,20 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
         }
         finally
         {
-            await EndChat();
+            await EndChat(baseUrl);
         }
     }
 
     public async Task<SimilarResponseModel> GetSimilarQuestion(QuestionApiModel model)
     {
+        var baseUrl = BaseUrl(model.UserId);
         SimilarResponseModel similar = null;
         try
         {
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiLite}/Model_Available");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
             var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
@@ -155,7 +169,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
                 LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
-            request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiLite}/Benzer")
+            request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Benzer")
             {
                 Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
             };
@@ -180,12 +194,13 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
         }
         finally
         {
-            await EndChat();
+            await EndChat(baseUrl);
         }
     }
 
     public async Task<QuizResponseModel> GetQuizQuestions(QuizApiModel model)
     {
+        var baseUrl = BaseUrl(model.UserId);
         var similars = new QuizResponseModel
         {
             Questions = []
@@ -196,7 +211,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiLite}/Model_Available");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
             var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
@@ -210,7 +225,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
                 LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
-            request = new HttpRequestMessage(HttpMethod.Post, $"{AppOptions.AIApiLite}/Multi_Benzer")
+            request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Multi_Benzer")
             {
                 Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
             };
@@ -221,12 +236,12 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
             content = await response.Content.ReadAsStringAsync();
             similars = JsonSerializer.Deserialize<QuizResponseModel>(content, _options);
             similars.Questions.ForEach(x =>
-            {                
+            {
                 x.RightOption = x.RightOption.IsNotEmpty()
                     ? x.RightOption.Trim("Cevap", ":", ")", "-").ToUpper()
                     : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
 
-                if(_answersOptions.Contains(x.RightOption, StringComparer.OrdinalIgnoreCase)) 
+                if (!_answersOptions.Contains(x.RightOption, StringComparer.OrdinalIgnoreCase))
                     throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
             });
         }
@@ -236,16 +251,16 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
         }
         finally
         {
-            await EndChat();
+            await EndChat(baseUrl);
         }
 
         return similars;
     }
 
-    private async Task EndChat()
+    private async Task EndChat(string baseUrl)
     {
         var client = httpClientFactory.CreateClient();
-        var response = await client.PostAsync($"{AppOptions.AIApiLite}/end-chat", null);
+        var response = await client.PostAsync($"{baseUrl}/end-chat", null);
         response.EnsureSuccessStatusCode();
     }
 }
