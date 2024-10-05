@@ -12,16 +12,16 @@ namespace Business.Features.Schools.Commands.Teachers;
 public class UpdateTeacherCommand : IRequest<GetTeacherModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
     public UpdateTeacherModel Model { get; set; }
-    public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public UserTypes[] Roles { get; } = [UserTypes.School];
     public string[] HidePropertyNames { get; } = [];
 }
 
 public class UpdateTeacherCommandHandler(IMapper mapper,
-                                     ITeacherDal teacherDal,
-                                     ICommonService commonService,
-                                     IUserDal userDal,
-                                     UserRules userRules,
-                                     TeacherRules teacherRules) : IRequestHandler<UpdateTeacherCommand, GetTeacherModel>
+                                         ITeacherDal teacherDal,
+                                         ICommonService commonService,
+                                         IUserDal userDal,
+                                         UserRules userRules,
+                                         TeacherRules teacherRules) : IRequestHandler<UpdateTeacherCommand, GetTeacherModel>
 {
     public async Task<GetTeacherModel> Handle(UpdateTeacherCommand request, CancellationToken cancellationToken)
     {

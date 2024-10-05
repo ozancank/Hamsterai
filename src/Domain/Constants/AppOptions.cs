@@ -11,10 +11,11 @@ public class AppOptions
     public static string QuizAnswerPicturePath { get; set; }
     public static int AITryCount { get; set; }
     public static int AITrySecond { get; set; }
-    public static string AIApiBaz { get; set; }
-    public static string AI8B70B { get; set; }
-    public static string AI8BGPT4o { get; set; }
-    public static string AI8B { get; set; }
+    public static string AI_Baz { get; set; }
+    public static string AI_8B_Baz { get; set; }
+    public static string AI_8B_GPT4o { get; set; }
+    public static string AI_8B { get; set; }
+    public static string AI_GPT4o { get; set; }
     public static string ForgetPasswordUrl { get; set; }
     public static int QuestionLimitForStudent { get; set; }
     public static int SimilarLimitForStudent { get; set; }

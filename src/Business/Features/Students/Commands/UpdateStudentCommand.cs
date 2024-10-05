@@ -12,7 +12,7 @@ namespace Business.Features.Students.Commands;
 public class UpdateStudentCommand : IRequest<GetStudentModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
     public UpdateStudentModel Model { get; set; }
-    public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public UserTypes[] Roles { get; } = [UserTypes.School];
     public string[] HidePropertyNames { get; } = [];
 }
 

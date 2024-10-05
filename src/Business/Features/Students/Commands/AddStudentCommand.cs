@@ -96,7 +96,7 @@ public class AddStudentCommandValidator : AbstractValidator<AddStudentCommand>
 
         RuleFor(x => x.Model.StudentNo).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Student} {Strings.No}"]);
         RuleFor(x => x.Model.StudentNo).MinimumLength(1).WithMessage(Strings.DynamicMinLength, [$"{Strings.Student} {Strings.No}", "1"]);
-        RuleFor(x => x.Model.StudentNo).MinimumLength(15).WithMessage(Strings.DynamicMinLength, [$"{Strings.Student} {Strings.No}", "15"]);
+        RuleFor(x => x.Model.StudentNo).MaximumLength(15).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Student} {Strings.No}", "15"]);
 
         RuleFor(x => x.Model.TcNo).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Identity} {Strings.No}"]);
         RuleFor(x => x.Model.TcNo).Length(11).WithMessage(Strings.DynamicLength, [$"{Strings.Identity} {Strings.No}", "11"]);

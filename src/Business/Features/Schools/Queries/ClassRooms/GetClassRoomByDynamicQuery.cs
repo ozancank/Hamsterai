@@ -10,7 +10,7 @@ public class GetClassRoomsByDynamicQuery : IRequest<PageableModel<GetClassRoomMo
     public PageRequest PageRequest { get; set; }
     public Dynamic Dynamic { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public UserTypes[] Roles { get; } = [UserTypes.School];
 }
 
 public class GetClassRoomsByDynamicQueryHandler(IMapper mapper,

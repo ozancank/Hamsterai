@@ -18,10 +18,10 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
     {
         return userId switch
         {
-            18 => AppOptions.AI8B70B,
-            19 => AppOptions.AI8BGPT4o,
-            20 => AppOptions.AI8B,
-            _ => AppOptions.AIApiBaz
+            18 => AppOptions.AI_GPT4o,
+            19 => AppOptions.AI_8B_GPT4o,
+            20 => AppOptions.AI_8B,
+            _ => AppOptions.AI_Baz
         };
     }
 

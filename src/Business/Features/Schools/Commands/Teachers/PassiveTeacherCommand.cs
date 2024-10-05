@@ -12,7 +12,7 @@ public class PassiveTeacherCommand : IRequest<bool>, ISecuredRequest<UserTypes>,
 {
     public int Id { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public UserTypes[] Roles { get; } = [UserTypes.School];
     public string[] HidePropertyNames { get; } = [];
 }
 

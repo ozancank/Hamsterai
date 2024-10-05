@@ -14,7 +14,7 @@ namespace Business.Features.Schools.Commands.Teachers;
 public class AddTeacherCommand : IRequest<GetTeacherModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
     public AddTeacherModel Model { get; set; }
-    public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public UserTypes[] Roles { get; } = [UserTypes.School];
     public string[] HidePropertyNames { get; } = [];
 }
 
@@ -44,6 +44,7 @@ public class AddTeacherCommandHandler(IMapper mapper,
         teacher.CreateDate = date;
         teacher.UpdateUser = userId;
         teacher.UpdateDate = date;
+        teacher.SchoolId = commonService.HttpSchoolId ?? 0;
 
         HashingHelper.CreatePasswordHash(AppOptions.DefaultPassword, out byte[] passwordHash, out byte[] passwordSalt);
 
