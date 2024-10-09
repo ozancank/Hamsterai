@@ -22,6 +22,7 @@ public class User : Security.User
     public virtual ICollection<Similar> SimilarQuestions { get; set; }
     public virtual ICollection<NotificationDeviceToken> NotificationDeviceTokens { get; set; }
     public virtual ICollection<Quiz> Quizzes { get; set; }
+    public virtual ICollection<Homework> Homeworks { get; set; }
 
     public User() : base()
     {
@@ -31,6 +32,7 @@ public class User : Security.User
         PasswordTokens = [];
         SimilarQuestions = [];
         NotificationDeviceTokens = [];
+        Homeworks = [];
     }
 
     public User(long id, string userName, byte[] passwordSalt, byte[] passwordHash, bool mustPasswordChange, DateTime createDate, bool isActive)
@@ -42,5 +44,6 @@ public class User : Security.User
         PasswordTokens = [];
         SimilarQuestions = [];
         NotificationDeviceTokens = [];
+        Homeworks = [];
     }
 }

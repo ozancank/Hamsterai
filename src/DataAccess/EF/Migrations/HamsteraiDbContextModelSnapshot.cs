@@ -792,6 +792,141 @@ namespace DataAccess.EF.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Domain.Entities.Homework", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("citext")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<int?>("ClassRoomId")
+                        .HasColumnType("integer")
+                        .HasColumnName("ClassRoomId")
+                        .HasColumnOrder(10);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("citext")
+                        .HasColumnName("FilePath")
+                        .HasColumnOrder(9);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<byte>("LessonId")
+                        .HasColumnType("smallint")
+                        .HasColumnName("LessonId")
+                        .HasColumnOrder(8);
+
+                    b.Property<int?>("SchoolId")
+                        .HasColumnType("integer")
+                        .HasColumnName("SchoolId")
+                        .HasColumnOrder(6);
+
+                    b.Property<int?>("TeacherId")
+                        .HasColumnType("integer")
+                        .HasColumnName("TeacherId")
+                        .HasColumnOrder(7);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassRoomId");
+
+                    b.HasIndex("CreateUser");
+
+                    b.HasIndex("LessonId");
+
+                    b.HasIndex("SchoolId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("Homeworks", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.HomeworkStudent", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("citext")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("AnswerPath")
+                        .HasColumnType("citext")
+                        .HasColumnName("AnswerPath")
+                        .HasColumnOrder(8);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<string>("HomeworkId")
+                        .IsRequired()
+                        .HasColumnType("citext")
+                        .HasColumnName("HomeworkId")
+                        .HasColumnOrder(7);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("smallint")
+                        .HasColumnName("Status")
+                        .HasColumnOrder(9);
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("StudentId")
+                        .HasColumnOrder(6);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HomeworkId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("HomeworkStudents", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.Lesson", b =>
                 {
                     b.Property<byte>("Id")
@@ -2433,6 +2568,62 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("Lesson");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Homework", b =>
+                {
+                    b.HasOne("Domain.Entities.ClassRoom", "ClassRoom")
+                        .WithMany("Homeworks")
+                        .HasForeignKey("ClassRoomId");
+
+                    b.HasOne("Domain.Entities.Core.User", "User")
+                        .WithMany("Homeworks")
+                        .HasForeignKey("CreateUser")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Lesson", "Lesson")
+                        .WithMany("Homeworks")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.School", "School")
+                        .WithMany("Homeworks")
+                        .HasForeignKey("SchoolId");
+
+                    b.HasOne("Domain.Entities.Teacher", "Teacher")
+                        .WithMany("Homeworks")
+                        .HasForeignKey("TeacherId");
+
+                    b.Navigation("ClassRoom");
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("School");
+
+                    b.Navigation("Teacher");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.HomeworkStudent", b =>
+                {
+                    b.HasOne("Domain.Entities.Homework", "Homework")
+                        .WithMany("HomeworkStudents")
+                        .HasForeignKey("HomeworkId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Student", "Student")
+                        .WithMany("HomeworkStudents")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Homework");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("Domain.Entities.LessonGroup", b =>
                 {
                     b.HasOne("Domain.Entities.Group", "Group")
@@ -2628,6 +2819,8 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("Domain.Entities.ClassRoom", b =>
                 {
+                    b.Navigation("Homeworks");
+
                     b.Navigation("Students");
 
                     b.Navigation("TeacherClassRooms");
@@ -2640,6 +2833,8 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("Domain.Entities.Core.User", b =>
                 {
+                    b.Navigation("Homeworks");
+
                     b.Navigation("NotificationDeviceTokens");
 
                     b.Navigation("PasswordTokens");
@@ -2669,9 +2864,16 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("LessonGroups");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Homework", b =>
+                {
+                    b.Navigation("HomeworkStudents");
+                });
+
             modelBuilder.Entity("Domain.Entities.Lesson", b =>
                 {
                     b.Navigation("Gains");
+
+                    b.Navigation("Homeworks");
 
                     b.Navigation("LessonGroups");
 
@@ -2693,6 +2895,8 @@ namespace DataAccess.EF.Migrations
                 {
                     b.Navigation("ClassRooms");
 
+                    b.Navigation("Homeworks");
+
                     b.Navigation("Teachers");
 
                     b.Navigation("Users");
@@ -2700,11 +2904,15 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("Domain.Entities.Student", b =>
                 {
+                    b.Navigation("HomeworkStudents");
+
                     b.Navigation("Teachers");
                 });
 
             modelBuilder.Entity("Domain.Entities.Teacher", b =>
                 {
+                    b.Navigation("Homeworks");
+
                     b.Navigation("TeacherClassRooms");
 
                     b.Navigation("TeacherLessons");

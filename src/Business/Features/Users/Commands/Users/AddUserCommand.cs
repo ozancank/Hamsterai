@@ -62,7 +62,7 @@ public class AddUserCommandHandler(IMapper mapper,
             SchoolId = request.Model.SchoolId,
         };
 
-        await userDal.AddAsync(user);
+        await userDal.AddAsync(user, cancellationToken: cancellationToken);
         var result = mapper.Map<GetUserModel>(user);
         return result;
     }

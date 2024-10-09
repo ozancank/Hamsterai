@@ -34,6 +34,10 @@ public struct Strings
     public const string DynamicActived = "{0} kaydı aktif yapıldı.";
     public const string DynamicLessonQuestionAnswered = "{0} dersinin sorusu çözüldü.";
     public const string DynamicLessonQuestionPrepared = "{0} dersinin benzer sorusu hazırlandı.";
+    public const string DynamicOnlyOneShouldBeFilled = "{0} yalnız bir tanesi dolu olmalıdır.";
+    public const string DynamicShouldExistsAndActive = "{0} bulunmalı ve aktif olmalıdır.";
+    public const string DynamicLessonTestPrepared = "{0} testiniz hazırlandı";
+    public const string DynamicLessonTestPreparedForYou = "Hamster AI sizin için {0} testi hazırlandı. İyi çalışmalar :)\nTest No: {1}";
 
     public const string Second = "Saniye";
     public const string Minute = "Dakika";
@@ -62,6 +66,7 @@ public struct Strings
     public const string School = "Okul";
     public const string Lesson = "Ders";
     public const string Question = "Soru";
+    public const string Answer = "Cevap";
     public const string SimilarQuestion = "Benzer Soru";
     public const string FileName = "Dosya adı";
     public const string TaxNumber = "Vergi Numarası";
@@ -97,6 +102,11 @@ public struct Strings
     public const string Teacher = "Öğretmen";
     public const string Identity = "Kimlik";
     public const string Student = "Öğrenci";
+    public const string File = "Dosya";
+    public const string Directory = "Klasör";
+    public const string Homework = "Ödev";
+    public const string Created = "Oluşturuldu";
+    public const string Test = "Test";
 
     public const string FileNameExtension = "Dosya adı içerisinde nokta olmalı ve uzantı belirtilmelidir.";
 

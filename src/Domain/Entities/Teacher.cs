@@ -15,15 +15,18 @@ public class Teacher : BaseEntity<int>
     public virtual School School { get; set; }
     public virtual ICollection<TeacherLesson> TeacherLessons { get; set; }
     public virtual ICollection<TeacherClassRoom> TeacherClassRooms { get; set; }
+    public virtual ICollection<Homework> Homeworks { get; set; }
 
     public Teacher() : base()
     {
         TeacherClassRooms = [];
+        Homeworks = [];
     }
 
     public Teacher(int id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate)
         : base(id, isActive, createUser, createDate, updateUser, updateDate)
     {
         TeacherClassRooms = [];
+        Homeworks = [];
     }
 }

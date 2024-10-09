@@ -1,10 +1,8 @@
 ﻿using AutoMapper.EquivalencyExpression;
-using Business.Behaviors;
 using DataAccess;
 using Infrastructure;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using OCK.Core.Logging.Serilog;
 using System.Reflection;
 
 namespace Business;
@@ -21,7 +19,7 @@ public static class BusinessServiceRegistration
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Behaviors.AuthorizationBehavior<,>));
         //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Caching.CachingBehavior<,>));
         //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Caching.CacheRemovingBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Logging.LoggingBehavior<,>));
@@ -29,7 +27,7 @@ public static class BusinessServiceRegistration
         //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Transaction.TransactionScopeBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Validation.RequestValidationBehavior<,>));
 
-        services.AddSingleton<LoggerServiceBase, PostgreSqlLogger>();
+        services.AddSingleton<OCK.Core.Logging.Serilog.LoggerServiceBase, OCK.Core.Logging.Serilog.Logger.PostgreSqlLogger>();
         services.AddSingleton<OCK.Core.Mailing.IMailService, OCK.Core.Mailing.MailKitImplementations.MailKitMailService>();
 
         services.AddScoped<Services.AuthService.IAuthService, Services.AuthService.AuthManager>();

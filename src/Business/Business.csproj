@@ -37,7 +37,6 @@
 		<Using Include="OCK.Core.Exceptions.CustomExceptions" />
 		<Using Include="OCK.Core.Extensions" />
 		<Using Include="OCK.Core.Interfaces" />
-		<Using Include="OCK.Core.Logging.Serilog.Logger" />
 		<Using Include="OCK.Core.Paging" />
 		<Using Include="OCK.Core.Utilities" />
 	</ItemGroup>

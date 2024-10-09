@@ -29,7 +29,7 @@ public class UpdateGroupCommandHandler(IMapper mapper,
         group.UpdateUser = commonService.HttpUserId;
         group.UpdateDate = DateTime.Now;
 
-        var updated = await groupDal.UpdateAsyncCallback(group);
+        var updated = await groupDal.UpdateAsyncCallback(group, cancellationToken: cancellationToken);
         var result = mapper.Map<GetGroupModel>(updated);
         return result;
     }

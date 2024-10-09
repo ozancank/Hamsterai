@@ -35,6 +35,7 @@ public class GetQuestionsQueryHandler(IMapper mapper,
             include: x => x.Include(u => u.Lesson),
             orderBy: x => x.OrderByDescending(u => u.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,
+            index: request.PageRequest.Page, size: request.PageRequest.PageSize,
             cancellationToken: cancellationToken);
         var result = mapper.Map<PageableModel<GetQuestionModel>>(questions);
         return result;

@@ -16,6 +16,10 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor) : ICommonSe
         int.TryParse(httpContextAccessor.HttpContext.User.Claims
             .FirstOrDefault(x => x.Type == ClaimTypes.SchoolId)?.Value, out int schoolId) ? schoolId : null;
 
+    public int? HttpConnectionId =>
+        int.TryParse(httpContextAccessor.HttpContext.User.Claims
+            .FirstOrDefault(x => x.Type == ClaimTypes.ConnectionId)?.Value, out int connectionId) ? connectionId : null;
+
     public async Task<string> PictureConvert(string base64, string fileName, string folder)
     {
         if (base64.IsEmpty() || fileName.IsEmpty()) return await Task.FromResult(string.Empty);

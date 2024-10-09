@@ -1,6 +1,6 @@
 ﻿using Business.Features.Schools.Models.Schools;
-using Business.Features.Schools.Models.Teachers;
 using Business.Features.Students.Models;
+using Business.Features.Teachers.Models;
 
 namespace Business.Features.Schools.Models.ClassRooms;
 

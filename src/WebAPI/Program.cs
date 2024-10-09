@@ -6,6 +6,7 @@ using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -71,6 +72,13 @@ static void Services(WebApplicationBuilder builder)
     //if (!builder.Environment.IsDevelopment())
     builder.Services.AddHostedService<SenderHostedService>();
     builder.Services.AddHostedService<QuizHostedService>();
+
+    builder.Services.Configure<FormOptions>(options =>
+    {
+        options.MultipartBodyLengthLimit = 5242880;
+        options.ValueLengthLimit = 1024 * 1024;
+        options.MemoryBufferThreshold = 1024 * 1024;
+    });
 
     SwaggerAndToken(builder);
 
@@ -210,7 +218,9 @@ static void StaticFiles(WebApplication app)
         { "/SimilarQuestionPicture", Domain.Constants.AppOptions.SimilarQuestionPictureFolderPath },
         { "/SimilarAnswerPicture", Domain.Constants.AppOptions.SimilarAnswerPictureFolderPath },
         { "/QuizQuestionPicture", Domain.Constants.AppOptions.QuizQuestionPictureFolderPath },
-        { "/QuizAnswerPicture", Domain.Constants.AppOptions.QuizAnswerPictureFolderPath }
+        { "/QuizAnswerPicture", Domain.Constants.AppOptions.QuizAnswerPictureFolderPath },
+        { "/Homework", Domain.Constants.AppOptions.HomeworkFolderPath },
+        { "/HomeworkAnswer", Domain.Constants.AppOptions.HomeworkAnswerFolderPath }
     };
 
     foreach (var path in staticFilePaths)

@@ -1,11 +1,5 @@
-﻿using Business.Features.Lessons.Rules;
-using Business.Features.Questions.Models.Quizzes;
-using Business.Features.Questions.Rules;
-using Business.Features.Users.Rules;
-using Business.Services.CommonService;
-using Business.Services.GainService;
+﻿using Business.Features.Questions.Models.Quizzes;
 using Business.Services.QuestionService;
-using Infrastructure.AI;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 

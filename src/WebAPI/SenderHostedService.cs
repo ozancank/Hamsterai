@@ -14,6 +14,8 @@ public class SenderHostedService(IServiceProvider serviceProvider) : BackgroundS
             {
                 await Task.Delay(AppOptions.AITrySecond * 1000, stoppingToken);
 
+                if (!AppStatics.SenderTryQuestion) continue;
+
                 using var scope = serviceProvider.CreateScope();
                 var questionService = scope.ServiceProvider.GetRequiredService<IQuestionService>();
                 await questionService.SendForStatusSendAgain(stoppingToken);

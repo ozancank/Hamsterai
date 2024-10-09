@@ -20,10 +20,9 @@ public class GetGainsQueryQueryHandler(IMapper mapper,
 
         var gains = await gainDal.GetPageListAsyncAutoMapper<GetGainModel>(
             enableTracking: false,
-            size: request.PageRequest.PageSize,
-            index: request.PageRequest.Page,
             orderBy: x => x.OrderBy(x => x.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,
+            index: request.PageRequest.Page, size: request.PageRequest.PageSize,
             cancellationToken: cancellationToken);
         var result = mapper.Map<PageableModel<GetGainModel>>(gains);
         return result;

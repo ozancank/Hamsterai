@@ -26,7 +26,7 @@ public interface IQuestionService : IBusinessService
 
     Task<string> AddQuiz(AddQuizModel model, CancellationToken cancellationToken);
 
-    Task<bool> AddQuiz(CancellationToken cancellationToken);
+    Task<bool> AddQuiz(bool timePass = false, CancellationToken cancellationToken = default);
 
     #endregion Quiz
 }

@@ -1,4 +1,5 @@
 ﻿using Business.Services.QuestionService;
+using Domain.Constants;
 
 namespace WebAPI;
 
@@ -21,12 +22,12 @@ public class QuizHostedService(IServiceProvider serviceProvider) : BackgroundSer
                 {
                     using var scope = serviceProvider.CreateScope();
                     var questionService = scope.ServiceProvider.GetRequiredService<IQuestionService>();
-                    await questionService.AddQuiz(stoppingToken);
+                    await questionService.AddQuiz(false, stoppingToken);
                 }
 
                 await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
             }
-            catch { }
+            catch { }            
         }
     }
 }

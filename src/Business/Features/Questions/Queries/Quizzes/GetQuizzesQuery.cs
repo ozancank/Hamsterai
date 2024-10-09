@@ -36,6 +36,7 @@ public class GetQuizzesQueryHandler(IMapper mapper,
                            .Include(u => u.QuizQuestions).ThenInclude(u => u.Gain),
             orderBy: x => x.OrderByDescending(u => u.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,
+            index: request.PageRequest.Page, size: request.PageRequest.PageSize,
             cancellationToken: cancellationToken);
         var result = mapper.Map<PageableModel<GetQuizListModel>>(quizzes);
         return result;

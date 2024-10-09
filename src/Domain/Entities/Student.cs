@@ -13,16 +13,19 @@ public class Student : BaseEntity<int>
     public int ClassRoomId { get; set; }
 
     public virtual ClassRoom ClassRoom { get; set; }
-    public virtual ICollection<Teacher> Teachers { get; set; } = [];
+    public virtual ICollection<Teacher> Teachers { get; set; }
+    public virtual ICollection<HomeworkStudent> HomeworkStudents { get; set; }
 
     public Student() : base()
     {
         Teachers = [];
+        HomeworkStudents = [];
     }
 
     public Student(int id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate)
         : base(id, isActive, createUser, createDate, updateUser, updateDate)
     {
         Teachers = [];
+        HomeworkStudents = [];
     }
 }

@@ -10,10 +10,30 @@ public class ClassRoomRules(IClassRoomDal classRoomDal) : IBusinessRule
         return Task.CompletedTask;
     }
 
+    internal static Task ClassRoomShouldExistsAndActive(GetClassRoomModel model)
+    {
+        ClassRoomShouldExists(model);
+        if (!model.IsActive) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.ClassRoom);
+        return Task.CompletedTask;
+    }
+
     internal static Task ClassRoomShouldExists(ClassRoom entity)
     {
         if (entity == null) throw new BusinessException(Strings.DynamicNotFound, Strings.ClassRoom);
         return Task.CompletedTask;
+    }
+
+    internal static Task ClassRoomShouldExistsAndActive(ClassRoom entity)
+    {
+        ClassRoomShouldExists(entity);
+        if (!entity.IsActive) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.ClassRoom);
+        return Task.CompletedTask;
+    }
+
+    internal async Task ClassRoomShouldExistsAndActiveById(int id)
+    {
+        var classRoom = await classRoomDal.GetAsync(predicate: x => x.Id == id, enableTracking: false);
+        await ClassRoomShouldExistsAndActive(classRoom);
     }
 
     internal async Task ClassRoomNoAndBranchAndSchoolIdCanNotBeDuplicated(short no, string branch, int schoolId, int? classRoomId = null)

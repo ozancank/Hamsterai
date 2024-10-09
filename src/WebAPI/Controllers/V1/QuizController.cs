@@ -34,6 +34,14 @@ public class QuizController : BaseController
         return Ok(result);
     }
 
+    [HttpPost("AddQuizForAll")]
+    public async Task<IActionResult> AddQuizForAll()
+    {
+        var command = new AddQuizForAllCommand();
+        await Mediator.Send(command);
+        return Ok();
+    }
+
     [HttpPost("UpdateQuiz")]
     public async Task<IActionResult> UpdateQuiz([FromBody] UpdateQuizModel model)
     {

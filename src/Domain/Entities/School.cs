@@ -17,12 +17,14 @@ public class School : BaseEntity<int>
     public virtual ICollection<User> Users { get; set; }
     public virtual ICollection<Teacher> Teachers { get; set; }
     public virtual ICollection<ClassRoom> ClassRooms { get; set; }
+    public virtual ICollection<Homework> Homeworks { get; set; }
 
     public School() : base()
     {
         Users = [];
         Teachers = [];
         ClassRooms = [];
+        Homeworks = [];
     }
 
     public School(byte id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate)
@@ -31,5 +33,6 @@ public class School : BaseEntity<int>
         Users = [];
         Teachers = [];
         ClassRooms = [];
+        Homeworks = [];
     }
 }

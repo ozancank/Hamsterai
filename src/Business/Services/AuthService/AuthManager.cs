@@ -26,6 +26,7 @@ public class AuthManager(IConfiguration configuration,
         List<Claim> claims = [
                 new(Domain.Constants.ClaimTypes.UserType, $"{(int)user.Type}", ClaimValueTypes.Integer),
                 new(Domain.Constants.ClaimTypes.SchoolId, $"{user.SchoolId}", ClaimValueTypes.String),
+                new(Domain.Constants.ClaimTypes.ConnectionId, $"{user.ConnectionId}", ClaimValueTypes.String)
             ];
 
         var accessToken = tokenHelper.CreateToken(user, operationClaims, $"{user.Name} {user.Surname}", user.Email, claims);

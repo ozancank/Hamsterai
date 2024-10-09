@@ -9,6 +9,8 @@ public class AppOptions
     public static string SimilarAnswerPicturePath { get; set; }
     public static string QuizQuestionPicturePath { get; set; }
     public static string QuizAnswerPicturePath { get; set; }
+    public static string HomeworkPath { get; set; }
+    public static string HomeworkAnswerPath { get; set; }
     public static int AITryCount { get; set; }
     public static int AITrySecond { get; set; }
     public static string AI_Baz { get; set; }
@@ -29,6 +31,8 @@ public class AppOptions
     public static string SimilarAnswerPictureFolderPath { get; set; }
     public static string QuizQuestionPictureFolderPath { get; set; }
     public static string QuizAnswerPictureFolderPath { get; set; }
+    public static string HomeworkFolderPath { get; set; }
+    public static string HomeworkAnswerFolderPath { get; set; }
 
     public static void CreateFolder()
     {
@@ -52,5 +56,11 @@ public class AppOptions
 
         QuizAnswerPictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, QuizAnswerPicturePath);
         if (!Directory.Exists(QuizAnswerPictureFolderPath)) Directory.CreateDirectory(QuizAnswerPictureFolderPath);
+
+        HomeworkFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, HomeworkPath);
+        if (!Directory.Exists(HomeworkFolderPath)) Directory.CreateDirectory(HomeworkFolderPath);
+
+        HomeworkAnswerFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, HomeworkAnswerPath);
+        if (!Directory.Exists(HomeworkAnswerFolderPath)) Directory.CreateDirectory(HomeworkAnswerFolderPath);
     }
 }

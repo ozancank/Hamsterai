@@ -10,22 +10,30 @@ public class StudentRules(IStudentDal studentDal) : IBusinessRule
         return Task.CompletedTask;
     }
 
-    internal static Task StudentShouldExists(GetStudentModel studentModel)
+    internal static Task StudentShouldExistsAndActive(GetStudentModel studentModel)
     {
-        if (studentModel == null) throw new BusinessException(Strings.DynamicNotFound, Strings.Student);
+        StudentShouldExists(studentModel);
+        if (!studentModel.IsActive) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.Student);
         return Task.CompletedTask;
     }
 
-    internal static Task StudentShouldExists(Student student)
+    internal static Task StudentShouldExistsAndActive(Student student)
     {
-        if (student == null) throw new BusinessException(Strings.DynamicNotFound, Strings.Student);
+        StudentShouldExists(student);
+        if (!student.IsActive) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.Student);
         return Task.CompletedTask;
     }
 
     internal async Task StudentShouldExists(int id)
     {
         var exists = await studentDal.IsExistsAsync(x => x.Id == id, enableTracking: false);
-        if (exists) throw new BusinessException(Strings.DynamicNotFound, Strings.Student);
+        await StudentShouldExists(exists);
+    }
+
+    internal async Task StudentShouldExistsAndActive(int id)
+    {
+        var student = await studentDal.GetAsync(predicate: x => x.Id == id, enableTracking: false);
+        await StudentShouldExistsAndActive(student);
     }
 
     internal async Task StudentNoCanNotBeDuplicated(string no, int? studentId = null)
@@ -58,5 +66,11 @@ public class StudentRules(IStudentDal studentDal) : IBusinessRule
         var student = await studentDal.GetAsync(predicate: x => x.Phone == phone, enableTracking: false);
         if (studentId == null && student != null) throw new BusinessException(Strings.DynamicExists, phone);
         if (studentId != null && student != null && student.Id != studentId) throw new BusinessException(Strings.DynamicExists, phone);
+    }
+
+    internal async Task StudentsShouldExistsAndActiveByIds(List<int> studentIds)
+    {
+        var students = !studentIds.Except(await studentDal.Query().AsNoTracking().Where(x => x.IsActive).Select(x => x.Id).ToListAsync()).Any();
+        if (!students) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.Student);
     }
 }
