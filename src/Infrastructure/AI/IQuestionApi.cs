@@ -17,4 +17,6 @@ public interface IQuestionApi : IArtificialIntelligenceApi
     Task<QuizResponseModel> GetQuizQuestions(QuizApiModel model);
 
     Task<QuizResponseModel> GetSimilarForQuiz(QuizApiModel model);
+
+    Task<QuizTextResponseModel> GetSimilarTextForQuiz(QuizApiModel model);
 }

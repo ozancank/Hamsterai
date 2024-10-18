@@ -30,7 +30,11 @@ public interface IQuestionService : IBusinessService
 
     Task<string> AddQuiz(AddQuizModel model, CancellationToken cancellationToken);
 
+    Task<string> AddQuizText(AddQuizModel model, CancellationToken cancellationToken);
+
     Task<bool> AddQuiz(bool timePass = false, CancellationToken cancellationToken = default);
+
+    Task<bool> AddQuizText(bool timePass = false, CancellationToken cancellationToken = default);
 
     #endregion Quiz
 }

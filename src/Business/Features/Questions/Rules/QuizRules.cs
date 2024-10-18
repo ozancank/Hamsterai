@@ -28,4 +28,10 @@ public class QuizRules : IBusinessRule
         if (responses == null || responses.Count <= 0) throw new BusinessException(Strings.DynamicNotEmpty, Strings.Question);
         return Task.CompletedTask;
     }
+
+    internal static Task QuizQuestionsShouldExists(List<SimilarTextResponseModel> responses)
+    {
+        if (responses == null || responses.Count <= 0) throw new BusinessException(Strings.DynamicNotEmpty, Strings.Question);
+        return Task.CompletedTask;
+    }
 }

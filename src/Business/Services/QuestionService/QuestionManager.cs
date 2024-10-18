@@ -239,7 +239,7 @@ public class QuestionManager(ICommonService commonService,
     public async Task SendForStatusSendAgain(CancellationToken cancellationToken)
     {
         AppStatics.SenderQuestionAllow = false;
-        var changeDate = new DateTime(2024, 10, 14, 17, 0, 0);
+        var changeDate = new DateTime(2024, 10, 19, 1, 30, 0);
         try
         {
             QuestionStatus[] status = [QuestionStatus.Waiting, QuestionStatus.Error, QuestionStatus.SendAgain];
@@ -401,6 +401,104 @@ public class QuestionManager(ICommonService commonService,
         return result;
     }
 
+    public async Task<string> AddQuizText(AddQuizModel model, CancellationToken cancellationToken)
+    {
+        await QuizRules.QuizQuestionShouldExists(model.QuestionList);
+        await userRules.UserShouldExistsAndActiveById(model.UserId);
+
+        var lessonName = await lessonDal.GetAsync(
+            predicate: x => x.Id == model.LessonId,
+            enableTracking: false,
+            selector: x => x.Name,
+            cancellationToken: cancellationToken);
+        await LessonRules.LessonShouldExists(lessonName);
+
+        var responses = await questionApi.GetSimilarTextForQuiz(new()
+        {
+            QuestionTexts = model.QuestionList,
+            LessonName = lessonName,
+            UserId = model.UserId
+        });
+
+        await QuizRules.QuizQuestionsShouldExists(responses.Questions);
+
+        var result = await quizDal.ExecuteWithTransactionAsync(async () =>
+        {
+            var userId = 1;
+            var date = DateTime.Now;
+            var idPrefix = $"T-{model.LessonId}-{model.UserId}-";
+            var maxId = await quizDal.Query().AsNoTracking().Where(x => x.Id.StartsWith(idPrefix)).OrderBy(x => x.Id).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken: cancellationToken);
+            var nextId = Convert.ToInt32(maxId?[idPrefix.Length..] ?? "0") + 1;
+            var quziId = $"{idPrefix}{nextId}";
+            var quiz = new Quiz
+            {
+                Id = quziId,
+                IsActive = true,
+                CreateUser = userId,
+                CreateDate = date,
+                UpdateUser = userId,
+                UpdateDate = date,
+                UserId = model.UserId,
+                LessonId = model.LessonId,
+                TimeSecond = 0,
+                Status = QuizStatus.NotStarted,
+                CorrectCount = 0,
+                WrongCount = 0,
+                EmptyCount = 0,
+                SuccessRate = 0,
+            };
+
+            var questions = new List<QuizQuestion>();
+
+            for (byte i = 0; i < responses.Questions.Count; i++)
+            {
+                var response = responses.Questions[i];
+                var sortNo = (byte)(i + 1);
+
+                var questionId = $"{quiz.Id}-{sortNo}";
+                var extension = ".png";
+                var fileName = $"{model.UserId}_{model.LessonId}_{questionId}{extension}";
+                var questionFileName = $"TQ_{fileName}";
+                var answerFileName = $"TA_{fileName}";
+                await commonService.TextToImage(response.SimilarQuestionText, questionFileName, AppOptions.QuizQuestionPictureFolderPath);
+                await commonService.TextToImage(response.AnswerText, answerFileName, AppOptions.QuizAnswerPictureFolderPath);
+
+                var gain = await gainService.GetOrAddGain(new(response.GainName, model.LessonId, userId));
+
+                questions.Add(new()
+                {
+                    Id = questionId,
+                    IsActive = true,
+                    CreateUser = userId,
+                    CreateDate = date,
+                    UpdateUser = userId,
+                    UpdateDate = date,
+                    QuizId = quiz.Id,
+                    SortNo = sortNo,
+                    Question = response.QuestionText,
+                    QuestionPictureFileName = questionFileName,
+                    QuestionPictureExtension = extension,
+                    Answer = response.AnswerText,
+                    AnswerPictureFileName = answerFileName,
+                    AnswerPictureExtension = extension,
+                    RightOption = response.RightOption.Trim()[0],
+                    AnswerOption = null,
+                    OptionCount = (byte)response.OptionCount,
+                    GainId = gain.Id
+                });
+            }
+
+            await quizDal.AddAsync(quiz, cancellationToken: cancellationToken);
+            await quizQuestionDal.AddRangeAsync(questions, cancellationToken: cancellationToken);
+
+            return quiz.Id;
+        }, cancellationToken: cancellationToken);
+
+        _ = await notificationService.PushNotificationByUserId(new(Strings.DynamicLessonTestPrepared.Format(lessonName), Strings.DynamicLessonTestPreparedForYou.Format(lessonName, result), model.UserId, NotificationTypes.QuizCreated, result));
+
+        return result;
+    }
+
     public async Task<bool> AddQuiz(bool timePass = false, CancellationToken cancellationToken = default)
     {
         try
@@ -504,6 +602,7 @@ public class QuestionManager(ICommonService commonService,
         try
         {
             AppStatics.SenderQuestionAllow = false;
+            var changeDate = new DateTime(2024, 10, 19, 1, 30, 0);
 
             var questions = await questionDal.GetListAsync(
                 enableTracking: false,
@@ -515,7 +614,8 @@ public class QuestionManager(ICommonService commonService,
                                 && x.Lesson.IsActive
                                 && x.Gain.IsActive
                                 && (x.User.SchoolId == null || x.User.School.IsActive)
-                                && (x.User.SchoolId == null || x.User.School.LicenseEndDate.Date >= DateTime.Now.Date),
+                                && (x.User.SchoolId == null || x.User.School.LicenseEndDate.Date >= DateTime.Now.Date)
+                                && x.CreateDate > changeDate,
                 include: x => x.Include(u => u.User).ThenInclude(u => u.School)
                                .Include(u => u.Lesson)
                                .Include(u => u.Gain),
@@ -566,7 +666,7 @@ public class QuestionManager(ICommonService commonService,
 
                     try
                     {
-                        await AddQuiz(addQuizModel, cancellationToken);
+                        await AddQuizText(addQuizModel, cancellationToken);
 
                         foreach (var questionId in questionsIds)
                         {
@@ -590,6 +690,7 @@ public class QuestionManager(ICommonService commonService,
             AppStatics.SenderQuestionAllow = true;
         }
     }
+
     #endregion Quiz
 }
 

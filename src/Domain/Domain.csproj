@@ -48,9 +48,9 @@
 		<PackageReference Include="Serilog.Sinks.MSSqlServer" Version="7.0.1" />
 		<PackageReference Include="Serilog.Sinks.PostgreSQL" Version="2.3.0" />
 		<PackageReference Include="Serilog.Sinks.RabbitMQ" Version="7.0.2" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.8.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.8.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.8.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.9.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.9.0" />
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.1" />
 		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.4.6" />
 		<PackageReference Include="System.Text.Json" Version="8.0.5" />
