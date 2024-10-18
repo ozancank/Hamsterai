@@ -18,7 +18,7 @@ public class AddSimilarCommand : IRequest<GetSimilarModel>, ISecuredRequest<User
 }
 
 public class AddSimilarCommandHandler(IMapper mapper,
-                                      ISimilarQuestionDal similarQuestionDal,
+                                      ISimilarDal similarQuestionDal,
                                       ICommonService commonService,
                                       ILessonDal lessonDal,
                                       IQuestionApi questionApi,
@@ -63,6 +63,7 @@ public class AddSimilarCommandHandler(IMapper mapper,
             Status = QuestionStatus.Waiting,
             IsRead = false,
             SendForQuiz = false,
+            ExcludeQuiz = false,
             TryCount = 0,
             GainId = null,
             RightOption = null,
@@ -71,7 +72,7 @@ public class AddSimilarCommandHandler(IMapper mapper,
         var added = await similarQuestionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
         var result = mapper.Map<GetSimilarModel>(added);
 
-        _ = questionApi.GetSimilarQuestion(new()
+        _ = questionApi.GetSimilar(new()
         {
             Id = result.Id,
             Base64 = question.QuestionPicture,

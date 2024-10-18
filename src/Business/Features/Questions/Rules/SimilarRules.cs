@@ -3,7 +3,7 @@ using Business.Services.CommonService;
 
 namespace Business.Features.Questions.Rules;
 
-public class SimilarRules(ISimilarQuestionDal similarQuestionDal,
+public class SimilarRules(ISimilarDal similarQuestionDal,
                           ICommonService commonService) : IBusinessRule
 {
     internal static Task SimilarQuestionShouldExists(GetSimilarModel model)

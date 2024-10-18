@@ -12,7 +12,7 @@ public class UpdateSimilarIsReadCommand : IRequest<bool>, ISecuredRequest<UserTy
     public UserTypes[] Roles { get; } = [];
 }
 
-public class UpdateSimilarIsReadCommandHandler(ISimilarQuestionDal similarDal,
+public class UpdateSimilarIsReadCommandHandler(ISimilarDal similarDal,
                                                ICommonService commonService) : IRequestHandler<UpdateSimilarIsReadCommand, bool>
 {
     public async Task<bool> Handle(UpdateSimilarIsReadCommand request, CancellationToken cancellationToken)

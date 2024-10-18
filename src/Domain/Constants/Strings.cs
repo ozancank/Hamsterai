@@ -107,6 +107,7 @@ public struct Strings
     public const string Homework = "Ödev";
     public const string Created = "Oluşturuldu";
     public const string Test = "Test";
+    public const string Notification = "Bildirim";
 
     public const string FileNameExtension = "Dosya adı içerisinde nokta olmalı ve uzantı belirtilmelidir.";
 

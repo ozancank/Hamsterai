@@ -17,7 +17,7 @@ namespace DataAccess.EF.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "citext");
@@ -255,6 +255,11 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("Email")
                         .HasColumnOrder(11);
 
+                    b.Property<byte>("GroupId")
+                        .HasColumnType("smallint")
+                        .HasColumnName("GroupId")
+                        .HasColumnOrder(15);
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("IsActive")
@@ -326,6 +331,8 @@ namespace DataAccess.EF.Migrations
                         .IsUnique()
                         .HasDatabaseName("UK_Users_Email");
 
+                    b.HasIndex("GroupId");
+
                     b.HasIndex("Phone")
                         .IsUnique()
                         .HasDatabaseName("UK_Users_Phone");
@@ -344,6 +351,7 @@ namespace DataAccess.EF.Migrations
                             Id = 1L,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "root@mail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Root",
@@ -359,6 +367,7 @@ namespace DataAccess.EF.Migrations
                             Id = 2L,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@mail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Admin",
@@ -374,6 +383,7 @@ namespace DataAccess.EF.Migrations
                             Id = 3L,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "okul@mail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Okul",
@@ -391,6 +401,7 @@ namespace DataAccess.EF.Migrations
                             ConnectionId = 1,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "hoca1@mail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğretmen 1",
@@ -408,6 +419,7 @@ namespace DataAccess.EF.Migrations
                             ConnectionId = 2,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "hoca2@mail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğretmen 2",
@@ -425,6 +437,7 @@ namespace DataAccess.EF.Migrations
                             ConnectionId = 1,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ogrenci1@mail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğrenci 1",
@@ -442,6 +455,7 @@ namespace DataAccess.EF.Migrations
                             ConnectionId = 2,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ogrenci2@mail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğrenci 2",
@@ -459,6 +473,7 @@ namespace DataAccess.EF.Migrations
                             ConnectionId = 3,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ogrenci3@mail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğrenci 3",
@@ -476,6 +491,7 @@ namespace DataAccess.EF.Migrations
                             ConnectionId = 4,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ogrenci4@mail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğrenci 4",
@@ -493,6 +509,7 @@ namespace DataAccess.EF.Migrations
                             ConnectionId = 5,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ogrenci5@mail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğrenci 5",
@@ -510,6 +527,7 @@ namespace DataAccess.EF.Migrations
                             ConnectionId = 6,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ogrenci6@mail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğrenci 6",
@@ -527,6 +545,7 @@ namespace DataAccess.EF.Migrations
                             ConnectionId = 7,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ozancank@gmail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Ozan Can",
@@ -544,6 +563,7 @@ namespace DataAccess.EF.Migrations
                             ConnectionId = 8,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "942alicankesen@gmail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Alican",
@@ -561,6 +581,7 @@ namespace DataAccess.EF.Migrations
                             ConnectionId = 9,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "balcan1905@gmail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Eyüp",
@@ -577,6 +598,7 @@ namespace DataAccess.EF.Migrations
                             Id = 15L,
                             CreateDate = new DateTime(2024, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "kazimyildirimeng@gmail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Kazım",
@@ -592,6 +614,7 @@ namespace DataAccess.EF.Migrations
                             Id = 18L,
                             CreateDate = new DateTime(2024, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "kazimyildirimeng1@gmail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Kazım",
@@ -607,6 +630,7 @@ namespace DataAccess.EF.Migrations
                             Id = 19L,
                             CreateDate = new DateTime(2024, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "kazimyildirimeng2@gmail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Kazım",
@@ -622,6 +646,7 @@ namespace DataAccess.EF.Migrations
                             Id = 20L,
                             CreateDate = new DateTime(2024, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "kazimyildirimeng3@gmail.com",
+                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Kazım",
@@ -774,21 +799,71 @@ namespace DataAccess.EF.Migrations
                         {
                             Id = (byte)1,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
+                            CreateUser = 1L,
                             IsActive = true,
                             Name = "Sözel",
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
+                            UpdateUser = 1L
                         },
                         new
                         {
                             Id = (byte)2,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
+                            CreateUser = 1L,
                             IsActive = true,
                             Name = "Sayısal",
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
+                            UpdateUser = 1L
+                        },
+                        new
+                        {
+                            Id = (byte)3,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            Name = "Eşit Ağırlık",
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L
+                        },
+                        new
+                        {
+                            Id = (byte)4,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            Name = "Yabancı Dil",
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L
+                        },
+                        new
+                        {
+                            Id = (byte)5,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            Name = "Hepsi",
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L
+                        },
+                        new
+                        {
+                            Id = (byte)6,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            Name = "Orta Okul",
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L
+                        },
+                        new
+                        {
+                            Id = (byte)7,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            Name = "Lise",
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L
                         });
                 });
 
@@ -1286,7 +1361,96 @@ namespace DataAccess.EF.Migrations
                             LessonId = (byte)11,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedecb"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            GroupId = (byte)1,
+                            IsActive = true,
+                            LessonId = (byte)12,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
                         });
+                });
+
+            modelBuilder.Entity("Domain.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("citext")
+                        .HasColumnName("Body")
+                        .HasColumnOrder(10);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsRead")
+                        .HasColumnOrder(7);
+
+                    b.Property<DateTime?>("ReadDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("ReadDate")
+                        .HasColumnOrder(8);
+
+                    b.Property<string>("ReasonId")
+                        .HasColumnType("citext")
+                        .HasColumnName("ReasonId")
+                        .HasColumnOrder(12);
+
+                    b.Property<long>("ReceiveredUserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("ReceiveredUserId")
+                        .HasColumnOrder(6);
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("citext")
+                        .HasColumnName("Title")
+                        .HasColumnOrder(9);
+
+                    b.Property<byte>("Type")
+                        .HasColumnType("smallint")
+                        .HasColumnName("Type")
+                        .HasColumnOrder(11);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreateUser");
+
+                    b.HasIndex("ReceiveredUserId");
+
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.NotificationDeviceToken", b =>
@@ -1402,6 +1566,13 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("CreateUser")
                         .HasColumnOrder(2);
+
+                    b.Property<bool>("ExcludeQuiz")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("ExcludeQuiz")
+                        .HasColumnOrder(19);
 
                     b.Property<int?>("GainId")
                         .HasColumnType("integer")
@@ -1824,6 +1995,13 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("CreateUser")
                         .HasColumnOrder(2);
+
+                    b.Property<bool>("ExcludeQuiz")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("ExcludeQuiz")
+                        .HasColumnOrder(22);
 
                     b.Property<int?>("GainId")
                         .HasColumnType("integer")
@@ -2531,9 +2709,17 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("Domain.Entities.Core.User", b =>
                 {
+                    b.HasOne("Domain.Entities.Group", "Group")
+                        .WithMany("Users")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.School", "School")
                         .WithMany("Users")
                         .HasForeignKey("SchoolId");
+
+                    b.Navigation("Group");
 
                     b.Navigation("School");
                 });
@@ -2641,6 +2827,25 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("Domain.Entities.Core.User", "SenderUser")
+                        .WithMany("SendNotification")
+                        .HasForeignKey("CreateUser")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Core.User", "ReceiveredUser")
+                        .WithMany("ReceivedNotification")
+                        .HasForeignKey("ReceiveredUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ReceiveredUser");
+
+                    b.Navigation("SenderUser");
                 });
 
             modelBuilder.Entity("Domain.Entities.NotificationDeviceToken", b =>
@@ -2843,7 +3048,11 @@ namespace DataAccess.EF.Migrations
 
                     b.Navigation("Quizzes");
 
+                    b.Navigation("ReceivedNotification");
+
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("SendNotification");
 
                     b.Navigation("SimilarQuestions");
 
@@ -2862,6 +3071,8 @@ namespace DataAccess.EF.Migrations
             modelBuilder.Entity("Domain.Entities.Group", b =>
                 {
                     b.Navigation("LessonGroups");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Domain.Entities.Homework", b =>

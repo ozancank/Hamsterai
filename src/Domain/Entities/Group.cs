@@ -6,11 +6,13 @@ public class Group : BaseEntity<byte>
 {
     public string Name { get; set; }
 
-    public virtual ICollection<LessonGroup> LessonGroups { get; set; } = [];
+    public virtual ICollection<LessonGroup> LessonGroups { get; set; }
+    public virtual ICollection<User> Users { get; set; }
 
     public Group() : base()
     {
         LessonGroups = [];
+        Users = [];
     }
 
     public Group(byte id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate, string name)
@@ -18,5 +20,6 @@ public class Group : BaseEntity<byte>
     {
         Name = name;
         LessonGroups = [];
+        Users = [];
     }
 }

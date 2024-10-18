@@ -42,6 +42,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Update="Fonts\Arial.ttf">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="Templates\ForgetPassword.html">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
@@ -52,6 +55,12 @@
 
 	<ItemGroup>
 	  <Folder Include="Features\Auths\Dtos\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="SixLabors.ImageSharp.Drawing">
+	    <HintPath>..\..\..\..\Nuget\sixlabors.imagesharp.drawing\2.1.4\lib\net6.0\SixLabors.ImageSharp.Drawing.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 </Project>

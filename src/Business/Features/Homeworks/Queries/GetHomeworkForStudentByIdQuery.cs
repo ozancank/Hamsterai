@@ -6,7 +6,7 @@ using OCK.Core.Pipelines.Authorization;
 
 namespace Business.Features.Homeworks.Queries;
 
-public class GetHomeworkForStudentByIdQuery : IRequest<GetHomeworkModel>, ISecuredRequest<UserTypes>
+public class GetHomeworkForStudentByIdQuery : IRequest<GetHomeworkStudentModel>, ISecuredRequest<UserTypes>
 {
     public string Id { get; set; }
     public bool ThrowException { get; set; } = true;
@@ -17,11 +17,11 @@ public class GetHomeworkForStudentByIdQuery : IRequest<GetHomeworkModel>, ISecur
 
 public class GetHomeworkForStudentByIdHandler(IMapper mapper,
                                               IHomeworkStudentDal homeworkStudentDal,
-                                              ICommonService commonService) : IRequestHandler<GetHomeworkForStudentByIdQuery, GetHomeworkModel>
+                                              ICommonService commonService) : IRequestHandler<GetHomeworkForStudentByIdQuery, GetHomeworkStudentModel>
 {
-    public async Task<GetHomeworkModel> Handle(GetHomeworkForStudentByIdQuery request, CancellationToken cancellationToken)
+    public async Task<GetHomeworkStudentModel> Handle(GetHomeworkForStudentByIdQuery request, CancellationToken cancellationToken)
     {
-        var result = await homeworkStudentDal.GetAsyncAutoMapper<GetHomeworkModel>(
+        var result = await homeworkStudentDal.GetAsyncAutoMapper<GetHomeworkStudentModel>(
             enableTracking: request.Tracking,
             predicate: x => x.IsActive && x.Id == request.Id && x.StudentId == commonService.HttpConnectionId,
             include: x => x.Include(u => u.Student)

@@ -14,7 +14,7 @@ public class ActiveSimilarCommand : IRequest<bool>, ISecuredRequest<UserTypes>, 
     public string[] HidePropertyNames { get; } = [];
 }
 
-public class ActiveSimilarCommandHandler(ISimilarQuestionDal similarQuestionDal,
+public class ActiveSimilarCommandHandler(ISimilarDal similarQuestionDal,
                                          ICommonService commonService) : IRequestHandler<ActiveSimilarCommand, bool>
 {
     public async Task<bool> Handle(ActiveSimilarCommand request, CancellationToken cancellationToken)

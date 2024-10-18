@@ -19,10 +19,10 @@ public class FirebaseApi : INotificationApi
 
         if (!IsString.Value) throw new BusinessException(Strings.InvalidValue);
 
-        if (IsNullable.Value && notificationModel.ToList == null)
+        if (IsNullable.Value && notificationModel.List == null)
             throw new BusinessException(Strings.InvalidValue);
 
-        var tokens = notificationModel.ToList.ToList();
+        var tokens = notificationModel.List.ToList();
 
         if (tokens.Count == 0) throw new BusinessException(Strings.DynamicNotEmpty, Strings.Token);
 
@@ -33,8 +33,8 @@ public class FirebaseApi : INotificationApi
                 Title = notificationModel.Title,
                 Body = notificationModel.Body,
             },
-            Tokens = (tokens as List<string>)
-        };
+            Tokens = tokens as List<string>,
+        };        
 
         var messaging = FirebaseMessaging.DefaultInstance;
         _ = await messaging.SendEachForMulticastAsync(message);

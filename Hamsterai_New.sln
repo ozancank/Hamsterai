@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "src\WebAPI\WebAPI
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{390E1B5B-12EF-4F04-9540-96054C617A83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.API.Test", "Web.API.Test\Web.API.Test.csproj", "{C3D0FBB0-A0B6-4ED8-B488-64A7DD529B1F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.API.Test", "test\Web.API.Test\Web.API.Test.csproj", "{C3D0FBB0-A0B6-4ED8-B488-64A7DD529B1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

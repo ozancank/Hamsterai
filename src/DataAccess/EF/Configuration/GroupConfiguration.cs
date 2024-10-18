@@ -16,8 +16,13 @@ public class GroupConfiguration : IEntityTypeConfiguration<Group>
         builder.HasAlternateKey(e => e.Name).HasName("UK_Groups_Name");
 
         builder.HasData([
-                new(1, true, 2, new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01), "Sözel"),
-                new(2, true, 2, new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01), "Sayısal"),
+                new(1, true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), "Sözel"),
+                new(2, true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), "Sayısal"),
+                new(3, true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), "Eşit Ağırlık"),
+                new(4, true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), "Yabancı Dil"),
+                new(5, true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), "Hepsi"),
+                new(6, true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), "Orta Okul"),
+                new(7, true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), "Lise"),
             ]);
     }
 }

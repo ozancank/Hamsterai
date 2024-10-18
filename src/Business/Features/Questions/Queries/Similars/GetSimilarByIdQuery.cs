@@ -16,7 +16,7 @@ public class GetSimilarByIdQuery : IRequest<GetSimilarModel>, ISecuredRequest<Us
 }
 
 public class GetSimilarByIdQueryHandler(IMapper mapper,
-                                        ISimilarQuestionDal similarDal,
+                                        ISimilarDal similarDal,
                                         ICommonService commonService) : IRequestHandler<GetSimilarByIdQuery, GetSimilarModel>
 {
     public async Task<GetSimilarModel> Handle(GetSimilarByIdQuery request, CancellationToken cancellationToken)

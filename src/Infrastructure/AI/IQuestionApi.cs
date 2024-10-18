@@ -8,9 +8,13 @@ public interface IQuestionApi : IArtificialIntelligenceApi
 
     Task<QuestionITOResponseModel> AskQuestionOcrImage(QuestionApiModel model);
 
-    Task<SimilarResponseModel> GetSimilarQuestion(QuestionApiModel model);
+    Task<QuestionTextResponseModel> AskQuestionText(QuestionApiModel model);
+
+    Task<SimilarResponseModel> GetSimilar(QuestionApiModel model);
+
+    Task<SimilarTextResponseModel> GetSimilarText(QuestionApiModel model);
 
     Task<QuizResponseModel> GetQuizQuestions(QuizApiModel model);
 
-    Task<QuizResponseModel> GetSimilarQuestionsForQuiz(QuizApiModel model);
+    Task<QuizResponseModel> GetSimilarForQuiz(QuizApiModel model);
 }

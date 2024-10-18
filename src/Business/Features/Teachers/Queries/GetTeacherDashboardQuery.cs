@@ -18,7 +18,7 @@ public class GetTeacherDashboardQueryHandler(ITeacherDal teacherDal,
                                              IUserDal userDal,
                                              ICommonService commonService,
                                              IQuestionDal questionDal,
-                                             ISimilarQuestionDal similarQuestionDal) : IRequestHandler<GetTeacherDashboardQuery, GetTeacherDashboardModel>
+                                             ISimilarDal similarQuestionDal) : IRequestHandler<GetTeacherDashboardQuery, GetTeacherDashboardModel>
 {
     public async Task<GetTeacherDashboardModel> Handle(GetTeacherDashboardQuery request, CancellationToken cancellationToken)
     {

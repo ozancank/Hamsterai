@@ -34,7 +34,7 @@ public class HomeworkController : BaseController
         return Ok(result);
     }
 
-    [HttpGet("GetHomeworksForStudent")]
+    [HttpPost("GetHomeworksForStudent")]
     public async Task<IActionResult> GetHomeworksForStudent([FromQuery] PageRequest pageRequest, [FromBody] HomeworkRequestModel model)
     {
         var command = new GetHomeworksForStudentQuery { PageRequest = pageRequest, Model= model};
@@ -67,7 +67,7 @@ public class HomeworkController : BaseController
     }
 
     [HttpPost("UpdateHomeworkAnswer")]
-    public async Task<IActionResult> UpdateHomeworkAnswer([FromQuery] HomeworkAnswerRequestModel model)
+    public async Task<IActionResult> UpdateHomeworkAnswer([FromBody] HomeworkAnswerRequestModel model)
     {
         var command = new UpdateHomeworkAnswerCommand { Model = model };
         var result = await Mediator.Send(command);
@@ -75,7 +75,7 @@ public class HomeworkController : BaseController
     }
 
     [HttpPost("PassiveHomework")]
-    public async Task<IActionResult> PassiveHomework([FromBody] string homeworkId)
+    public async Task<IActionResult> PassiveHomework([FromQuery] string homeworkId)
     {
         var command = new PassiveHomeworkCommand { HomeworkId = homeworkId };
         await Mediator.Send(command);
@@ -83,7 +83,7 @@ public class HomeworkController : BaseController
     }
 
     [HttpPost("ActiveHomework")]
-    public async Task<IActionResult> ActiveHomework([FromBody] string homeworkId)
+    public async Task<IActionResult> ActiveHomework([FromQuery] string homeworkId)
     {
         var command = new ActiveHomeworkCommand { HomeworkId = homeworkId };
         await Mediator.Send(command);

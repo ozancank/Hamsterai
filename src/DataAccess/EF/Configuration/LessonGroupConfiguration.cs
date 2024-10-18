@@ -31,6 +31,7 @@ public class LessonGroupConfiguration : IEntityTypeConfiguration<LessonGroup>
                 new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec8"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),1,9),
                 new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec9"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),1,10),
                 new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedeca"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),1,11),
+                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedecb"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),1,12),
             ]);
     }
 }

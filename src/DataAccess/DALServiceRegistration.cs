@@ -15,14 +15,17 @@ public static class DALServiceRegistration
     {
         services.AddDbContextFactory<HamsteraiDbContext>(options =>
         {
-            //options.UseSqlServer(ServiceTools.Configuration.GetConnectionString("HamsteraiConnectionString"),
-            //    o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
-            //);
-            options.UseNpgsql(ServiceTools.Configuration.GetConnectionString("HamsteraiConnectionString"),
-                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
-        );
+            if (!options.IsConfigured)
+            {
+                //options.UseSqlServer(ServiceTools.Configuration.GetConnectionString("HamsteraiConnectionString"),
+                //    o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+                //);
+                options.UseNpgsql(ServiceTools.Configuration.GetConnectionString("HamsteraiConnectionString"),
+                    o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+            );
+            }
             if (Debugger.IsAttached) options.EnableSensitiveDataLogging();
-        }, ServiceLifetime.Scoped);
+        });
 
         services.AddScoped<IOperationClaimDal, OperationClaimDal>();
         services.AddScoped<IRefreshTokenDal, RefreshTokenDal>();
@@ -36,13 +39,14 @@ public static class DALServiceRegistration
         services.AddScoped<IHomeworkStudentDal, HomeworkStudentDal>();
         services.AddScoped<ILessonDal, LessonDal>();
         services.AddScoped<ILessonGroupDal, LessonGroupDal>();
+        services.AddScoped<INotificationDal, NotificationDal>();
         services.AddScoped<INotificationDeviceTokenDal, NotificationDeviceTokenDal>();
         services.AddScoped<IPasswordTokenDal, PasswordTokenDal>();
         services.AddScoped<IQuestionDal, QuestionDal>();
         services.AddScoped<IQuizDal, QuizDal>();
         services.AddScoped<IQuizQuestionDal, QuizQuestionDal>();
         services.AddScoped<ISchoolDal, SchoolDal>();
-        services.AddScoped<ISimilarQuestionDal, SimilarQuestionDal>();
+        services.AddScoped<ISimilarDal, SimilarDal>();
         services.AddScoped<IStudentDal, StudentDal>();
         services.AddScoped<ITeacherClassRoomDal, TeacherClassRoomDal>();
         services.AddScoped<ITeacherDal, TeacherDal>();

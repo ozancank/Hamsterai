@@ -1,10 +1,10 @@
-﻿
-using Business.Services.QuestionService;
+﻿using Business.Services.QuestionService;
 using Domain.Constants;
+using OCK.Core.Logging.Serilog;
 
 namespace WebAPI;
 
-public class SenderHostedService(IServiceProvider serviceProvider) : BackgroundService
+public class SenderHostedService(IServiceProvider serviceProvider, LoggerServiceBase loggerServiceBase) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -12,15 +12,18 @@ public class SenderHostedService(IServiceProvider serviceProvider) : BackgroundS
         {
             try
             {
-                await Task.Delay(AppOptions.AITrySecond * 1000, stoppingToken);
+                await Task.Delay(AppOptions.AISendSecond * 1000, stoppingToken);
 
-                if (!AppStatics.SenderTryQuestion) continue;
+                if (!AppStatics.SenderQuestionAllow) continue;
 
                 using var scope = serviceProvider.CreateScope();
                 var questionService = scope.ServiceProvider.GetRequiredService<IQuestionService>();
                 await questionService.SendForStatusSendAgain(stoppingToken);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                loggerServiceBase.Error($"SenderHostedService {ex.Message}"); 
+            }
         }
     }
 }

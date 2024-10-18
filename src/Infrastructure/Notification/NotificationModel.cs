@@ -7,5 +7,5 @@ public class NotificationModel<T> : IModel
     public string Title { get; set; }
     public string Body { get; set; }
 
-    public IEnumerable<T> ToList { get; set; }
+    public IEnumerable<T> List { get; set; }
 }

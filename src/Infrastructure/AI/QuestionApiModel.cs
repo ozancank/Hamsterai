@@ -8,4 +8,6 @@ public class QuestionApiModel : IRequestModel
     public string Base64 { get; set; }
     public string LessonName { get; set; }
     public long UserId { get; set; }
+    public string QuestionText { get; set; }
+    public bool ExcludeQuiz { get; set; }
 }

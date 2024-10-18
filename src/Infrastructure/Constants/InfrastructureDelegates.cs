@@ -7,13 +7,21 @@ public class InfrastructureDelegates
 {
     public delegate Task<bool> UpdateQuestionOcrDelegate(QuestionTOResponseModel model, UpdateQuestionDto dto);
 
-    public static UpdateQuestionOcrDelegate UpdateQuestionOcr { get; set; }
-
     public delegate Task<bool> UpdateQuestionOcrImageDelegate(QuestionITOResponseModel model, UpdateQuestionDto dto);
+
+    public delegate Task<bool> UpdateSimilarDelegate(SimilarResponseModel model, UpdateQuestionDto dto);
+
+    public delegate Task<bool> UpdateQuestionTextDelegate(QuestionTextResponseModel model, UpdateQuestionDto dto);
+
+    public delegate Task<bool> UpdateSimilarTextDelegate(SimilarTextResponseModel model, UpdateQuestionDto dto);
+
+    public static UpdateQuestionOcrDelegate UpdateQuestionOcr { get; set; }
 
     public static UpdateQuestionOcrImageDelegate UpdateQuestionOcrImage { get; set; }
 
-    public delegate Task<bool> UpdateSimilarQuestionAnswerDelegate(SimilarResponseModel model, UpdateQuestionDto dto);
+    public static UpdateSimilarDelegate UpdateSimilarAnswer { get; set; }
 
-    public static UpdateSimilarQuestionAnswerDelegate UpdateSimilarQuestionAnswer { get; set; }
+    public static UpdateQuestionTextDelegate UpdateQuestionText { get; set; }
+
+    public static UpdateSimilarTextDelegate UpdateSimilarText { get; set; }
 }

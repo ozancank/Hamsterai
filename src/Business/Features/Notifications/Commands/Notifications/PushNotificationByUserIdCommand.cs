@@ -4,7 +4,7 @@ using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 
-namespace Business.Features.Notifications.Commands.Notification;
+namespace Business.Features.Notifications.Commands.Notifications;
 
 public class PushNotificationByUserIdCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
@@ -20,7 +20,7 @@ public class PushNotificationByUserIdCommandHandler(INotificationService notific
 {
     public async Task<bool> Handle(PushNotificationByUserIdCommand request, CancellationToken cancellationToken)
     {
-        var result = await notificationService.PushNotificationByUserId(request.Model.Title, request.Model.Body, request.UserId);
+        var result = await notificationService.PushNotificationByUserId(new(request.Model.Title, request.Model.Body, request.UserId, NotificationTypes.Undifined));
         return result;
     }
 }

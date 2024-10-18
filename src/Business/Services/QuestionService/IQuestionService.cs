@@ -12,11 +12,15 @@ public interface IQuestionService : IBusinessService
 
     Task<bool> UpdateAnswer(QuestionITOResponseModel model, UpdateQuestionDto dto);
 
+    Task<bool> UpdateAnswer(QuestionTextResponseModel model, UpdateQuestionDto dto);
+
     #endregion Question
 
     #region SimilarQuestion
 
     Task<bool> UpdateSimilarAnswer(SimilarResponseModel model, UpdateQuestionDto dto);
+
+    Task<bool> UpdateSimilarAnswer(SimilarTextResponseModel model, UpdateQuestionDto dto);
 
     #endregion SimilarQuestion
 

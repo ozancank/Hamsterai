@@ -1,15 +1,21 @@
-﻿using Infrastructure.Notification;
+﻿using Business.Features.Notifications.Dto;
+using Business.Services.CommonService;
+using DataAccess.EF;
+using Infrastructure.Notification;
 
 namespace Business.Services.NotificationService;
 
 public class NotificationManager(INotificationApi notificationApi,
-                                 INotificationDeviceTokenDal notificationDeviceTokenDal) : INotificationService
+                                 ICommonService commonService,
+                                 IDbContextFactory<HamsteraiDbContext> contextFactory) : INotificationService
 {
     public async Task<bool> PushNotificationAll(string title, string body)
     {
-        var tokens = await notificationDeviceTokenDal.Query().AsNoTracking().Include(x => x.User)
+        using var context = contextFactory.CreateDbContext();
+
+        var tokens = await context.NotificationDeviceTokens.AsNoTracking().Include(x => x.User)
             .Where(x => x.IsActive && x.User.IsActive)
-            .Select(x => x.DeviceToken).ToListAsync();
+            .Select(x => new { x.User.Id, x.DeviceToken }).ToListAsync();
 
         if (tokens.Count == 0) return false;
 
@@ -17,31 +23,79 @@ public class NotificationManager(INotificationApi notificationApi,
         {
             Title = title,
             Body = body,
-
-            ToList = tokens
+            List = tokens.Select(x => x.DeviceToken)
         };
 
-        _ = notificationApi.PushNotification(message);
+        await notificationApi.PushNotification(message);
+
+        var date = DateTime.Now;
+
+        var notifications = tokens.Select(x => new Notification
+        {
+            Id = Guid.NewGuid(),
+            IsActive = true,
+            CreateDate = date,
+            CreateUser = commonService.HttpUserId,
+            UpdateDate = date,
+            UpdateUser = commonService.HttpUserId,
+            ReceiveredUserId = x.Id,
+            IsRead = false,
+            ReadDate = null,
+            Title = title,
+            Body = body,
+            Type = NotificationTypes.Everbody,
+            ReasonId = null
+        }).ToList();
+
+        await context.Notifications.AddRangeAsync(notifications);
+        await context.SaveChangesAsync();
+
         return true;
     }
 
-    public async Task<bool> PushNotificationByUserId(string title, string body, long userId)
+    public async Task<bool> PushNotificationByUserId(NotificationUserDto dto)
     {
-        var tokens = await notificationDeviceTokenDal.Query().AsNoTracking().Include(x => x.User)
-            .Where(x => x.UserId == userId && x.IsActive && x.User.IsActive)
-            .Select(x => x.DeviceToken).ToListAsync();
+        using var context = contextFactory.CreateDbContext();
+
+        var tokens = await context.NotificationDeviceTokens.AsNoTracking()
+            .Include(x => x.User)
+            .Where(x => x.UserId == dto.ReceivedUserId && x.IsActive && x.User.IsActive)
+            .Select(x => x.DeviceToken)
+            .ToListAsync();
 
         if (tokens.Count == 0) return false;
 
         var message = new NotificationModel<string>()
         {
-            Title = title,
-            Body = body,
-
-            ToList = tokens
+            Title = dto.Title,
+            Body = dto.Body,
+            List = tokens
         };
 
-        _ = notificationApi.PushNotification(message);
+        await notificationApi.PushNotification(message);
+
+        var date = DateTime.Now;
+
+        var notifications = tokens.Select(x => new Notification
+        {
+            Id = Guid.NewGuid(),
+            IsActive = true,
+            CreateDate = date,
+            CreateUser = dto.SenderUserId,
+            UpdateDate = date,
+            UpdateUser = dto.SenderUserId,
+            ReceiveredUserId = dto.ReceivedUserId,
+            IsRead = false,
+            ReadDate = null,
+            Title = dto.Title,
+            Body = dto.Body,
+            Type = dto.Type,
+            ReasonId = dto.ReasonId
+        }).ToList();
+
+        await context.Notifications.AddRangeAsync(notifications);
+        await context.SaveChangesAsync();
+
         return true;
     }
 }

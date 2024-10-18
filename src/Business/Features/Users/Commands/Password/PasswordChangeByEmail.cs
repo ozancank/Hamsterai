@@ -8,12 +8,11 @@ using OCK.Core.Security.HashingHelper;
 
 namespace Business.Features.Users.Commands.Password;
 
-public class PasswordChangeByEmailCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
+public class PasswordChangeByEmailCommand : IRequest<bool>, ILoggableRequest
 {
     public string Password { get; set; }
     public string Token { get; set; }
 
-    public UserTypes[] Roles { get; } = [];
     public string[] HidePropertyNames { get; } = ["Password"];
 }
 

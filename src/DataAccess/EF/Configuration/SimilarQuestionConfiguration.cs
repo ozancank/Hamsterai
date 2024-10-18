@@ -28,6 +28,7 @@ public class SimilarQuestionConfiguration : IEntityTypeConfiguration<Similar>
         builder.Property(e => e.TryCount).HasColumnName("TryCount").HasDefaultValue((byte)0).HasColumnOrder(19).IsRequired();
         builder.Property(e => e.GainId).HasColumnName("GainId").HasColumnOrder(20);
         builder.Property(e => e.RightOption).HasColumnName("RightOption").HasMaxLength(1).HasColumnOrder(21);
+        builder.Property(e => e.ExcludeQuiz).HasColumnName("ExcludeQuiz").HasDefaultValue(false).HasColumnOrder(22).IsRequired();
 
         builder.HasOne(x => x.User).WithMany(x => x.SimilarQuestions).HasForeignKey(x => x.CreateUser).HasPrincipalKey(x => x.Id);
         builder.HasOne(x => x.Lesson).WithMany(x => x.SimilarQuestions).HasForeignKey(x => x.LessonId).HasPrincipalKey(x => x.Id);

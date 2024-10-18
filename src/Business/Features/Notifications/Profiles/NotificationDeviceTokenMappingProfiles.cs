@@ -2,9 +2,9 @@
 
 namespace Business.Features.Notifications.Profiles;
 
-public class MappingProfiles : Profile
+public class NotificationDeviceTokenMappingProfiles : Profile
 {
-    public MappingProfiles()
+    public NotificationDeviceTokenMappingProfiles()
     {
         CreateMap<DeviceTokenModel, NotificationDeviceToken>().ReverseMap();
     }

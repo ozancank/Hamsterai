@@ -3,10 +3,10 @@ using System.Text.Json.Serialization;
 
 namespace Infrastructure.AI.Seduss.Models;
 
-public class QuestionRequestModel : IRequestModel
+public class QuestionTextRequestModel : IRequestModel
 {
     [JsonPropertyName("content")]
-    public string QuestionImage { get; set; }
+    public string QuestionText { get; set; }
 
 
     [JsonPropertyName("ders")]

@@ -4,11 +4,12 @@ using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 
-namespace Business.Features.Notifications.Commands.Notification;
+namespace Business.Features.Notifications.Commands.Notifications;
 
 public class PushNotificationAllCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
     public MessageRequestModel Model { get; set; }
+
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public string[] HidePropertyNames { get; } = [];
 }

@@ -238,5 +238,7 @@ static void Delegates()
     ControlUserStatusAsync = ServiceTools.GetService<IUserService>().UserStatusAndLicense;
     UpdateQuestionOcr = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
     UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
-    UpdateSimilarQuestionAnswer = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
+    UpdateSimilarAnswer = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
+    UpdateQuestionText = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
+    UpdateSimilarText = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
 }

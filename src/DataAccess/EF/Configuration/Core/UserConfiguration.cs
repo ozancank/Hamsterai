@@ -26,8 +26,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.Type).HasColumnName("Type").HasColumnOrder(12).IsRequired();
         builder.Property(e => e.SchoolId).HasColumnName("SchoolId").HasColumnOrder(13);
         builder.Property(e => e.ConnectionId).HasColumnName("ConnectionId").HasColumnOrder(14);
+        builder.Property(e => e.GroupId).HasColumnName("GroupId").HasColumnOrder(15);
 
         builder.HasOne(e => e.School).WithMany(e => e.Users).HasForeignKey(e => e.SchoolId).HasPrincipalKey(e => e.Id);
+        builder.HasOne(e => e.Group).WithMany(e => e.Users).HasForeignKey(e => e.GroupId).HasPrincipalKey(e => e.Id);
 
         var passwordSalt1 = new byte[] { 22, 25, 49, 68, 114, 216, 25, 253, 239, 196, 230, 130, 40, 214, 153, 94, 28, 188, 154, 225, 50, 31, 161, 21, 4, 230, 179, 118, 232, 155, 171, 114, 197, 6, 252, 53, 35, 172, 165, 92, 20, 162, 101, 242, 248, 163, 238, 160, 154, 196, 49, 79, 75, 39, 86, 23, 235, 103, 53, 30, 125, 117, 85, 109, 131, 66, 2, 219, 134, 223, 230, 64, 180, 36, 225, 254, 237, 167, 255, 137, 54, 86, 113, 27, 104, 47, 172, 200, 53, 23, 217, 143, 228, 57, 211, 92, 242, 99, 140, 90, 93, 1, 134, 181, 53, 38, 226, 125, 45, 80, 44, 8, 43, 67, 20, 84, 161, 155, 150, 7, 31, 182, 239, 204, 76, 162, 82, 81 };
         var passwordHash1 = new byte[] { 169, 145, 33, 161, 147, 58, 15, 169, 19, 31, 236, 3, 128, 147, 151, 45, 188, 253, 68, 70, 153, 152, 73, 88, 253, 225, 151, 194, 216, 163, 110, 253, 172, 109, 2, 180, 132, 19, 48, 181, 217, 89, 227, 138, 159, 251, 96, 176, 113, 54, 11, 219, 157, 136, 251, 120, 124, 56, 153, 29, 36, 35, 129, 141 };
@@ -50,6 +52,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Administator,
                 SchoolId=null,
                 ConnectionId=null,
+                GroupId=5
             },
             new(2,"Admin",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Admin",
@@ -59,6 +62,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Administator,
                 SchoolId=null,
                 ConnectionId=null,
+                GroupId=5
             },
             new(3,"Okul",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Okul",
@@ -68,6 +72,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.School,
                 SchoolId=1,
                 ConnectionId=null,
+                GroupId=5
             },
             new(4,"Hoca1",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğretmen 1",
@@ -77,6 +82,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Teacher,
                 SchoolId=1,
                 ConnectionId=1,
+                GroupId=5
             },
             new(5,"Hoca2",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğretmen 2",
@@ -86,6 +92,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Teacher,
                 SchoolId=1,
                 ConnectionId=2,
+                GroupId=5
             },
             new(6,"Öğrenci1",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğrenci 1",
@@ -95,6 +102,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=1,
+                GroupId=5
             },
             new(7,"Öğrenci2",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğrenci 2",
@@ -104,6 +112,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=2,
+                GroupId=5
             },
             new(8,"Öğrenci3",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğrenci 3",
@@ -113,6 +122,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=3,
+                GroupId=5
             },
             new(9,"Öğrenci4",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğrenci 4",
@@ -122,6 +132,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=4,
+                GroupId=5
             },
             new(10,"Öğrenci5",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğrenci 5",
@@ -131,6 +142,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=5,
+                GroupId=5
             },
             new(11,"Öğrenci6",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğrenci 6",
@@ -140,6 +152,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=6,
+                GroupId=5
             },
             new(12,"ozancank@gmail.com",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Ozan Can",
@@ -149,6 +162,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=7,
+                GroupId=5
             },
             new(13,"942alicankesen@gmail.com",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Alican",
@@ -158,6 +172,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=8,
+                GroupId=5
             },
             new(14,"balcan1905@gmail.com",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Eyüp",
@@ -167,6 +182,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=9,
+                GroupId=5
             },
             new(15,"kazim",passwordSalt3,passwordHash3,false,new DateTime(2024,09,14),true){
                 Name="Kazım",
@@ -175,7 +191,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Email="kazimyildirimeng@gmail.com",
                 Type=UserTypes.Administator,
                 SchoolId=null,
-                ConnectionId=null
+                ConnectionId=null,
+                GroupId=5
             },
             //16 Ahmet Çelik
             //17 Göksel Gündüz
@@ -186,7 +203,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Email="kazimyildirimeng1@gmail.com",
                 Type=UserTypes.Administator,
                 SchoolId=null,
-                ConnectionId=null
+                ConnectionId=null,
+                GroupId=5
             },
             new(19,"kazim2",passwordSalt3,passwordHash3,false,new DateTime(2024,09,14),true){
                 Name="Kazım",
@@ -195,7 +213,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Email="kazimyildirimeng2@gmail.com",
                 Type=UserTypes.Administator,
                 SchoolId=null,
-                ConnectionId=null
+                ConnectionId=null,
+                GroupId=5
             },
             new(20,"kazim3",passwordSalt3,passwordHash3,false,new DateTime(2024,09,14),true){
                 Name="Kazım",
@@ -204,7 +223,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Email="kazimyildirimeng3@gmail.com",
                 Type=UserTypes.Administator,
                 SchoolId=null,
-                ConnectionId=null
+                ConnectionId=null,
+                GroupId=5
             },
         ]);
     }

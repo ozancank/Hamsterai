@@ -16,14 +16,26 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
     private const double _apiTimeoutMinute = 10;
     private static readonly string[] _answersOptions = ["A", "B", "C", "D", "E"];
 
+    private static readonly string[] _emptyQuestion =
+    [
+        "Soruyu lütfen iletin.",
+        "ancak asıl soru verilmemiş",
+        "Soruyu lütfen bana verin",
+        "Örnek sorunuzda yoktu",
+        "asıl soruyu belirtin",
+        "Lütfen soruyu yazın",
+        "Lütfen soruyu paylaşın",
+        "bana asıl soruyu vermen"
+    ];
+
     private static string BaseUrl(long userId)
     {
         return userId switch
         {
-            18 => AppOptions.AI_GPT4o,
-            19 => AppOptions.AI_8B_GPT4o,
-            20 => AppOptions.AI_8B,
-            _ => AppOptions.AI_Baz
+            18 => AppOptions.AI_Kazim1,
+            19 => AppOptions.AI_Kazim2,
+            20 => AppOptions.AI_Kazim3,
+            _ => AppOptions.AI_Default
         };
     }
 
@@ -143,7 +155,77 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
         }
     }
 
-    public async Task<SimilarResponseModel> GetSimilarQuestion(QuestionApiModel model)
+    public async Task<QuestionTextResponseModel> AskQuestionText(QuestionApiModel model)
+    {
+        var baseUrl = BaseUrl(model.UserId);
+        QuestionTextResponseModel answer = null;
+        try
+        {
+            using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            var available = Convert.ToBoolean(content);
+
+            if (!available)
+            {
+                await InfrastructureDelegates.UpdateQuestionText?.Invoke(new(), new(model.Id, QuestionStatus.SendAgain, model.UserId));
+                return answer;
+            }
+
+            var data = new QuestionTextRequestModel
+            {
+                QuestionText = model.QuestionText,
+                LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
+            };
+
+            request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/TextReq")
+            {
+                Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"),
+            };
+
+            response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+
+            content = await response.Content.ReadAsStringAsync();
+            answer = JsonSerializer.Deserialize<QuestionTextResponseModel>(content, _options);
+
+            if (model.QuestionText.IsEmpty()
+                || answer.AnswerText.IsEmpty()
+                || _emptyQuestion.Any(x => answer.AnswerText.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                throw new ExternalApiException(Strings.DynamicNotEmpty, Strings.Question);
+
+            if (!model.ExcludeQuiz)
+            {
+                answer.RightOption = answer.RightOption.IsNotEmpty()
+                    ? answer.RightOption.Trim("Cevap", ".", ":", ")", "-").ToUpper()[..1]
+                    : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
+
+                if (!_answersOptions.Contains(answer.RightOption, StringComparer.OrdinalIgnoreCase))
+                    throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
+            }
+
+            answer.AnswerText = answer.AnswerText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
+
+            await InfrastructureDelegates.UpdateQuestionText?.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId));
+
+            return answer;
+        }
+        catch (Exception ex)
+        {
+            await InfrastructureDelegates.UpdateQuestionText?.Invoke(answer, new(model.Id, QuestionStatus.Error, model.UserId));
+            throw new ExternalApiException(ex.Message);
+        }
+        finally
+        {
+            await EndChat(baseUrl);
+        }
+    }
+
+    public async Task<SimilarResponseModel> GetSimilar(QuestionApiModel model)
     {
         var baseUrl = BaseUrl(model.UserId);
         SimilarResponseModel similar = null;
@@ -161,7 +243,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
             if (!available)
             {
                 similar = new SimilarResponseModel { QuestionText = model.Base64 };
-                await InfrastructureDelegates.UpdateSimilarQuestionAnswer.Invoke(similar, new UpdateQuestionDto(model.Id, QuestionStatus.SendAgain, model.UserId));
+                await InfrastructureDelegates.UpdateSimilarAnswer.Invoke(new(), new UpdateQuestionDto(model.Id, QuestionStatus.SendAgain, model.UserId));
                 return similar;
             }
 
@@ -183,15 +265,88 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
             similar = JsonSerializer.Deserialize<SimilarResponseModel>(content, _options);
             similar.RightOption = similar.RightOption.Trim("Cevap", ":", ")", "-").ToUpper();
 
-            if (InfrastructureDelegates.UpdateSimilarQuestionAnswer != null)
-                await InfrastructureDelegates.UpdateSimilarQuestionAnswer.Invoke(similar, new(model.Id, QuestionStatus.Answered, model.UserId));
+            if (InfrastructureDelegates.UpdateSimilarAnswer != null)
+                await InfrastructureDelegates.UpdateSimilarAnswer.Invoke(similar, new(model.Id, QuestionStatus.Answered, model.UserId));
 
             return similar;
         }
         catch (Exception ex)
         {
-            if (InfrastructureDelegates.UpdateSimilarQuestionAnswer != null)
-                await InfrastructureDelegates.UpdateSimilarQuestionAnswer.Invoke(similar, new(model.Id, QuestionStatus.Error, model.UserId));
+            if (InfrastructureDelegates.UpdateSimilarAnswer != null)
+                await InfrastructureDelegates.UpdateSimilarAnswer.Invoke(similar, new(model.Id, QuestionStatus.Error, model.UserId));
+            throw new ExternalApiException(ex.Message);
+        }
+        finally
+        {
+            await EndChat(baseUrl);
+        }
+    }
+
+    public async Task<SimilarTextResponseModel> GetSimilarText(QuestionApiModel model)
+    {
+        var baseUrl = BaseUrl(model.UserId);
+        SimilarTextResponseModel similar = null;
+        try
+        {
+            using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            var available = Convert.ToBoolean(content);
+
+            if (!available)
+            {
+                await InfrastructureDelegates.UpdateSimilarText.Invoke(new(), new UpdateQuestionDto(model.Id, QuestionStatus.SendAgain, model.UserId));
+                return similar;
+            }
+
+            var data = new QuestionTextRequestModel
+            {
+                QuestionText = model.QuestionText,
+                LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
+            };
+
+            request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Text2Benzer")
+            {
+                Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
+            };
+
+            response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+
+            content = await response.Content.ReadAsStringAsync();
+            similar = JsonSerializer.Deserialize<SimilarTextResponseModel>(content, _options);
+
+                if (model.QuestionText.IsEmpty()
+                || similar.AnswerText.IsEmpty()
+                || _emptyQuestion.Any(x => similar.AnswerText.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    throw new ExternalApiException(Strings.DynamicNotEmpty, Strings.Question);
+
+            if (!model.ExcludeQuiz)
+            {
+                similar.RightOption = similar.RightOption.IsNotEmpty()
+                    ? similar.RightOption.Trim("Cevap", ".", ":", ")", "-").ToUpper()[..1]
+                    : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
+
+                if (!_answersOptions.Contains(similar.RightOption, StringComparer.OrdinalIgnoreCase))
+                    throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
+
+                if (InfrastructureDelegates.UpdateSimilarText != null)
+                    await InfrastructureDelegates.UpdateSimilarText.Invoke(similar, new(model.Id, QuestionStatus.Answered, model.UserId));
+            }
+
+            similar.SimilarQuestionText = similar.SimilarQuestionText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
+            similar.AnswerText = similar.AnswerText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
+
+            return similar;
+        }
+        catch (Exception ex)
+        {
+            if (InfrastructureDelegates.UpdateSimilarText != null)
+                await InfrastructureDelegates.UpdateSimilarText.Invoke(similar, new(model.Id, QuestionStatus.Error, model.UserId));
             throw new ExternalApiException(ex.Message);
         }
         finally
@@ -259,7 +414,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
         return similars;
     }
 
-    public async Task<QuizResponseModel> GetSimilarQuestionsForQuiz(QuizApiModel model)
+    public async Task<QuizResponseModel> GetSimilarForQuiz(QuizApiModel model)
     {
         var baseUrl = BaseUrl(model.UserId);
         var similars = new QuizResponseModel
@@ -322,6 +477,89 @@ public class SedussApi(IHttpClientFactory httpClientFactory) : IQuestionApi
                     : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
 
                 if (!_answersOptions.Contains(x.RightOption, StringComparer.OrdinalIgnoreCase))
+                    throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new ExternalApiException(ex.Message);
+        }
+        finally
+        {
+            await EndChat(baseUrl);
+        }
+
+        return similars;
+    }
+
+    public async Task<QuizResponseModel> GetSimilarTextForQuiz(QuizApiModel model)
+    {
+        var baseUrl = BaseUrl(model.UserId);
+        var similars = new QuizResponseModel
+        {
+            Questions = []
+        };
+
+        try
+        {
+            using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
+
+            for (int i = 0; i < model.QuestionTexts.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}");
+                Debug.WriteLine($"{i + 1}");
+
+                var question = model.QuestionTexts[i];
+
+                var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
+                HttpResponseMessage response = null;
+
+                var count = (byte)0;
+                do
+                {
+                    if (count > 0) await Task.Delay(3000);
+                    response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                    count++;
+                }
+                while (response.StatusCode != HttpStatusCode.OK && count < 3);
+
+                var content = await response.Content.ReadAsStringAsync();
+                var available = Convert.ToBoolean(content);
+
+                if (!available) return similars;
+
+                var data = new QuestionTextRequestModel
+                {
+                    QuestionText = question,
+                    LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
+                };
+
+                request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Text2Benzer")
+                {
+                    Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
+                };
+
+                response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                response.EnsureSuccessStatusCode();
+
+                content = await response.Content.ReadAsStringAsync();
+                var similarObj = JsonSerializer.Deserialize<SimilarResponseModel>(content, _options);
+                similars.Questions.Add(similarObj);
+            }
+
+            similars.Questions.ForEach(similar =>
+            {
+                if (similar.QuestionText.IsEmpty()
+                    || similar.AnswerText.IsEmpty()
+                    || _emptyQuestion.Any(x => similar.AnswerText.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    throw new ExternalApiException(Strings.DynamicNotEmpty, Strings.Question);
+
+                similar.RightOption = similar.RightOption.IsNotEmpty()
+                    ? similar.RightOption.Trim("Cevap", ".", ":", ")", "-").ToUpper()[..1]
+                    : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
+
+                if (!_answersOptions.Contains(similar.RightOption, StringComparer.OrdinalIgnoreCase))
                     throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
             });
         }

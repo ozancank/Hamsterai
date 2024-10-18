@@ -12,17 +12,18 @@ public class AppOptions
     public static string HomeworkPath { get; set; }
     public static string HomeworkAnswerPath { get; set; }
     public static int AITryCount { get; set; }
-    public static int AITrySecond { get; set; }
-    public static string AI_Baz { get; set; }
-    public static string AI_8B_Baz { get; set; }
-    public static string AI_8B_GPT4o { get; set; }
-    public static string AI_8B { get; set; }
-    public static string AI_GPT4o { get; set; }
+    public static int AISendSecond { get; set; }
+    public static string AI_Default { get; set; }
+    public static string AI_Kazim1 { get; set; }
+    public static string AI_Kazim2 { get; set; }
+    public static string AI_Kazim3 { get; set; }
     public static string ForgetPasswordUrl { get; set; }
     public static int QuestionLimitForStudent { get; set; }
     public static int SimilarLimitForStudent { get; set; }
     public static int QuizMinimumQuestionLimit { get; set; }
     public static string DefaultPassword { get; set; }
+    public static int SenderCapacity { get; set; }
+    public static string OCR_Url { get; set; }
 
     public static string ProfilePictureFolderPath { get; set; }
     public static string QuestionPictureFolderPath { get; set; }

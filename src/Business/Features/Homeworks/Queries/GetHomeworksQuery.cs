@@ -5,7 +5,7 @@ using OCK.Core.Pipelines.Authorization;
 
 namespace Business.Features.Homeworks.Queries;
 
-public class GetHomeworksQuery : IRequest<PageableModel<GetHomeworkStudentModel>>, ISecuredRequest<UserTypes>
+public class GetHomeworksQuery : IRequest<PageableModel<GetHomeworkModel>>, ISecuredRequest<UserTypes>
 {
     public PageRequest PageRequest { get; set; }
     public HomeworkRequestModel Model { get; set; }
@@ -15,9 +15,9 @@ public class GetHomeworksQuery : IRequest<PageableModel<GetHomeworkStudentModel>
 
 public class GetHomeworksQueryHandler(IMapper mapper,
                                       IHomeworkDal homeworkDal,
-                                      ICommonService commonService) : IRequestHandler<GetHomeworksQuery, PageableModel<GetHomeworkStudentModel>>
+                                      ICommonService commonService) : IRequestHandler<GetHomeworksQuery, PageableModel<GetHomeworkModel>>
 {
-    public async Task<PageableModel<GetHomeworkStudentModel>> Handle(GetHomeworksQuery request, CancellationToken cancellationToken)
+    public async Task<PageableModel<GetHomeworkModel>> Handle(GetHomeworksQuery request, CancellationToken cancellationToken)
     {
         request.PageRequest ??= new PageRequest();
         request.Model ??= new HomeworkRequestModel();
@@ -25,7 +25,7 @@ public class GetHomeworksQueryHandler(IMapper mapper,
         if (request.Model.StartDate == null) request.Model.StartDate = DateTime.Today.AddDays(-7);
         if (request.Model.EndDate == null) request.Model.EndDate = DateTime.Today;
 
-        var homeworks = await homeworkDal.GetPageListAsyncAutoMapper<GetHomeworkStudentModel>(
+        var homeworks = await homeworkDal.GetPageListAsyncAutoMapper<GetHomeworkModel>(
             enableTracking: false,
             predicate: x => x.IsActive
                             && x.TeacherId == commonService.HttpConnectionId
@@ -42,7 +42,7 @@ public class GetHomeworksQueryHandler(IMapper mapper,
             index: request.PageRequest.Page, size: request.PageRequest.PageSize,
             cancellationToken: cancellationToken);
 
-        var result = mapper.Map<PageableModel<GetHomeworkStudentModel>>(homeworks);
+        var result = mapper.Map<PageableModel<GetHomeworkModel>>(homeworks);
         return result;
     }
 }

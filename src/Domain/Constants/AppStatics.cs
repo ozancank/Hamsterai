@@ -2,5 +2,6 @@
 
 public class AppStatics
 {
-    public static bool SenderTryQuestion { get; set; } = true;
+    public static bool SenderQuestionAllow { get; set; } = true;
+
 }

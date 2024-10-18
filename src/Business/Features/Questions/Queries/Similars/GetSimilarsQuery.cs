@@ -15,7 +15,7 @@ public class GetSimilarsQuery : IRequest<PageableModel<GetSimilarModel>>, ISecur
 }
 
 public class GetSimilarsQueryHandler(IMapper mapper,
-                                     ISimilarQuestionDal similarDal,
+                                     ISimilarDal similarDal,
                                      ICommonService commonService) : IRequestHandler<GetSimilarsQuery, PageableModel<GetSimilarModel>>
 {
     public async Task<PageableModel<GetSimilarModel>> Handle(GetSimilarsQuery request, CancellationToken cancellationToken)

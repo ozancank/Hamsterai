@@ -32,11 +32,15 @@ public class QuestionRules(IQuestionDal questionDal,
 
     internal async Task QuestionLimitControl()
     {
+        var date = DateTime.Today;
+
         if (commonService.HttpUserType == UserTypes.Administator) return;
         var count = await questionDal.CountOfRecordAsync(
                     enableTracking: false,
                     predicate: x => x.CreateUser == commonService.HttpUserId
-                                    && x.Status != QuestionStatus.Error);
+                                    && x.Status != QuestionStatus.Error
+                                    && x.CreateDate >= DateTime.Today
+                                    && x.CreateDate <= DateTime.Today.AddDays(1).AddMilliseconds(-1));
 
         if (count >= AppOptions.QuestionLimitForStudent) throw new BusinessException(Strings.QuestionLimitForStudent);
     }

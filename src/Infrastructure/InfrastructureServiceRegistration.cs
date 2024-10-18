@@ -10,6 +10,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<Time.ITimeApi, Time.WorldTimeApi.WorldTimeApi>();
         services.AddTransient<AI.IQuestionApi, AI.Seduss.SedussApi>();
         services.AddSingleton<Notification.INotificationApi, Notification.Firebase.FirebaseApi>();
+        services.AddTransient<OCR.IOcrApi, OCR.Gemini.GeminiApi>();
 
         return services;
     }

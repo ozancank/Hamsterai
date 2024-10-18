@@ -25,9 +25,9 @@ public class UpdateUserCommandHandler(IMapper mapper,
         var user = await userDal.GetAsync(predicate: x => x.Id == request.Model.Id, cancellationToken: cancellationToken);
 
         await UserRules.UserShouldExistsAndActive(user);
-        await userRules.UserNameCanNotBeDuplicated(request.Model.UserName);
-        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone);
+        await userRules.UserNameCanNotBeDuplicated(request.Model.UserName, request.Model.Id);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email, request.Model.Id);
+        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone, request.Model.Id);
         await userRules.UserTypeAllowed(user.Type, user.Id);
 
         var date = DateTime.Now;

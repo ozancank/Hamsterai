@@ -18,7 +18,7 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
                                             IUserDal userDal,
                                             ICommonService commonService,
                                             IQuestionDal questionDal,
-                                            ISimilarQuestionDal similarQuestionDal,
+                                            ISimilarDal similarQuestionDal,
                                             IClassRoomDal classRoomDal) : IRequestHandler<GetSchoolDashboardQuery, GetSchoolDashboardModel>
 {
     public async Task<GetSchoolDashboardModel> Handle(GetSchoolDashboardQuery request, CancellationToken cancellationToken)

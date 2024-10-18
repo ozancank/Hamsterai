@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.Core;
 using Microsoft.Extensions.Configuration;
+using OCK.Core.Utilities;
 using System.Reflection;
 
 namespace DataAccess.EF;
@@ -31,21 +32,22 @@ public class HamsteraiDbContext : DbContext
     public DbSet<Quiz> Quizzes { get; set; }
     public DbSet<QuizQuestion> QuizQuestions { get; set; }
     public DbSet<School> Schools { get; set; }
-    public DbSet<Similar> SimilarQuestions { get; set; }
+    public DbSet<Similar> Similars { get; set; }
     public DbSet<Student> Students { get; set; }
     public DbSet<Teacher> Teachers { get; set; }
     public DbSet<TeacherClassRoom> TeacherClassRooms { get; set; }
     public DbSet<TeacherLesson> TeacherLessons { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
 
-    public HamsteraiDbContext(DbContextOptions<HamsteraiDbContext> options, IConfiguration configuration)
+    public HamsteraiDbContext(DbContextOptions<HamsteraiDbContext> options)
         : base(options)
-    {
-        Configuration = configuration;
+    {        
+        Configuration=ServiceTools.GetService<IConfiguration>();
         if (!IsMigration)
         {
             Database.Migrate();
             IsMigration = true;
-        }
+        }      
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
