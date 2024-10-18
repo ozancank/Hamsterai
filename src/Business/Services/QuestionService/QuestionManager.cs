@@ -206,8 +206,8 @@ public class QuestionManager(ICommonService commonService,
             var fileName = $"{dto.UserId}_{data.LessonId}_{dto.QuestionId}{extension}";
             questionFileName = $"SQ_{fileName}";
             answerFileName = $"SA_{fileName}";
-            await commonService.TextToImage(model?.SimilarQuestionText, fileName, AppOptions.SimilarQuestionPictureFolderPath);
-            await commonService.TextToImage(model?.AnswerText, fileName, AppOptions.SimilarAnswerPictureFolderPath);
+            await commonService.TextToImage(model?.SimilarQuestionText, questionFileName, AppOptions.SimilarQuestionPictureFolderPath);
+            await commonService.TextToImage(model?.AnswerText, answerFileName, AppOptions.SimilarAnswerPictureFolderPath);
         }
 
         data.UpdateUser = 1;

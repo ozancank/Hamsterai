@@ -256,8 +256,10 @@ namespace DataAccess.EF.Migrations
                         .HasColumnOrder(11);
 
                     b.Property<byte>("GroupId")
+                        .IsRequired()
                         .HasColumnType("smallint")
                         .HasColumnName("GroupId")
+                        .HasDefaultValue((byte)1)
                         .HasColumnOrder(15);
 
                     b.Property<bool>("IsActive")

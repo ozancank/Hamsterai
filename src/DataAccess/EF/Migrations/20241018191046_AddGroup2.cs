@@ -18,7 +18,7 @@ namespace DataAccess.EF.Migrations
                 table: "Users",
                 type: "smallint",
                 nullable: false,
-                defaultValue: (byte)0)
+                defaultValue: (byte)1)
                 .Annotation("Relational:ColumnOrder", 15);
 
             migrationBuilder.AddColumn<bool>(
