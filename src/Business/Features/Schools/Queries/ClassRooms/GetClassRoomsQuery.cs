@@ -9,7 +9,7 @@ public class GetClassRoomsQuery : IRequest<PageableModel<GetClassRoomModel>>, IS
 {
     public PageRequest PageRequest { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.School];
+    public UserTypes[] Roles { get; } = [UserTypes.School,UserTypes.Teacher];
 }
 
 public class GetClassRoomsQueryHandler(IMapper mapper,

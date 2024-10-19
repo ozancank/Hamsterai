@@ -1,4 +1,5 @@
-﻿using Business.Features.Users.Models.User;
+﻿using Business.Features.Lessons.Rules;
+using Business.Features.Users.Models.User;
 using Business.Features.Users.Rules;
 using Business.Services.CommonService;
 using DataAccess.Abstract.Core;
@@ -18,7 +19,8 @@ public class UpdateUserCommand : IRequest<GetUserModel>, ISecuredRequest<UserTyp
 public class UpdateUserCommandHandler(IMapper mapper,
                                       ICommonService commonService,
                                       IUserDal userDal,
-                                      UserRules userRules) : IRequestHandler<UpdateUserCommand, GetUserModel>
+                                      UserRules userRules,
+                                      GroupRules groupRules) : IRequestHandler<UpdateUserCommand, GetUserModel>
 {
     public async Task<GetUserModel> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
@@ -29,6 +31,7 @@ public class UpdateUserCommandHandler(IMapper mapper,
         await userRules.UserEmailCanNotBeDuplicated(request.Model.Email, request.Model.Id);
         await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone, request.Model.Id);
         await userRules.UserTypeAllowed(user.Type, user.Id);
+        await groupRules.GroupShouldExistsById(request.Model.GroupId);
 
         var date = DateTime.Now;
         if (request.Model.ProfilePictureFileName.IsNotEmpty() && request.Model.ProfilePictureBase64.IsNotEmpty())
@@ -48,6 +51,7 @@ public class UpdateUserCommandHandler(IMapper mapper,
         user.Type = Enum.Parse<UserTypes>($"{request.Model.Type}");
         user.ConnectionId = request.Model.ConnectionId;
         user.SchoolId = request.Model.SchoolId;
+        user.GroupId = request.Model.GroupId;
 
         await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
         var result = mapper.Map<GetUserModel>(user);
@@ -84,5 +88,8 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserModel>
         RuleFor(x => x.Email).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Email, "100"]);
 
         RuleFor(x => (byte)x.Type).InclusiveBetween((byte)1, (byte)4).WithMessage(Strings.DynamicBetween, [Strings.UserType, "1", "4"]);
+
+        RuleFor(x => x.GroupId).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Group]);
+        RuleFor(x => x.GroupId).InclusiveBetween((byte)1, (byte)255).WithMessage(Strings.DynamicBetween, [Strings.Group, "1", "255"]);
     }
 }

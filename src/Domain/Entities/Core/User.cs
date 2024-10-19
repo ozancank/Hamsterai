@@ -13,7 +13,7 @@ public class User : Security.User
     public UserTypes Type { get; set; }
     public int? ConnectionId { get; set; }
     public int? SchoolId { get; set; }
-    public byte GroupId { get; set; }
+    public byte? GroupId { get; set; }
 
     public virtual School School { get; set; }
     public virtual Group Group { get; set; }

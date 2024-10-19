@@ -9,7 +9,7 @@ public class GetStudentsQuery : IRequest<PageableModel<GetStudentModel>>, ISecur
 {
     public PageRequest PageRequest { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.School];
+    public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
 }
 
 public class GetStudentsQueryHandler(IMapper mapper,

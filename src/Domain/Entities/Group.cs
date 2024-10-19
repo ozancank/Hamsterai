@@ -8,6 +8,7 @@ public class Group : BaseEntity<byte>
 
     public virtual ICollection<LessonGroup> LessonGroups { get; set; }
     public virtual ICollection<User> Users { get; set; }
+    public virtual ICollection<SchoolGroup> SchoolGroups { get; set; }
 
     public Group() : base()
     {

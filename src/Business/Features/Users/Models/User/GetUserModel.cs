@@ -14,5 +14,6 @@ public class GetUserModel : IResponseModel
     public int? ConnectionId { get; set; }
     public int? SchoolId { get; set; }
     public byte Type { get; set; }
+    public byte GroupId { get; set; }
     public IList<string> OperationClaims { get; set; }
 }

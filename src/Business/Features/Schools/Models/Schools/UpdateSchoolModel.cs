@@ -12,4 +12,5 @@ public class UpdateSchoolModel : IRequestModel
     public string AuthorizedEmail { get; set; }
     public DateTime LicenseEndDate { get; set; }
     public int UserCount { get; set; }
+    public List<byte> GroupIds { get; set; }
 }

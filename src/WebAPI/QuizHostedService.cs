@@ -1,9 +1,9 @@
 ﻿using Business.Services.QuestionService;
-using Domain.Constants;
+using OCK.Core.Logging.Serilog;
 
 namespace WebAPI;
 
-public class QuizHostedService(IServiceProvider serviceProvider) : BackgroundService
+public class QuizHostedService(IServiceProvider serviceProvider, LoggerServiceBase loggerServiceBase) : BackgroundService
 {
     public override Task StartAsync(CancellationToken cancellationToken)
     {
@@ -27,7 +27,10 @@ public class QuizHostedService(IServiceProvider serviceProvider) : BackgroundSer
 
                 await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
             }
-            catch { }            
+            catch (Exception ex)
+            {
+                loggerServiceBase.Error($"QuizHostedService {ex.InnerException.Message}*{ex.Message}*{ex.StackTrace}");
+            }
         }
     }
 }

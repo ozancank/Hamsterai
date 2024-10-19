@@ -49,4 +49,20 @@ public class GroupRules(IGroupDal groupDal) : IBusinessRule
         if (groupId == null && university != null) throw new BusinessException(Strings.DynamicExists, name);
         if (groupId != null && university != null && university.Id != groupId) throw new BusinessException(Strings.DynamicExists, name);
     }
+
+    internal async Task GroupShouldBeRecordInDatabase(IEnumerable<byte> ids)
+    {
+        var groups = await groupDal.GetListAsync(predicate: x => x.IsActive, selector: x => x.Id, enableTracking: false);
+        foreach (var id in ids)
+            if (!groups.Any(x => x == id))
+                throw new BusinessException(Strings.DynamicNotFound, Strings.Group);        
+    }
+
+    internal static Task GroupShouldBeRecordInDatabase(IEnumerable<byte> ids, IEnumerable<Group> groups)
+    {
+        foreach (var id in ids)
+            if (!groups.Any(x => x.Id == id))
+                throw new BusinessException(Strings.DynamicNotFound, Strings.Group);
+        return Task.CompletedTask;
+    }
 }

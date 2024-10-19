@@ -26,7 +26,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.Type).HasColumnName("Type").HasColumnOrder(12).IsRequired();
         builder.Property(e => e.SchoolId).HasColumnName("SchoolId").HasColumnOrder(13);
         builder.Property(e => e.ConnectionId).HasColumnName("ConnectionId").HasColumnOrder(14);
-        builder.Property(e => e.GroupId).HasColumnName("GroupId").HasDefaultValue((byte)1).HasColumnOrder(15).IsRequired();
+        builder.Property(e => e.GroupId).HasColumnName("GroupId").HasColumnOrder(15);
 
         builder.HasOne(e => e.School).WithMany(e => e.Users).HasForeignKey(e => e.SchoolId).HasPrincipalKey(e => e.Id);
         builder.HasOne(e => e.Group).WithMany(e => e.Users).HasForeignKey(e => e.GroupId).HasPrincipalKey(e => e.Id);

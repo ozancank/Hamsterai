@@ -1,4 +1,5 @@
-﻿using Business.Features.Schools.Models.ClassRooms;
+﻿using Business.Features.Lessons.Rules;
+using Business.Features.Schools.Models.ClassRooms;
 using Business.Features.Schools.Rules;
 using Business.Services.CommonService;
 using MediatR;
@@ -29,7 +30,7 @@ public class AddClassRoomCommandHandler(IMapper mapper,
         var date = DateTime.Now;
 
         var classRoom = mapper.Map<ClassRoom>(request.Model);
-        classRoom.Id = await classRoomDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
+        classRoom.Id = await classRoomDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);        
         classRoom.IsActive = true;
         classRoom.CreateUser = userId.Value;
         classRoom.CreateDate = date;
@@ -53,7 +54,7 @@ public class AddClassRoomCommandValidator : AbstractValidator<AddClassRoomComman
         RuleFor(x => x.Model.No).GreaterThan((short)0).WithMessage(Strings.DynamicGratherThan, [$"{Strings.ClassRoom} {Strings.OfNumber}", "0"]);
 
         RuleFor(x => x.Model.Branch).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.ClassRoom} {Strings.OfBranch}"]);
-        RuleFor(x => x.Model.Branch).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [$"{Strings.ClassRoom} {Strings.OfBranch}", "1"]);
+        RuleFor(x => x.Model.Branch).MinimumLength(1).WithMessage(Strings.DynamicMinLength, [$"{Strings.ClassRoom} {Strings.OfBranch}", "1"]);
         RuleFor(x => x.Model.Branch).MaximumLength(10).WithMessage(Strings.DynamicMaxLength, [$"{Strings.ClassRoom} {Strings.OfBranch}", "10"]);
 
         RuleFor(x => x.Model.SchoolId).GreaterThan(0).WithMessage(Strings.DynamicGratherThan, [Strings.School, "0"]);

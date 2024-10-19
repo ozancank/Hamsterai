@@ -3,6 +3,7 @@ using System;
 using DataAccess.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.EF.Migrations
 {
     [DbContext(typeof(HamsteraiDbContext))]
-    partial class HamsteraiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241019195022_AddSchoolGroups")]
+    partial class AddSchoolGroups
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -255,8 +258,10 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("Email")
                         .HasColumnOrder(11);
 
-                    b.Property<byte?>("GroupId")
+                    b.Property<byte>("GroupId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("smallint")
+                        .HasDefaultValue((byte)1)
                         .HasColumnName("GroupId")
                         .HasColumnOrder(15);
 
@@ -2777,7 +2782,9 @@ namespace DataAccess.EF.Migrations
                 {
                     b.HasOne("Domain.Entities.Group", "Group")
                         .WithMany("Users")
-                        .HasForeignKey("GroupId");
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("Domain.Entities.School", "School")
                         .WithMany("Users")

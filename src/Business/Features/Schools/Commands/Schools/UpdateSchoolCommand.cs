@@ -1,8 +1,10 @@
-﻿using Business.Features.Schools.Models.Schools;
+﻿using Business.Features.Lessons.Rules;
+using Business.Features.Schools.Models.Schools;
 using Business.Features.Schools.Rules;
 using Business.Features.Users.Rules;
 using Business.Services.CommonService;
 using DataAccess.Abstract.Core;
+using Domain.Entities.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
@@ -17,11 +19,13 @@ public class UpdateSchoolCommand : IRequest<GetSchoolModel>, ISecuredRequest<Use
 }
 
 public class UpdateSchoolCommandHandler(IMapper mapper,
-                                     ISchoolDal schoolDal,
-                                     ICommonService commonService,
-                                     IUserDal userDal,
-                                     UserRules userRules,
-                                     SchoolRules schoolRules) : IRequestHandler<UpdateSchoolCommand, GetSchoolModel>
+                                        ISchoolDal schoolDal,
+                                        ICommonService commonService,
+                                        IUserDal userDal,
+                                        ISchoolGroupDal schoolGroupDal,
+                                        UserRules userRules,
+                                        SchoolRules schoolRules,
+                                        GroupRules groupRules) : IRequestHandler<UpdateSchoolCommand, GetSchoolModel>
 {
     public async Task<GetSchoolModel> Handle(UpdateSchoolCommand request, CancellationToken cancellationToken)
     {
@@ -30,6 +34,7 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
         await SchoolRules.SchoolShouldExists(school);
         await schoolRules.SchoolNameAndCityCanNotBeDuplicated(request.Model.Name, request.Model.City, school.Id);
         await schoolRules.SchoolTaxNumberCanNotBeDuplicated(request.Model.TaxNumber, school.Id);
+        await groupRules.GroupShouldBeRecordInDatabase(request.Model.GroupIds);
 
         var user = await userDal.GetAsync(x => x.SchoolId == school.Id && x.Type == UserTypes.School, cancellationToken: cancellationToken);
 
@@ -56,10 +61,38 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
         user.Email = school.AuthorizedEmail.Trim().ToLower();
         user.Phone = school.AuthorizedPhone.TrimForPhone();
 
+        var deleteList = await schoolGroupDal.GetListAsync(predicate: x => x.SchoolId == school.Id, cancellationToken: cancellationToken);
+
+        var schoolGroups = request.Model.GroupIds.Select(x => new SchoolGroup
+        {
+            Id = Guid.NewGuid(),
+            IsActive = true,
+            CreateUser = userId,
+            CreateDate = date,
+            UpdateUser = userId,
+            UpdateDate = date,
+            SchoolId = school.Id,
+            GroupId = x,
+        }).ToList();
+
+        var updateList = new List<User>();
+        var usersInSchool = await userDal.GetListAsync(predicate: x => x.SchoolId == school.Id && x.Type == UserTypes.Student, cancellationToken: cancellationToken);
+        foreach (var student in usersInSchool)
+        {
+            if (student.GroupId != null && !request.Model.GroupIds.Contains(student.GroupId.Value))
+            {
+                student.GroupId = null;
+                updateList.Add(student);
+            }
+        }
+
         var result = await schoolDal.ExecuteWithTransactionAsync(async () =>
         {
             var added = await schoolDal.UpdateAsyncCallback(school, cancellationToken: cancellationToken);
             await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
+            await schoolGroupDal.DeleteRangeAsync(deleteList, cancellationToken: cancellationToken);
+            await schoolGroupDal.AddRangeAsync(schoolGroups, cancellationToken: cancellationToken);
+            await userDal.UpdateRangeAsync(updateList, cancellationToken: cancellationToken);
             var result = mapper.Map<GetSchoolModel>(added);
             return result;
         }, cancellationToken: cancellationToken);

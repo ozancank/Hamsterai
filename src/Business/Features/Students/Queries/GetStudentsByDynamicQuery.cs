@@ -11,7 +11,7 @@ public class GetStudentsByDynamicQuery : IRequest<PageableModel<GetStudentModel>
     public PageRequest PageRequest { get; set; }
     public Dynamic Dynamic { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.School];
+    public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
 }
 
 public class GetStudentsByDynamicQueryHandler(IMapper mapper,

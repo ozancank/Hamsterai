@@ -25,7 +25,8 @@ public class AddHomeworkCommandHandler(IMapper mapper,
                                        IStudentDal studentDal,
                                        LessonRules lessonRules,
                                        ClassRoomRules classRoomRules,
-                                       StudentRules studentRules) : IRequestHandler<AddHomeworkCommand, GetHomeworkModel>
+                                       StudentRules studentRules,
+                                       HomeworkRules homeworkRules) : IRequestHandler<AddHomeworkCommand, GetHomeworkModel>
 {
     public async Task<GetHomeworkModel> Handle(AddHomeworkCommand request, CancellationToken cancellationToken)
     {
@@ -52,9 +53,9 @@ public class AddHomeworkCommandHandler(IMapper mapper,
         var userId = commonService.HttpUserId;
         var date = DateTime.Now;
         var idPrefix = $"HW-{userId}-{request.Model.LessonId}-";
-        var maxId = await homeworkDal.Query().AsNoTracking().Where(x => x.Id.StartsWith(idPrefix)).OrderBy(x => x.Id).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken: cancellationToken);
-        var nextId = Convert.ToInt32(maxId?[idPrefix.Length..] ?? "0") + 1;
-        var homeworkId = $"{idPrefix}{nextId}";
+        var homeworkId = $"{idPrefix}{date:HHmmssfff}";
+
+        await homeworkRules.HomeworkShouldNotExistsById(homeworkId);
 
         var fileName = $"{homeworkId}_{Guid.NewGuid()}{Path.GetExtension(request.Model.File.FileName)}";
         var filePath = Path.Combine(AppOptions.HomeworkFolderPath, fileName);

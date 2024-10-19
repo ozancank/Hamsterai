@@ -12,7 +12,7 @@ public class GetClassRoomByIdQuery : IRequest<GetClassRoomModel>, ISecuredReques
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 
-    public UserTypes[] Roles { get; } = [UserTypes.School];
+    public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
 }
 
 public class GetClassRoomByIdQueryHandler(IMapper mapper,

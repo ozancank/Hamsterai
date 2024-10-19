@@ -1,5 +1,6 @@
 ﻿using Business.Features.Lessons.Models.Lessons;
 using Business.Features.Lessons.Rules;
+using Business.Services.CommonService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
@@ -15,10 +16,13 @@ public class GetLessonByIdQuery : IRequest<GetLessonModel>, ISecuredRequest<User
 }
 
 public class GetLessonByIdQueryHandler(IMapper mapper,
+                                       ICommonService commonService,
                                        ILessonDal lessonDal) : IRequestHandler<GetLessonByIdQuery, GetLessonModel>
 {
     public async Task<GetLessonModel> Handle(GetLessonByIdQuery request, CancellationToken cancellationToken)
     {
+        var groupId=commonService.HttpGroupId;       
+
         var lesson = await lessonDal.GetAsyncAutoMapper<GetLessonModel>(
             enableTracking: request.Tracking,
             predicate: x => x.Id == request.Id,

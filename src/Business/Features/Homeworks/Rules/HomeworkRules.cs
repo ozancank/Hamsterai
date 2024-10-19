@@ -1,7 +1,10 @@
 ﻿
+using DataAccess.EF.Concrete.Core;
+
 namespace Business.Features.Homeworks.Rules;
 
-public class HomeworkRules : IBusinessRule
+public class HomeworkRules(IHomeworkDal homeworkDal,
+                           IHomeworkStudentDal homeworkStudentDal) : IBusinessRule
 {
     internal static Task HomeworkShouldExists(object homework)
     {
@@ -9,10 +12,22 @@ public class HomeworkRules : IBusinessRule
         return Task.CompletedTask;
     }
 
+    internal async Task HomeworkShouldNotExistsById(string id)
+    {
+        var control = await homeworkDal.IsExistsAsync(predicate: x => x.Id == id, enableTracking: false);
+        if (control) throw new BusinessException(Strings.DynamicExists, $"{Strings.Homework} Id");
+    }
+
     internal static Task HomeworkStudentShouldExists(object homework)
     {
         if (homework == null) throw new BusinessException(Strings.DynamicNotFound, Strings.Homework);
         return Task.CompletedTask;
+    }
+
+    internal async Task HomeworkStudentShouldNotExistsById(string id)
+    {
+        var control = await homeworkDal.IsExistsAsync(predicate: x => x.Id == id, enableTracking: false);
+        if (control) throw new BusinessException(Strings.DynamicExists, $"{Strings.Homework}-{Strings.Student} Id ");
     }
 
     internal static Task OnlyOneShouldBeFilled(int? classRoomId, List<int> studentIds)

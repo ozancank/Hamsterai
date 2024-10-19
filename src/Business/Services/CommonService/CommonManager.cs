@@ -1,4 +1,6 @@
 ﻿using Business.Features.Users.Rules;
+using OCK.Core.Logging;
+using OCK.Core.Logging.Serilog;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
@@ -7,11 +9,14 @@ using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System.Configuration;
 using System.Reflection;
 
 namespace Business.Services.CommonService;
 
-public class CommonManager(IHttpContextAccessor httpContextAccessor) : ICommonService
+public class CommonManager(IHttpContextAccessor httpContextAccessor,
+                           LoggerServiceBase loggerServiceBase,
+                           IConfiguration configuration) : ICommonService
 {
     public long HttpUserId =>
         Convert.ToInt64(httpContextAccessor.HttpContext.User.Claims
@@ -28,6 +33,10 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor) : ICommonSe
     public int? HttpConnectionId =>
         int.TryParse(httpContextAccessor.HttpContext.User.Claims
             .FirstOrDefault(x => x.Type == ClaimTypes.ConnectionId)?.Value, out int connectionId) ? connectionId : null;
+
+    public byte? HttpGroupId =>
+        byte.TryParse(httpContextAccessor.HttpContext.User.Claims
+            .FirstOrDefault(x => x.Type == ClaimTypes.GroupId)?.Value, out byte groupId) ? groupId : null;
 
     public async Task<string> PictureConvert(string base64, string fileName, string folder)
     {
@@ -49,7 +58,7 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor) : ICommonSe
         text = text.TextSplitLine();
 
         var collection = new FontCollection();
-        var family = collection.Add(System.IO.Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName,"Fonts", "Arial.ttf"));
+        var family = collection.Add(System.IO.Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Fonts", "Arial.ttf"));
         var font = family.CreateFont(20);
 
         var textOptions = new RichTextOptions(font)
@@ -74,5 +83,20 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor) : ICommonSe
         await image.SaveAsync(filePath, imageEncoder);
 
         return filePath;
+    }
+
+    public void ThrowErrorTry(Exception exception)
+    {
+        if (HttpUserType != UserTypes.Administator) throw new AuthenticationException(Strings.AuthorizationDenied);
+        throw exception;
+    }
+
+    public List<string> GetLogs(PageRequest pageRequest, bool onlyError)
+    {
+        if (!(HttpUserType == UserTypes.Administator
+            || (httpContextAccessor.HttpContext.Request.Headers.TryGetValue(configuration.GetSection("ByPassOptions:Name")?.Value, out var byPassKey)
+            && byPassKey == configuration.GetSection("ByPassOptions:Key")?.Value))) throw new AuthenticationException(Strings.AuthorizationDenied);
+        var result = loggerServiceBase.GetLogs(pageRequest, onlyError);
+        return result;
     }
 }

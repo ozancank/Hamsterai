@@ -12,7 +12,7 @@ public class GetStudentByIdQuery : IRequest<GetStudentModel>, ISecuredRequest<Us
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 
-    public UserTypes[] Roles { get; } = [UserTypes.School];
+    public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
 }
 
 public class GetStudentByIdQueryHandler(IMapper mapper,
