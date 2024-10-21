@@ -1,10 +1,11 @@
 ﻿using Business.Features.Questions.Models.Similars;
 using Business.Services.CommonService;
+using DataAccess.EF.Concrete;
 using Infrastructure.OCR.Models;
 
 namespace Business.Features.Questions.Rules;
 
-public class SimilarRules(ISimilarDal similarQuestionDal,
+public class SimilarRules(ISimilarDal similarDal,
                           ICommonService commonService) : IBusinessRule
 {
     internal static Task SimilarQuestionShouldExists(GetSimilarModel model)
@@ -19,25 +20,16 @@ public class SimilarRules(ISimilarDal similarQuestionDal,
         return Task.CompletedTask;
     }
 
-    internal async Task SimilarLimitControl(byte lessonId)
-    {
-        if (commonService.HttpUserType == UserTypes.Administator) return;
-        var count = await similarQuestionDal.CountOfRecordAsync(
-                    enableTracking: false,
-                    predicate: x => x.LessonId == lessonId
-                                    && x.CreateUser == commonService.HttpUserId
-                                    && x.Status != QuestionStatus.Error);
-
-        if (count >= AppOptions.SimilarLimitForStudent) throw new BusinessException(Strings.SimilarLimitForStudentAndLesson);
-    }
-
     internal async Task SimilarLimitControl()
     {
+        var date = DateTime.Today;
+
         if (commonService.HttpUserType == UserTypes.Administator) return;
-        var count = await similarQuestionDal.CountOfRecordAsync(
-                    enableTracking: false,
-                    predicate: x => x.CreateUser == commonService.HttpUserId
-                                    && x.Status != QuestionStatus.Error);
+        var count = await similarDal.Query().AsNoTracking()
+            .Where(x => x.CreateUser == commonService.HttpUserId
+                        && x.Status != QuestionStatus.Error
+                        && x.CreateDate >= date
+                        && x.CreateDate <= date.AddDays(1).AddMilliseconds(-1)).CountAsync();
 
         if (count >= AppOptions.SimilarLimitForStudent) throw new BusinessException(Strings.SimilarLimitForStudent);
     }

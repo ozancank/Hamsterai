@@ -19,29 +19,16 @@ public class QuestionRules(IQuestionDal questionDal,
         return Task.CompletedTask;
     }
 
-    internal async Task QuestionLimitControl(byte lessonId)
-    {
-        if (commonService.HttpUserType == UserTypes.Administator) return;
-        var count = await questionDal.CountOfRecordAsync(
-                    enableTracking: false,
-                    predicate: x => x.LessonId == lessonId
-                                    && x.CreateUser == commonService.HttpUserId
-                                    && x.Status != QuestionStatus.Error);
-
-        if (count >= AppOptions.QuestionLimitForStudent) throw new BusinessException(Strings.QuestionLimitForStudentAndLesson);
-    }
-
     internal async Task QuestionLimitControl()
     {
         var date = DateTime.Today;
 
         if (commonService.HttpUserType == UserTypes.Administator) return;
-        var count = await questionDal.CountOfRecordAsync(
-                    enableTracking: false,
-                    predicate: x => x.CreateUser == commonService.HttpUserId
+        var count = await questionDal.Query().AsNoTracking()
+            .Where(x => x.CreateUser == commonService.HttpUserId
                                     && x.Status != QuestionStatus.Error
-                                    && x.CreateDate >= DateTime.Today
-                                    && x.CreateDate <= DateTime.Today.AddDays(1).AddMilliseconds(-1));
+                                    && x.CreateDate >= date
+                                    && x.CreateDate <= date.AddDays(1).AddMilliseconds(-1)).CountAsync();
 
         if (count >= AppOptions.QuestionLimitForStudent) throw new BusinessException(Strings.QuestionLimitForStudent);
     }
