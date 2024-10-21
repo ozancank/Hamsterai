@@ -45,11 +45,11 @@ public class AddQuestionCommandHandler(IMapper mapper,
         var question = new Question
         {
             Id = id,
+            IsActive = true,
             CreateDate = date,
             CreateUser = userId,
             UpdateDate = date,
             UpdateUser = userId,
-            IsActive = true,
             LessonId = request.Model.LessonId,
             QuestionPictureBase64 = request.Model.QuestionPictureBase64,
             QuestionPictureFileName = fileName,
@@ -62,7 +62,9 @@ public class AddQuestionCommandHandler(IMapper mapper,
             SendForQuiz = false,
             TryCount = 0,
             GainId = null,
-            RightOption = null
+            RightOption = null,
+            ExcludeQuiz = false,
+            ExistsVisualContent = true,
         };
 
         var added = await questionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);

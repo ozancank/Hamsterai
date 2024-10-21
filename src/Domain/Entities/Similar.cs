@@ -18,10 +18,11 @@ public class Similar : BaseEntity<Guid>
     public QuestionStatus Status { get; set; }
     public bool IsRead { get; set; }
     public bool SendForQuiz { get; set; }
-    public bool ExcludeQuiz { get; set; }
     public int TryCount { get; set; }
     public int? GainId { get; set; }
     public char? RightOption { get; set; }
+    public bool ExcludeQuiz { get; set; }
+    public bool ExistsVisualContent { get; set; }
 
     public virtual User User { get; set; }
     public virtual Lesson Lesson { get; set; }

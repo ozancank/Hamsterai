@@ -44,6 +44,8 @@ public class AddSimilarTextCommandHandler(IMapper mapper,
 
         var ocr = await ocrApi.GetTextFromImage(new(filePath));
 
+        var existsVisualContent = ocr.Text.Contains("##visual##", StringComparison.OrdinalIgnoreCase);
+
         var question = new Similar
         {
             Id = id,
@@ -53,7 +55,9 @@ public class AddSimilarTextCommandHandler(IMapper mapper,
             UpdateUser = commonService.HttpUserId,
             UpdateDate = date,
             LessonId = request.Model.LessonId,
-            QuestionPicture = ocr.Text.Replace("##classic##", string.Empty),
+            QuestionPicture = existsVisualContent
+                              ? request.Model.QuestionPictureBase64
+                              : ocr.Text.Trim("##classic##", "##visual##"),
             QuestionPictureFileName = fileName,
             QuestionPictureExtension = extension,
             ResponseQuestion = string.Empty,
@@ -65,10 +69,11 @@ public class AddSimilarTextCommandHandler(IMapper mapper,
             Status = QuestionStatus.Waiting,
             IsRead = false,
             SendForQuiz = false,
-            ExcludeQuiz = ocr.Text.Contains("##classic##", StringComparison.OrdinalIgnoreCase) || ocr.Text.Contains("Cevap X", StringComparison.OrdinalIgnoreCase),
             TryCount = 0,
             GainId = null,
             RightOption = null,
+            ExcludeQuiz = ocr.Text.Contains("##classic##", StringComparison.OrdinalIgnoreCase) || ocr.Text.Contains("Cevap X", StringComparison.OrdinalIgnoreCase),
+            ExistsVisualContent = existsVisualContent
         };
 
         var added = await similarDal.AddAsyncCallback(question, cancellationToken: cancellationToken);

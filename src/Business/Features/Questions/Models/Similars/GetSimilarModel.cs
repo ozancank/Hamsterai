@@ -18,7 +18,10 @@ public class GetSimilarModel : IResponseModel
     public bool IsRead { get; set; }
     public int TryCount { get; set; }
     public int? GainId { get; set; }
-    
+    public char? RightOption { get; set; }
+    public bool ExcludeQuiz { get; set; }
+    public bool ExistsVisualContent { get; set; }
+
     public string LessonName { get; set; }
     public string GainName { get; set; }
 }

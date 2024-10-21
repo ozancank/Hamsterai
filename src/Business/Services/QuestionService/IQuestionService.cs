@@ -24,7 +24,7 @@ public interface IQuestionService : IBusinessService
 
     #endregion SimilarQuestion
 
-    Task SendForStatusSendAgain(CancellationToken cancellationToken);
+    Task SendQueztions(CancellationToken cancellationToken);
 
     #region Quiz
 

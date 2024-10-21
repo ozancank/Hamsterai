@@ -44,6 +44,8 @@ public class AddQuestionTextCommandHandler(IMapper mapper,
 
         var ocr = await ocrApi.GetTextFromImage(new(filePath));
 
+        var existsVisualContent = ocr.Text.Contains("##visual##", StringComparison.OrdinalIgnoreCase);
+
         var question = new Question
         {
             Id = id,
@@ -53,7 +55,9 @@ public class AddQuestionTextCommandHandler(IMapper mapper,
             UpdateDate = date,
             UpdateUser = userId,
             LessonId = request.Model.LessonId,
-            QuestionPictureBase64 = ocr.Text.Replace("##classic##", string.Empty),
+            QuestionPictureBase64 = existsVisualContent
+                                    ? request.Model.QuestionPictureBase64
+                                    : ocr.Text.Trim("##classic##", "##visual##"),
             QuestionPictureFileName = fileName,
             QuestionPictureExtension = extension,
             AnswerText = string.Empty,
@@ -62,10 +66,11 @@ public class AddQuestionTextCommandHandler(IMapper mapper,
             Status = QuestionStatus.Waiting,
             IsRead = false,
             SendForQuiz = false,
-            ExcludeQuiz = ocr.Text.Contains("##classic##", StringComparison.OrdinalIgnoreCase) || ocr.Text.Contains("Cevap X", StringComparison.OrdinalIgnoreCase),
             TryCount = 0,
             GainId = null,
             RightOption = null,
+            ExcludeQuiz = ocr.Text.Contains("##classic##", StringComparison.OrdinalIgnoreCase) || ocr.Text.Contains("Cevap X", StringComparison.OrdinalIgnoreCase),
+            ExistsVisualContent = existsVisualContent
         };
 
         var added = await questionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);

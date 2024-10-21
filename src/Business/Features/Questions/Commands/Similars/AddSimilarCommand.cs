@@ -44,7 +44,7 @@ public class AddSimilarCommandHandler(IMapper mapper,
 
         var question = new Similar
         {
-            Id = Guid.NewGuid(),
+            Id = id,
             IsActive = true,
             CreateUser = commonService.HttpUserId,
             UpdateUser = commonService.HttpUserId,
@@ -63,10 +63,11 @@ public class AddSimilarCommandHandler(IMapper mapper,
             Status = QuestionStatus.Waiting,
             IsRead = false,
             SendForQuiz = false,
-            ExcludeQuiz = false,
             TryCount = 0,
             GainId = null,
             RightOption = null,
+            ExcludeQuiz = false,
+            ExistsVisualContent = true,
         };
 
         var added = await similarQuestionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);

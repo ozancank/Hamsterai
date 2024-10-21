@@ -43,6 +43,6 @@ public class AddQuizTextCommandValidator : AbstractValidator<AddQuizTextCommand>
 
         RuleFor(x => x.Model.LessonId).InclusiveBetween((byte)1, (byte)255).WithMessage(Strings.DynamicBetween, [Strings.Lesson, "1", "255"]);
 
-        RuleFor(x => x.Model.Base64List).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Question]);
+        RuleFor(x => x.Model.QuestionList).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Question]);
     }
 }

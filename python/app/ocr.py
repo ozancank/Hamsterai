@@ -36,7 +36,9 @@ def extract_text_from_image(image_file):
     - Bir OCR gibi çalış ve metnin tamamını çıkar. Metin dili Türkiye Türkçesi dir.
     - Eğer resim bir SORU değil ise sadece #NanTestNan# cevabını ver.
     - Eğer resim bir SORU ise şu kuralları uygula:    
+      - Eğer soru içeriği bir görsel,resim içeriyorsa ##visual## yazısını ilk olarak ekle.
       - Eğer çoktan seçmeli bir test sorusu ise ve şıkları var ise:
+        - Eğer soru ve/veya şıklar bir tablo içeriyorsa, tablo formatına uygun bir yazı oluştur.
         - A) veya a) ile başlayan satırı tespit et. Bu satır şıkların başladığı satırdır. Bu satırın üstündeki tüm satırlar soru satırıdır.
         - Soru satırlarını ekle. 
         - Şıklar arasında, yani başlangıcı "A","B","C","D","E" boş satır bırakamadan şıkları ekle. Şıkları her zaman harften sonra bir adet kapalı parantez olacak şekilde yaz.

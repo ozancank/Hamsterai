@@ -2,12 +2,13 @@
 using Infrastructure.OCR.Gemini.Models;
 using Infrastructure.OCR.Models;
 using OCK.Core.Exceptions.CustomExceptions;
+using OCK.Core.Logging.Serilog;
 using System.Text;
 using System.Text.Json;
 
 namespace Infrastructure.OCR.Gemini;
 
-public class GeminiApi(IHttpClientFactory httpClientFactory) : IOcrApi
+public class GeminiApi(IHttpClientFactory httpClientFactory, LoggerServiceBase loggerServiceBase) : IOcrApi
 {
     private static readonly JsonSerializerOptions _options = new() { PropertyNameCaseInsensitive = true };
     private readonly int _apiTimeoutSecond = 20;
@@ -37,7 +38,7 @@ public class GeminiApi(IHttpClientFactory httpClientFactory) : IOcrApi
             var content = await response.Content.ReadAsStringAsync();
             var responseJson = JsonSerializer.Deserialize<GeminiOcrResponseModel>(content, _options);
 
-            var isClassic = responseJson.Message.Contains("##classic##", StringComparison.OrdinalIgnoreCase) || responseJson.Message.Contains("Cevap X", StringComparison.OrdinalIgnoreCase);
+            var isClassic = responseJson.Message.Contains("##classic##", StringComparison.OrdinalIgnoreCase);
 
             var lines = responseJson.Message.Trim('\r').Split("\n").ToList();
 
@@ -56,8 +57,7 @@ public class GeminiApi(IHttpClientFactory httpClientFactory) : IOcrApi
                 options[4] = lines.Any(x => x.Trim().StartsWith("E) ", StringComparison.CurrentCultureIgnoreCase));
 
                 var optionCount = options.Count(x => x);
-                if (!optionCount.Between(1, 5)) throw new ExternalApiException($"OCR'dan dönen şıklar 3 ile 5 arasında olmalıdır. Seçenek sayısı: {optionCount}");
-
+                if (!optionCount.Between(3, 5)) throw new ExternalApiException($"OCR'dan dönen şıklar 3 ile 5 arasında olmalıdır. Seçenek sayısı: {optionCount}");
 
                 int indexA = lines.FindIndex(x => x.StartsWith("A) "));
 
@@ -84,12 +84,11 @@ public class GeminiApi(IHttpClientFactory httpClientFactory) : IOcrApi
             result.Text = string.Join("\n", lines);
 
             if (result.Text.Contains("argument should contain only ASCII characters")) throw new ExternalApiException("OCR ASCII hatası verdi.");
-
-            return result;
         }
         catch (Exception ex)
         {
-            throw new ExternalApiException(ex.Message);
+            loggerServiceBase.Error($"GetTextFromImage {ex?.InnerException?.Message}*{ex?.Message}");
         }
+        return result;
     }
 }

@@ -3,6 +3,7 @@ using System;
 using DataAccess.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.EF.Migrations
 {
     [DbContext(typeof(HamsteraiDbContext))]
-    partial class HamsteraiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241020221351_ExistsVirtualContent")]
+    partial class ExistsVirtualContent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1574,11 +1577,11 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("ExcludeQuiz")
                         .HasColumnOrder(19);
 
-                    b.Property<bool>("ExistsVisualContent")
+                    b.Property<bool>("ExistsVirtualContent")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("ExistsVisualContent")
+                        .HasColumnName("ExistsVirtualContent")
                         .HasColumnOrder(20);
 
                     b.Property<int?>("GainId")
@@ -2075,13 +2078,6 @@ namespace DataAccess.EF.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("ExcludeQuiz")
                         .HasColumnOrder(22);
-
-                    b.Property<bool>("ExistsVisualContent")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("ExistsVisualContent")
-                        .HasColumnOrder(23);
 
                     b.Property<int?>("GainId")
                         .HasColumnType("integer")

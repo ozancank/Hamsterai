@@ -14,6 +14,9 @@ public class GetQuestionModel : IResponseModel
     public bool SendForQuiz { get; set; }
     public byte TryCount { get; set; }
     public int GainId { get; set; }
+    public char? RightOption { get; set; }
+    public bool ExcludeQuiz { get; set; }
+    public bool ExistsVisualContent { get; set; }
 
     public string LessonName { get; set; }
     public string GainName { get; set; }

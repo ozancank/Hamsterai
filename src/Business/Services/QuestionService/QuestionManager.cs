@@ -237,7 +237,7 @@ public class QuestionManager(ICommonService commonService,
 
     public SemaphoreSlim SenderSemaphore = new(AppOptions.SenderCapacity);
 
-    public async Task SendForStatusSendAgain(CancellationToken cancellationToken)
+    public async Task SendQueztions(CancellationToken cancellationToken)
     {
         AppStatics.SenderQuestionAllow = false;
         var changeDate = new DateTime(2024, 10, 19, 1, 30, 0);
@@ -265,26 +265,48 @@ public class QuestionManager(ICommonService commonService,
                 await SenderSemaphore.WaitAsync(cancellationToken);
                 try
                 {
-                    if (question is Question q)
+                    if (question is Question q1 && q1.ExistsVisualContent)
+                    {
+                        await questionApi.AskQuestionOcrImage(new()
+                        {
+                            Id = q1.Id,
+                            Base64 = q1.QuestionPictureBase64,
+                            LessonName = q1.Lesson.Name,
+                            UserId = q1.CreateUser,
+                            ExcludeQuiz = q1.ExcludeQuiz
+                        });
+                    }
+                    else if (question is Question q2)
                     {
                         await questionApi.AskQuestionText(new()
                         {
-                            Id = q.Id,
-                            QuestionText = q.QuestionPictureBase64,
-                            LessonName = q.Lesson.Name,
-                            UserId = q.CreateUser,
-                            ExcludeQuiz = q.ExcludeQuiz
+                            Id = q2.Id,
+                            QuestionText = q2.QuestionPictureBase64,
+                            LessonName = q2.Lesson.Name,
+                            UserId = q2.CreateUser,
+                            ExcludeQuiz = q2.ExcludeQuiz
                         });
                     }
-                    else if (question is Similar sm)
+                    else if (question is Similar sm1 && sm1.ExistsVisualContent)
+                    {
+                        await questionApi.GetSimilar(new()
+                        {
+                            Id = sm1.Id,
+                            Base64 = sm1.QuestionPicture,
+                            LessonName = sm1.Lesson.Name,
+                            UserId = sm1.CreateUser,
+                            ExcludeQuiz = sm1.ExcludeQuiz
+                        });
+                    }
+                    else if (question is Similar sm2)
                     {
                         await questionApi.GetSimilarText(new()
                         {
-                            Id = sm.Id,
-                            QuestionText = sm.QuestionPicture,
-                            LessonName = sm.Lesson.Name,
-                            UserId = sm.CreateUser,
-                            ExcludeQuiz = sm.ExcludeQuiz
+                            Id = sm2.Id,
+                            QuestionText = sm2.QuestionPicture,
+                            LessonName = sm2.Lesson.Name,
+                            UserId = sm2.CreateUser,
+                            ExcludeQuiz = sm2.ExcludeQuiz
                         });
                     }
                 }
@@ -306,100 +328,100 @@ public class QuestionManager(ICommonService commonService,
 
     public async Task<string> AddQuiz(AddQuizModel model, CancellationToken cancellationToken)
     {
-            await QuizRules.QuizQuestionShouldExists(model.Base64List);
-            await userRules.UserShouldExistsAndActiveById(model.UserId);
+        await QuizRules.QuizQuestionShouldExists(model.QuestionList);
+        await userRules.UserShouldExistsAndActiveById(model.UserId);
 
-            var lessonName = await lessonDal.GetAsync(
-                predicate: x => x.Id == model.LessonId,
-                enableTracking: false,
-                selector: x => x.Name,
-                cancellationToken: cancellationToken);
-            await LessonRules.LessonShouldExists(lessonName);
+        var lessonName = await lessonDal.GetAsync(
+            predicate: x => x.Id == model.LessonId,
+            enableTracking: false,
+            selector: x => x.Name,
+            cancellationToken: cancellationToken);
+        await LessonRules.LessonShouldExists(lessonName);
 
-            var responses = await questionApi.GetSimilarForQuiz(new()
+        var responses = await questionApi.GetSimilarForQuiz(new()
+        {
+            QuestionImages = model.QuestionList,
+            LessonName = lessonName,
+            UserId = model.UserId
+        });
+
+        await QuizRules.QuizQuestionsShouldExists(responses.Questions);
+
+        var result = await quizDal.ExecuteWithTransactionAsync(async () =>
+        {
+            var userId = 1;
+            var date = DateTime.Now;
+            var idPrefix = $"T-{model.LessonId}-{model.UserId}-";
+            var quziId = $"{idPrefix}{date:HHmmssfff}";
+
+            await quizRules.QuizQuestionShouldNotExistsById(quziId);
+            var quiz = new Quiz
             {
-                QuestionImages = model.Base64List,
-                LessonName = lessonName,
-                UserId = model.UserId
-            });
+                Id = quziId,
+                IsActive = true,
+                CreateUser = userId,
+                CreateDate = date,
+                UpdateUser = userId,
+                UpdateDate = date,
+                UserId = model.UserId,
+                LessonId = model.LessonId,
+                TimeSecond = 0,
+                Status = QuizStatus.NotStarted,
+                CorrectCount = 0,
+                WrongCount = 0,
+                EmptyCount = 0,
+                SuccessRate = 0,
+            };
 
-            await QuizRules.QuizQuestionsShouldExists(responses.Questions);
+            var questions = new List<QuizQuestion>();
 
-            var result = await quizDal.ExecuteWithTransactionAsync(async () =>
+            for (byte i = 0; i < responses.Questions.Count; i++)
             {
-                var userId = 1;
-                var date = DateTime.Now;
-                var idPrefix = $"T-{model.LessonId}-{model.UserId}-";                
-                var quziId = $"{idPrefix}{date:HHmmssfff}";
+                var response = responses.Questions[i];
+                var sortNo = (byte)(i + 1);
 
-                await quizRules.QuizQuestionShouldNotExistsById(quziId);
-                var quiz = new Quiz
+                var questionId = $"{quiz.Id}-{sortNo}";
+                var extension = ".png";
+                var fileName = $"{model.UserId}_{model.LessonId}_{questionId}{extension}";
+                var questionFileName = $"TQ_{fileName}";
+                var answerFileName = $"TA_{fileName}";
+                await commonService.PictureConvert(response.SimilarImage, questionFileName, AppOptions.QuizQuestionPictureFolderPath);
+                await commonService.PictureConvert(response.AnswerImage, answerFileName, AppOptions.QuizAnswerPictureFolderPath);
+
+                var gain = await gainService.GetOrAddGain(new(response.GainName, model.LessonId, userId));
+
+                questions.Add(new()
                 {
-                    Id = quziId,
+                    Id = questionId,
                     IsActive = true,
                     CreateUser = userId,
                     CreateDate = date,
                     UpdateUser = userId,
                     UpdateDate = date,
-                    UserId = model.UserId,
-                    LessonId = model.LessonId,
-                    TimeSecond = 0,
-                    Status = QuizStatus.NotStarted,
-                    CorrectCount = 0,
-                    WrongCount = 0,
-                    EmptyCount = 0,
-                    SuccessRate = 0,
-                };
+                    QuizId = quiz.Id,
+                    SortNo = sortNo,
+                    Question = response.QuestionText,
+                    QuestionPictureFileName = questionFileName,
+                    QuestionPictureExtension = extension,
+                    Answer = response.AnswerText,
+                    AnswerPictureFileName = answerFileName,
+                    AnswerPictureExtension = extension,
+                    RightOption = response.RightOption.Trim()[0],
+                    AnswerOption = null,
+                    OptionCount = (byte)response.OptionCount,
+                    GainId = gain.Id
+                });
+            }
 
-                var questions = new List<QuizQuestion>();
+            await quizDal.AddAsync(quiz, cancellationToken: cancellationToken);
+            await quizQuestionDal.AddRangeAsync(questions, cancellationToken: cancellationToken);
 
-                for (byte i = 0; i < responses.Questions.Count; i++)
-                {
-                    var response = responses.Questions[i];
-                    var sortNo = (byte)(i + 1);
+            return quiz.Id;
+        }, cancellationToken: cancellationToken);
 
-                    var questionId = $"{quiz.Id}-{sortNo}";
-                    var extension = ".png";
-                    var fileName = $"{model.UserId}_{model.LessonId}_{questionId}{extension}";
-                    var questionFileName = $"TQ_{fileName}";
-                    var answerFileName = $"TA_{fileName}";
-                    await commonService.PictureConvert(response.SimilarImage, questionFileName, AppOptions.QuizQuestionPictureFolderPath);
-                    await commonService.PictureConvert(response.AnswerImage, answerFileName, AppOptions.QuizAnswerPictureFolderPath);
+        _ = await notificationService.PushNotificationByUserId(new(Strings.DynamicLessonTestPrepared.Format(lessonName), Strings.DynamicLessonTestPreparedForYou.Format(lessonName, result), model.UserId, NotificationTypes.QuizCreated, result));
 
-                    var gain = await gainService.GetOrAddGain(new(response.GainName, model.LessonId, userId));
-
-                    questions.Add(new()
-                    {
-                        Id = questionId,
-                        IsActive = true,
-                        CreateUser = userId,
-                        CreateDate = date,
-                        UpdateUser = userId,
-                        UpdateDate = date,
-                        QuizId = quiz.Id,
-                        SortNo = sortNo,
-                        Question = response.QuestionText,
-                        QuestionPictureFileName = questionFileName,
-                        QuestionPictureExtension = extension,
-                        Answer = response.AnswerText,
-                        AnswerPictureFileName = answerFileName,
-                        AnswerPictureExtension = extension,
-                        RightOption = response.RightOption.Trim()[0],
-                        AnswerOption = null,
-                        OptionCount = (byte)response.OptionCount,
-                        GainId = gain.Id
-                    });
-                }
-
-                await quizDal.AddAsync(quiz, cancellationToken: cancellationToken);
-                await quizQuestionDal.AddRangeAsync(questions, cancellationToken: cancellationToken);
-
-                return quiz.Id;
-            }, cancellationToken: cancellationToken);
-
-            _ = await notificationService.PushNotificationByUserId(new(Strings.DynamicLessonTestPrepared.Format(lessonName), Strings.DynamicLessonTestPreparedForYou.Format(lessonName, result), model.UserId, NotificationTypes.QuizCreated, result));
-
-            return result;
+        return result;
     }
 
     public async Task<string> AddQuizText(AddQuizModel model, CancellationToken cancellationToken)
@@ -417,6 +439,7 @@ public class QuestionManager(ICommonService commonService,
         var responses = await questionApi.GetSimilarTextForQuiz(new()
         {
             QuestionTexts = model.QuestionList,
+            VisualList = model.VisualList,
             LessonName = lessonName,
             UserId = model.UserId
         });
@@ -427,7 +450,7 @@ public class QuestionManager(ICommonService commonService,
         {
             var userId = 1;
             var date = DateTime.Now;
-            var idPrefix = $"T-{model.LessonId}-{model.UserId}-";            
+            var idPrefix = $"T-{model.LessonId}-{model.UserId}-";
             var quziId = $"{idPrefix}{date:HHmmssfff}";
 
             await quizRules.QuizShouldNotExistsById(quziId);
@@ -520,7 +543,7 @@ public class QuestionManager(ICommonService commonService,
                 include: x => x.Include(u => u.User).ThenInclude(u => u.School)
                                .Include(u => u.Lesson)
                                .Include(u => u.Gain),
-                selector: x => new { x.Id, x.QuestionPictureFileName, x.CreateUser, x.User.SchoolId, x.LessonId },
+                selector: x => new { x.Id, x.QuestionPictureFileName, x.CreateUser, x.User.SchoolId, x.LessonId, x.ExistsVisualContent },
                 cancellationToken: cancellationToken);
 
             if (questions.Count == 0) return false;
@@ -534,7 +557,8 @@ public class QuestionManager(ICommonService commonService,
                     q.QuestionPictureFileName,
                     q.CreateUser,
                     q.SchoolId,
-                    q.LessonId
+                    q.LessonId,
+                    q.ExistsVisualContent
                 }))
                 .OrderBy(o => o.CreateUser).ThenBy(o => o.SchoolId).ThenBy(o => o.LessonId).ThenBy(o => o.CreateUser)
                 .ToList();
@@ -555,6 +579,8 @@ public class QuestionManager(ICommonService commonService,
                     if (DateTime.Now.Hour >= 7 && !timePass) return false;
 
                     var base64List = new List<string>();
+                    var visualList = new List<bool>();
+
                     var questionsIds = lessonGroup.Select(x => x.Id).ToList();
 
                     foreach (var question in lessonGroup)
@@ -563,13 +589,15 @@ public class QuestionManager(ICommonService commonService,
                         var fileBytes = await File.ReadAllBytesAsync(filePath, cancellationToken);
                         var base64String = Convert.ToBase64String(fileBytes);
                         base64List.Add(base64String);
+                        visualList.Add(question.ExistsVisualContent);
                     }
 
                     var addQuizModel = new AddQuizModel
                     {
-                        Base64List = base64List,
+                        QuestionList = base64List,
                         LessonId = lessonGroup.Key,
-                        UserId = userGroup.Key
+                        UserId = userGroup.Key,
+                        VisualList = visualList
                     };
 
                     try
@@ -621,7 +649,7 @@ public class QuestionManager(ICommonService commonService,
                 include: x => x.Include(u => u.User).ThenInclude(u => u.School)
                                .Include(u => u.Lesson)
                                .Include(u => u.Gain),
-                selector: x => new { x.Id, x.QuestionPictureBase64, x.CreateUser, x.User.SchoolId, x.LessonId },
+                selector: x => new { x.Id, x.QuestionPictureBase64, x.QuestionPictureFileName, x.CreateUser, x.User.SchoolId, x.LessonId, x.ExistsVisualContent },
                 cancellationToken: cancellationToken);
 
             if (questions.Count == 0) return false;
@@ -633,9 +661,11 @@ public class QuestionManager(ICommonService commonService,
                 {
                     q.Id,
                     q.QuestionPictureBase64,
+                    q.QuestionPictureFileName,
                     q.CreateUser,
                     q.SchoolId,
-                    q.LessonId
+                    q.LessonId,
+                    q.ExistsVisualContent
                 }))
                 .OrderBy(o => o.CreateUser).ThenBy(o => o.SchoolId).ThenBy(o => o.LessonId).ThenBy(o => o.CreateUser)
                 .ToList();
@@ -657,13 +687,28 @@ public class QuestionManager(ICommonService commonService,
 
                     var questionsIds = lessonGroup.Select(x => x.Id).ToList();
 
-                    var questionList = lessonGroup.Select(x => x.QuestionPictureBase64).ToList();
+                    var questionList = new List<string>();
+                    var visualList = new List<bool>();
+
+                    foreach (var question in lessonGroup)
+                    {
+                        var content = question.QuestionPictureBase64;
+                        if (question.ExistsVisualContent)
+                        {
+                            var filePath = Path.Combine(AppOptions.QuestionPictureFolderPath, question.QuestionPictureFileName);
+                            var fileBytes = await File.ReadAllBytesAsync(filePath, cancellationToken);
+                            content = Convert.ToBase64String(fileBytes);
+                        }
+                        questionList.Add(content);
+                        visualList.Add(question.ExistsVisualContent);
+                    }
 
                     var addQuizModel = new AddQuizModel
                     {
                         QuestionList = questionList,
                         LessonId = lessonGroup.Key,
-                        UserId = userGroup.Key
+                        UserId = userGroup.Key,
+                        VisualList = visualList
                     };
 
                     try

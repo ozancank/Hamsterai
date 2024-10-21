@@ -18,11 +18,11 @@ public class SenderHostedService(IServiceProvider serviceProvider, LoggerService
 
                 using var scope = serviceProvider.CreateScope();
                 var questionService = scope.ServiceProvider.GetRequiredService<IQuestionService>();
-                await questionService.SendForStatusSendAgain(stoppingToken);
+                await questionService.SendQueztions(stoppingToken);
             }
             catch (Exception ex)
             {
-                loggerServiceBase.Error($"SenderHostedService {ex.InnerException.Message}*{ex.Message}*{ex.StackTrace}"); 
+                loggerServiceBase.Error($"SenderHostedService {ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
             }
         }
     }
