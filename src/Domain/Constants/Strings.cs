@@ -143,5 +143,6 @@ public struct Strings
     public const string ClassRoomsNotNull = "Sınıflar belirtilmelidir.";
     public const string WrongLessonIds = "Ders id'leri yanlış girildi.";
     public const string LessonsNotNull = "Dersler belirtilmelidir.";
+    public const string NoResponseFromOCR = "OCR'dan yanıt alınamadı.";
 
 }

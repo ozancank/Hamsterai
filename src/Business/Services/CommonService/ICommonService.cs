@@ -6,6 +6,7 @@ namespace Business.Services.CommonService;
 public interface ICommonService : IBusinessService
 {
     long HttpUserId { get; }
+    string HttpUserName { get; }
     UserTypes HttpUserType { get; }
     int? HttpSchoolId { get; }
     int? HttpConnectionId { get; }

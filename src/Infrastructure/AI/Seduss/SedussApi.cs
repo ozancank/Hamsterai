@@ -40,6 +40,16 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         };
     }
 
+    private static async Task<bool> ModelAvailable(string baseUrl, HttpClient client)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
+        var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+        if (response.StatusCode != HttpStatusCode.OK) return false;
+        var content = await response.Content.ReadAsStringAsync();
+        var result = content == "1" ? "true" : content;
+        return Convert.ToBoolean(result);
+    }
+
     public async Task<QuestionTOResponseModel> AskQuestionOcr(QuestionApiModel model)
     {
         var baseUrl = BaseUrl(model.UserId);
@@ -49,11 +59,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
-            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            var available = Convert.ToBoolean(content);
+            var available = await ModelAvailable(baseUrl, client);
 
             if (!available)
             {
@@ -68,15 +74,15 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
                 LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
-            request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Soru_TO")
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Soru_TO")
             {
                 Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
             };
 
-            response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
 
-            content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync();
             answer = JsonSerializer.Deserialize<QuestionTOResponseModel>(content, _options);
 
             if (!model.ExcludeQuiz)
@@ -98,7 +104,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         {
             if (InfrastructureDelegates.UpdateQuestionOcr != null)
                 await InfrastructureDelegates.UpdateQuestionOcr.Invoke(answer, new(model.Id, QuestionStatus.Error, model.UserId));
-            loggerServiceBase.Error($"AskQuestionOcr {ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            loggerServiceBase.Error($"AskQuestionOcr {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
         }
         return answer;
     }
@@ -112,11 +118,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
-            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            var available = Convert.ToBoolean(content);
+            var available = await ModelAvailable(baseUrl, client);
 
             if (!available)
             {
@@ -131,15 +133,15 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
                 LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
-            request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Soru_ITO")
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Soru_ITO")
             {
                 Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"),
             };
 
-            response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
 
-            content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync();
             answer = JsonSerializer.Deserialize<QuestionITOResponseModel>(content, _options);
 
             if (!model.ExcludeQuiz)
@@ -161,7 +163,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         {
             if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
                 await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.Error, model.UserId));
-            loggerServiceBase.Error($"AskQuestionOcrImage {ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            loggerServiceBase.Error($"AskQuestionOcrImage {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
         }
 
         return answer;
@@ -176,11 +178,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
-            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            var available = Convert.ToBoolean(content);
+            var available = await ModelAvailable(baseUrl, client);
 
             if (!available)
             {
@@ -194,15 +192,15 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
                 LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
-            request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/TextReq")
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/TextReq")
             {
                 Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"),
             };
 
-            response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
 
-            content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync();
             answer = JsonSerializer.Deserialize<QuestionTextResponseModel>(content, _options);
 
             if (model.QuestionText.IsEmpty()
@@ -228,7 +226,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         catch (Exception ex)
         {
             await InfrastructureDelegates.UpdateQuestionText?.Invoke(answer, new(model.Id, QuestionStatus.Error, model.UserId));
-            loggerServiceBase.Error($"AskQuestionText {ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            loggerServiceBase.Error($"AskQuestionText {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
         }
         return answer;
     }
@@ -242,11 +240,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
-            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            var available = Convert.ToBoolean(content);
+            var available = await ModelAvailable(baseUrl, client);
 
             if (!available)
             {
@@ -261,15 +255,15 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
                 LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
-            request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Benzer")
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Benzer")
             {
                 Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
             };
 
-            response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
 
-            content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync();
             similar = JsonSerializer.Deserialize<SimilarResponseModel>(content, _options);
 
             if (!model.ExcludeQuiz)
@@ -292,7 +286,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         {
             if (InfrastructureDelegates.UpdateSimilarAnswer != null)
                 await InfrastructureDelegates.UpdateSimilarAnswer.Invoke(similar, new(model.Id, QuestionStatus.Error, model.UserId));
-            loggerServiceBase.Error($"GetSimilar {ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            loggerServiceBase.Error($"GetSimilar {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
         }
         return similar;
     }
@@ -305,12 +299,8 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         {
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
-
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
-            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            var available = Convert.ToBoolean(content);
+            
+            var available = await ModelAvailable(baseUrl, client);
 
             if (!available)
             {
@@ -324,15 +314,15 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
                 LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
-            request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Text2Benzer")
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Text2Benzer")
             {
                 Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
             };
 
-            response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
 
-            content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync();
             similar = JsonSerializer.Deserialize<SimilarTextResponseModel>(content, _options);
 
             if (model.QuestionText.IsEmpty()
@@ -360,7 +350,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         {
             if (InfrastructureDelegates.UpdateSimilarText != null)
                 await InfrastructureDelegates.UpdateSimilarText.Invoke(similar, new(model.Id, QuestionStatus.Error, model.UserId));
-            loggerServiceBase.Error($"GetSimilarText {ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            loggerServiceBase.Error($"GetSimilarText {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
         }
         return similar;
     }
@@ -378,11 +368,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Model_Available");
-            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            var available = Convert.ToBoolean(content);
+            var available = await ModelAvailable(baseUrl, client);
 
             if (!available) return similars;
 
@@ -392,15 +378,15 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
                 LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
-            request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Multi_Benzer")
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Multi_Benzer")
             {
                 Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
             };
 
-            response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
 
-            content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync();
             similars = JsonSerializer.Deserialize<QuizResponseModel>(content, _options);
             similars.Questions.ForEach(x =>
             {
@@ -414,7 +400,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         }
         catch (Exception ex)
         {
-            loggerServiceBase.Error($"GetQuizQuestions {ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            loggerServiceBase.Error($"GetQuizQuestions {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
         }
 
         return similars;
@@ -506,7 +492,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         }
         catch (Exception ex)
         {
-            loggerServiceBase.Error($"GetSimilarForQuiz {ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            loggerServiceBase.Error($"GetSimilarForQuiz {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
         }
 
         return similars;
@@ -601,7 +587,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         }
         catch (Exception ex)
         {
-            loggerServiceBase.Error($"GetSimilarTextForQuiz {ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            loggerServiceBase.Error($"GetSimilarTextForQuiz {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
         }
 
         return similars;

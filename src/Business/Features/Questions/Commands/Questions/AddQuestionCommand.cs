@@ -75,7 +75,7 @@ public class AddQuestionCommandHandler(IMapper mapper,
             Id = result.Id,
             Base64 = question.QuestionPictureBase64,
             LessonName = lessonName,
-            UserId = question.CreateUser
+            UserId = question.CreateUser,
         });
 
         return result;

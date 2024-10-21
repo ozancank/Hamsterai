@@ -5,13 +5,17 @@ namespace Infrastructure.OCR.Models;
 public class OcrRequestModel : IRequestModel
 {
     public string FileName { get; set; }
+    public string UserName { get; set; }
+    public long UserId { get; set; }
 
     public OcrRequestModel()
     {
     }
 
-    public OcrRequestModel(string fileName)
+    public OcrRequestModel(string fileName, string userName, long userId)
     {
         FileName = fileName;
+        UserName = userName;
+        UserId = userId;
     }
 }

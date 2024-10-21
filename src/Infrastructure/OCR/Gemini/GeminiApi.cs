@@ -87,7 +87,7 @@ public class GeminiApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         }
         catch (Exception ex)
         {
-            loggerServiceBase.Error($"GetTextFromImage {ex?.InnerException?.Message}*{ex?.Message}");
+            loggerServiceBase.Error($"GetTextFromImage {model.UserName}*{model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}");
         }
         return result;
     }

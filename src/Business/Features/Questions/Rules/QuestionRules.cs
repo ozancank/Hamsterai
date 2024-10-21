@@ -1,5 +1,6 @@
 ﻿using Business.Features.Questions.Models.Questions;
 using Business.Services.CommonService;
+using Infrastructure.OCR.Models;
 
 namespace Business.Features.Questions.Rules;
 
@@ -43,5 +44,12 @@ public class QuestionRules(IQuestionDal questionDal,
                                     && x.CreateDate <= DateTime.Today.AddDays(1).AddMilliseconds(-1));
 
         if (count >= AppOptions.QuestionLimitForStudent) throw new BusinessException(Strings.QuestionLimitForStudent);
+    }
+
+    internal static Task OCRShouldBeFilled(OcrResponseModel ocr)
+    {
+        if (ocr == null) throw new BusinessException(Strings.NoResponseFromOCR);
+        if (ocr.Text.IsEmpty()) throw new BusinessException(Strings.NoResponseFromOCR);
+        return Task.CompletedTask;
     }
 }

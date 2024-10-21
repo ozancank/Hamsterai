@@ -15,14 +15,9 @@ using OCK.Core.Logging.Serilog;
 namespace Business.Services.QuestionService;
 
 public class QuestionManager(ICommonService commonService,
-                             IQuestionDal questionDal,
-                             ISimilarDal similarDal,
                              INotificationService notificationService,
                              IGainService gainService,
                              IQuestionApi questionApi,
-                             IQuizDal quizDal,
-                             IQuizQuestionDal quizQuestionDal,
-                             ILessonDal lessonDal,
                              IDbContextFactory<HamsteraiDbContext> _factory,
                              UserRules userRules,
                              QuizRules quizRules,
@@ -32,14 +27,16 @@ public class QuestionManager(ICommonService commonService,
 
     public async Task<bool> UpdateAnswer(QuestionTOResponseModel model, UpdateQuestionDto dto)
     {
-        var data = await questionDal.GetAsync(
-            predicate: x => x.Id == dto.QuestionId && x.IsActive,
-            include: x => x.Include(u => u.Lesson));
+        using var context = _factory.CreateDbContext();
+
+        var data = await context.Questions
+            .Include(x => x.Lesson)
+            .FirstOrDefaultAsync(x => x.Id == dto.QuestionId && x.IsActive);
         await QuestionRules.QuestionShouldExists(data);
 
         GetGainModel gain = null;
         if (dto.Status == QuestionStatus.Answered && model.GainName.IsNotEmpty())
-            gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser));
+            gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser, context));
 
         data.UpdateUser = 1;
         data.UpdateDate = DateTime.Now;
@@ -50,9 +47,14 @@ public class QuestionManager(ICommonService commonService,
         data.Status = dto.Status;
         data.GainId = gain?.Id;
         data.RightOption = model?.RightOption.FirstOrDefault();
-        if (dto.Status != QuestionStatus.Answered) data.TryCount++;
+        if (dto.Status != QuestionStatus.Answered)
+        {
+            data.TryCount++;
+            data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;
+        }
 
-        await questionDal.UpdateAsync(data);
+        context.Questions.Update(data);
+        await context.SaveChangesAsync();
 
         if (dto.Status == QuestionStatus.Answered)
             _ = notificationService.PushNotificationByUserId(new(Strings.Answered, Strings.DynamicLessonQuestionAnswered.Format(data.Lesson.Name), data.CreateUser, NotificationTypes.QuestionAnswered, dto.QuestionId.ToString()));
@@ -62,14 +64,16 @@ public class QuestionManager(ICommonService commonService,
 
     public async Task<bool> UpdateAnswer(QuestionITOResponseModel model, UpdateQuestionDto dto)
     {
-        var data = await questionDal.GetAsync(
-            predicate: x => x.Id == dto.QuestionId && x.IsActive,
-            include: x => x.Include(u => u.Lesson));
+        using var context = _factory.CreateDbContext();
+
+        var data = await context.Questions
+            .Include(x => x.Lesson)
+            .FirstOrDefaultAsync(x => x.Id == dto.QuestionId && x.IsActive);
         await QuestionRules.QuestionShouldExists(data);
 
         GetGainModel gain = null;
         if (dto.Status == QuestionStatus.Answered && model.GainName.IsNotEmpty())
-            gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser));
+            gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser, context));
 
         string extension = string.Empty;
         string fileName = string.Empty;
@@ -84,14 +88,19 @@ public class QuestionManager(ICommonService commonService,
         data.UpdateDate = DateTime.Now;
         data.QuestionPictureBase64 = model?.QuestionText ?? string.Empty;
         data.AnswerText = model?.AnswerText ?? string.Empty;
-        data.AnswerPictureFileName = fileName;
-        data.AnswerPictureExtension = extension;
+        data.AnswerPictureFileName = fileName ?? string.Empty;
+        data.AnswerPictureExtension = extension ?? string.Empty;
         data.Status = dto.Status;
         data.GainId = gain?.Id;
         data.RightOption = model?.RightOption.FirstOrDefault();
-        if (dto.Status != QuestionStatus.Answered) data.TryCount++;
+        if (dto.Status != QuestionStatus.Answered)
+        {
+            data.TryCount++;
+            data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;
+        }
 
-        await questionDal.UpdateAsync(data);
+        context.Questions.Update(data);
+        await context.SaveChangesAsync();
 
         if (dto.Status == QuestionStatus.Answered)
             _ = notificationService.PushNotificationByUserId(new(Strings.Answered, Strings.DynamicLessonQuestionAnswered.Format(data.Lesson.Name), data.CreateUser, NotificationTypes.QuestionAnswered, dto.QuestionId.ToString()));
@@ -123,12 +132,16 @@ public class QuestionManager(ICommonService commonService,
         data.UpdateUser = 1;
         data.UpdateDate = DateTime.Now;
         data.AnswerText = model?.AnswerText ?? string.Empty;
-        data.AnswerPictureFileName = fileName;
-        data.AnswerPictureExtension = extension;
+        data.AnswerPictureFileName = fileName ?? string.Empty;
+        data.AnswerPictureExtension = extension ?? string.Empty;
         data.Status = dto.Status;
         data.GainId = gain?.Id;
         data.RightOption = model?.RightOption.FirstOrDefault();
-        if (dto.Status != QuestionStatus.Answered) data.TryCount++;
+        if (dto.Status != QuestionStatus.Answered)
+        {
+            data.TryCount++;
+            data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;
+        }
 
         context.Questions.Update(data);
         await context.SaveChangesAsync();
@@ -145,14 +158,16 @@ public class QuestionManager(ICommonService commonService,
 
     public async Task<bool> UpdateSimilarAnswer(SimilarResponseModel model, UpdateQuestionDto dto)
     {
-        var data = await similarDal.GetAsync(
-            predicate: x => x.Id == dto.QuestionId && x.IsActive,
-            include: x => x.Include(u => u.Lesson));
+        using var context = _factory.CreateDbContext();
+
+        var data = await context.Similars
+            .Include(x => x.Lesson)
+            .FirstOrDefaultAsync(x => x.Id == dto.QuestionId && x.IsActive);
         await SimilarRules.SimilarQuestionShouldExists(data);
 
         GetGainModel gain = null;
         if (dto.Status == QuestionStatus.Answered && model.GainName.IsNotEmpty())
-            gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser));
+            gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser, context));
 
         string extension = null, questionFileName = null, answerFileName = null;
         if (dto.Status == QuestionStatus.Answered)
@@ -173,13 +188,18 @@ public class QuestionManager(ICommonService commonService,
         data.ResponseQuestionExtension = extension ?? string.Empty;
         data.ResponseAnswer = model?.AnswerText ?? string.Empty;
         data.ResponseAnswerFileName = answerFileName ?? string.Empty;
-        data.ResponseAnswerExtension = extension;
+        data.ResponseAnswerExtension = extension ?? string.Empty;
         data.Status = dto.Status;
         data.GainId = gain?.Id;
         data.RightOption = model?.RightOption.FirstOrDefault();
-        if (dto.Status != QuestionStatus.Answered) data.TryCount++;
+        if (dto.Status != QuestionStatus.Answered)
+        {
+            data.TryCount++;
+            data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;
+        }
 
-        await similarDal.UpdateAsync(data);
+        context.Similars.Update(data);
+        await context.SaveChangesAsync();
 
         if (dto.Status == QuestionStatus.Answered)
             _ = notificationService.PushNotificationByUserId(new(Strings.Prepared, Strings.DynamicLessonQuestionPrepared.Format(data.Lesson.Name), data.CreateUser, NotificationTypes.SimilarCreated, data.Id.ToString()));
@@ -218,11 +238,15 @@ public class QuestionManager(ICommonService commonService,
         data.ResponseQuestionExtension = extension ?? string.Empty;
         data.ResponseAnswer = model?.AnswerText ?? string.Empty;
         data.ResponseAnswerFileName = answerFileName ?? string.Empty;
-        data.ResponseAnswerExtension = extension;
+        data.ResponseAnswerExtension = extension ?? string.Empty;
         data.Status = dto.Status;
         data.GainId = gain?.Id;
         data.RightOption = model?.RightOption.FirstOrDefault();
-        if (dto.Status != QuestionStatus.Answered) data.TryCount++;
+        if (dto.Status != QuestionStatus.Answered)
+        {
+            data.TryCount++;
+            data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;
+        }
 
         context.Similars.Update(data);
         await context.SaveChangesAsync();
@@ -237,24 +261,26 @@ public class QuestionManager(ICommonService commonService,
 
     public SemaphoreSlim SenderSemaphore = new(AppOptions.SenderCapacity);
 
-    public async Task SendQueztions(CancellationToken cancellationToken)
+    public async Task SendQuestions(CancellationToken cancellationToken)
     {
         AppStatics.SenderQuestionAllow = false;
         var changeDate = new DateTime(2024, 10, 19, 1, 30, 0);
         try
         {
             QuestionStatus[] status = [QuestionStatus.Waiting, QuestionStatus.Error, QuestionStatus.SendAgain];
-            var questions = await questionDal.GetListAsync(
-                predicate: x => status.Contains(x.Status) && x.TryCount < AppOptions.AITryCount && x.CreateDate > changeDate,
-                include: x => x.Include(u => u.Lesson),
-                enableTracking: false,
-                cancellationToken: cancellationToken);
+            using var context = _factory.CreateDbContext();
 
-            var similarQuestions = await similarDal.GetListAsync(
-                predicate: x => status.Contains(x.Status) && x.TryCount < AppOptions.AITryCount && x.CreateDate > changeDate,
-                include: x => x.Include(u => u.Lesson),
-                enableTracking: false,
-                cancellationToken: cancellationToken);
+            var questions = await context.Questions
+                .AsNoTracking()
+                .Include(x => x.Lesson)
+                .Where(x => status.Contains(x.Status) && x.TryCount < AppOptions.AITryCount && x.CreateDate > changeDate)
+                .ToListAsync(cancellationToken);
+
+            var similarQuestions = await context.Similars
+                .AsNoTracking()
+                .Include(x => x.Lesson)
+                .Where(x => status.Contains(x.Status) && x.TryCount < AppOptions.AITryCount && x.CreateDate > changeDate)
+                .ToListAsync(cancellationToken);
 
             var allQuestions = questions.Cast<object>().Concat(similarQuestions.Cast<object>()).ToList();
 
@@ -331,11 +357,13 @@ public class QuestionManager(ICommonService commonService,
         await QuizRules.QuizQuestionShouldExists(model.QuestionList);
         await userRules.UserShouldExistsAndActiveById(model.UserId);
 
-        var lessonName = await lessonDal.GetAsync(
-            predicate: x => x.Id == model.LessonId,
-            enableTracking: false,
-            selector: x => x.Name,
-            cancellationToken: cancellationToken);
+        using var context = _factory.CreateDbContext();
+
+        var lessonName = await context.Lessons
+            .AsNoTracking()
+            .Where(x => x.Id == model.LessonId)
+            .Select(x => x.Name)
+            .FirstOrDefaultAsync(cancellationToken);
         await LessonRules.LessonShouldExists(lessonName);
 
         var responses = await questionApi.GetSimilarForQuiz(new()
@@ -347,7 +375,9 @@ public class QuestionManager(ICommonService commonService,
 
         await QuizRules.QuizQuestionsShouldExists(responses.Questions);
 
-        var result = await quizDal.ExecuteWithTransactionAsync(async () =>
+        using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+
+        try
         {
             var userId = 1;
             var date = DateTime.Now;
@@ -388,7 +418,7 @@ public class QuestionManager(ICommonService commonService,
                 await commonService.PictureConvert(response.SimilarImage, questionFileName, AppOptions.QuizQuestionPictureFolderPath);
                 await commonService.PictureConvert(response.AnswerImage, answerFileName, AppOptions.QuizAnswerPictureFolderPath);
 
-                var gain = await gainService.GetOrAddGain(new(response.GainName, model.LessonId, userId));
+                var gain = await gainService.GetOrAddGain(new(response.GainName, model.LessonId, userId, context));
 
                 questions.Add(new()
                 {
@@ -400,12 +430,12 @@ public class QuestionManager(ICommonService commonService,
                     UpdateDate = date,
                     QuizId = quiz.Id,
                     SortNo = sortNo,
-                    Question = response.QuestionText,
-                    QuestionPictureFileName = questionFileName,
-                    QuestionPictureExtension = extension,
-                    Answer = response.AnswerText,
-                    AnswerPictureFileName = answerFileName,
-                    AnswerPictureExtension = extension,
+                    Question = response.QuestionText ?? string.Empty,
+                    QuestionPictureFileName = questionFileName ?? string.Empty,
+                    QuestionPictureExtension = extension ?? string.Empty,
+                    Answer = response.AnswerText ?? string.Empty,
+                    AnswerPictureFileName = answerFileName ?? string.Empty,
+                    AnswerPictureExtension = extension ?? string.Empty,
                     RightOption = response.RightOption.Trim()[0],
                     AnswerOption = null,
                     OptionCount = (byte)response.OptionCount,
@@ -413,15 +443,21 @@ public class QuestionManager(ICommonService commonService,
                 });
             }
 
-            await quizDal.AddAsync(quiz, cancellationToken: cancellationToken);
-            await quizQuestionDal.AddRangeAsync(questions, cancellationToken: cancellationToken);
+            await context.Quizzes.AddAsync(quiz, cancellationToken);
+            await context.QuizQuestions.AddRangeAsync(questions, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
+
+            _ = notificationService.PushNotificationByUserId(new(Strings.DynamicLessonTestPrepared.Format(lessonName), Strings.DynamicLessonTestPreparedForYou.Format(lessonName, quiz.Id), model.UserId, NotificationTypes.QuizCreated, quiz.Id));
 
             return quiz.Id;
-        }, cancellationToken: cancellationToken);
-
-        _ = await notificationService.PushNotificationByUserId(new(Strings.DynamicLessonTestPrepared.Format(lessonName), Strings.DynamicLessonTestPreparedForYou.Format(lessonName, result), model.UserId, NotificationTypes.QuizCreated, result));
-
-        return result;
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw new BusinessException(ex.Message);
+        }
     }
 
     public async Task<string> AddQuizText(AddQuizModel model, CancellationToken cancellationToken)
@@ -429,11 +465,13 @@ public class QuestionManager(ICommonService commonService,
         await QuizRules.QuizQuestionShouldExists(model.QuestionList);
         await userRules.UserShouldExistsAndActiveById(model.UserId);
 
-        var lessonName = await lessonDal.GetAsync(
-            predicate: x => x.Id == model.LessonId,
-            enableTracking: false,
-            selector: x => x.Name,
-            cancellationToken: cancellationToken);
+        using var context = _factory.CreateDbContext();
+
+        var lessonName = await context.Lessons
+            .AsNoTracking()
+            .Where(x => x.Id == model.LessonId)
+            .Select(x => x.Name)
+            .FirstOrDefaultAsync(cancellationToken);
         await LessonRules.LessonShouldExists(lessonName);
 
         var responses = await questionApi.GetSimilarTextForQuiz(new()
@@ -446,7 +484,8 @@ public class QuestionManager(ICommonService commonService,
 
         await QuizRules.QuizQuestionsShouldExists(responses.Questions);
 
-        var result = await quizDal.ExecuteWithTransactionAsync(async () =>
+        using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+        try
         {
             var userId = 1;
             var date = DateTime.Now;
@@ -488,7 +527,7 @@ public class QuestionManager(ICommonService commonService,
                 await commonService.TextToImage(response.SimilarQuestionText, questionFileName, AppOptions.QuizQuestionPictureFolderPath);
                 await commonService.TextToImage(response.AnswerText, answerFileName, AppOptions.QuizAnswerPictureFolderPath);
 
-                var gain = await gainService.GetOrAddGain(new(response.GainName, model.LessonId, userId));
+                var gain = await gainService.GetOrAddGain(new(response.GainName, model.LessonId, userId, context));
 
                 questions.Add(new()
                 {
@@ -500,12 +539,12 @@ public class QuestionManager(ICommonService commonService,
                     UpdateDate = date,
                     QuizId = quiz.Id,
                     SortNo = sortNo,
-                    Question = response.QuestionText,
-                    QuestionPictureFileName = questionFileName,
-                    QuestionPictureExtension = extension,
-                    Answer = response.AnswerText,
-                    AnswerPictureFileName = answerFileName,
-                    AnswerPictureExtension = extension,
+                    Question = response.QuestionText ?? string.Empty,
+                    QuestionPictureFileName = questionFileName ?? string.Empty,
+                    QuestionPictureExtension = extension ?? string.Empty,
+                    Answer = response.AnswerText ?? string.Empty,
+                    AnswerPictureFileName = answerFileName ?? string.Empty,
+                    AnswerPictureExtension = extension ?? string.Empty,
                     RightOption = response.RightOption.Trim()[0],
                     AnswerOption = null,
                     OptionCount = (byte)response.OptionCount,
@@ -513,15 +552,21 @@ public class QuestionManager(ICommonService commonService,
                 });
             }
 
-            await quizDal.AddAsync(quiz, cancellationToken: cancellationToken);
-            await quizQuestionDal.AddRangeAsync(questions, cancellationToken: cancellationToken);
+            await context.Quizzes.AddAsync(quiz, cancellationToken);
+            await context.QuizQuestions.AddRangeAsync(questions, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
+
+            _ = notificationService.PushNotificationByUserId(new(Strings.DynamicLessonTestPrepared.Format(lessonName), Strings.DynamicLessonTestPreparedForYou.Format(lessonName, quiz.Id), model.UserId, NotificationTypes.QuizCreated, quiz.Id));
 
             return quiz.Id;
-        }, cancellationToken: cancellationToken);
-
-        _ = await notificationService.PushNotificationByUserId(new(Strings.DynamicLessonTestPrepared.Format(lessonName), Strings.DynamicLessonTestPreparedForYou.Format(lessonName, result), model.UserId, NotificationTypes.QuizCreated, result));
-
-        return result;
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw new BusinessException(ex.Message);
+        }
     }
 
     public async Task<bool> AddQuiz(bool timePass = false, CancellationToken cancellationToken = default)
@@ -529,22 +574,24 @@ public class QuestionManager(ICommonService commonService,
         try
         {
             AppStatics.SenderQuestionAllow = false;
+            using var context = _factory.CreateDbContext();
 
-            var questions = await questionDal.GetListAsync(
-                enableTracking: false,
-                predicate: x => x.IsActive
-                                && x.Status == QuestionStatus.Answered
-                                && !x.SendForQuiz
-                                && x.User.IsActive
-                                && x.Lesson.IsActive
-                                && x.Gain.IsActive
-                                && (x.User.SchoolId == null || x.User.School.IsActive)
-                                && (x.User.SchoolId == null || x.User.School.LicenseEndDate.Date >= DateTime.Now.Date),
-                include: x => x.Include(u => u.User).ThenInclude(u => u.School)
-                               .Include(u => u.Lesson)
-                               .Include(u => u.Gain),
-                selector: x => new { x.Id, x.QuestionPictureFileName, x.CreateUser, x.User.SchoolId, x.LessonId, x.ExistsVisualContent },
-                cancellationToken: cancellationToken);
+            var questions = await context.Questions
+                .AsNoTracking()
+                .Include(u => u.User).ThenInclude(u => u.School)
+                .Include(u => u.Lesson)
+                .Include(u => u.Gain)
+                .Where(x => x.IsActive
+                            && x.Status == QuestionStatus.Answered
+                            && !x.SendForQuiz
+                            && !x.ExcludeQuiz
+                            && x.User.IsActive
+                            && x.Lesson.IsActive
+                            && x.Gain.IsActive
+                            && (x.User.SchoolId == null || x.User.School.IsActive)
+                            && (x.User.SchoolId == null || x.User.School.LicenseEndDate.Date >= DateTime.Now.Date))
+                .Select(x => new { x.Id, x.QuestionPictureBase64, x.QuestionPictureFileName, x.CreateUser, x.User.SchoolId, x.LessonId, x.ExistsVisualContent })
+                .ToListAsync(cancellationToken);
 
             if (questions.Count == 0) return false;
 
@@ -606,9 +653,10 @@ public class QuestionManager(ICommonService commonService,
 
                         foreach (var questionId in questionsIds)
                         {
-                            var questionUpdate = await questionDal.GetAsync(x => x.Id == questionId, cancellationToken: cancellationToken);
+                            var questionUpdate = await context.Questions.FirstOrDefaultAsync(x => x.Id == questionId, cancellationToken);
                             questionUpdate.SendForQuiz = true;
-                            await questionDal.UpdateAsync(questionUpdate, cancellationToken: cancellationToken);
+                            context.Questions.Update(questionUpdate);
+                            await context.SaveChangesAsync(cancellationToken);
                         }
                     }
                     catch (Exception ex)
@@ -633,24 +681,25 @@ public class QuestionManager(ICommonService commonService,
         {
             AppStatics.SenderQuestionAllow = false;
             var changeDate = new DateTime(2024, 10, 19, 1, 30, 0);
+            using var context = _factory.CreateDbContext();
 
-            var questions = await questionDal.GetListAsync(
-                enableTracking: false,
-                predicate: x => x.IsActive
-                                && x.Status == QuestionStatus.Answered
-                                && !x.SendForQuiz
-                                && !x.ExcludeQuiz
-                                && x.User.IsActive
-                                && x.Lesson.IsActive
-                                && x.Gain.IsActive
-                                && (x.User.SchoolId == null || x.User.School.IsActive)
-                                && (x.User.SchoolId == null || x.User.School.LicenseEndDate.Date >= DateTime.Now.Date)
-                                && x.CreateDate > changeDate,
-                include: x => x.Include(u => u.User).ThenInclude(u => u.School)
-                               .Include(u => u.Lesson)
-                               .Include(u => u.Gain),
-                selector: x => new { x.Id, x.QuestionPictureBase64, x.QuestionPictureFileName, x.CreateUser, x.User.SchoolId, x.LessonId, x.ExistsVisualContent },
-                cancellationToken: cancellationToken);
+            var questions = await context.Questions
+                .AsNoTracking()
+                .Include(u => u.User).ThenInclude(u => u.School)
+                .Include(u => u.Lesson)
+                .Include(u => u.Gain)
+                .Where(x => x.IsActive
+                            && x.Status == QuestionStatus.Answered
+                            && !x.SendForQuiz
+                            && !x.ExcludeQuiz
+                            && x.User.IsActive
+                            && x.Lesson.IsActive
+                            && x.Gain.IsActive
+                            && (x.User.SchoolId == null || x.User.School.IsActive)
+                            && (x.User.SchoolId == null || x.User.School.LicenseEndDate.Date >= DateTime.Now.Date)
+                            && x.CreateDate > changeDate)
+                .Select(x => new { x.Id, x.QuestionPictureBase64, x.QuestionPictureFileName, x.CreateUser, x.User.SchoolId, x.LessonId, x.ExistsVisualContent })
+                .ToListAsync(cancellationToken);
 
             if (questions.Count == 0) return false;
 
@@ -717,9 +766,10 @@ public class QuestionManager(ICommonService commonService,
 
                         foreach (var questionId in questionsIds)
                         {
-                            var questionUpdate = await questionDal.GetAsync(x => x.Id == questionId, cancellationToken: cancellationToken);
+                            var questionUpdate = await context.Questions.FirstOrDefaultAsync(x => x.Id == questionId, cancellationToken);
                             questionUpdate.SendForQuiz = true;
-                            await questionDal.UpdateAsync(questionUpdate, cancellationToken: cancellationToken);
+                            context.Questions.Update(questionUpdate);
+                            await context.SaveChangesAsync(cancellationToken);
                         }
                     }
                     catch (Exception ex)

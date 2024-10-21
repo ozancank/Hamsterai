@@ -42,7 +42,8 @@ public class AddQuestionTextCommandHandler(IMapper mapper,
         var fileName = $"Q_{userId}_{request.Model.LessonId}_{id}{extension}";
         var filePath = await commonService.PictureConvert(request.Model.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath);
 
-        var ocr = await ocrApi.GetTextFromImage(new(filePath));
+        var ocr = await ocrApi.GetTextFromImage(new(filePath, commonService.HttpUserName, userId));
+        await QuestionRules.OCRShouldBeFilled(ocr);
 
         var existsVisualContent = ocr.Text.Contains("##visual##", StringComparison.OrdinalIgnoreCase);
 

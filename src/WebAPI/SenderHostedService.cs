@@ -18,7 +18,7 @@ public class SenderHostedService(IServiceProvider serviceProvider, LoggerService
 
                 using var scope = serviceProvider.CreateScope();
                 var questionService = scope.ServiceProvider.GetRequiredService<IQuestionService>();
-                await questionService.SendQueztions(stoppingToken);
+                await questionService.SendQuestions(stoppingToken);
             }
             catch (Exception ex)
             {

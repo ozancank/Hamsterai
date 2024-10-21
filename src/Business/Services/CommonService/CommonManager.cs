@@ -1,6 +1,7 @@
 ﻿using Business.Features.Users.Rules;
 using OCK.Core.Logging;
 using OCK.Core.Logging.Serilog;
+using OCK.Core.Security.Extensions;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
@@ -21,6 +22,10 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
     public long HttpUserId =>
         Convert.ToInt64(httpContextAccessor.HttpContext.User.Claims
             .FirstOrDefault(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+    public string HttpUserName =>
+        httpContextAccessor.HttpContext.User.Claims
+            .FirstOrDefault(x => x.Type == CustomClaimTypes.UserName)?.Value.IfNullEmptyString("NaN") ?? "NaN";
 
     public UserTypes HttpUserType =>
         Enum.TryParse(httpContextAccessor.HttpContext.User.Claims
