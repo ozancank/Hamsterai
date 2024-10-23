@@ -14,7 +14,7 @@ public class TeacherConfiguration : IEntityTypeConfiguration<Teacher>
         builder.Property(e => e.UpdateDate).HasColumnName("UpdateDate").HasColumnOrder(5).IsRequired();
         builder.Property(e => e.Name).HasColumnName("Name").HasMaxLength(100).HasColumnOrder(6).IsRequired();
         builder.Property(e => e.Surname).HasColumnName("Surname").HasMaxLength(100).HasColumnOrder(7).IsRequired();
-        builder.Property(e => e.TcNo).HasColumnName("TcNo").HasMaxLength(11).HasColumnOrder(8).IsRequired();
+        builder.Property(e => e.TcNo).HasColumnName("TcNo").HasMaxLength(11).HasColumnOrder(8);
         builder.HasIndex(e => e.TcNo).HasDatabaseName("UK_Teachers_TcNo").IsUnique();
         builder.Property(e => e.Phone).HasColumnName("Phone").HasMaxLength(15).HasColumnOrder(9).IsRequired();
         builder.HasIndex(e => e.Phone).HasDatabaseName("UK_Teachers_Phone").IsUnique();

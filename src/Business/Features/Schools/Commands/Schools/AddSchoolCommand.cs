@@ -32,7 +32,7 @@ public class AddSchoolCommandHandler(IMapper mapper,
     {
         await schoolRules.SchoolNameAndCityCanNotBeDuplicated(request.Model.Name, request.Model.City);
         await schoolRules.SchoolTaxNumberCanNotBeDuplicated(request.Model.TaxNumber);
-        await userRules.UserNameCanNotBeDuplicated(request.Model.AuthorizedEmail);
+        await userRules.UserNameCanNotBeDuplicated(request.Model.TaxNumber);
         await userRules.UserEmailCanNotBeDuplicated(request.Model.AuthorizedEmail);
         await userRules.UserPhoneCanNotBeDuplicated(request.Model.AuthorizedPhone);
         await groupRules.GroupShouldBeRecordInDatabase(request.Model.GroupIds);
@@ -54,7 +54,7 @@ public class AddSchoolCommandHandler(IMapper mapper,
         {
             Id = await userDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken),
             CreateDate = date,
-            UserName = school.AuthorizedEmail.Trim().ToLower(),
+            UserName = school.TaxNumber.Trim().ToLower(),
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
             MustPasswordChange = true,

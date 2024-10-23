@@ -3,6 +3,7 @@ using System;
 using DataAccess.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.EF.Migrations
 {
     [DbContext(typeof(HamsteraiDbContext))]
-    partial class HamsteraiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241023124645_FixTCKN")]
+    partial class FixTCKN
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,11 +50,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("CreateUser")
                         .HasColumnOrder(2);
 
-                    b.Property<byte?>("GroupId")
-                        .HasColumnType("smallint")
-                        .HasColumnName("GroupId")
-                        .HasColumnOrder(9);
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("IsActive")
@@ -79,8 +77,6 @@ namespace DataAccess.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupId");
-
                     b.HasIndex("SchoolId");
 
                     b.HasIndex("No", "Branch", "SchoolId")
@@ -96,7 +92,6 @@ namespace DataAccess.EF.Migrations
                             Branch = "A",
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)1,
                             IsActive = true,
                             No = (short)1,
                             SchoolId = 1,
@@ -109,7 +104,6 @@ namespace DataAccess.EF.Migrations
                             Branch = "B",
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)1,
                             IsActive = true,
                             No = (short)1,
                             SchoolId = 1,
@@ -122,7 +116,6 @@ namespace DataAccess.EF.Migrations
                             Branch = "C",
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)1,
                             IsActive = true,
                             No = (short)1,
                             SchoolId = 1,
@@ -2775,17 +2768,11 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("Domain.Entities.ClassRoom", b =>
                 {
-                    b.HasOne("Domain.Entities.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId");
-
                     b.HasOne("Domain.Entities.School", "School")
                         .WithMany("ClassRooms")
                         .HasForeignKey("SchoolId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Group");
 
                     b.Navigation("School");
                 });

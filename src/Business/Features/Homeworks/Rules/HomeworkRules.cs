@@ -37,4 +37,10 @@ public class HomeworkRules(IHomeworkDal homeworkDal,
             throw new BusinessException(Strings.DynamicOnlyOneShouldBeFilled, $"{Strings.ClassRoom} veya {Strings.Student} seçeneğinden");
         return Task.CompletedTask;
     }
+
+    internal static Task HomeworkSendUserShouldBeTeacher(UserTypes httpUserType)
+    {
+        if(httpUserType != UserTypes.Teacher) throw new BusinessException(Strings.DynamicUserTypeShouldBe, Strings.Teacher);
+        return Task.CompletedTask;
+    }
 }

@@ -18,24 +18,27 @@ public class AddClassRoomCommand : IRequest<GetClassRoomModel>, ISecuredRequest<
 public class AddClassRoomCommandHandler(IMapper mapper,
                                         IClassRoomDal classRoomDal,
                                         ICommonService commonService,
-                                        ClassRoomRules classRoomRules) : IRequestHandler<AddClassRoomCommand, GetClassRoomModel>
+                                        ClassRoomRules classRoomRules,
+                                        GroupRules groupRules) : IRequestHandler<AddClassRoomCommand, GetClassRoomModel>
 {
     public async Task<GetClassRoomModel> Handle(AddClassRoomCommand request, CancellationToken cancellationToken)
     {
         request.Model.Branch = request.Model.Branch.Trim().ToUpper();
-
-        await classRoomRules.ClassRoomNoAndBranchAndSchoolIdCanNotBeDuplicated(request.Model.No, request.Model.Branch, request.Model.SchoolId);
-
+        var schoolId = commonService.HttpSchoolId ?? 0;
         var userId = commonService.HttpSchoolId;
         var date = DateTime.Now;
 
+        await classRoomRules.ClassRoomNoAndBranchAndSchoolIdCanNotBeDuplicated(request.Model.No, request.Model.Branch, schoolId);
+        await groupRules.GroupShouldExistsAndActiveById(request.Model.GroupId);
+
         var classRoom = mapper.Map<ClassRoom>(request.Model);
-        classRoom.Id = await classRoomDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);        
+        classRoom.Id = await classRoomDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
         classRoom.IsActive = true;
         classRoom.CreateUser = userId.Value;
         classRoom.CreateDate = date;
         classRoom.UpdateUser = userId.Value;
         classRoom.UpdateDate = date;
+        classRoom.SchoolId = schoolId;
 
         var added = await classRoomDal.AddAsyncCallback(classRoom, cancellationToken: cancellationToken);
         var result = mapper.Map<GetClassRoomModel>(added);
@@ -56,7 +59,5 @@ public class AddClassRoomCommandValidator : AbstractValidator<AddClassRoomComman
         RuleFor(x => x.Model.Branch).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.ClassRoom} {Strings.OfBranch}"]);
         RuleFor(x => x.Model.Branch).MinimumLength(1).WithMessage(Strings.DynamicMinLength, [$"{Strings.ClassRoom} {Strings.OfBranch}", "1"]);
         RuleFor(x => x.Model.Branch).MaximumLength(10).WithMessage(Strings.DynamicMaxLength, [$"{Strings.ClassRoom} {Strings.OfBranch}", "10"]);
-
-        RuleFor(x => x.Model.SchoolId).GreaterThan(0).WithMessage(Strings.DynamicGratherThan, [Strings.School, "0"]);
     }
 }

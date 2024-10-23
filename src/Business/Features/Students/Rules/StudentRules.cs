@@ -46,6 +46,7 @@ public class StudentRules(IStudentDal studentDal) : IBusinessRule
 
     internal async Task StudentTcNoCanNotBeDuplicated(string tcNo, int? studentId = null)
     {
+        if (tcNo.IsEmpty()) return;
         tcNo = tcNo.Trim();
         var student = await studentDal.GetAsync(predicate: x => x.TcNo == tcNo, enableTracking: false);
         if (studentId == null && student != null) throw new BusinessException(Strings.DynamicExists, tcNo);

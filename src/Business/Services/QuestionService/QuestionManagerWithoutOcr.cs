@@ -10,21 +10,19 @@ using DataAccess.EF;
 using Infrastructure.AI;
 using Infrastructure.AI.Seduss.Dtos;
 using Infrastructure.AI.Seduss.Models;
-using Infrastructure.OCR;
 using OCK.Core.Logging.Serilog;
 using OneOf;
 
 namespace Business.Services.QuestionService;
 
-public class QuestionManager(ICommonService commonService,
-                             INotificationService notificationService,
-                             IGainService gainService,
-                             IQuestionApi questionApi,
-                             IDbContextFactory<HamsteraiDbContext> contextFactory,
-                             IOcrApi ocrApi,
-                             UserRules userRules,
-                             QuizRules quizRules,
-                             LoggerServiceBase logger) : IQuestionService
+public class QuestionManagerWithoutOcr(ICommonService commonService,
+                                       INotificationService notificationService,
+                                       IGainService gainService,
+                                       IQuestionApi questionApi,
+                                       IDbContextFactory<HamsteraiDbContext> contextFactory,
+                                       UserRules userRules,
+                                       QuizRules quizRules,
+                                       LoggerServiceBase logger) : IQuestionService
 {
     public async Task SendQuestions(CancellationToken cancellationToken)
     {
@@ -58,49 +56,33 @@ public class QuestionManager(ICommonService commonService,
                 await AppStatics.SenderSemaphore.WaitAsync(cancellationToken);
                 try
                 {
-                    var result = await SendOcr(question, cancellationToken);
+                    var base64 = await commonService.ImageToBase64(
+                        Path.Combine(AppOptions.QuestionPictureFolderPath, question.Match(q => q.QuestionPictureFileName, s => s.QuestionPicture)));
 
-                    if (result.IsT0)
+                    if (question.IsT0)
                     {
                         var model = new QuestionApiModel
                         {
-                            Id = result.AsT0.Id,
-                            LessonName = result.AsT0.Lesson.Name,
-                            UserId = result.AsT0.CreateUser,
-                            ExcludeQuiz = result.AsT0.ExcludeQuiz
+                            Id = question.AsT0.Id,
+                            LessonName = question.AsT0.Lesson.Name,
+                            UserId = question.AsT0.CreateUser,
+                            ExcludeQuiz = question.AsT0.ExcludeQuiz,
+                            Base64 = base64
                         };
-
-                        if (result.AsT0.ExistsVisualContent)
-                        {
-                            model.Base64 = result.AsT0.QuestionPictureBase64;
-                            await questionApi.AskQuestionOcrImage(model);
-                        }
-                        else
-                        {
-                            model.QuestionText = result.AsT0.QuestionPictureBase64;
-                            await questionApi.AskQuestionText(model);
-                        }
+                        await questionApi.AskQuestionOcrImage(model);
                     }
-
-                    if (result.IsT1)
+                    else if (question.IsT1)
                     {
                         var model = new QuestionApiModel
                         {
-                            Id = result.AsT1.Id,
-                            LessonName = result.AsT1.Lesson.Name,
-                            UserId = result.AsT1.CreateUser,
-                            ExcludeQuiz = result.AsT1.ExcludeQuiz
+                            Id = question.AsT1.Id,
+                            LessonName = question.AsT1.Lesson.Name,
+                            UserId = question.AsT1.CreateUser,
+                            ExcludeQuiz = question.AsT1.ExcludeQuiz,
+                            Base64 = base64
                         };
-                        if (result.AsT1.ExistsVisualContent)
-                        {
-                            model.Base64 = result.AsT1.QuestionPicture;
-                            await questionApi.GetSimilar(model);
-                        }
-                        else
-                        {
-                            model.QuestionText = result.AsT1.QuestionPicture;
-                            await questionApi.GetSimilarText(model);
-                        }
+
+                        await questionApi.GetSimilar(model);
                     }
                 }
                 finally
@@ -117,51 +99,6 @@ public class QuestionManager(ICommonService commonService,
         }
     }
 
-    private async Task<OneOf<Question, Similar>> SendOcr(OneOf<Question, Similar> entity, CancellationToken cancellationToken)
-    {
-        //return entity;
-
-        using var context = contextFactory.CreateDbContext();
-
-        var id = entity.Match(q => q.Id, s => s.Id);
-        var userId = entity.Match(q => q.CreateUser, s => s.CreateUser);
-        var username = await context.Users.Where(x => x.Id == userId).Select(x => x.UserName).FirstOrDefaultAsync(cancellationToken);
-        var filePath = entity.Match(q => Path.Combine(AppOptions.QuestionPictureFolderPath, q.QuestionPictureFileName), s => Path.Combine(AppOptions.QuestionPictureFolderPath, s.QuestionPictureFileName));
-
-        var ocr = await ocrApi.GetTextFromImage(new(filePath, username, userId));
-        await QuestionRules.OCRShouldBeFilled(ocr);
-
-        var existsVisualContent = ocr.Text.Contains("##visual##", StringComparison.OrdinalIgnoreCase);
-        var excludeQuiz = ocr.Text.Contains("##classic##", StringComparison.OrdinalIgnoreCase) || ocr.Text.Contains("Cevap X", StringComparison.OrdinalIgnoreCase);
-
-        if (entity.IsT0)
-        {
-            var result = entity.AsT0;
-            var data = await context.Questions.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-
-            result.QuestionPictureBase64 = data.QuestionPictureBase64 = existsVisualContent
-                ? data.QuestionPictureBase64
-                : ocr.Text.Trim("##classic##", "##visual##");
-            result.ExcludeQuiz = data.ExcludeQuiz = excludeQuiz;
-            result.ExistsVisualContent = data.ExistsVisualContent = existsVisualContent;
-            context.Questions.Update(data);
-            await context.SaveChangesAsync(cancellationToken);
-            return result;
-        }
-        else
-        {
-            var result = entity.AsT1;
-            var data = await context.Similars.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-            result.QuestionPicture = data.QuestionPicture = existsVisualContent
-                ? data.QuestionPicture
-                : ocr.Text.Trim("##classic##", "##visual##");
-            result.ExcludeQuiz = data.ExcludeQuiz = excludeQuiz;
-            result.ExistsVisualContent = data.ExistsVisualContent = existsVisualContent;
-            context.Similars.Update(data);
-            await context.SaveChangesAsync(cancellationToken);
-            return result;
-        }
-    }
     #region Question
 
     public async Task<bool> UpdateAnswer(QuestionITOResponseModel model, UpdateQuestionDto dto)
@@ -254,9 +191,53 @@ public class QuestionManager(ICommonService commonService,
         return true;
     }
 
-    public Task<bool> UpdateAnswer(QuestionVisualResponseModel model, UpdateQuestionDto dto)
+    public async Task<bool> UpdateAnswer(QuestionVisualResponseModel model, UpdateQuestionDto dto)
     {
-        throw new NotImplementedException();
+        using var context = contextFactory.CreateDbContext();
+
+        var data = await context.Questions
+            .Include(x => x.Lesson)
+            .FirstOrDefaultAsync(x => x.Id == dto.QuestionId && x.IsActive);
+        await QuestionRules.QuestionShouldExists(data);
+
+        //GetGainModel gain = null;
+        //if (dto.Status == QuestionStatus.Answered && model.GainName.IsNotEmpty())
+        //    gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser, context));
+
+        string extension = string.Empty;
+        string fileName = string.Empty;
+        if (dto.Status == QuestionStatus.Answered)
+        {
+            extension = ".png";
+            fileName = $"A_{dto.UserId}_{data.LessonId}_{dto.QuestionId}{extension}";
+            await commonService.TextToImage(model?.AnswerText, fileName, AppOptions.AnswerPictureFolderPath);
+        }
+
+        data.UpdateUser = 1;
+        data.UpdateDate = DateTime.Now;
+        data.QuestionPictureBase64 = model?.QuestionText ?? string.Empty;
+        data.AnswerText = model?.AnswerText ?? string.Empty;
+        data.AnswerPictureFileName = fileName ?? string.Empty;
+        data.AnswerPictureExtension = extension ?? string.Empty;
+        data.Status = dto.Status;
+        //data.GainId = gain?.Id;
+        //data.RightOption = model?.RightOption.FirstOrDefault();
+        if (dto.Status != QuestionStatus.Answered)
+        {
+            data.TryCount++;
+            data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;
+        }
+
+        context.Questions.Update(data);
+        await context.SaveChangesAsync();
+
+        if (dto.Status == QuestionStatus.Answered)
+            _ = notificationService.PushNotificationByUserId(new(Strings.Answered,
+                                                                 Strings.DynamicLessonQuestionAnswered.Format(data.Lesson.Name),
+                                                                 data.CreateUser, NotificationTypes.QuestionAnswered,
+                                                                 dto.QuestionId.ToString()));
+
+        return true;
     }
 
     #endregion Question
@@ -365,9 +346,6 @@ public class QuestionManager(ICommonService commonService,
     }
 
     #endregion SimilarQuestion
-
-
-
 
     #region Quiz
 
@@ -809,49 +787,3 @@ public class QuestionManager(ICommonService commonService,
 
     #endregion Quiz
 }
-
-/*
-    //public async Task SendForStatusSendAgain(CancellationToken cancellationToken)
-    //{
-    //    QuestionStatus[] status = [QuestionStatus.Waiting, QuestionStatus.Error, QuestionStatus.SendAgain];
-    //    var questions = await questionDal.GetListAsync(
-    //        predicate: x => (status.Contains(x.Status)
-    //                         || (x.Status == QuestionStatus.Waiting && x.CreateDate < DateTime.Now.AddMinutes(1)))
-    //                        && x.TryCount < AppOptions.AITryCount,
-    //        include: x => x.Include(u => u.Lesson),
-    //        enableTracking: false,
-    //        cancellationToken: cancellationToken);
-
-    //    foreach (var question in questions)
-    //    {
-    //        Console.WriteLine($"Question Id: {question.Id}");
-    //        _ = await questionApi.AskQuestionOcrImage(new()
-    //        {
-    //            Id = question.Id,
-    //            Base64 = question.QuestionPictureBase64,
-    //            LessonName = question.Lesson.Name,
-    //            UserId = question.CreateUser
-    //        });
-    //    }
-
-    //    var similarQuestions = await similarQuestionDal.GetListAsync(
-    //        predicate: x => (status.Contains(x.Status)
-    //                         || (x.Status == QuestionStatus.Waiting && x.CreateDate < DateTime.Now.AddMinutes(1)))
-    //                        && x.TryCount < AppOptions.AITryCount,
-    //        include: x => x.Include(u => u.Lesson),
-    //        enableTracking: false,
-    //        cancellationToken: cancellationToken);
-
-    //    foreach (var question in similarQuestions)
-    //    {
-    //        Console.WriteLine($"Similar Question Id: {question.Id}");
-    //        _ = await questionApi.GetSimilarQuestion(new()
-    //        {
-    //            Id = question.Id,
-    //            Base64 = question.QuestionPicture,
-    //            LessonName = question.Lesson.Name,
-    //            UserId = question.CreateUser
-    //        });
-    //    }
-    //}
- */

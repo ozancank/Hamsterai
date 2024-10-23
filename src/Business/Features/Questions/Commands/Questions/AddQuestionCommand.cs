@@ -2,7 +2,6 @@
 using Business.Features.Questions.Models.Questions;
 using Business.Features.Questions.Rules;
 using Business.Services.CommonService;
-using Infrastructure.AI;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
@@ -21,7 +20,6 @@ public class AddQuestionCommandHandler(IMapper mapper,
                                        IQuestionDal questionDal,
                                        ICommonService commonService,
                                        ILessonDal lessonDal,
-                                       IQuestionApi questionApi,
                                        QuestionRules questionRules) : IRequestHandler<AddQuestionCommand, GetQuestionModel>
 {
     public async Task<GetQuestionModel> Handle(AddQuestionCommand request, CancellationToken cancellationToken)
@@ -69,14 +67,6 @@ public class AddQuestionCommandHandler(IMapper mapper,
 
         var added = await questionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
         var result = mapper.Map<GetQuestionModel>(added);
-
-        _ = questionApi.AskQuestionOcrImage(new()
-        {
-            Id = result.Id,
-            Base64 = question.QuestionPictureBase64,
-            LessonName = lessonName,
-            UserId = question.CreateUser,
-        });
 
         return result;
     }

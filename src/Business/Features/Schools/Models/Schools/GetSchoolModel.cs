@@ -1,4 +1,5 @@
-﻿using Business.Features.Users.Models.User;
+﻿using Business.Features.Lessons.Models.Groups;
+using Business.Features.Users.Models.User;
 
 namespace Business.Features.Schools.Models.Schools;
 
@@ -22,7 +23,9 @@ public sealed class GetSchoolModel : IResponseModel
     public int TeacherCount { get; set; }
     public int StudentCount { get; set; }
 
+    public List<byte> GroupIds { get; set; } = [];
+    public List<GetGroupLiteModel> Groups { get; set; } = [];
     public List<GetUserModel> Users { get; set; } = [];
-    //public List<Teacher> Teachers { get; set; } = [];
-    //public List<ClassRoom> ClassRooms { get; set; } = [];
+    public List<Teacher> Teachers { get; set; } = [];
+    public List<ClassRoom> ClassRooms { get; set; } = [];
 }

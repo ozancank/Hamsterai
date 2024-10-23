@@ -14,6 +14,7 @@ public interface ICommonService : IBusinessService
 
     Task<string> PictureConvert(string base64, string fileName, string folder);
     Task<string> TextToImage(string text, string fileName, string folder, IImageEncoder imageEncoder = null);
+    Task<string> ImageToBase64(string path);
 
     void ThrowErrorTry(Exception exception);
     List<string> GetLogs(PageRequest pageRequest, bool onlyError);

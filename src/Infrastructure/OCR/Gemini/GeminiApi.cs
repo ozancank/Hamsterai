@@ -47,40 +47,40 @@ public class GeminiApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
                 || lines.Contains("Görselde yazı yok", StringComparer.OrdinalIgnoreCase))
                 throw new ExternalApiException("Görselde metin veya yazı yok.");
 
-            if (!isClassic)
-            {
-                var options = new bool[5];
-                options[0] = lines.Any(x => x.Trim().StartsWith("A) ", StringComparison.CurrentCultureIgnoreCase));
-                options[1] = lines.Any(x => x.Trim().StartsWith("B) ", StringComparison.CurrentCultureIgnoreCase));
-                options[2] = lines.Any(x => x.Trim().StartsWith("C) ", StringComparison.CurrentCultureIgnoreCase));
-                options[3] = lines.Any(x => x.Trim().StartsWith("D) ", StringComparison.CurrentCultureIgnoreCase));
-                options[4] = lines.Any(x => x.Trim().StartsWith("E) ", StringComparison.CurrentCultureIgnoreCase));
+            //if (!isClassic)
+            //{
+            //    var options = new bool[5];
+            //    options[0] = lines.Any(x => x.Trim().StartsWith("A) ", StringComparison.CurrentCultureIgnoreCase));
+            //    options[1] = lines.Any(x => x.Trim().StartsWith("B) ", StringComparison.CurrentCultureIgnoreCase));
+            //    options[2] = lines.Any(x => x.Trim().StartsWith("C) ", StringComparison.CurrentCultureIgnoreCase));
+            //    options[3] = lines.Any(x => x.Trim().StartsWith("D) ", StringComparison.CurrentCultureIgnoreCase));
+            //    options[4] = lines.Any(x => x.Trim().StartsWith("E) ", StringComparison.CurrentCultureIgnoreCase));
 
-                var optionCount = options.Count(x => x);
-                if (!optionCount.Between(3, 5)) throw new ExternalApiException($"OCR'dan dönen şıklar 3 ile 5 arasında olmalıdır. Seçenek sayısı: {optionCount}");
+            //    var optionCount = options.Count(x => x);
+            //    if (!optionCount.Between(3, 5)) throw new ExternalApiException($"OCR'dan dönen şıklar 3 ile 5 arasında olmalıdır. Seçenek sayısı: {optionCount}");
 
-                int indexA = lines.FindIndex(x => x.StartsWith("A) "));
+            //    int indexA = lines.FindIndex(x => x.StartsWith("A) "));
 
-                if (indexA > 0)
-                {
-                    if (indexA == 1 || lines[indexA - 1].IsNotEmpty())
-                        lines.Insert(indexA, string.Empty);
-                    else if (indexA > 1 && lines[indexA - 2].IsEmpty())
-                        lines.RemoveAt(indexA - 1);
-                }
+            //    if (indexA > 0)
+            //    {
+            //        if (indexA == 1 || lines[indexA - 1].IsNotEmpty())
+            //            lines.Insert(indexA, string.Empty);
+            //        else if (indexA > 1 && lines[indexA - 2].IsEmpty())
+            //            lines.RemoveAt(indexA - 1);
+            //    }
 
-                for (int i = indexA + 1; i < lines.Count; i++)
-                {
-                    if (lines[i].StartsWith("B) ") || lines[i].StartsWith("C) ") || lines[i].StartsWith("D) ") || lines[i].StartsWith("E) "))
-                    {
-                        if (lines[i - 1].IsEmpty())
-                        {
-                            lines.RemoveAt(i - 1);
-                            i--;
-                        }
-                    }
-                }
-            }
+            //    for (int i = indexA + 1; i < lines.Count; i++)
+            //    {
+            //        if (lines[i].StartsWith("B) ") || lines[i].StartsWith("C) ") || lines[i].StartsWith("D) ") || lines[i].StartsWith("E) "))
+            //        {
+            //            if (lines[i - 1].IsEmpty())
+            //            {
+            //                lines.RemoveAt(i - 1);
+            //                i--;
+            //            }
+            //        }
+            //    }
+            //}
             result.Text = string.Join("\n", lines);
 
             if (result.Text.Contains("argument should contain only ASCII characters")) throw new ExternalApiException("OCR ASCII hatası verdi.");

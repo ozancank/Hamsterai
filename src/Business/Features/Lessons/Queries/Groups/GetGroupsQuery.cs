@@ -23,6 +23,7 @@ public class GetGroupsQueryHandler(IMapper mapper,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
             orderBy: x => x.OrderBy(x => x.CreateDate),
+            include: x => x.Include(u => u.LessonGroups).ThenInclude(u => u.Lesson),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
         var result = mapper.Map<PageableModel<GetGroupModel>>(groups);

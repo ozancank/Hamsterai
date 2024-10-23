@@ -90,6 +90,14 @@ public class SchoolController : BaseController
         return Ok();
     }
 
+    [HttpGet("GetSchoolGroups")]
+    public async Task<IActionResult> GetSchoolGroups()
+    {
+        var command = new GetSchoolGroupsQuery();
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
     #endregion School
 
     #region ClassRoom

@@ -11,7 +11,7 @@ namespace WebAPI.Controllers.V1;
 public class StudentController : BaseController
 {
     [HttpGet("GetStudentById/{id}")]
-    public async Task<IActionResult> GetStudentById([FromRoute] byte id)
+    public async Task<IActionResult> GetStudentById([FromRoute] int id)
     {
         var command = new GetStudentByIdQuery { Id = id };
         var result = await Mediator.Send(command);
@@ -23,6 +23,14 @@ public class StudentController : BaseController
     {
         var getStudentGainsForSelfQuery = new GetStudentGainsForSelfQuery();
         var result = await Mediator.Send(getStudentGainsForSelfQuery);
+        return Ok(result);
+    }
+
+    [HttpPost("GetStudentGains")]
+    public async Task<IActionResult> GetStudentGainsForSelf([FromBody] StudentGainsRequestModel model)
+    {
+        var getStudentGainsByIdQuery = new GetStudentGainsByIdQuery { Model = model };
+        var result = await Mediator.Send(getStudentGainsByIdQuery);
         return Ok(result);
     }
 

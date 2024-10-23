@@ -15,7 +15,7 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
         builder.Property(e => e.Name).HasColumnName("Name").HasMaxLength(50).HasColumnOrder(6).IsRequired();
         builder.Property(e => e.Surname).HasColumnName("Surname").HasMaxLength(50).HasColumnOrder(7).IsRequired();
         builder.Property(e => e.StudentNo).HasColumnName("StudentNo").HasMaxLength(15).HasColumnOrder(8).IsRequired();
-        builder.Property(e => e.TcNo).HasColumnName("TcNo").HasMaxLength(11).HasColumnOrder(9).IsRequired();
+        builder.Property(e => e.TcNo).HasColumnName("TcNo").HasMaxLength(11).HasColumnOrder(9);
         builder.HasIndex(e => e.TcNo).HasDatabaseName("UK_Students_TcNo").IsUnique();
         builder.Property(e => e.Phone).HasColumnName("Phone").HasMaxLength(15).HasColumnOrder(10).IsRequired();
         builder.HasIndex(e => e.Phone).HasDatabaseName("UK_Students_Phone").IsUnique();

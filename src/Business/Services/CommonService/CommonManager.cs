@@ -54,6 +54,13 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         return filePath;
     }
 
+    public async Task<string> ImageToBase64(string path)
+    {
+        if (path.IsEmpty()) return string.Empty;
+        var imageBytes = await File.ReadAllBytesAsync(path);
+        return Convert.ToBase64String(imageBytes);
+    }
+
     public async Task<string> TextToImage(string text, string fileName, string folder, IImageEncoder imageEncoder = null)
     {
         if (text.IsEmpty() || fileName.IsEmpty() || folder.IsEmpty()) return string.Empty;
@@ -104,4 +111,6 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         var result = loggerServiceBase.GetLogs(pageRequest, onlyError);
         return result;
     }
+
+  
 }

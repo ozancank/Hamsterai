@@ -34,7 +34,7 @@ public class QuestionController() : BaseController
     [HttpPost("AddQuestion")]
     public async Task<IActionResult> AddQuestion([FromBody] AddQuestionModel model)
     {
-        var command = new AddQuestionTextCommand { Model = model };
+        var command = new AddQuestionCommand { Model = model };
         var result = await Mediator.Send(command);
         return Ok(result);
     }
@@ -86,7 +86,7 @@ public class QuestionController() : BaseController
     [HttpPost("AddSimilarQuestion")]
     public async Task<IActionResult> AddSimilarQuestion([FromBody] AddSimilarModel model)
     {
-        var command = new AddSimilarTextCommand { Model = model };
+        var command = new AddSimilarCommand { Model = model };
         var result = await Mediator.Send(command);
         return Ok(result);
     }

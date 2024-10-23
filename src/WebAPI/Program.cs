@@ -236,9 +236,9 @@ static void StaticFiles(WebApplication app)
 static void Delegates()
 {
     ControlUserStatusAsync = ServiceTools.GetService<IUserService>().UserStatusAndLicense;
-    UpdateQuestionOcr = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
     UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
     UpdateSimilarAnswer = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
     UpdateQuestionText = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
     UpdateSimilarText = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
+    UpdateQuestionVisual = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
 }

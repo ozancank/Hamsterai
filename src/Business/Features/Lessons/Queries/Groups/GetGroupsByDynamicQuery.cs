@@ -24,6 +24,7 @@ public class GetGroupsByDynamicQueryHandler(IMapper mapper,
             dynamic: request.Dynamic,
             defaultOrderColumnName: x => x.CreateDate,
             enableTracking: false,
+            include: x => x.Include(u => u.LessonGroups).ThenInclude(u => u.Lesson),
             configurationProvider: mapper.ConfigurationProvider,
             index: request.PageRequest.Page, size: request.PageRequest.PageSize,
             cancellationToken: cancellationToken);

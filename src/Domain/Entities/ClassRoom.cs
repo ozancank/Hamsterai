@@ -7,8 +7,10 @@ public class ClassRoom : BaseEntity<int>
     public short No { get; set; }
     public string Branch { get; set; }
     public int SchoolId { get; set; }
+    public byte? GroupId { get; set; }
 
     public virtual School School { get; set; }
+    public virtual Group Group { get; set; }
     public virtual ICollection<TeacherClassRoom> TeacherClassRooms { get; set; }
     public virtual ICollection<Student> Students { get; set; }
     public virtual ICollection<Homework> Homeworks { get; set; }

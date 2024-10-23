@@ -8,5 +8,5 @@ public class AddStudentModel : IRequestModel
     public string TcNo { get; set; }
     public string Phone { get; set; }
     public string Email { get; set; }
-    public string ClassRoomId { get; set; }
+    public int ClassRoomId { get; set; }
 }

@@ -4,11 +4,11 @@ namespace Infrastructure.AI;
 
 public interface IQuestionApi : IArtificialIntelligenceApi
 {
-    Task<QuestionTOResponseModel> AskQuestionOcr(QuestionApiModel model);
-
     Task<QuestionITOResponseModel> AskQuestionOcrImage(QuestionApiModel model);
 
     Task<QuestionTextResponseModel> AskQuestionText(QuestionApiModel model);
+
+    Task<QuestionVisualResponseModel> AskQuestionVisual(QuestionApiModel model);
 
     Task<SimilarResponseModel> GetSimilar(QuestionApiModel model);
 

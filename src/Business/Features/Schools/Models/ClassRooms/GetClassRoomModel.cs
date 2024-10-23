@@ -15,6 +15,8 @@ public sealed class GetClassRoomModel : IResponseModel
     public short No { get; set; }
     public string Branch { get; set; }
     public int SchoolId { get; set; }
+    public byte GroupId { get; set; }
+    public string GroupName { get; set; }
 
     public GetSchoolModel School { get; set; }
     public List<GetTeacherModel> Teachers { get; set; } = [];

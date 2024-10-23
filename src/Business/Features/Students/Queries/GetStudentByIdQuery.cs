@@ -8,7 +8,7 @@ namespace Business.Features.Students.Queries;
 
 public class GetStudentByIdQuery : IRequest<GetStudentModel>, ISecuredRequest<UserTypes>
 {
-    public byte Id { get; set; }
+    public int Id { get; set; }
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 

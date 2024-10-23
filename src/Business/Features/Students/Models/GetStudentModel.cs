@@ -14,7 +14,7 @@ public class GetStudentModel : IResponseModel
     public string TcNo { get; set; }
     public string Phone { get; set; }
     public string Email { get; set; }
-    public string ClassRoomId { get; set; }
+    public int ClassRoomId { get; set; }
     public string FullName { get; set; }
     public string ClassName { get; set; }
     public List<string> TeacherNames { get; set; } = [];

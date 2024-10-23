@@ -57,7 +57,7 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
         school.UserCount = request.Model.UserCount;
 
         user.Name = school.Name;
-        user.UserName = school.AuthorizedEmail.Trim().ToLower();
+        user.UserName = school.TaxNumber.Trim().ToLower();
         user.Email = school.AuthorizedEmail.Trim().ToLower();
         user.Phone = school.AuthorizedPhone.TrimForPhone();
 

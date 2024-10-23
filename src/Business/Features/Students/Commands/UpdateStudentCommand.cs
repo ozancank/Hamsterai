@@ -1,4 +1,5 @@
-﻿using Business.Features.Students.Models;
+﻿using Business.Features.Schools.Rules;
+using Business.Features.Students.Models;
 using Business.Features.Students.Rules;
 using Business.Features.Users.Rules;
 using Business.Services.CommonService;
@@ -21,7 +22,8 @@ public class UpdateStudentCommandHandler(IMapper mapper,
                                          ICommonService commonService,
                                          IUserDal userDal,
                                          UserRules userRules,
-                                         StudentRules studentRules) : IRequestHandler<UpdateStudentCommand, GetStudentModel>
+                                         StudentRules studentRules,
+                                         IClassRoomDal classRoomDal) : IRequestHandler<UpdateStudentCommand, GetStudentModel>
 {
     public async Task<GetStudentModel> Handle(UpdateStudentCommand request, CancellationToken cancellationToken)
     {
@@ -39,20 +41,31 @@ public class UpdateStudentCommandHandler(IMapper mapper,
         await userRules.UserEmailCanNotBeDuplicated(request.Model.Email, user.Id);
         await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone, user.Id);
 
+        var classRoom = await classRoomDal.GetAsync(
+            enableTracking: false,
+            predicate: x => x.Id == request.Model.ClassRoomId && x.SchoolId == commonService.HttpSchoolId,
+            cancellationToken: cancellationToken);
+        await ClassRoomRules.ClassRoomShouldExistsAndActive(classRoom);
+
         var userId = commonService.HttpUserId;
         var date = DateTime.Now;
 
+        student.UpdateUser = userId;
+        student.UpdateDate = date;
         student.Name = request.Model.Name;
         student.Surname = request.Model.Surname;
         student.StudentNo = request.Model.StudentNo;
         student.TcNo = request.Model.TcNo;
         student.Email = request.Model.Email;
         student.Phone = request.Model.Phone.TrimForPhone();
+        student.ClassRoomId = request.Model.ClassRoomId;
 
         user.Name = student.Name;
+        user.Surname = student.Surname;
         user.UserName = student.Email.Trim().ToLower();
         user.Email = student.Email.Trim().ToLower();
         user.Phone = student.Phone.TrimForPhone();
+        user.GroupId = classRoom.GroupId;
 
         var result = await studentDal.ExecuteWithTransactionAsync(async () =>
         {
@@ -86,9 +99,10 @@ public class UpdateStudentCommandValidator : AbstractValidator<UpdateStudentComm
         RuleFor(x => x.Model.StudentNo).MinimumLength(1).WithMessage(Strings.DynamicMinLength, [$"{Strings.Student} {Strings.No}", "1"]);
         RuleFor(x => x.Model.StudentNo).MaximumLength(15).WithMessage(Strings.DynamicMinLength, [$"{Strings.Student} {Strings.No}", "15"]);
 
-        RuleFor(x => x.Model.TcNo).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Identity} {Strings.No}"]);
-        RuleFor(x => x.Model.TcNo).Length(11).WithMessage(Strings.DynamicLength, [$"{Strings.Identity} {Strings.No}", "11"]);
-        RuleFor(x => x.Model.TcNo).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [$"{Strings.Identity} {Strings.No}"]);
+        //RuleFor(x => x.Model.TcNo).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Identity} {Strings.No}"]);
+        //RuleFor(x => x.Model.TcNo).Length(11).WithMessage(Strings.DynamicLength, [$"{Strings.Identity} {Strings.No}", "11"]);
+        //RuleFor(x => x.Model.TcNo).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [$"{Strings.Identity} {Strings.No}"]);
+        RuleFor(x => x.Model.TcNo).MaximumLength(11).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Identity} {Strings.No}", "11"]);
 
         RuleFor(x => x.Model.Email).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Authorized} {Strings.OfEmail}"]);
         RuleFor(x => x.Model.Email).MinimumLength(5).WithMessage(Strings.DynamicMinLength, [$"{Strings.Authorized} {Strings.OfEmail}", "5"]);

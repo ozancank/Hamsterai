@@ -24,7 +24,9 @@ public class GetClassRoomByIdQueryHandler(IMapper mapper,
         var classRoom = await classRoomDal.GetAsyncAutoMapper<GetClassRoomModel>(
             enableTracking: request.Tracking,
             predicate: x => x.Id == request.Id && (commonService.HttpUserType == UserTypes.Administator || x.School.Id == commonService.HttpSchoolId),
-            include: x => x.Include(u => u.School),
+            include: x => x.Include(u => u.School).Include(u => u.Group)
+                           .Include(u => u.TeacherClassRooms).ThenInclude(u => u.Teacher)
+                           .Include(u => u.Students),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
 

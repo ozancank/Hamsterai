@@ -24,6 +24,8 @@ public class GetSchoolsByDynamicQueryHandler(IMapper mapper,
             dynamic: request.Dynamic,
             defaultOrderColumnName: x => x.CreateDate,
             enableTracking: false,
+            include: x => x.Include(u => u.Users)
+                           .Include(x => x.SchoolGroups).ThenInclude(u => u.Group),
             configurationProvider: mapper.ConfigurationProvider,
             index: request.PageRequest.Page, size: request.PageRequest.PageSize,
             cancellationToken: cancellationToken);

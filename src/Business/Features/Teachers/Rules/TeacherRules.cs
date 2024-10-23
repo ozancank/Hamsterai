@@ -30,6 +30,7 @@ public class TeacherRules(ITeacherDal teacherDal) : IBusinessRule
 
     internal async Task TeacherTcNoCanNotBeDuplicated(string tcNo, int? teacherId = null)
     {
+        if (tcNo.IsEmpty())return;
         tcNo = tcNo.Trim();
         var teacher = await teacherDal.GetAsync(predicate: x => x.TcNo == tcNo, enableTracking: false);
         if (teacherId == null && teacher != null) throw new BusinessException(Strings.DynamicExists, tcNo);

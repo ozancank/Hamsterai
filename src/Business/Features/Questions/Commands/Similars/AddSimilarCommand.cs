@@ -2,7 +2,6 @@
 using Business.Features.Questions.Models.Similars;
 using Business.Features.Questions.Rules;
 using Business.Services.CommonService;
-using Infrastructure.AI;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
@@ -18,10 +17,9 @@ public class AddSimilarCommand : IRequest<GetSimilarModel>, ISecuredRequest<User
 }
 
 public class AddSimilarCommandHandler(IMapper mapper,
-                                      ISimilarDal similarQuestionDal,
+                                      ISimilarDal similarDal,
                                       ICommonService commonService,
                                       ILessonDal lessonDal,
-                                      IQuestionApi questionApi,
                                       SimilarRules similarRules) : IRequestHandler<AddSimilarCommand, GetSimilarModel>
 {
     public async Task<GetSimilarModel> Handle(AddSimilarCommand request, CancellationToken cancellationToken)
@@ -47,8 +45,8 @@ public class AddSimilarCommandHandler(IMapper mapper,
             Id = id,
             IsActive = true,
             CreateUser = commonService.HttpUserId,
-            UpdateUser = commonService.HttpUserId,
             CreateDate = date,
+            UpdateUser = commonService.HttpUserId,
             UpdateDate = date,
             LessonId = request.Model.LessonId,
             QuestionPicture = request.Model.QuestionPictureBase64,
@@ -70,16 +68,8 @@ public class AddSimilarCommandHandler(IMapper mapper,
             ExistsVisualContent = true,
         };
 
-        var added = await similarQuestionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
+        var added = await similarDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
         var result = mapper.Map<GetSimilarModel>(added);
-
-        _ = questionApi.GetSimilar(new()
-        {
-            Id = result.Id,
-            Base64 = question.QuestionPicture,
-            LessonName = lessonName,
-            UserId = question.CreateUser
-        });
 
         return result;
     }

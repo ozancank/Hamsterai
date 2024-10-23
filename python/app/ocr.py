@@ -35,8 +35,10 @@ def extract_text_from_image(image_file):
     prompt = """
     - Bir OCR gibi çalış ve metnin tamamını çıkar. Metin dili Türkiye Türkçesi dir.
     - Eğer resim bir SORU değil ise sadece #NanTestNan# cevabını ver.
+    - Soru içeriğini kesinlikle ekle.
     - Eğer resim bir SORU ise şu kuralları uygula:    
       - Eğer soru içeriği bir görsel,resim içeriyorsa ##visual## yazısını ilk olarak ekle.
+      - Eğer soru içeriğinde "boşlukları", "boşluğu" vb. kelimeler veya altı çizili, italik, kalın, renkli metinler var ise yine ##visual## yazısını ekle.
       - Eğer çoktan seçmeli bir test sorusu ise ve şıkları var ise:
         - Eğer soru ve/veya şıklar bir tablo içeriyorsa, tablo formatına uygun bir yazı oluştur.
         - A) veya a) ile başlayan satırı tespit et. Bu satır şıkların başladığı satırdır. Bu satırın üstündeki tüm satırlar soru satırıdır.
@@ -45,7 +47,8 @@ def extract_text_from_image(image_file):
         - Kesinlikle doğru cevabı verme, sadece metni çıkar.
       - Eğer çoktan seçmeli bir test sorusu değil ise:
         - Sadece soru metnini çıkar ve en sonuna ##classic## yazısını ekle.
-      
+    
+    - Soru kısmının kesinlike eklendiğinden EMİN OL!  
     - Yukarıdaki tüm şartların gerçekleştirdiğinden EMİN OL!
     """
     response = model.generate_content([image_file, prompt], generation_config=generation_config)
@@ -65,7 +68,6 @@ def get_text(file_path):
       raise ValueError("Resim bir test sorusu değil.")
     return text
   except FileNotFoundError:
-    print(f"Soru resmi bulunamadı: {file_path}")
+    raise ValueError(f"Soru resmi bulunamadı: {file_path}")    
   except Exception as e:
-    print(f"Bir hata oluştu: {e}")
-  raise ValueError("OCR çözümleme yapamadı")
+    raise ValueError(f"OCR de bir hata oluştu: {e}")

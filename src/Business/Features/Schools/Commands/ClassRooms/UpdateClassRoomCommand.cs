@@ -1,4 +1,5 @@
-﻿using Business.Features.Schools.Models.ClassRooms;
+﻿using Business.Features.Lessons.Rules;
+using Business.Features.Schools.Models.ClassRooms;
 using Business.Features.Schools.Rules;
 using Business.Services.CommonService;
 using MediatR;
@@ -17,19 +18,23 @@ public class UpdateClassRoomCommand : IRequest<GetClassRoomModel>, ISecuredReque
 public class UpdateClassRoomCommandHandler(IMapper mapper,
                                            IClassRoomDal classRoomDal,
                                            ICommonService commonService,
-                                           ClassRoomRules classRoomRules) : IRequestHandler<UpdateClassRoomCommand, GetClassRoomModel>
+                                           ClassRoomRules classRoomRules,
+                                           GroupRules groupRules) : IRequestHandler<UpdateClassRoomCommand, GetClassRoomModel>
 {
     public async Task<GetClassRoomModel> Handle(UpdateClassRoomCommand request, CancellationToken cancellationToken)
     {
         request.Model.Branch = request.Model.Branch.Trim().ToUpper();
-        
-        var classRoom = await classRoomDal.GetAsync(x => x.Id == request.Model.Id, cancellationToken: cancellationToken);
+        var schoolId = commonService.HttpSchoolId ?? 0;
 
-        await classRoomRules.ClassRoomNoAndBranchAndSchoolIdCanNotBeDuplicated(request.Model.No, request.Model.Branch, request.Model.SchoolId, classRoom.Id);
+        var classRoom = await classRoomDal.GetAsync(x => x.Id == request.Model.Id && x.SchoolId == schoolId, cancellationToken: cancellationToken);
+
+        await classRoomRules.ClassRoomNoAndBranchAndSchoolIdCanNotBeDuplicated(request.Model.No, request.Model.Branch, schoolId, classRoom.Id);
+        await groupRules.GroupShouldExistsAndActiveById(request.Model.GroupId);
 
         mapper.Map(request.Model, classRoom);
         classRoom.UpdateUser = commonService.HttpUserId;
         classRoom.UpdateDate = DateTime.Now;
+        schoolId = classRoom.SchoolId;
 
         var updated = await classRoomDal.UpdateAsyncCallback(classRoom, cancellationToken: cancellationToken);
         var result = mapper.Map<GetClassRoomModel>(updated);

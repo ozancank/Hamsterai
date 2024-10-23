@@ -30,6 +30,7 @@ public class AddHomeworkCommandHandler(IMapper mapper,
 {
     public async Task<GetHomeworkModel> Handle(AddHomeworkCommand request, CancellationToken cancellationToken)
     {
+        await HomeworkRules.HomeworkSendUserShouldBeTeacher(commonService.HttpUserType);
         await lessonRules.LessonShouldExistsAndActiveById(request.Model.LessonId);
         await HomeworkRules.OnlyOneShouldBeFilled(request.Model.ClassRoomId, request.Model.StudentIds);
 

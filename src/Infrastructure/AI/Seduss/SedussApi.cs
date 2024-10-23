@@ -13,7 +13,7 @@ namespace Infrastructure.AI.Seduss;
 public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase loggerServiceBase) : IQuestionApi
 {
     private static readonly JsonSerializerOptions _options = new() { PropertyNameCaseInsensitive = true };
-    private const double _apiTimeoutMinute = 10;
+    private const double _apiTimeoutMinute = 1;
     private static readonly string[] _answersOptions = ["A", "B", "C", "D", "E"];
     private const byte _tryAgainCount = 3;
 
@@ -50,65 +50,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         return Convert.ToBoolean(result);
     }
 
-    public async Task<QuestionTOResponseModel> AskQuestionOcr(QuestionApiModel model)
-    {
-        var baseUrl = BaseUrl(model.UserId);
-        QuestionTOResponseModel answer = null;
-        try
-        {
-            using var client = httpClientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
-
-            var available = await ModelAvailable(baseUrl, client);
-
-            if (!available)
-            {
-                answer = new QuestionTOResponseModel { QuestionText = model.Base64 };
-                await InfrastructureDelegates.UpdateQuestionOcr.Invoke(answer, new(model.Id, QuestionStatus.SendAgain, model.UserId));
-                return answer;
-            }
-
-            var data = new QuestionRequestModel
-            {
-                QuestionImage = model.Base64,
-                LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
-            };
-
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Soru_TO")
-            {
-                Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json")
-            };
-
-            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-            answer = JsonSerializer.Deserialize<QuestionTOResponseModel>(content, _options);
-
-            if (!model.ExcludeQuiz)
-            {
-                answer.RightOption = answer.RightOption.IsNotEmpty()
-                    ? answer.RightOption.Trim("Cevap", ".", ":", ")", "-").ToUpper()[..1]
-                    : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
-
-                if (!_answersOptions.Contains(answer.RightOption, StringComparer.OrdinalIgnoreCase))
-                    throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
-            }
-
-            answer.AnswerText = answer.AnswerText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
-
-            if (InfrastructureDelegates.UpdateQuestionOcr != null)
-                await InfrastructureDelegates.UpdateQuestionOcr.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId));
-        }
-        catch (Exception ex)
-        {
-            if (InfrastructureDelegates.UpdateQuestionOcr != null)
-                await InfrastructureDelegates.UpdateQuestionOcr.Invoke(answer, new(model.Id, QuestionStatus.Error, model.UserId));
-            loggerServiceBase.Error($"AskQuestionOcr {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
-        }
-        return answer;
-    }
-
+    #region Question
     public async Task<QuestionITOResponseModel> AskQuestionOcrImage(QuestionApiModel model)
     {
         var baseUrl = BaseUrl(model.UserId);
@@ -231,6 +173,68 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         return answer;
     }
 
+    public async Task<QuestionVisualResponseModel> AskQuestionVisual(QuestionApiModel model)
+    {
+        var baseUrl = BaseUrl(model.UserId);
+        QuestionVisualResponseModel answer = null;
+        try
+        {
+            using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
+
+            var available = await ModelAvailable(baseUrl, client);
+
+            if (!available)
+            {
+                answer = new QuestionVisualResponseModel { QuestionText = model.Base64 };
+                await InfrastructureDelegates.UpdateQuestionVisual.Invoke(answer, new(model.Id, QuestionStatus.SendAgain, model.UserId));
+                return answer;
+            }
+
+            var data = new QuestionRequestModel
+            {
+                QuestionImage = model.Base64,
+                LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Gorsel_Soru")
+            {
+                Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"),
+            };
+
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            answer = JsonSerializer.Deserialize<QuestionVisualResponseModel>(content, _options);
+
+            //if (!model.ExcludeQuiz)
+            //{
+            //    answer.RightOption = answer.RightOption.IsNotEmpty()
+            //        ? answer.RightOption.Trim("Cevap", ".", ":", ")", "-").ToUpper()[..1]
+            //        : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
+
+            //    if (!_answersOptions.Contains(answer.RightOption, StringComparer.OrdinalIgnoreCase))
+            //        throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
+            //}
+
+            answer.AnswerText = answer.AnswerText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
+
+            if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
+                await InfrastructureDelegates.UpdateQuestionVisual.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId));
+        }
+        catch (Exception ex)
+        {
+            if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
+                await InfrastructureDelegates.UpdateQuestionVisual.Invoke(answer, new(model.Id, QuestionStatus.Error, model.UserId));
+            loggerServiceBase.Error($"AskQuestionVisual {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+        }
+
+        return answer;
+    }
+    #endregion
+
+    #region Similar
     public async Task<SimilarResponseModel> GetSimilar(QuestionApiModel model)
     {
         var baseUrl = BaseUrl(model.UserId);
@@ -299,7 +303,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         {
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
-            
+
             var available = await ModelAvailable(baseUrl, client);
 
             if (!available)
@@ -354,7 +358,9 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         }
         return similar;
     }
+    #endregion
 
+    #region Quiz
     public async Task<QuizResponseModel> GetQuizQuestions(QuizApiModel model)
     {
         var baseUrl = BaseUrl(model.UserId);
@@ -592,4 +598,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
 
         return similars;
     }
+    #endregion
+
+
 }

@@ -15,22 +15,58 @@ public class AddGroupCommand : IRequest<GetGroupModel>, ISecuredRequest<UserType
 }
 
 public class AddGroupCommandHandler(IMapper mapper,
+    ILessonDal lessonDal,
                                      IGroupDal groupDal,
                                      ICommonService commonService,
+                                     ILessonGroupDal lessonGroupDal,
                                      GroupRules groupRules) : IRequestHandler<AddGroupCommand, GetGroupModel>
 {
     public async Task<GetGroupModel> Handle(AddGroupCommand request, CancellationToken cancellationToken)
     {
         await groupRules.GroupNameCanNotBeDuplicated(request.Model.Name);
+        var date = DateTime.Now;
 
         var group = mapper.Map<Group>(request.Model);
         group.Id = await groupDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
         group.IsActive = true;
         group.CreateUser = group.UpdateUser = commonService.HttpUserId;
-        group.CreateDate = group.UpdateDate = DateTime.Now;
+        group.CreateDate = group.UpdateDate = date;
 
-        var added = await groupDal.AddAsyncCallback(group, cancellationToken: cancellationToken);
-        var result = mapper.Map<GetGroupModel>(added);
+        List<LessonGroup> lessonGroups = [];
+
+        if (request.Model.LessonIds != null && request.Model.LessonIds.Count != 0)
+        {
+            var lessons = await lessonDal.GetListAsync(
+                predicate: x => x.IsActive,
+                enableTracking: false,
+                cancellationToken: cancellationToken);
+            await LessonRules.LessonShouldBeRecordInDatabase(request.Model.LessonIds, lessons);
+            var entities = new List<LessonGroup>();
+
+            foreach (var id in request.Model.LessonIds!)
+            {
+                entities.Add(new LessonGroup
+                {
+                    Id = Guid.NewGuid(),
+                    IsActive = true,
+                    CreateUser = commonService.HttpUserId,
+                    CreateDate = date,
+                    UpdateUser = commonService.HttpUserId,
+                    UpdateDate = date,
+                    GroupId = group.Id,
+                    LessonId = id,
+                });
+            }
+        }
+
+        var result = await groupDal.ExecuteWithTransactionAsync(async () =>
+        {
+            var added = await groupDal.AddAsyncCallback(group, cancellationToken: cancellationToken);
+            await lessonGroupDal.AddRangeAsync(lessonGroups, cancellationToken: cancellationToken);
+            var result = mapper.Map<GetGroupModel>(added);
+            return result;
+        }, cancellationToken: cancellationToken);
+
         return result;
     }
 }

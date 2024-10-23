@@ -38,6 +38,8 @@ public struct Strings
     public const string DynamicShouldExistsAndActive = "{0} bulunmalı ve aktif olmalıdır.";
     public const string DynamicLessonTestPrepared = "{0} testiniz hazırlandı";
     public const string DynamicLessonTestPreparedForYou = "Hamster AI sizin için {0} testi hazırlandı. İyi çalışmalar :)\nTest No: {1}";
+    public const string DynamicUserTypeShouldBe = "Kullanıcı tipi {0} olmalıdır.";
+
 
     public const string Second = "Saniye";
     public const string Minute = "Dakika";

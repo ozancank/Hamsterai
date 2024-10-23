@@ -8,11 +8,11 @@ public interface IQuestionService : IBusinessService
 {
     #region Question
 
-    Task<bool> UpdateAnswer(QuestionTOResponseModel model, UpdateQuestionDto dto);
-
     Task<bool> UpdateAnswer(QuestionITOResponseModel model, UpdateQuestionDto dto);
 
     Task<bool> UpdateAnswer(QuestionTextResponseModel model, UpdateQuestionDto dto);
+
+    Task<bool> UpdateAnswer(QuestionVisualResponseModel model, UpdateQuestionDto dto);
 
     #endregion Question
 
