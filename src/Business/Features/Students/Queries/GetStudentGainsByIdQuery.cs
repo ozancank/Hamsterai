@@ -14,7 +14,7 @@ public class GetStudentGainsByIdQuery : IRequest<GetStudentGainsModel>, ISecured
     public UserTypes[] Roles { get; } = [UserTypes.Student];
 }
 
-public class GetStudentGainsByIdQueryHandler(ICommonService commonService,
+public class GetStudentGainsByIdQueryHandler(//ICommonService commonService,
                                              IQuestionDal questionDal,
                                              IQuizQuestionDal quizQuestionDal,
                                              ISimilarDal similarQuestionDal,

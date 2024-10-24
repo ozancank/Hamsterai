@@ -17,7 +17,7 @@ public class UpdateGroupCommand : IRequest<GetGroupModel>, ISecuredRequest<UserT
 public class UpdateGroupCommandHandler(IMapper mapper,
                                        IGroupDal groupDal,
                                        ICommonService commonService,
-                                       ILessonDal lessonDal,
+                                       //ILessonDal lessonDal,
                                        ILessonGroupDal lessonGroupDal,
                                        GroupRules groupRules) : IRequestHandler<UpdateGroupCommand, GetGroupModel>
 {

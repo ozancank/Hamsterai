@@ -1,0 +1,27 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:mobile/core/base/base_service.dart';
+import 'package:mobile/core/enums/service_endpoints.dart';
+import 'package:mobile/pages/auth/model/error_model.dart';
+
+class UpdatePasswordService extends BaseService {
+  UpdatePasswordService(super.dio);
+  Future updatePassword(Map<String, dynamic> json) async {
+    getAuth();
+    try {
+      final response = await dio
+          .post(ServiceEndpoints.passwordChangeByUser.getEndpoint, data: json);
+      if (response.statusCode == HttpStatus.ok) {
+        return true;
+      }
+    } on DioException catch (e) {
+      final errorJson = e.response?.data;
+      return ErrorModel.fromJson(errorJson);
+    } catch (e) {
+      return ErrorModel(statusCode: 500, message: 'Bilinmeyen bir hata oluştu');
+    }
+
+    return ErrorModel(statusCode: 400, message: 'Hata');
+  }
+}
