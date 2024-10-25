@@ -76,8 +76,8 @@ static void Services(WebApplicationBuilder builder)
     builder.Services.Configure<FormOptions>(options =>
     {
         options.MultipartBodyLengthLimit = 5242880;
-        options.ValueLengthLimit = 1024 * 1024;
-        options.MemoryBufferThreshold = 1024 * 1024;
+        options.ValueLengthLimit = 1024 * 1024*1024;
+        options.MemoryBufferThreshold = 1024 * 1024 * 1024;
     });
 
     SwaggerAndToken(builder);

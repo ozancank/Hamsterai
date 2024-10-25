@@ -60,14 +60,14 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
 
-            var available = await ModelAvailable(baseUrl, client);
+            //var available = await ModelAvailable(baseUrl, client);
 
-            if (!available)
-            {
-                answer = new QuestionITOResponseModel { QuestionText = model.Base64 };
-                await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.SendAgain, model.UserId));
-                return answer;
-            }
+            //if (!available)
+            //{
+            //    answer = new QuestionITOResponseModel { QuestionText = model.Base64 };
+            //    await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.SendAgain, model.UserId));
+            //    return answer;
+            //}
 
             var data = new QuestionRequestModel
             {
@@ -75,7 +75,10 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
                 LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/Soru_ITO")
+            var url = $"{baseUrl}/Soru_ITO";
+            if (baseUrl.Contains("54.237.224.177")) url = $"{baseUrl}/question/sor";
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
             {
                 Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"),
             };

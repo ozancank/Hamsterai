@@ -57,7 +57,7 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
                 try
                 {
                     var base64 = await commonService.ImageToBase64(
-                        Path.Combine(AppOptions.QuestionPictureFolderPath, question.Match(q => q.QuestionPictureFileName, s => s.QuestionPicture)));
+                        Path.Combine(AppOptions.QuestionPictureFolderPath, question.Match(q => q.QuestionPictureFileName, s => s.QuestionPictureFileName)));
 
                     if (question.IsT0)
                     {

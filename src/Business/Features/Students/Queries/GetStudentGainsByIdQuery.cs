@@ -1,4 +1,5 @@
-﻿using Business.Features.Students.Models;
+﻿using Amazon.Runtime.Internal.Transform;
+using Business.Features.Students.Models;
 using Business.Features.Users.Rules;
 using Business.Services.CommonService;
 using DataAccess.Abstract.Core;
@@ -11,7 +12,7 @@ public class GetStudentGainsByIdQuery : IRequest<GetStudentGainsModel>, ISecured
 {
     public StudentGainsRequestModel Model { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.Student];
+    public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher];
 }
 
 public class GetStudentGainsByIdQueryHandler(//ICommonService commonService,
@@ -26,14 +27,14 @@ public class GetStudentGainsByIdQueryHandler(//ICommonService commonService,
 
         var user = await userDal.GetAsync(
             enableTracking: false,
-            predicate: x => x.ConnectionId == request.Model.StudentId,
+            predicate: x => x.Type == UserTypes.Student && x.ConnectionId == request.Model.StudentId,
             cancellationToken: cancellationToken);
         await UserRules.UserShouldExistsAndActive(user);
 
         var userId = user.Id;
 
-        if (request.Model.StartDate == null) request.Model.StartDate = DateTime.Today;
-        if (request.Model.EndDate == null) request.Model.EndDate = DateTime.Today;
+        if (request.Model.StartDate == null) request.Model.StartDate = DateTime.Today.AddMonths(-1);
+        if (request.Model.EndDate == null) request.Model.EndDate = DateTime.Today.AddDays(1).AddMilliseconds(-1);
 
         var questions = await questionDal.GetListAsync(
             enableTracking: false,
@@ -90,7 +91,13 @@ public class GetStudentGainsByIdQueryHandler(//ICommonService commonService,
                          .ToDictionary(y => y.Gain, y => y.Count)
             })
             .ToDictionary(x => x.Lesson, x => x.Gains);
-
+           
+            result.Info = new Dictionary<string, int>
+            {
+                { "TotalQuestion", allQuestions.Count },
+                { "TotalGain", result.ForLessons.Sum(x=>x.Value) }
+            };
+        
         return result;
     }
 }

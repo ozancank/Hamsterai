@@ -20,7 +20,7 @@ public class GetGainsForStudentIdQueryHandler(ICommonService commonService,
         var result = new GetStudentGainsModel();
         var userId = commonService.HttpUserId;
 
-        var startDate= DateTime.Today.AddMonths(-1);
+        var startDate = DateTime.Today.AddMonths(-1);
         var endDate = DateTime.Today;
 
         var questions = await questionDal.GetListAsync(
@@ -78,6 +78,12 @@ public class GetGainsForStudentIdQueryHandler(ICommonService commonService,
                          .ToDictionary(y => y.Gain, y => y.Count)
             })
             .ToDictionary(x => x.Lesson, x => x.Gains);
+
+        result.Info = new Dictionary<string, int>
+        {
+            { "TotalQuestion", allQuestions.Count },
+            { "TotalGain", result.ForLessons.Sum(x=>x.Value) }
+        };
 
         return result;
     }
