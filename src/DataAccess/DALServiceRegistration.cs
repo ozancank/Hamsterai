@@ -34,24 +34,25 @@ public static class DALServiceRegistration
 
         services.AddScoped<IClassRoomDal, ClassRoomDal>();
         services.AddScoped<IGainDal, GainDal>();
-        services.AddScoped<IGroupDal, GroupDal>();
         services.AddScoped<IHomeworkDal, HomeworkDal>();
         services.AddScoped<IHomeworkStudentDal, HomeworkStudentDal>();
         services.AddScoped<ILessonDal, LessonDal>();
-        services.AddScoped<ILessonGroupDal, LessonGroupDal>();
         services.AddScoped<INotificationDal, NotificationDal>();
         services.AddScoped<INotificationDeviceTokenDal, NotificationDeviceTokenDal>();
+        services.AddScoped<IPackageDal, PackageDal>();
         services.AddScoped<IPasswordTokenDal, PasswordTokenDal>();
         services.AddScoped<IQuestionDal, QuestionDal>();
         services.AddScoped<IQuizDal, QuizDal>();
         services.AddScoped<IQuizQuestionDal, QuizQuestionDal>();
+        services.AddScoped<IRPackageLessonDal, RPackageLessonDal>();
+        services.AddScoped<IRPackageSchoolDal, RPackageSchoolDal>();
+        services.AddScoped<IRPackageUserDal, RPackageUserDal>();
+        services.AddScoped<IRTeacherClassRoomDal, RTeacherClassRoomDal>();
+        services.AddScoped<IRTeacherLessonDal, RTeacherLessonDal>();
         services.AddScoped<ISchoolDal, SchoolDal>();
-        services.AddScoped<ISchoolGroupDal, SchoolGroupDal>();
         services.AddScoped<ISimilarDal, SimilarDal>();
         services.AddScoped<IStudentDal, StudentDal>();
-        services.AddScoped<ITeacherClassRoomDal, TeacherClassRoomDal>();
         services.AddScoped<ITeacherDal, TeacherDal>();
-        services.AddScoped<ITeacherLessonDal, TeacherLessonDal>();
 
         services.AddCoreServices();
         return services;

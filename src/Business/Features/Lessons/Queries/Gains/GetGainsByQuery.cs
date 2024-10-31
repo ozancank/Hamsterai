@@ -6,7 +6,7 @@ namespace Business.Features.Lessons.Queries.Gains;
 
 public class GetGainsQuery : IRequest<PageableModel<GetGainModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
+    public required PageRequest PageRequest { get; set; }
 
     public UserTypes[] Roles { get; } = [];
 }

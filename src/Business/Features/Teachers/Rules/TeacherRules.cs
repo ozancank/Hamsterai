@@ -28,15 +28,6 @@ public class TeacherRules(ITeacherDal teacherDal) : IBusinessRule
         if (exists) throw new BusinessException(Strings.DynamicNotFound, Strings.Teacher);
     }
 
-    internal async Task TeacherTcNoCanNotBeDuplicated(string tcNo, int? teacherId = null)
-    {
-        if (tcNo.IsEmpty())return;
-        tcNo = tcNo.Trim();
-        var teacher = await teacherDal.GetAsync(predicate: x => x.TcNo == tcNo, enableTracking: false);
-        if (teacherId == null && teacher != null) throw new BusinessException(Strings.DynamicExists, tcNo);
-        if (teacherId != null && teacher != null && teacher.Id != teacherId) throw new BusinessException(Strings.DynamicExists, tcNo);
-    }
-
     internal async Task TeacherEmailCanNotBeDuplicated(string email, int? teacherId = null)
     {
         email = email.Trim();

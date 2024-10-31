@@ -24,7 +24,7 @@ public class GetTeacherByIdQueryHandler(IMapper mapper,
         var teacher = await teacherDal.GetAsyncAutoMapper<GetTeacherModel>(
             enableTracking: request.Tracking,
             predicate: x => x.Id == request.Id && (commonService.HttpUserType == UserTypes.Administator || x.SchoolId == commonService.HttpSchoolId),
-            include: x => x.Include(u => u.School).Include(u => u.TeacherLessons).Include(u => u.TeacherLessons),
+            include: x => x.Include(u => u.School).Include(u => u.RTeacherLessons).Include(u => u.RTeacherLessons),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
 

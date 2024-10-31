@@ -7,10 +7,12 @@ public class Package : BaseEntity<byte>
     public string? Name { get; set; }
     public byte SortNo { get; set; }
     public bool IsWebVisible { get; set; }
+    public double Price { get; set; }
+    public double? OldPrice { get; set; }
 
-    public virtual ICollection<RPackageGroup> RPackageLessons { get; set; } = [];
-    public virtual ICollection<User> Users { get; set; } = [];
-    public virtual ICollection<SchoolGroup> SchoolGroups { get; set; } = [];
+    public virtual ICollection<RPackageLesson> RPackageLessons { get; set; } = [];
+    public virtual ICollection<RPackageUser> RPackageUsers { get; set; } = [];
+    public virtual ICollection<RPackageSchool> RPackageSchools { get; set; } = [];
 
     public Package() : base()
     { }

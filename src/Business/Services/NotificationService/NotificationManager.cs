@@ -14,8 +14,8 @@ public class NotificationManager(INotificationApi notificationApi,
         using var context = contextFactory.CreateDbContext();
 
         var tokens = await context.NotificationDeviceTokens.AsNoTracking().Include(x => x.User)
-            .Where(x => x.IsActive && x.User.IsActive)
-            .Select(x => new { x.User.Id, x.DeviceToken }).ToListAsync();
+            .Where(x => x.IsActive && x.User!.IsActive)
+            .Select(x => new { x.User!.Id, x.DeviceToken }).ToListAsync();
 
         if (tokens.Count == 0) return false;
 
@@ -59,7 +59,7 @@ public class NotificationManager(INotificationApi notificationApi,
 
         var tokens = await context.NotificationDeviceTokens.AsNoTracking()
             .Include(x => x.User)
-            .Where(x => x.UserId == dto.ReceivedUserId && x.IsActive && x.User.IsActive)
+            .Where(x => x.UserId == dto.ReceivedUserId && x.IsActive && x.User!.IsActive)
             .Select(x => x.DeviceToken)
             .ToListAsync();
 

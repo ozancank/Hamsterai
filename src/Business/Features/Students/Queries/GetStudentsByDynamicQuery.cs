@@ -8,8 +8,8 @@ namespace Business.Features.Students.Queries;
 
 public class GetStudentsByDynamicQuery : IRequest<PageableModel<GetStudentModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
-    public Dynamic Dynamic { get; set; }
+    public required PageRequest PageRequest { get; set; }
+    public required Dynamic Dynamic { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
 }
@@ -30,7 +30,7 @@ public class GetStudentsByDynamicQueryHandler(IMapper mapper,
             enableTracking: false,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
-            predicate: x => commonService.HttpUserType == UserTypes.Administator || x.ClassRoom.SchoolId == schoolId,
+            predicate: x => commonService.HttpUserType == UserTypes.Administator || x.ClassRoom!.SchoolId == schoolId,
             include: x => x.Include(u => u.ClassRoom).Include(u => u.Teachers),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

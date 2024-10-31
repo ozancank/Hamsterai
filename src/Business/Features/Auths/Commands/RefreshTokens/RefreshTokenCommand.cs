@@ -9,8 +9,8 @@ namespace Business.Features.Auths.Commands.RefreshTokens;
 
 public class RefreshTokenCommand : IRequest<TokenModel>
 {
-    public string RefreshToken { get; set; }
-    public string IpAddress { get; set; }
+    public required string RefreshToken { get; set; }
+    public required string IpAddress { get; set; }
 }
 
 public class RefreshTokenCommandHandler(IAuthService authService,
@@ -28,12 +28,12 @@ public class RefreshTokenCommandHandler(IAuthService authService,
         await AuthRules.RefreshTokenShouldBeActive(refreshToken);
         await UserRules.UserShouldExistsAndActive(refreshToken.User);
 
-        var newRefreshToken = await authService.RotateRefreshToken(refreshToken.User, refreshToken, request.IpAddress!);
+        var newRefreshToken = await authService.RotateRefreshToken(refreshToken.User!, refreshToken, request.IpAddress!);
         var addedRefreshToken = await authService.AddRefreshToken(newRefreshToken) ?? throw new AuthenticationException();
 
         await authService.DeleteOldRefreshTokens(refreshToken.UserId);
 
-        var createdAccessToken = await authService.CreateAccessToken(refreshToken.User);
+        var createdAccessToken = await authService.CreateAccessToken(refreshToken.User!);
 
         var result = new TokenModel
         {

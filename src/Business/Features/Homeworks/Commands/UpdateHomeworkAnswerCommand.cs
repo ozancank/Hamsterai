@@ -9,7 +9,7 @@ namespace Business.Features.Homeworks.Commands;
 
 public class UpdateHomeworkAnswerCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public HomeworkAnswerRequestModel Model { get; set; }
+    public required HomeworkAnswerRequestModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Student];
     public string[] HidePropertyNames { get; } = ["Model.AnswerPictureBase64"];
@@ -57,6 +57,6 @@ public class UpdateHomeworkAnswerCommandValidator : AbstractValidator<UpdateHome
         RuleFor(x => x.Model.AnswerPictureBase64).MustBeValidBase64().WithMessage(Strings.DynamicNotEmpty, [Strings.Answer]);
 
         RuleFor(x => x.Model.AnswerPictureFileName).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.FileName]);
-        RuleFor(x => x.Model.AnswerPictureFileName).Must(x => x.Contains('.')).WithMessage(Strings.FileNameExtension);
+        RuleFor(x => x.Model.AnswerPictureFileName).Must(x => x.EmptyOrTrim().Contains('.')).WithMessage(Strings.FileNameExtension);
     }
 }

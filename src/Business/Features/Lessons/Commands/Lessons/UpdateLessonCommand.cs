@@ -9,7 +9,7 @@ namespace Business.Features.Lessons.Commands.Lessons;
 
 public class UpdateLessonCommand : IRequest<GetLessonModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public UpdateLessonModel UpdateLessonModel { get; set; }
+    public required UpdateLessonModel UpdateLessonModel { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public string[] HidePropertyNames { get; } = [];
 }
@@ -23,7 +23,7 @@ public class UpdateLessonCommandHandler(IMapper mapper,
     {
         var lesson = await lessonDal.GetAsync(x => x.Id == request.UpdateLessonModel.Id, cancellationToken: cancellationToken);
 
-        await lessonRules.LessonNameCanNotBeDuplicated(request.UpdateLessonModel.Name, request.UpdateLessonModel.Id);
+        await lessonRules.LessonNameCanNotBeDuplicated(request.UpdateLessonModel.Name!, request.UpdateLessonModel.Id);
 
         mapper.Map(request.UpdateLessonModel, lesson);
         lesson.UpdateUser = commonService.HttpUserId;

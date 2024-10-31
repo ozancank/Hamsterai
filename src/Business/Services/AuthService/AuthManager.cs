@@ -10,13 +10,13 @@ public class AuthManager(IConfiguration configuration,
                          ITokenHelper tokenHelper,
                          IRefreshTokenDal refreshTokenDal) : IAuthService
 {
-    private readonly TokenOptions _tokenOptions = configuration.GetSection("TokenOptions").Get<TokenOptions>();
+    private readonly TokenOptions _tokenOptions = configuration.GetSection("TokenOptions").Get<TokenOptions>()!;
 
     public Task<AccessToken> CreateAccessToken(User user)
     {
         var operationClaims = user.UserOperationClaims.Select(x => new Security.OperationClaim
         {
-            Id = x.OperationClaim.Id,
+            Id = x.OperationClaim!.Id,
             Name = x.OperationClaim.Name,
             Description = x.OperationClaim.Description
         }).ToList();
@@ -27,7 +27,7 @@ public class AuthManager(IConfiguration configuration,
                 new(Domain.Constants.ClaimTypes.UserType, $"{(int)user.Type}", ClaimValueTypes.Integer),
                 new(Domain.Constants.ClaimTypes.SchoolId, $"{user.SchoolId}", ClaimValueTypes.String),
                 new(Domain.Constants.ClaimTypes.ConnectionId, $"{user.ConnectionId}", ClaimValueTypes.String),
-                new(Domain.Constants.ClaimTypes.GroupId, $"{user.GroupId}", ClaimValueTypes.Integer)
+                new(Domain.Constants.ClaimTypes.PackageId, $"{user.RPackageUsers}", ClaimValueTypes.String)
             ];
 
         var accessToken = tokenHelper.CreateToken(user, operationClaims, $"{user.Name} {user.Surname}", user.Email, claims);

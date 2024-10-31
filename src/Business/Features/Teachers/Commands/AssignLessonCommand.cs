@@ -10,7 +10,7 @@ namespace Business.Features.Teachers.Commands;
 public class AssignLessonCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
     public int Id { get; set; }
-    public List<byte> LessonIds { get; set; }
+    public List<byte> LessonIds { get; set; } = [];
 
     public UserTypes[] Roles { get; } = [UserTypes.School];
     public string[] HidePropertyNames { get; } = [];
@@ -18,25 +18,25 @@ public class AssignLessonCommand : IRequest<bool>, ISecuredRequest<UserTypes>, I
 
 public class AssignLessonCommandHandler(ITeacherDal teacherDal,
                                         ILessonDal lessonDal,
-                                        ITeacherLessonDal teacherLessonDal,
+                                        IRTeacherLessonDal teacherLessonDal,
                                         ICommonService commonService) : IRequestHandler<AssignLessonCommand, bool>
 {
     public async Task<bool> Handle(AssignLessonCommand request, CancellationToken cancellationToken)
     {
         var teacher = await teacherDal.GetAsync(
             predicate: x => x.Id == request.Id,
-            include: x => x.Include(u => u.TeacherLessons).ThenInclude(u => u.Lesson),
+            include: x => x.Include(u => u.RTeacherLessons).ThenInclude(u => u.Lesson),
             cancellationToken: cancellationToken);
 
         await TeacherRules.TeacherShouldExists(request.Id);
 
-        await teacherLessonDal.DeleteRangeAsync(teacher.TeacherLessons, cancellationToken);
+        await teacherLessonDal.DeleteRangeAsync(teacher.RTeacherLessons, cancellationToken);
 
         if (request.LessonIds != null && request.LessonIds.Count != 0)
         {
             var lessons = await lessonDal.GetListAsync(enableTracking: false, cancellationToken: cancellationToken);
             await LessonRules.LessonShouldBeRecordInDatabase(request.LessonIds, lessons);
-            var teacherLessons = new List<TeacherLesson>();
+            var teacherLessons = new List<RTeacherLesson>();
 
             var userId = commonService.HttpUserId;
             var date = DateTime.Now;

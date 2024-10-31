@@ -66,7 +66,7 @@ public class QuestionManager(ICommonService commonService,
                         var model = new QuestionApiModel
                         {
                             Id = result.AsT0.Id,
-                            LessonName = result.AsT0.Lesson.Name,
+                            LessonName = result.AsT0.Lesson!.Name,
                             UserId = result.AsT0.CreateUser,
                             ExcludeQuiz = result.AsT0.ExcludeQuiz
                         };
@@ -88,7 +88,7 @@ public class QuestionManager(ICommonService commonService,
                         var model = new QuestionApiModel
                         {
                             Id = result.AsT1.Id,
-                            LessonName = result.AsT1.Lesson.Name,
+                            LessonName = result.AsT1.Lesson!.Name,
                             UserId = result.AsT1.CreateUser,
                             ExcludeQuiz = result.AsT1.ExcludeQuiz
                         };
@@ -127,12 +127,12 @@ public class QuestionManager(ICommonService commonService,
         var id = entity.Match(q => q.Id, s => s.Id);
         var userId = entity.Match(q => q.CreateUser, s => s.CreateUser);
         var username = await context.Users.Where(x => x.Id == userId).Select(x => x.UserName).FirstOrDefaultAsync(cancellationToken);
-        var filePath = entity.Match(q => Path.Combine(AppOptions.QuestionPictureFolderPath, q.QuestionPictureFileName), s => Path.Combine(AppOptions.QuestionPictureFolderPath, s.QuestionPictureFileName));
+        var filePath = entity.Match(q => Path.Combine(AppOptions.QuestionPictureFolderPath, q.QuestionPictureFileName!), s => Path.Combine(AppOptions.QuestionPictureFolderPath, s.QuestionPictureFileName!));
 
         var ocr = await ocrApi.GetTextFromImage(new(filePath, username, userId));
         await QuestionRules.OCRShouldBeFilled(ocr);
 
-        var existsVisualContent = ocr.Text.Contains("##visual##", StringComparison.OrdinalIgnoreCase);
+        var existsVisualContent = ocr.Text!.Contains("##visual##", StringComparison.OrdinalIgnoreCase);
         var excludeQuiz = ocr.Text.Contains("##classic##", StringComparison.OrdinalIgnoreCase) || ocr.Text.Contains("Cevap X", StringComparison.OrdinalIgnoreCase);
 
         if (entity.IsT0)
@@ -140,7 +140,7 @@ public class QuestionManager(ICommonService commonService,
             var result = entity.AsT0;
             var data = await context.Questions.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
-            result.QuestionPictureBase64 = data.QuestionPictureBase64 = existsVisualContent
+            result.QuestionPictureBase64 = data!.QuestionPictureBase64 = existsVisualContent
                 ? data.QuestionPictureBase64
                 : ocr.Text.Trim("##classic##", "##visual##");
             result.ExcludeQuiz = data.ExcludeQuiz = excludeQuiz;
@@ -153,7 +153,7 @@ public class QuestionManager(ICommonService commonService,
         {
             var result = entity.AsT1;
             var data = await context.Similars.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-            result.QuestionPicture = data.QuestionPicture = existsVisualContent
+            result.QuestionPicture = data!.QuestionPicture = existsVisualContent
                 ? data.QuestionPicture
                 : ocr.Text.Trim("##classic##", "##visual##");
             result.ExcludeQuiz = data.ExcludeQuiz = excludeQuiz;
@@ -174,20 +174,20 @@ public class QuestionManager(ICommonService commonService,
             .FirstOrDefaultAsync(x => x.Id == dto.QuestionId && x.IsActive);
         await QuestionRules.QuestionShouldExists(data);
 
-        GetGainModel gain = null;
+        GetGainModel? gain = null;
         if (dto.Status == QuestionStatus.Answered && model.GainName.IsNotEmpty())
-            gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser, context));
+            gain = await gainService.GetOrAddGain(new(model.GainName!, data!.LessonId, data.CreateUser, context));
 
         string extension = string.Empty;
         string fileName = string.Empty;
         if (dto.Status == QuestionStatus.Answered)
         {
             extension = ".png";
-            fileName = $"A_{dto.UserId}_{data.LessonId}_{dto.QuestionId}{extension}";
-            await commonService.TextToImage(model?.AnswerText, fileName, AppOptions.AnswerPictureFolderPath);
+            fileName = $"A_{dto.UserId}_{data!.LessonId}_{dto.QuestionId}{extension}";
+            await commonService.TextToImage(model?.AnswerText!, fileName, AppOptions.AnswerPictureFolderPath);
         }
 
-        data.UpdateUser = 1;
+        data!.UpdateUser = 1;
         data.UpdateDate = DateTime.Now;
         data.QuestionPictureBase64 = model?.QuestionText ?? string.Empty;
         data.AnswerText = model?.AnswerText ?? string.Empty;
@@ -195,7 +195,7 @@ public class QuestionManager(ICommonService commonService,
         data.AnswerPictureExtension = extension ?? string.Empty;
         data.Status = dto.Status;
         data.GainId = gain?.Id;
-        data.RightOption = model?.RightOption.FirstOrDefault();
+        data.RightOption = model?.RightOption?.FirstOrDefault();
         if (dto.Status != QuestionStatus.Answered)
         {
             data.TryCount++;
@@ -206,7 +206,7 @@ public class QuestionManager(ICommonService commonService,
         await context.SaveChangesAsync();
 
         if (dto.Status == QuestionStatus.Answered)
-            _ = notificationService.PushNotificationByUserId(new(Strings.Answered, Strings.DynamicLessonQuestionAnswered.Format(data.Lesson.Name), data.CreateUser, NotificationTypes.QuestionAnswered, dto.QuestionId.ToString()));
+            _ = notificationService.PushNotificationByUserId(new(Strings.Answered, Strings.DynamicLessonQuestionAnswered.Format(data.Lesson!.Name), data.CreateUser, NotificationTypes.QuestionAnswered, dto.QuestionId.ToString()));
 
         return true;
     }
@@ -220,26 +220,26 @@ public class QuestionManager(ICommonService commonService,
             .FirstOrDefaultAsync(x => x.Id == dto.QuestionId && x.IsActive);
         await QuestionRules.QuestionShouldExists(data);
 
-        GetGainModel gain = null;
+        GetGainModel? gain = null;
         if (dto.Status == QuestionStatus.Answered && model.GainName.IsNotEmpty())
-            gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser, context));
+            gain = await gainService.GetOrAddGain(new(model?.GainName!, data!.LessonId, data.CreateUser, context));
 
         string extension = string.Empty, fileName = string.Empty;
         if (dto.Status == QuestionStatus.Answered)
         {
             extension = ".png";
-            fileName = $"A_{dto.UserId}_{data.LessonId}_{dto.QuestionId}{extension}";
-            await commonService.TextToImage(model?.AnswerText, fileName, AppOptions.AnswerPictureFolderPath);
+            fileName = $"A_{dto.UserId}_{data!.LessonId}_{dto.QuestionId}{extension}";
+            await commonService.TextToImage(model?.AnswerText!, fileName, AppOptions.AnswerPictureFolderPath);
         }
 
-        data.UpdateUser = 1;
+        data!.UpdateUser = 1;
         data.UpdateDate = DateTime.Now;
         data.AnswerText = model?.AnswerText ?? string.Empty;
         data.AnswerPictureFileName = fileName ?? string.Empty;
         data.AnswerPictureExtension = extension ?? string.Empty;
         data.Status = dto.Status;
         data.GainId = gain?.Id;
-        data.RightOption = model?.RightOption.FirstOrDefault();
+        data.RightOption = model?.RightOption?.FirstOrDefault();
         if (dto.Status != QuestionStatus.Answered)
         {
             data.TryCount++;
@@ -250,7 +250,7 @@ public class QuestionManager(ICommonService commonService,
         await context.SaveChangesAsync();
 
         if (dto.Status == QuestionStatus.Answered)
-            _ = notificationService.PushNotificationByUserId(new(Strings.Answered, Strings.DynamicLessonQuestionAnswered.Format(data.Lesson.Name), data.CreateUser, NotificationTypes.QuestionAnswered, dto.QuestionId.ToString()));
+            _ = notificationService.PushNotificationByUserId(new(Strings.Answered, Strings.DynamicLessonQuestionAnswered.Format(data.Lesson!.Name), data.CreateUser, NotificationTypes.QuestionAnswered, dto.QuestionId.ToString()));
 
         return true;
     }
@@ -273,22 +273,22 @@ public class QuestionManager(ICommonService commonService,
             .FirstOrDefaultAsync(x => x.Id == dto.QuestionId && x.IsActive);
         await SimilarRules.SimilarQuestionShouldExists(data);
 
-        GetGainModel gain = null;
+        GetGainModel? gain = null;
         if (dto.Status == QuestionStatus.Answered && model.GainName.IsNotEmpty())
-            gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser, context));
+            gain = await gainService.GetOrAddGain(new(model?.GainName, data!.LessonId, data.CreateUser, context));
 
-        string extension = null, questionFileName = null, answerFileName = null;
+        string extension = string.Empty, questionFileName = string.Empty, answerFileName = string.Empty;
         if (dto.Status == QuestionStatus.Answered)
         {
             extension = ".png";
-            var fileName = $"{dto.UserId}_{data.LessonId}_{dto.QuestionId}{extension}";
+            var fileName = $"{dto.UserId}_{data!.LessonId}_{dto.QuestionId}{extension}";
             questionFileName = $"SQ_{fileName}";
             answerFileName = $"SA_{fileName}";
             await commonService.PictureConvert(model?.SimilarImage, questionFileName, AppOptions.SimilarQuestionPictureFolderPath);
             await commonService.PictureConvert(model?.AnswerImage, answerFileName, AppOptions.SimilarAnswerPictureFolderPath);
         }
 
-        data.UpdateUser = 1;
+        data!.UpdateUser = 1;
         data.UpdateDate = DateTime.Now;
         data.QuestionPicture = model?.QuestionText ?? string.Empty;
         data.ResponseQuestion = model?.SimilarQuestionText ?? string.Empty;
@@ -299,7 +299,7 @@ public class QuestionManager(ICommonService commonService,
         data.ResponseAnswerExtension = extension ?? string.Empty;
         data.Status = dto.Status;
         data.GainId = gain?.Id;
-        data.RightOption = model?.RightOption.FirstOrDefault();
+        data.RightOption = model?.RightOption?.FirstOrDefault();
         if (dto.Status != QuestionStatus.Answered)
         {
             data.TryCount++;
@@ -310,7 +310,7 @@ public class QuestionManager(ICommonService commonService,
         await context.SaveChangesAsync();
 
         if (dto.Status == QuestionStatus.Answered)
-            _ = notificationService.PushNotificationByUserId(new(Strings.Prepared, Strings.DynamicLessonQuestionPrepared.Format(data.Lesson.Name), data.CreateUser, NotificationTypes.SimilarCreated, data.Id.ToString()));
+            _ = notificationService.PushNotificationByUserId(new(Strings.Prepared, Strings.DynamicLessonQuestionPrepared.Format(data.Lesson?.Name), data.CreateUser, NotificationTypes.SimilarCreated, data.Id.ToString()));
 
         return true;
     }
@@ -324,22 +324,22 @@ public class QuestionManager(ICommonService commonService,
             .FirstOrDefaultAsync(x => x.Id == dto.QuestionId && x.IsActive);
         await SimilarRules.SimilarQuestionShouldExists(data);
 
-        GetGainModel gain = null;
+        GetGainModel? gain = null;
         if (dto.Status == QuestionStatus.Answered && model.GainName.IsNotEmpty())
-            gain = await gainService.GetOrAddGain(new(model?.GainName, data.LessonId, data.CreateUser, context));
+            gain = await gainService.GetOrAddGain(new(model?.GainName, data!.LessonId, data.CreateUser, context));
 
-        string extension = null, questionFileName = null, answerFileName = null;
+        string extension = string.Empty, questionFileName = string.Empty, answerFileName = string.Empty;
         if (dto.Status == QuestionStatus.Answered)
         {
             extension = ".png";
-            var fileName = $"{dto.UserId}_{data.LessonId}_{dto.QuestionId}{extension}";
+            var fileName = $"{dto.UserId}_{data!.LessonId}_{dto.QuestionId}{extension}";
             questionFileName = $"SQ_{fileName}";
             answerFileName = $"SA_{fileName}";
             await commonService.TextToImage(model?.SimilarQuestionText, questionFileName, AppOptions.SimilarQuestionPictureFolderPath);
             await commonService.TextToImage(model?.AnswerText, answerFileName, AppOptions.SimilarAnswerPictureFolderPath);
         }
 
-        data.UpdateUser = 1;
+        data!.UpdateUser = 1;
         data.UpdateDate = DateTime.Now;
         data.ResponseQuestion = model?.SimilarQuestionText ?? string.Empty;
         data.ResponseQuestionFileName = questionFileName ?? string.Empty;
@@ -349,7 +349,7 @@ public class QuestionManager(ICommonService commonService,
         data.ResponseAnswerExtension = extension ?? string.Empty;
         data.Status = dto.Status;
         data.GainId = gain?.Id;
-        data.RightOption = model?.RightOption.FirstOrDefault();
+        data.RightOption = model?.RightOption?.FirstOrDefault();
         if (dto.Status != QuestionStatus.Answered)
         {
             data.TryCount++;
@@ -360,7 +360,7 @@ public class QuestionManager(ICommonService commonService,
         await context.SaveChangesAsync();
 
         if (dto.Status == QuestionStatus.Answered)
-            _ = notificationService.PushNotificationByUserId(new(Strings.Prepared, Strings.DynamicLessonQuestionPrepared.Format(data.Lesson.Name), data.CreateUser, NotificationTypes.SimilarCreated, data.Id.ToString()));
+            _ = notificationService.PushNotificationByUserId(new(Strings.Prepared, Strings.DynamicLessonQuestionPrepared.Format(data.Lesson?.Name), data.CreateUser, NotificationTypes.SimilarCreated, data.Id.ToString()));
 
         return true;
     }
@@ -388,7 +388,7 @@ public class QuestionManager(ICommonService commonService,
 
         var responses = await questionApi.GetSimilarForQuiz(new()
         {
-            QuestionImages = model.QuestionList,
+            QuestionImages = model.QuestionList!,
             LessonName = lessonName,
             UserId = model.UserId
         });
@@ -456,10 +456,10 @@ public class QuestionManager(ICommonService commonService,
                     Answer = response.AnswerText ?? string.Empty,
                     AnswerPictureFileName = answerFileName ?? string.Empty,
                     AnswerPictureExtension = extension ?? string.Empty,
-                    RightOption = response.RightOption.Trim()[0],
+                    RightOption = response.RightOption!.Trim()[0],
                     AnswerOption = null,
                     OptionCount = (byte)response.OptionCount,
-                    GainId = gain.Id
+                    GainId = gain?.Id
                 });
             }
 
@@ -496,7 +496,7 @@ public class QuestionManager(ICommonService commonService,
 
         var responses = await questionApi.GetSimilarTextForQuiz(new()
         {
-            QuestionTexts = model.QuestionList,
+            QuestionTexts = model.QuestionList!,
             VisualList = model.VisualList,
             LessonName = lessonName,
             UserId = model.UserId
@@ -565,10 +565,10 @@ public class QuestionManager(ICommonService commonService,
                     Answer = response.AnswerText ?? string.Empty,
                     AnswerPictureFileName = answerFileName ?? string.Empty,
                     AnswerPictureExtension = extension ?? string.Empty,
-                    RightOption = response.RightOption.Trim()[0],
+                    RightOption = response.RightOption!.Trim()[0],
                     AnswerOption = null,
                     OptionCount = (byte)response.OptionCount,
-                    GainId = gain.Id
+                    GainId = gain?.Id
                 });
             }
 
@@ -598,19 +598,19 @@ public class QuestionManager(ICommonService commonService,
 
             var questions = await context.Questions
                 .AsNoTracking()
-                .Include(u => u.User).ThenInclude(u => u.School)
+                .Include(u => u.User).ThenInclude(u => u!.School)
                 .Include(u => u.Lesson)
                 .Include(u => u.Gain)
                 .Where(x => x.IsActive
                             && x.Status == QuestionStatus.Answered
                             && !x.SendForQuiz
                             && !x.ExcludeQuiz
-                            && x.User.IsActive
-                            && x.Lesson.IsActive
-                            && x.Gain.IsActive
-                            && (x.User.SchoolId == null || x.User.School.IsActive)
-                            && (x.User.SchoolId == null || x.User.School.LicenseEndDate.Date >= DateTime.Now.Date))
-                .Select(x => new { x.Id, x.QuestionPictureBase64, x.QuestionPictureFileName, x.CreateUser, x.User.SchoolId, x.LessonId, x.ExistsVisualContent })
+                            && x.User!.IsActive
+                            && x.Lesson!.IsActive
+                            && x.Gain!.IsActive
+                            && (x.User.SchoolId == null || x.User.School!.IsActive)
+                            && (x.User.SchoolId == null || x.User.School!.LicenseEndDate.Date >= DateTime.Now.Date))
+                .Select(x => new { x.Id, x.QuestionPictureBase64, x.QuestionPictureFileName, x.CreateUser, x.User!.SchoolId, x.LessonId, x.ExistsVisualContent })
                 .ToListAsync(cancellationToken);
 
             if (questions.Count == 0) return false;
@@ -652,7 +652,7 @@ public class QuestionManager(ICommonService commonService,
 
                     foreach (var question in lessonGroup)
                     {
-                        var filePath = Path.Combine(AppOptions.QuestionPictureFolderPath, question.QuestionPictureFileName);
+                        var filePath = Path.Combine(AppOptions.QuestionPictureFolderPath, question.QuestionPictureFileName!);
                         var fileBytes = await File.ReadAllBytesAsync(filePath, cancellationToken);
                         var base64String = Convert.ToBase64String(fileBytes);
                         base64List.Add(base64String);
@@ -674,7 +674,7 @@ public class QuestionManager(ICommonService commonService,
                         foreach (var questionId in questionsIds)
                         {
                             var questionUpdate = await context.Questions.FirstOrDefaultAsync(x => x.Id == questionId, cancellationToken);
-                            questionUpdate.SendForQuiz = true;
+                            questionUpdate!.SendForQuiz = true;
                             context.Questions.Update(questionUpdate);
                             await context.SaveChangesAsync(cancellationToken);
                         }
@@ -705,20 +705,20 @@ public class QuestionManager(ICommonService commonService,
 
             var questions = await context.Questions
                 .AsNoTracking()
-                .Include(u => u.User).ThenInclude(u => u.School)
+                .Include(u => u.User).ThenInclude(u => u!.School)
                 .Include(u => u.Lesson)
                 .Include(u => u.Gain)
                 .Where(x => x.IsActive
                             && x.Status == QuestionStatus.Answered
                             && !x.SendForQuiz
                             && !x.ExcludeQuiz
-                            && x.User.IsActive
-                            && x.Lesson.IsActive
-                            && x.Gain.IsActive
-                            && (x.User.SchoolId == null || x.User.School.IsActive)
-                            && (x.User.SchoolId == null || x.User.School.LicenseEndDate.Date >= DateTime.Now.Date)
+                            && x.User!.IsActive
+                            && x.Lesson!.IsActive
+                            && x.Gain!.IsActive
+                            && (x.User.SchoolId == null || x.User.School!.IsActive)
+                            && (x.User.SchoolId == null || x.User.School!.LicenseEndDate.Date >= DateTime.Now.Date)
                             && x.CreateDate > changeDate)
-                .Select(x => new { x.Id, x.QuestionPictureBase64, x.QuestionPictureFileName, x.CreateUser, x.User.SchoolId, x.LessonId, x.ExistsVisualContent })
+                .Select(x => new { x.Id, x.QuestionPictureBase64, x.QuestionPictureFileName, x.CreateUser, x.User!.SchoolId, x.LessonId, x.ExistsVisualContent })
                 .ToListAsync(cancellationToken);
 
             if (questions.Count == 0) return false;
@@ -764,11 +764,10 @@ public class QuestionManager(ICommonService commonService,
                         var content = question.QuestionPictureBase64;
                         if (question.ExistsVisualContent)
                         {
-                            var filePath = Path.Combine(AppOptions.QuestionPictureFolderPath, question.QuestionPictureFileName);
-                            var fileBytes = await File.ReadAllBytesAsync(filePath, cancellationToken);
-                            content = Convert.ToBase64String(fileBytes);
+                            var filePath = Path.Combine(AppOptions.QuestionPictureFolderPath, question.QuestionPictureFileName!);
+                            content = await commonService.ImageToBase64(filePath);
                         }
-                        questionList.Add(content);
+                        questionList.Add(content!);
                         visualList.Add(question.ExistsVisualContent);
                     }
 
@@ -787,7 +786,8 @@ public class QuestionManager(ICommonService commonService,
                         foreach (var questionId in questionsIds)
                         {
                             var questionUpdate = await context.Questions.FirstOrDefaultAsync(x => x.Id == questionId, cancellationToken);
-                            questionUpdate.SendForQuiz = true;
+                            await QuestionRules.QuestionShouldExists(questionUpdate);
+                            questionUpdate!.SendForQuiz = true;
                             context.Questions.Update(questionUpdate);
                             await context.SaveChangesAsync(cancellationToken);
                         }

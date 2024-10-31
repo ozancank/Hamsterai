@@ -10,7 +10,7 @@ namespace Business.Features.Users.Commands.Claim;
 public class UserAssignClaimsCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
     public long Id { get; set; }
-    public string[] AssignRoles { get; set; }
+    public string[] AssignRoles { get; set; } = [];
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public string[] HidePropertyNames { get; } = [];

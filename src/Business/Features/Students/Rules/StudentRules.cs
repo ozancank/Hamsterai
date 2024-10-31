@@ -44,15 +44,6 @@ public class StudentRules(IStudentDal studentDal) : IBusinessRule
         if (studentId != null && student != null && student.Id != studentId) throw new BusinessException(Strings.DynamicExists, no);
     }
 
-    internal async Task StudentTcNoCanNotBeDuplicated(string tcNo, int? studentId = null)
-    {
-        if (tcNo.IsEmpty()) return;
-        tcNo = tcNo.Trim();
-        var student = await studentDal.GetAsync(predicate: x => x.TcNo == tcNo, enableTracking: false);
-        if (studentId == null && student != null) throw new BusinessException(Strings.DynamicExists, tcNo);
-        if (studentId != null && student != null && student.Id != studentId) throw new BusinessException(Strings.DynamicExists, tcNo);
-    }
-
     internal async Task StudentEmailCanNotBeDuplicated(string email, int? studentId = null)
     {
         email = email.Trim();

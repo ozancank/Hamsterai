@@ -9,7 +9,7 @@ namespace Business.Services.EmailService;
 
 public class EmailManager(IUserDal userDal, IMailService mailService) : IEmailService
 {
-    private static string _forgetPasswordTemplate;
+    private static string _forgetPasswordTemplate = string.Empty;
 
     public async Task SendForgetPassword(string email, string link)
     {
@@ -25,7 +25,7 @@ public class EmailManager(IUserDal userDal, IMailService mailService) : IEmailSe
 
         if (_forgetPasswordTemplate.IsEmpty())
         {
-            var templatePath = Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Templates", "ForgetPassword.html");
+            var templatePath = Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location)!.FullName, "Templates", "ForgetPassword.html");
             _forgetPasswordTemplate = new StreamReader(templatePath).ReadToEnd().HTMLMinifer();
         }
 

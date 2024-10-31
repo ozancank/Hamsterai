@@ -8,7 +8,7 @@ namespace Business.Features.Homeworks.Commands;
 
 public class UpdateHomeworkReadCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public string HomeworkStudentId { get; set; }
+    public required string HomeworkStudentId { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Student];
     public string[] HidePropertyNames { get; } = [];

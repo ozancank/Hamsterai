@@ -7,7 +7,7 @@ namespace Business.Features.Questions.Commands.Quizzes;
 
 public class AddQuizCommand : IRequest<GetQuizModel>, ISecuredRequest<UserTypes>
 {
-    public AddQuizModel Model { get; set; }
+    public required AddQuizModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
 }

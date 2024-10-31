@@ -8,7 +8,7 @@ namespace Business.Features.Questions.Queries.Quizzes;
 
 public class GetQuizByIdQuery : IRequest<GetQuizModel>, ISecuredRequest<UserTypes>
 {
-    public string Id { get; set; }
+    public required string Id { get; set; }
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 
@@ -25,7 +25,7 @@ public class GetQuizByIdQueryHandler(IMapper mapper,
             predicate: x => x.Id == request.Id && x.UserId == commonService.HttpUserId && x.IsActive,
             enableTracking: request.Tracking,
             include: x => x.Include(u => u.Lesson)
-                           .Include(u => u.User).ThenInclude(u => u.School)
+                           .Include(u => u.User).ThenInclude(u => u!.School)
                            .Include(u => u.QuizQuestions.OrderBy(x => x.SortNo)).ThenInclude(u => u.Gain),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

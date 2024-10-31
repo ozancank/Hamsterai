@@ -1,10 +1,11 @@
-﻿using Business.Features.Lessons.Rules;
+﻿using Business.Features.Packages.Rules;
 using Business.Features.Schools.Models.Schools;
 using Business.Features.Schools.Rules;
 using Business.Features.Users.Rules;
 using Business.Services.CommonService;
 using DataAccess.Abstract.Core;
 using Domain.Entities.Core;
+using LinqKit;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
@@ -13,7 +14,7 @@ namespace Business.Features.Schools.Commands.Schools;
 
 public class UpdateSchoolCommand : IRequest<GetSchoolModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public UpdateSchoolModel Model { get; set; }
+    public required UpdateSchoolModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public string[] HidePropertyNames { get; } = [];
 }
@@ -22,26 +23,26 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
                                         ISchoolDal schoolDal,
                                         ICommonService commonService,
                                         IUserDal userDal,
-                                        ISchoolGroupDal schoolGroupDal,
+                                        IRPackageSchoolDal packageSchoolDal,
                                         UserRules userRules,
                                         SchoolRules schoolRules,
-                                        GroupRules groupRules) : IRequestHandler<UpdateSchoolCommand, GetSchoolModel>
+                                        PackageRules packageRules) : IRequestHandler<UpdateSchoolCommand, GetSchoolModel>
 {
     public async Task<GetSchoolModel> Handle(UpdateSchoolCommand request, CancellationToken cancellationToken)
     {
         var school = await schoolDal.GetAsync(x => x.Id == request.Model.Id, cancellationToken: cancellationToken);
 
         await SchoolRules.SchoolShouldExists(school);
-        await schoolRules.SchoolNameAndCityCanNotBeDuplicated(request.Model.Name, request.Model.City, school.Id);
-        await schoolRules.SchoolTaxNumberCanNotBeDuplicated(request.Model.TaxNumber, school.Id);
-        await groupRules.GroupShouldBeRecordInDatabase(request.Model.GroupIds);
+        await schoolRules.SchoolNameAndCityCanNotBeDuplicated(request.Model.Name!, request.Model.City!, school.Id);
+        await schoolRules.SchoolTaxNumberCanNotBeDuplicated(request.Model.TaxNumber!, school.Id);
+        await packageRules.PackageShouldBeRecordInDatabase(request.Model.PackageIds);
 
         var user = await userDal.GetAsync(x => x.SchoolId == school.Id && x.Type == UserTypes.School, cancellationToken: cancellationToken);
 
         await UserRules.UserShouldExists(user);
-        await userRules.UserNameCanNotBeDuplicated(request.Model.AuthorizedEmail, user.Id);
-        await userRules.UserEmailCanNotBeDuplicated(request.Model.AuthorizedEmail, user.Id);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.AuthorizedPhone, user.Id);
+        await userRules.UserNameCanNotBeDuplicated(request.Model.AuthorizedEmail!, user.Id);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.AuthorizedEmail!, user.Id);
+        await userRules.UserPhoneCanNotBeDuplicated(request.Model.AuthorizedPhone!, user.Id);
 
         var userId = commonService.HttpUserId;
         var date = DateTime.Now;
@@ -57,13 +58,13 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
         school.UserCount = request.Model.UserCount;
 
         user.Name = school.Name;
-        user.UserName = school.TaxNumber.Trim().ToLower();
-        user.Email = school.AuthorizedEmail.Trim().ToLower();
+        user.UserName = school.TaxNumber!.Trim().ToLower();
+        user.Email = school.AuthorizedEmail!.Trim().ToLower();
         user.Phone = school.AuthorizedPhone.TrimForPhone();
 
-        var deleteList = await schoolGroupDal.GetListAsync(predicate: x => x.SchoolId == school.Id, cancellationToken: cancellationToken);
+        var deleteList = await packageSchoolDal.GetListAsync(predicate: x => x.SchoolId == school.Id, cancellationToken: cancellationToken);
 
-        var schoolGroups = request.Model.GroupIds.Select(x => new SchoolGroup
+        var packageSchools = request.Model.PackageIds.Select(x => new RPackageSchool
         {
             Id = Guid.NewGuid(),
             IsActive = true,
@@ -72,17 +73,21 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
             UpdateUser = userId,
             UpdateDate = date,
             SchoolId = school.Id,
-            GroupId = x,
+            PackageId = x,
         }).ToList();
 
         var updateList = new List<User>();
-        var usersInSchool = await userDal.GetListAsync(predicate: x => x.SchoolId == school.Id && x.Type == UserTypes.Student, cancellationToken: cancellationToken);
-        foreach (var student in usersInSchool)
+        var usersInSchool = await userDal.GetListAsync(
+            predicate: x => x.SchoolId == school.Id && x.Type == UserTypes.Student,
+            include: x => x.Include(u => u.RPackageUsers).ThenInclude(u => u.Package),
+            cancellationToken: cancellationToken);
+
+        foreach (var studentUser in usersInSchool)
         {
-            if (student.GroupId != null && !request.Model.GroupIds.Contains(student.GroupId.Value))
+            if (studentUser.RPackageUsers.Count > 0 && !studentUser.RPackageUsers.Any(x => request.Model.PackageIds.Contains(x.PackageId)))
             {
-                student.GroupId = null;
-                updateList.Add(student);
+                //studentUser.PackageId = null;
+                updateList.Add(studentUser);
             }
         }
 
@@ -90,8 +95,8 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
         {
             var added = await schoolDal.UpdateAsyncCallback(school, cancellationToken: cancellationToken);
             await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
-            await schoolGroupDal.DeleteRangeAsync(deleteList, cancellationToken: cancellationToken);
-            await schoolGroupDal.AddRangeAsync(schoolGroups, cancellationToken: cancellationToken);
+            await packageSchoolDal.DeleteRangeAsync(deleteList, cancellationToken: cancellationToken);
+            await packageSchoolDal.AddRangeAsync(packageSchools, cancellationToken: cancellationToken);
             await userDal.UpdateRangeAsync(updateList, cancellationToken: cancellationToken);
             var result = mapper.Map<GetSchoolModel>(added);
             return result;

@@ -10,26 +10,26 @@ public class UserRules(IUserDal userDal,
                        IUserOperationClaimDal userOperationClaimDal,
                        ICommonService commonService) : IBusinessRule
 {
-    internal static Task UserShouldExists(User user)
+    internal static Task UserShouldExists(User? user)
     {
         if (user == null) throw new BusinessException(Strings.DynamicNotFound, Strings.User);
         return Task.CompletedTask;
     }
 
-    internal static Task UserShouldExistsAndActive(User user)
+    internal static Task UserShouldExistsAndActive(User? user)
     {
         UserShouldExists(user);
         if (!user.IsActive) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.User);
         return Task.CompletedTask;
     }
 
-    internal static Task UserShouldExists(GetUserModel user)
+    internal static Task UserShouldExists(GetUserModel? user)
     {
         if (user == null) throw new BusinessException(Strings.DynamicNotFound, Strings.User);
         return Task.CompletedTask;
     }
 
-    internal static Task UserShouldExistsAndActive(GetUserModel user)
+    internal static Task UserShouldExistsAndActive(GetUserModel? user)
     {
         UserShouldExists(user);
         if (!user.IsActive) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.User);

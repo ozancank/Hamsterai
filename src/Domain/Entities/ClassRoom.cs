@@ -5,28 +5,20 @@ namespace Domain.Entities;
 public class ClassRoom : BaseEntity<int>
 {
     public short No { get; set; }
-    public string Branch { get; set; }
+    public string? Branch { get; set; }
     public int SchoolId { get; set; }
-    public byte? GroupId { get; set; }
+    public byte? PackageId { get; set; }
 
-    public virtual School School { get; set; }
-    public virtual Package Group { get; set; }
-    public virtual ICollection<TeacherClassRoom> TeacherClassRooms { get; set; }
-    public virtual ICollection<Student> Students { get; set; }
-    public virtual ICollection<Homework> Homeworks { get; set; }
+    public virtual School? School { get; set; }
+    public virtual Package? Package { get; set; }
+    public virtual ICollection<RTeacherClassRoom> TeacherClassRooms { get; set; } = [];
+    public virtual ICollection<Student> Students { get; set; } = [];
+    public virtual ICollection<Homework> Homeworks { get; set; } = [];
 
     public ClassRoom() : base()
-    {
-        TeacherClassRooms = [];
-        Students = [];
-        Homeworks = [];
-    }
+    { }
 
     public ClassRoom(int id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate)
         : base(id, isActive, createUser, createDate, updateUser, updateDate)
-    {
-        TeacherClassRooms = [];
-        Students = [];
-        Homeworks = [];
-    }
+    { }
 }

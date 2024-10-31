@@ -8,7 +8,7 @@ namespace Business.Features.Notifications.Commands.Notifications;
 
 public class PushNotificationByUserIdCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public MessageRequestModel Model { get; set; }
+    public required MessageRequestModel Model { get; set; }
     public long UserId { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
@@ -20,19 +20,21 @@ public class PushNotificationByUserIdCommandHandler(INotificationService notific
 {
     public async Task<bool> Handle(PushNotificationByUserIdCommand request, CancellationToken cancellationToken)
     {
-        var result = await notificationService.PushNotificationByUserId(new(request.Model.Title, request.Model.Body, request.UserId, NotificationTypes.Undifined));
+        var result = await notificationService.PushNotificationByUserId(new(request.Model.Title!, request.Model.Body!, request.UserId, NotificationTypes.Undifined));
         return result;
     }
 }
 
-public class PushNotificationByUserIdCommandValidator : AbstractValidator<MessageRequestModel>
+public class PushNotificationByUserIdCommandValidator : AbstractValidator<PushNotificationByUserIdCommand>
 {
     public PushNotificationByUserIdCommandValidator()
     {
         RuleFor(x => x).NotEmpty().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.Title).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Header]);
+        RuleFor(x => x.Model).NotNull().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.Body).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Message]);
+        RuleFor(x => x.Model.Title).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Header]);
+
+        RuleFor(x => x.Model.Body).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Message]);
     }
 }

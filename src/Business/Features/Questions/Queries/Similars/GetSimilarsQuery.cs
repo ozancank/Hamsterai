@@ -8,8 +8,8 @@ namespace Business.Features.Questions.Queries.Similars;
 
 public class GetSimilarsQuery : IRequest<PageableModel<GetSimilarModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
-    public SimilarRequestModel Model { get; set; }
+    public required PageRequest PageRequest { get; set; }
+    public required SimilarRequestModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [];
 }

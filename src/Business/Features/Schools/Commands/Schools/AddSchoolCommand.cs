@@ -1,4 +1,4 @@
-﻿using Business.Features.Lessons.Rules;
+﻿using Business.Features.Packages.Rules;
 using Business.Features.Schools.Models.Schools;
 using Business.Features.Schools.Rules;
 using Business.Features.Users.Rules;
@@ -14,7 +14,7 @@ namespace Business.Features.Schools.Commands.Schools;
 
 public class AddSchoolCommand : IRequest<GetSchoolModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public AddSchoolModel Model { get; set; }
+    public required AddSchoolModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public string[] HidePropertyNames { get; } = [];
 }
@@ -23,19 +23,19 @@ public class AddSchoolCommandHandler(IMapper mapper,
                                      ISchoolDal schoolDal,
                                      ICommonService commonService,
                                      IUserDal userDal,
-                                     ISchoolGroupDal schoolGroupDal,
+                                     IRPackageSchoolDal packageSchoolDal,
                                      UserRules userRules,
                                      SchoolRules schoolRules,
-                                     GroupRules groupRules) : IRequestHandler<AddSchoolCommand, GetSchoolModel>
+                                     PackageRules packageRules) : IRequestHandler<AddSchoolCommand, GetSchoolModel>
 {
     public async Task<GetSchoolModel> Handle(AddSchoolCommand request, CancellationToken cancellationToken)
     {
-        await schoolRules.SchoolNameAndCityCanNotBeDuplicated(request.Model.Name, request.Model.City);
-        await schoolRules.SchoolTaxNumberCanNotBeDuplicated(request.Model.TaxNumber);
-        await userRules.UserNameCanNotBeDuplicated(request.Model.TaxNumber);
-        await userRules.UserEmailCanNotBeDuplicated(request.Model.AuthorizedEmail);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.AuthorizedPhone);
-        await groupRules.GroupShouldBeRecordInDatabase(request.Model.GroupIds);
+        await schoolRules.SchoolNameAndCityCanNotBeDuplicated(request.Model.Name!, request.Model.City!);
+        await schoolRules.SchoolTaxNumberCanNotBeDuplicated(request.Model.TaxNumber!);
+        await userRules.UserNameCanNotBeDuplicated(request.Model.TaxNumber!);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.AuthorizedEmail!);
+        await userRules.UserPhoneCanNotBeDuplicated(request.Model.AuthorizedPhone!);
+        await packageRules.PackageShouldBeRecordInDatabase(request.Model.PackageIds);
 
         var userId = commonService.HttpUserId;
         var date = DateTime.Now;
@@ -54,7 +54,7 @@ public class AddSchoolCommandHandler(IMapper mapper,
         {
             Id = await userDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken),
             CreateDate = date,
-            UserName = school.TaxNumber.Trim().ToLower(),
+            UserName = school.TaxNumber!.Trim().ToLower(),
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
             MustPasswordChange = true,
@@ -63,13 +63,13 @@ public class AddSchoolCommandHandler(IMapper mapper,
             Surname = string.Empty,
             Phone = school.AuthorizedPhone?.TrimForPhone(),
             ProfileUrl = string.Empty,
-            Email = school.AuthorizedEmail.Trim(),
+            Email = school.AuthorizedEmail!.Trim(),
             Type = UserTypes.School,
             SchoolId = school.Id,
             ConnectionId = null
         };
 
-        var schoolGroups = request.Model.GroupIds.Select(x => new SchoolGroup
+        var packageSchools = request.Model.PackageIds.Select(x => new RPackageSchool
         {
             Id = Guid.NewGuid(),
             IsActive = true,
@@ -78,14 +78,14 @@ public class AddSchoolCommandHandler(IMapper mapper,
             UpdateUser = userId,
             UpdateDate = date,
             SchoolId = school.Id,
-            GroupId = x,
+            PackageId = x,
         }).ToList();
 
         var result = await schoolDal.ExecuteWithTransactionAsync(async () =>
         {
             var added = await schoolDal.AddAsyncCallback(school, cancellationToken: cancellationToken);
             await userDal.AddAsync(user, cancellationToken: cancellationToken);
-            await schoolGroupDal.AddRangeAsync(schoolGroups, cancellationToken: cancellationToken);
+            await packageSchoolDal.AddRangeAsync(packageSchools, cancellationToken: cancellationToken);
             var result = mapper.Map<GetSchoolModel>(added);
             return result;
         }, cancellationToken: cancellationToken);

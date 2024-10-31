@@ -1,4 +1,4 @@
-﻿using Business.Features.Lessons.Rules;
+﻿using Business.Features.Packages.Rules;
 using Business.Features.Users.Models.User;
 using Business.Features.Users.Rules;
 using Business.Services.CommonService;
@@ -13,7 +13,7 @@ namespace Business.Features.Users.Commands.Users;
 
 public class AddUserCommand : IRequest<GetUserModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public AddUserModel Model { get; set; }
+    public required AddUserModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher];
     public string[] HidePropertyNames { get; } = ["AddUserModel.Password", "AddUserModel.ProfilePictureBase64"];
 }
@@ -22,7 +22,7 @@ public class AddUserCommandHandler(IMapper mapper,
                                    ICommonService commonService,
                                    IUserDal userDal,
                                    UserRules userRules,
-                                   GroupRules groupRules) : IRequestHandler<AddUserCommand, GetUserModel>
+                                   PackageRules packageRules) : IRequestHandler<AddUserCommand, GetUserModel>
 {
     public async Task<GetUserModel> Handle(AddUserCommand request, CancellationToken cancellationToken)
     {
@@ -30,10 +30,10 @@ public class AddUserCommandHandler(IMapper mapper,
         request.Model.Password = request.Model.Password!.Trim();
 
         await userRules.UserNameCanNotBeDuplicated(request.Model.UserName);
-        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email!);
+        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone!);
         await userRules.UserTypeAllowed(request.Model.Type);
-        await groupRules.GroupShouldExistsById(request.Model.GroupId);
+        await packageRules.PackageShouldExistsById(request.Model.PackageId);
 
         var id = await userDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
         var date = DateTime.Now;
@@ -63,7 +63,7 @@ public class AddUserCommandHandler(IMapper mapper,
             Type = Enum.Parse<UserTypes>($"{request.Model.Type}"),
             ConnectionId = request.Model.ConnectionId,
             SchoolId = request.Model.SchoolId,
-            GroupId = request.Model.GroupId,
+            //GroupId = request.Model.PackageId,
             QuestionCount = request.Model.QuestionCount
         };
 
@@ -80,7 +80,7 @@ public class AddUserCommandValidator : AbstractValidator<AddUserModel>
         RuleFor(x => x).NotEmpty().WithMessage(Strings.InvalidValue);
 
         RuleFor(x => x.UserName).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.UserName]);
-        RuleFor(x => x.UserName.Trim()).Must(x => !x.Trim().Contains(' ')).WithMessage(Strings.UserNameSpace);
+        RuleFor(x => x.UserName.EmptyOrTrim()).Must(x => !x.Trim().Contains(' ')).WithMessage(Strings.UserNameSpace);
 
         RuleFor(x => x.Password)
                 .NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Password])
@@ -108,7 +108,7 @@ public class AddUserCommandValidator : AbstractValidator<AddUserModel>
 
         RuleFor(x => (byte)x.Type).InclusiveBetween((byte)1, (byte)4).WithMessage(Strings.DynamicBetween, [Strings.UserType, "1", "4"]);
 
-        RuleFor(x => x.GroupId).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Group]);
-        RuleFor(x => x.GroupId).InclusiveBetween((byte)1, (byte)255).WithMessage(Strings.DynamicBetween, [Strings.Group, "1", "255"]);
+        RuleFor(x => x.PackageId).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Package]);
+        RuleFor(x => x.PackageId).InclusiveBetween((byte)1, (byte)255).WithMessage(Strings.DynamicBetween, [Strings.Package, "1", "255"]);
     }
 }

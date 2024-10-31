@@ -9,7 +9,7 @@ namespace Business.Features.Questions.Commands.Quizzes;
 
 public class UpdateQuizCommand : IRequest<GetQuizModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public UpdateQuizModel Model { get; set; }
+    public required UpdateQuizModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Student];
     public string[] HidePropertyNames { get; } = [];
@@ -38,7 +38,8 @@ public class UpdateQuizCommandHandler(IMapper mapper,
         foreach (var answer in request.Model.Answers)
         {
             var question = questions.Find(x => x.Id == answer.QuestionId);
-            question.UpdateUser = userId;
+            await QuestionRules.QuestionShouldExists(question);
+            question!.UpdateUser = userId;
             question.UpdateDate = date;
             question.AnswerOption = answer.AnswerOption;
         }
@@ -70,7 +71,7 @@ public class UpdateQuizCommandHandler(IMapper mapper,
             predicate: x => x.Id == quiz.Id,
             enableTracking: false,
             include: x => x.Include(u => u.Lesson)
-                           .Include(u => u.User).ThenInclude(u => u.School)
+                           .Include(u => u.User).ThenInclude(u => u!.School)
                            .Include(u => u.QuizQuestions.OrderBy(x => x.SortNo)).ThenInclude(u => u.Gain),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

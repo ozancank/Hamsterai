@@ -29,7 +29,7 @@ public class QuizHostedService(IServiceProvider serviceProvider, LoggerServiceBa
             }
             catch (Exception ex)
             {
-                loggerServiceBase.Error($"QuizHostedService {ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+                loggerServiceBase.Error($"QuizHostedService {DateTime.Now:yyyy-MM-dd HH:mm:ss}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
             }
         }
     }

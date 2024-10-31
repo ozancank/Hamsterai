@@ -28,7 +28,7 @@ class Program
             Console.Clear();
             foreach (var log in logs)
             {
-                Console.WriteLine(log.Length > 300 ? log.Substring(0, 300) : log);
+                Console.WriteLine(log.Length > 300 ? log[..300] : log);
             }
             await Task.Delay(1000);
         }

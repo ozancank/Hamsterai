@@ -13,7 +13,7 @@ namespace Business.Features.Homeworks.Commands;
 
 public class AddHomeworkCommand : IRequest<GetHomeworkModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public AddHomeworkModel Model { get; set; }
+    public required AddHomeworkModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Teacher];
     public string[] HidePropertyNames { get; } = [];
 }
@@ -58,7 +58,7 @@ public class AddHomeworkCommandHandler(IMapper mapper,
 
         await homeworkRules.HomeworkShouldNotExistsById(homeworkId);
 
-        var fileName = $"{homeworkId}_{Guid.NewGuid()}{Path.GetExtension(request.Model.File.FileName)}";
+        var fileName = $"{homeworkId}_{Guid.NewGuid()}{Path.GetExtension(request.Model.File!.FileName)}";
         var filePath = Path.Combine(AppOptions.HomeworkFolderPath, fileName);
 
         using (var stream = new FileStream(filePath, FileMode.Create))

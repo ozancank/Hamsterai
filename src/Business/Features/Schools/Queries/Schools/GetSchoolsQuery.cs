@@ -6,7 +6,7 @@ namespace Business.Features.Schools.Queries.Schools;
 
 public class GetSchoolsQuery : IRequest<PageableModel<GetSchoolModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
+    public required PageRequest PageRequest { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
 }
@@ -23,7 +23,7 @@ public class GetSchoolsQueryHandler(IMapper mapper,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
             include: x => x.Include(u => u.Users)
-                           .Include(x => x.SchoolGroups).ThenInclude(u => u.Group),
+                           .Include(x => x.RPackageSchools).ThenInclude(u => u.Package),
             orderBy: x => x.OrderBy(x => x.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

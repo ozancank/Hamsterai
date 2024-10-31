@@ -16,10 +16,10 @@ public class ClassRoomConfiguration : IEntityTypeConfiguration<ClassRoom>
         builder.Property(e => e.Branch).HasColumnName("Branch").HasColumnType("citext").HasMaxLength(10).HasColumnOrder(7).IsRequired();
         builder.Property(e => e.SchoolId).HasColumnName("SchoolId").HasColumnOrder(8).IsRequired();
         builder.HasIndex(e => new { e.No, e.Branch, e.SchoolId }).HasDatabaseName("IX_ClassRooms_1").IsUnique();
-        builder.Property(e => e.GroupId).HasColumnName("GroupId").HasColumnOrder(9);
+        builder.Property(e => e.PackageId).HasColumnName("PackageId").HasColumnOrder(9);
 
         builder.HasOne(d => d.School).WithMany(p => p.ClassRooms).HasForeignKey(d => d.SchoolId).HasPrincipalKey(x => x.Id);
-        builder.HasOne(d => d.Group).WithMany().HasForeignKey(d => d.GroupId).HasPrincipalKey(x => x.Id);
+        builder.HasOne(d => d.Package).WithMany().HasForeignKey(d => d.PackageId).HasPrincipalKey(x => x.Id);
 
         builder.HasData(
             new ClassRoom(1, true, 2, new DateTime(2000, 1, 1), 2, new(2000, 1, 1))
@@ -27,21 +27,21 @@ public class ClassRoomConfiguration : IEntityTypeConfiguration<ClassRoom>
                 No = 1,
                 Branch = "A",
                 SchoolId = 1,
-                GroupId = 1
+                PackageId = 1
             },
             new ClassRoom(2, true, 2, new DateTime(2000, 1, 1), 2, new(2000, 1, 1))
             {
                 No = 1,
                 Branch = "B",
                 SchoolId = 1,
-                GroupId = 1
+                PackageId = 1
             },
             new ClassRoom(3, true, 2, new DateTime(2000, 1, 1), 2, new(2000, 1, 1))
             {
                 No = 1,
                 Branch = "C",
                 SchoolId = 1,
-                GroupId = 1
+                PackageId = 1
             }
         );
     }

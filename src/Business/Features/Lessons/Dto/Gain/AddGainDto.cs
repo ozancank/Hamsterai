@@ -2,4 +2,4 @@
 
 namespace Business.Features.Lessons.Dto.Gain;
 
-public record AddGainDto(string GainName, byte LessonId, long UserId, HamsteraiDbContext Context = null);
+public record AddGainDto(string? GainName, byte LessonId, long UserId, HamsteraiDbContext? Context = null);

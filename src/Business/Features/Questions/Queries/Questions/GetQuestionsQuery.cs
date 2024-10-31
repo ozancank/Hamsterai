@@ -8,8 +8,8 @@ namespace Business.Features.Questions.Queries.Questions;
 
 public class GetQuestionsQuery : IRequest<PageableModel<GetQuestionModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
-    public QuestionRequestModel Model { get; set; }
+    public required PageRequest PageRequest { get; set; }
+    public required QuestionRequestModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [];
 }

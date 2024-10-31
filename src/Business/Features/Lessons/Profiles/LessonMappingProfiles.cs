@@ -7,7 +7,7 @@ public class LessonMappingProfiles : Profile
     public LessonMappingProfiles()
     {
         CreateMap<Lesson, GetLessonModel>()
-            .ForMember(dest => dest.Groups, opt => opt.MapFrom(src => src.LessonGroups.Where(x => x.Group.IsActive).Select(x => x.Group).OrderBy(x => x.Name)));
+            .ForMember(dest => dest.Packages, opt => opt.MapFrom(src => src.RPackageLessons.Where(x => x.Package!.IsActive).Select(x => x.Package).OrderBy(x => x!.Name)));
         CreateMap<Lesson, GetLessonLiteModel>();
         CreateMap<IPaginate<GetLessonModel>, PageableModel<GetLessonModel>>();
 

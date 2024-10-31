@@ -6,8 +6,8 @@ namespace Business.Features.Lessons.Queries.Gains;
 
 public class GetGainsByDynamicQuery : IRequest<PageableModel<GetGainModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
-    public Dynamic Dynamic { get; set; }
+    public required PageRequest PageRequest { get; set; }
+    public required Dynamic Dynamic { get; set; }
 
     public UserTypes[] Roles { get; } = [];
 }

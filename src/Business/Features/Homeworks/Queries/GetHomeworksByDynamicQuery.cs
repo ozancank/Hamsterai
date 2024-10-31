@@ -7,8 +7,8 @@ namespace Business.Features.Homeworks.Queries;
 
 public class GetHomeworksByDynamicQuery : IRequest<PageableModel<GetHomeworkModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
-    public Dynamic Dynamic { get; set; }
+    public required PageRequest PageRequest { get; set; }
+    public required Dynamic Dynamic { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
 }

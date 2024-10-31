@@ -6,8 +6,8 @@ namespace Business.Features.Lessons.Queries.Lessons;
 
 public class GetLessonsByDynamicQuery : IRequest<PageableModel<GetLessonModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
-    public Dynamic Dynamic { get; set; }
+    public required PageRequest PageRequest { get; set; }
+    public required Dynamic Dynamic { get; set; }
 
     public UserTypes[] Roles { get; } = [];
 }
@@ -26,7 +26,7 @@ public class GetLessonsByDynamicQueryHandler(IMapper mapper,
             index: request.PageRequest.Page,
             size: request.PageRequest.PageSize,
             include: x => x.Include(u => u.TeacherLessons).ThenInclude(u => u.Teacher)
-                           .Include(u => u.LessonGroups).ThenInclude(u => u.Group),
+                           .Include(u => u.RPackageLessons).ThenInclude(u => u.Package),
             defaultOrderColumnName: x => x.SortNo,
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

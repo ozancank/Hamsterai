@@ -7,8 +7,8 @@ namespace Business.Features.Homeworks.Queries;
 
 public class GetHomeworksForStudentQuery : IRequest<PageableModel<GetHomeworkStudentModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
-    public HomeworkRequestModel Model { get; set; }
+    public required PageRequest PageRequest { get; set; }
+    public required HomeworkRequestModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Student];
 }
@@ -29,15 +29,15 @@ public class GetHomeworksForStudentQueryHandler(IMapper mapper,
             enableTracking: false,
             predicate: x => x.IsActive
                             && x.StudentId == commonService.HttpConnectionId
-                            && x.Homework.IsActive
+                            && x.Homework!.IsActive
                             && x.Homework.CreateDate.Date >= request.Model.StartDate.Value.Date
                             && x.Homework.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddSeconds(-1),
             include: x => x.Include(u => u.Student)
-                           .Include(u => u.Homework).ThenInclude(u => u.User)
-                           .Include(u => u.Homework).ThenInclude(u => u.School)
-                           .Include(u => u.Homework).ThenInclude(u => u.Teacher)
-                           .Include(u => u.Homework).ThenInclude(u => u.Lesson)
-                           .Include(u => u.Homework).ThenInclude(u => u.ClassRoom),
+                           .Include(u => u.Homework).ThenInclude(u => u!.User)
+                           .Include(u => u.Homework).ThenInclude(u => u!.School)
+                           .Include(u => u.Homework).ThenInclude(u => u!.Teacher)
+                           .Include(u => u.Homework).ThenInclude(u => u!.Lesson)
+                           .Include(u => u.Homework).ThenInclude(u => u!.ClassRoom),
             configurationProvider: mapper.ConfigurationProvider,
             index: request.PageRequest.Page, size: request.PageRequest.PageSize,
             cancellationToken: cancellationToken);

@@ -35,7 +35,7 @@ public class UserManager(IUserDal userDal,
         return user;
     }
 
-    public Expression<Func<User, bool>> GetPredicateForUser(Expression<Func<User, bool>> expression = null)
+    public Expression<Func<User, bool>> GetPredicateForUser(Expression<Func<User, bool>>? expression = null)
     {
         var predicate = PredicateBuilder.New<User>(true);
 

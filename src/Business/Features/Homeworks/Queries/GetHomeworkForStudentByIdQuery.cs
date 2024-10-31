@@ -8,7 +8,7 @@ namespace Business.Features.Homeworks.Queries;
 
 public class GetHomeworkForStudentByIdQuery : IRequest<GetHomeworkStudentModel>, ISecuredRequest<UserTypes>
 {
-    public string Id { get; set; }
+    public required string Id { get; set; }
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 
@@ -25,11 +25,11 @@ public class GetHomeworkForStudentByIdHandler(IMapper mapper,
             enableTracking: request.Tracking,
             predicate: x => x.IsActive && x.Id == request.Id && x.StudentId == commonService.HttpConnectionId,
             include: x => x.Include(u => u.Student)
-                           .Include(u => u.Homework).ThenInclude(u => u.User)
-                           .Include(u => u.Homework).ThenInclude(u => u.School)
-                           .Include(u => u.Homework).ThenInclude(u => u.Teacher)
-                           .Include(u => u.Homework).ThenInclude(u => u.Lesson)
-                           .Include(u => u.Homework).ThenInclude(u => u.ClassRoom),
+                           .Include(u => u.Homework).ThenInclude(u => u!.User)
+                           .Include(u => u.Homework).ThenInclude(u => u!.School)
+                           .Include(u => u.Homework).ThenInclude(u => u!.Teacher)
+                           .Include(u => u.Homework).ThenInclude(u => u!.Lesson)
+                           .Include(u => u.Homework).ThenInclude(u => u!.ClassRoom),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
 

@@ -6,9 +6,9 @@ public class GetQuestionModel : IResponseModel
     public long CreateUser { get; set; }
     public DateTime CreateDate { get; set; }
     public byte LessonId { get; set; }
-    public string QuestionPictureFileName { get; set; }
-    public string QuestionPictureExtension { get; set; }
-    public string AnswerText { get; set; }
+    public string? QuestionPictureFileName { get; set; }
+    public string? QuestionPictureExtension { get; set; }
+    public string? AnswerText { get; set; }
     public QuestionStatus Status { get; set; }
     public bool IsRead { get; set; }
     public bool SendForQuiz { get; set; }
@@ -17,10 +17,10 @@ public class GetQuestionModel : IResponseModel
     public char? RightOption { get; set; }
     public bool ExcludeQuiz { get; set; }
     public bool ExistsVisualContent { get; set; }
-    public string OcrMethod { get; set; }
-    public string ErrorDescription { get; set; }
-    public string AIIP { get; set; }
+    public string? OcrMethod { get; set; }
+    public string? ErrorDescription { get; set; }
+    public string? AIIP { get; set; }
 
-    public string LessonName { get; set; }
-    public string GainName { get; set; }
+    public string? LessonName { get; set; }
+    public string? GainName { get; set; }
 }

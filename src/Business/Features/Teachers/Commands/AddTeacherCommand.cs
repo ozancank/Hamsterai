@@ -13,7 +13,7 @@ namespace Business.Features.Teachers.Commands;
 
 public class AddTeacherCommand : IRequest<GetTeacherModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public AddTeacherModel Model { get; set; }
+    public required AddTeacherModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.School];
     public string[] HidePropertyNames { get; } = [];
 }
@@ -27,12 +27,11 @@ public class AddTeacherCommandHandler(IMapper mapper,
 {
     public async Task<GetTeacherModel> Handle(AddTeacherCommand request, CancellationToken cancellationToken)
     {
-        await teacherRules.TeacherTcNoCanNotBeDuplicated(request.Model.TcNo);
-        await teacherRules.TeacherEmailCanNotBeDuplicated(request.Model.Email);
-        await teacherRules.TeacherPhoneCanNotBeDuplicated(request.Model.Phone);
-        await userRules.UserNameCanNotBeDuplicated(request.Model.Email);
-        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone);
+        await teacherRules.TeacherEmailCanNotBeDuplicated(request.Model.Email!);
+        await teacherRules.TeacherPhoneCanNotBeDuplicated(request.Model.Phone!);
+        await userRules.UserNameCanNotBeDuplicated(request.Model.Email!);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email!);
+        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone!);
 
         var userId = commonService.HttpUserId;
         var date = DateTime.Now;
@@ -52,7 +51,7 @@ public class AddTeacherCommandHandler(IMapper mapper,
         {
             Id = await userDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken),
             CreateDate = date,
-            UserName = teacher.Email.Trim().ToLower(),
+            UserName = teacher.Email!.Trim().ToLower(),
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
             MustPasswordChange = true,
@@ -94,11 +93,6 @@ public class AddTeacherCommandValidator : AbstractValidator<AddTeacherCommand>
         RuleFor(x => x.Model.Surname).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Surname]);
         RuleFor(x => x.Model.Surname).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Surname, "2"]);
         RuleFor(x => x.Model.Surname).MaximumLength(250).WithMessage(Strings.DynamicMaxLength, [Strings.Surname, "100"]);
-
-        //RuleFor(x => x.Model.TcNo).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Identity} {Strings.No}"]);
-        //RuleFor(x => x.Model.TcNo).Length(11).WithMessage(Strings.DynamicLength, [$"{Strings.Identity} {Strings.No}", "11"]);
-        //RuleFor(x => x.Model.TcNo).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [$"{Strings.Identity} {Strings.No}"]);
-        RuleFor(x => x.Model.TcNo).MaximumLength(11).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Identity} {Strings.No}", "11"]);
 
         RuleFor(x => x.Model.Email).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Authorized} {Strings.OfEmail}"]);
         RuleFor(x => x.Model.Email).MinimumLength(5).WithMessage(Strings.DynamicMinLength, [$"{Strings.Authorized} {Strings.OfEmail}", "5"]);

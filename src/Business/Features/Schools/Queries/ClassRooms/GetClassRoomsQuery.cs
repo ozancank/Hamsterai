@@ -7,7 +7,7 @@ namespace Business.Features.Schools.Queries.ClassRooms;
 
 public class GetClassRoomsQuery : IRequest<PageableModel<GetClassRoomModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
+    public required PageRequest PageRequest { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.School,UserTypes.Teacher];
 }
@@ -22,9 +22,9 @@ public class GetClassRoomsQueryHandler(IMapper mapper,
 
         var classRooms = await classRoomDal.GetPageListAsyncAutoMapper<GetClassRoomModel>(
             enableTracking: false,
-            predicate: x => commonService.HttpUserType == UserTypes.Administator || x.School.Id == commonService.HttpSchoolId,
-            include: x => x/*.Include(u => u.School).ThenInclude(u=>u.SchoolGroups).ThenInclude(u => u.Group)*/
-                           .Include(u => u.Group),
+            predicate: x => commonService.HttpUserType == UserTypes.Administator || x.School!.Id == commonService.HttpSchoolId,
+            include: x => x/*.Include(u => u.School).ThenInclude(u=>u.PackageSchools).ThenInclude(u => u.Package)*/
+                           .Include(u => u.Package),
                            //.Include(u => u.TeacherClassRooms).ThenInclude(u => u.Teacher)
                            //.Include(u => u.Students),
             size: request.PageRequest.PageSize,

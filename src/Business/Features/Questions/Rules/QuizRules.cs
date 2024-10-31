@@ -4,7 +4,7 @@ namespace Business.Features.Questions.Rules;
 
 public class QuizRules(IQuizDal quizDal, IQuizQuestionDal quizQuestionDal) : IBusinessRule
 {
-    internal static Task QuizShouldExists(object model)
+    internal static Task QuizShouldExists(object? model)
     {
         if (model == null) throw new BusinessException(Strings.DynamicNotFound, Strings.Quiz);
         return Task.CompletedTask;

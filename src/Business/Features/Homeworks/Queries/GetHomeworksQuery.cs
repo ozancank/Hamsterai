@@ -7,8 +7,8 @@ namespace Business.Features.Homeworks.Queries;
 
 public class GetHomeworksQuery : IRequest<PageableModel<GetHomeworkModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
-    public HomeworkRequestModel Model { get; set; }
+    public required PageRequest PageRequest { get; set; }
+    public required HomeworkRequestModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Teacher];
 }

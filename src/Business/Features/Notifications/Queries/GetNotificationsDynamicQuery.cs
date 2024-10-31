@@ -7,8 +7,8 @@ namespace Business.Features.Notifications.Queries;
 
 public class GetNotificationsDynamicQuery : IRequest<PageableModel<GetNotificationModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
-    public Dynamic Dynamic { get; set; }
+    public required PageRequest PageRequest { get; set; }
+    public required Dynamic Dynamic { get; set; }
 
     public UserTypes[] Roles { get; } = [];
 }

@@ -8,7 +8,7 @@ namespace Business.Features.Users.Commands.Password;
 
 public class UserSendForgetPasswordEmailCommand : IRequest<bool>, ILoggableRequest
 {
-    public string Email { get; set; }
+    public required string Email { get; set; }
 
     public string[] HidePropertyNames { get; } = [];
 }

@@ -7,8 +7,8 @@ namespace Business.Features.Schools.Queries.ClassRooms;
 
 public class GetClassRoomsByDynamicQuery : IRequest<PageableModel<GetClassRoomModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
-    public Dynamic Dynamic { get; set; }
+    public required PageRequest PageRequest { get; set; }
+    public required Dynamic Dynamic { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
 }
@@ -24,8 +24,8 @@ public class GetClassRoomsByDynamicQueryHandler(IMapper mapper,
 
         var classRooms = await classRoomDal.GetPageListAsyncAutoMapperByDynamic<GetClassRoomModel>(
             dynamic: request.Dynamic,
-            predicate: x => commonService.HttpUserType == UserTypes.Administator || x.School.Id == commonService.HttpSchoolId,
-            include: x => x.Include(u => u.School).Include(u => u.Group)
+            predicate: x => commonService.HttpUserType == UserTypes.Administator || x.School!.Id == commonService.HttpSchoolId,
+            include: x => x.Include(u => u.School).Include(u => u.Package)
                            .Include(u => u.TeacherClassRooms).ThenInclude(u => u.Teacher)
                            .Include(u => u.Students),
             defaultOrderColumnName: x => x.CreateDate,

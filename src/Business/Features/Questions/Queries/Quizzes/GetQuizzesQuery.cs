@@ -7,8 +7,8 @@ namespace Business.Features.Questions.Queries.Quizzes;
 
 public class GetQuizzesQuery : IRequest<PageableModel<GetQuizListModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
-    public QuizRequestModel Model { get; set; }
+    public required PageRequest PageRequest { get; set; }
+    public required QuizRequestModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [];
 }
@@ -32,7 +32,7 @@ public class GetQuizzesQueryHandler(IMapper mapper,
                             && x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddSeconds(-1),
             enableTracking: false,
             include: x => x.Include(u => u.Lesson)
-                           .Include(u => u.User).ThenInclude(u => u.School)
+                           .Include(u => u.User).ThenInclude(u => u!.School)
                            .Include(u => u.QuizQuestions).ThenInclude(u => u.Gain),
             orderBy: x => x.OrderByDescending(u => u.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,

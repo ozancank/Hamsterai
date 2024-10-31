@@ -9,12 +9,14 @@ public class AuthorizationBehavior<TRequest, TResponse>(IHttpContextAccessor htt
                                                         IConfiguration configuration)
     : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>, ISecuredRequest<UserTypes>
 {
-    private readonly string _byPassName = configuration.GetSection("ByPassOptions:Name")?.Value;
-    private readonly string _byPassKey = configuration.GetSection("ByPassOptions:Key")?.Value;
+    private readonly string _byPassName = configuration.GetSection("ByPassOptions:Name")?.Value ?? string.Empty;
+    private readonly string _byPassKey = configuration.GetSection("ByPassOptions:Key")?.Value ?? string.Empty;
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (!string.IsNullOrWhiteSpace(_byPassName) && !string.IsNullOrWhiteSpace(_byPassKey))
+        if(httpContextAccessor.HttpContext == null) throw new AuthenticationException(Strings.AuthorizationDenied);
+
+        if (_byPassName.IsNotEmpty() && _byPassKey.IsNotEmpty())
         {
             httpContextAccessor.HttpContext.Request.Headers.TryGetValue(_byPassName, out var byPassKey);
             if (_byPassKey == byPassKey) return await next();
@@ -24,14 +26,14 @@ public class AuthorizationBehavior<TRequest, TResponse>(IHttpContextAccessor htt
 
         if (Delegates.ControlUserStatus != null)
         {
-            var id = Convert.ToInt64(httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "-9999");
+            var id = Convert.ToInt64(httpContextAccessor.HttpContext!.User.Claims.FirstOrDefault(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "-9999");
             if (!await Delegates.ControlUserStatusAsync.Invoke(id)) throw new AuthenticationException(Strings.AuthorizationDenied);
         }
 
         if (!isAuthenticated) throw new AuthorizationException(Strings.AuthorizationDenied);
         if (isAuthenticated && request.Roles.Length == 0) return await next();
 
-        var roleClaims = httpContextAccessor.HttpContext.User.ClaimRoles() ?? [];
+        var roleClaims = httpContextAccessor.HttpContext!.User.ClaimRoles() ?? [];
         if (roleClaims.Contains("Admin")) return await next();
 
         _ = Enum.TryParse(httpContextAccessor.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.UserType)?.Value

@@ -8,7 +8,7 @@ namespace Business.Features.Homeworks.Queries;
 
 public class GetHomeworkByIdQuery : IRequest<GetHomeworkModel>, ISecuredRequest<UserTypes>
 {
-    public string Id { get; set; }
+    public required string Id { get; set; }
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 

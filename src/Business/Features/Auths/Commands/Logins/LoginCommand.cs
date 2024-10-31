@@ -11,8 +11,8 @@ namespace Business.Features.Auths.Commands.Logins;
 
 public class LoginCommand : IRequest<TokenModel>
 {
-    public LoginModel LoginModel { get; set; }
-    public string IpAddress { get; set; }
+    public required LoginModel LoginModel { get; set; }
+    public required string IpAddress { get; set; }
     public bool WebLogin { get; set; } = false;
 }
 
@@ -22,7 +22,7 @@ public class LoginCommandHandler(IUserDal userDal,
 {
     public async Task<TokenModel> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        request.LoginModel.UserName = request.LoginModel.UserName.ToLower();
+        request.LoginModel.UserName = request.LoginModel.UserName!.ToLower();
 
         Expression<Func<User, bool>> predicate = request.WebLogin
             ? x => x.UserName == request.LoginModel.UserName && x.Type != UserTypes.Student
@@ -35,7 +35,7 @@ public class LoginCommandHandler(IUserDal userDal,
             cancellationToken: cancellationToken);
 
         await AuthRules.UserShouldExistsByUserNameWhenLogin(user);
-        await AuthRules.PasswordShouldVerifiedWhenLogin(user, request.LoginModel.Password);
+        await AuthRules.PasswordShouldVerifiedWhenLogin(user, request.LoginModel.Password!);
         await AuthRules.UserShouldExistsAndActiveByUserNameWhenLogin(user);
 
         var createdAccessToken = await authService.CreateAccessToken(user);

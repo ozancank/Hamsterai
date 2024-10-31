@@ -90,10 +90,10 @@ public class SchoolController : BaseController
         return Ok();
     }
 
-    [HttpGet("GetSchoolGroups")]
-    public async Task<IActionResult> GetSchoolGroups()
+    [HttpGet("GetPackageSchools")]
+    public async Task<IActionResult> GetPackageSchools()
     {
-        var command = new GetSchoolGroupsQuery();
+        var command = new GetPackageSchoolsQuery();
         var result = await Mediator.Send(command);
         return Ok(result);
     }

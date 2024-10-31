@@ -14,7 +14,7 @@ namespace Business.Features.Students.Commands;
 
 public class AddStudentCommand : IRequest<GetStudentModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public AddStudentModel Model { get; set; }
+    public required AddStudentModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.School];
     public string[] HidePropertyNames { get; } = [];
 }
@@ -29,12 +29,11 @@ public class AddStudentCommandHandler(IMapper mapper,
 {
     public async Task<GetStudentModel> Handle(AddStudentCommand request, CancellationToken cancellationToken)
     {
-        await studentRules.StudentTcNoCanNotBeDuplicated(request.Model.TcNo);
-        await studentRules.StudentEmailCanNotBeDuplicated(request.Model.Email);
-        await studentRules.StudentPhoneCanNotBeDuplicated(request.Model.Phone);
-        await userRules.UserNameCanNotBeDuplicated(request.Model.Email);
-        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone);
+        await studentRules.StudentEmailCanNotBeDuplicated(request.Model.Email!);
+        await studentRules.StudentPhoneCanNotBeDuplicated(request.Model.Phone!);
+        await userRules.UserNameCanNotBeDuplicated(request.Model.Email!);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email!);
+        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone!);
 
         var classRoom = await classRoomDal.GetAsync(
             enableTracking: false,
@@ -59,7 +58,7 @@ public class AddStudentCommandHandler(IMapper mapper,
         {
             Id = await userDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken),
             CreateDate = date,
-            UserName = student.Email.Trim().ToLower(),
+            UserName = student.Email!.EmptyOrTrim().ToLower(),
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
             MustPasswordChange = true,
@@ -68,11 +67,11 @@ public class AddStudentCommandHandler(IMapper mapper,
             Surname = string.Empty,
             Phone = student.Phone?.TrimForPhone(),
             ProfileUrl = string.Empty,
-            Email = student.Email.Trim(),
+            Email = student.Email!.Trim().ToLower(),
             Type = UserTypes.Student,
             SchoolId = commonService.HttpSchoolId,
             ConnectionId = student.Id,
-            GroupId = classRoom.GroupId ?? 1,
+            //GroupId = classRoom.PackageId ?? 1,
         };
 
         var result = await studentDal.ExecuteWithTransactionAsync(async () =>

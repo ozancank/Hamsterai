@@ -6,8 +6,8 @@ namespace Business.Features.Auths.Commands.RefreshTokens;
 
 public class RevokeTokenCommand : IRequest<bool>
 {
-    public string RefreshToken { get; set; }
-    public string IpAddress { get; set; }
+    public required string RefreshToken { get; set; }
+    public required string IpAddress { get; set; }
 }
 
 public class RevokeTokenCommandHandler(IAuthService authService) : IRequestHandler<RevokeTokenCommand, bool>

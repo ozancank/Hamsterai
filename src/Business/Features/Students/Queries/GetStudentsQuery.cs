@@ -7,7 +7,7 @@ namespace Business.Features.Students.Queries;
 
 public class GetStudentsQuery : IRequest<PageableModel<GetStudentModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
+    public required PageRequest PageRequest { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
 }
@@ -24,7 +24,7 @@ public class GetStudentsQueryHandler(IMapper mapper,
             enableTracking: false,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
-            predicate: x => commonService.HttpUserType == UserTypes.Administator || x.ClassRoom.SchoolId == commonService.HttpSchoolId,
+            predicate: x => commonService.HttpUserType == UserTypes.Administator || x.ClassRoom!.SchoolId == commonService.HttpSchoolId,
             include: x => x.Include(u => u.ClassRoom).Include(u => u.Teachers),
             orderBy: x => x.OrderBy(x => x.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,

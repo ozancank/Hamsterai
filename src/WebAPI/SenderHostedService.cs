@@ -22,7 +22,7 @@ public class SenderHostedService(IServiceProvider serviceProvider, LoggerService
             }
             catch (Exception ex)
             {
-                loggerServiceBase.Error($"SenderHostedService {ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+                loggerServiceBase.Error($"SenderHostedService {DateTime.Now:yyyy-MM-dd HH:mm:ss}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
             }
         }
     }

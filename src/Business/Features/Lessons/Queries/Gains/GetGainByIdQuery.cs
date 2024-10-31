@@ -14,8 +14,8 @@ public class GetGainByIdQuery : IRequest<GetGainModel>, ISecuredRequest<UserType
     public UserTypes[] Roles { get; } = [];
 }
 
-public class GetGroupByIdQueryHandler(IMapper mapper,
-                                      IGainDal gainDal) : IRequestHandler<GetGainByIdQuery, GetGainModel>
+public class GetGainByIdQueryHandler(IMapper mapper,
+                                     IGainDal gainDal) : IRequestHandler<GetGainByIdQuery, GetGainModel>
 {
     public async Task<GetGainModel> Handle(GetGainByIdQuery request, CancellationToken cancellationToken)
     {

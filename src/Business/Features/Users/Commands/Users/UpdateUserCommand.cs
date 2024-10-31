@@ -1,4 +1,4 @@
-﻿using Business.Features.Lessons.Rules;
+﻿using Business.Features.Packages.Rules;
 using Business.Features.Users.Models.User;
 using Business.Features.Users.Rules;
 using Business.Services.CommonService;
@@ -11,7 +11,7 @@ namespace Business.Features.Users.Commands.Users;
 
 public class UpdateUserCommand : IRequest<GetUserModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public UpdateUserModel Model { get; set; }
+    public required UpdateUserModel Model { get; set; }
     public UserTypes[] Roles { get; } = [];
     public string[] HidePropertyNames { get; } = ["UpdateUserModel.Password", "UpdateUserModel.ProfilePictureBase64"];
 }
@@ -20,7 +20,7 @@ public class UpdateUserCommandHandler(IMapper mapper,
                                       ICommonService commonService,
                                       IUserDal userDal,
                                       UserRules userRules,
-                                      GroupRules groupRules) : IRequestHandler<UpdateUserCommand, GetUserModel>
+                                      PackageRules packageRules) : IRequestHandler<UpdateUserCommand, GetUserModel>
 {
     public async Task<GetUserModel> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
@@ -31,7 +31,7 @@ public class UpdateUserCommandHandler(IMapper mapper,
         await userRules.UserEmailCanNotBeDuplicated(request.Model.Email, request.Model.Id);
         await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone, request.Model.Id);
         await userRules.UserTypeAllowed(user.Type, user.Id);
-        await groupRules.GroupShouldExistsById(request.Model.GroupId);
+        await packageRules.PackageShouldExistsById(request.Model.PackageId);
 
         var date = DateTime.Now;
         if (request.Model.ProfilePictureFileName.IsNotEmpty() && request.Model.ProfilePictureBase64.IsNotEmpty())
@@ -51,7 +51,7 @@ public class UpdateUserCommandHandler(IMapper mapper,
         user.Type = Enum.Parse<UserTypes>($"{request.Model.Type}");
         user.ConnectionId = request.Model.ConnectionId;
         user.SchoolId = request.Model.SchoolId;
-        user.GroupId = request.Model.GroupId;
+        //user.GroupId = request.Model.PackageId;
         user.QuestionCount = request.Model.QuestionCount;
 
         await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
@@ -90,7 +90,7 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserModel>
 
         RuleFor(x => (byte)x.Type).InclusiveBetween((byte)1, (byte)4).WithMessage(Strings.DynamicBetween, [Strings.UserType, "1", "4"]);
 
-        RuleFor(x => x.GroupId).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Group]);
-        RuleFor(x => x.GroupId).InclusiveBetween((byte)1, (byte)255).WithMessage(Strings.DynamicBetween, [Strings.Group, "1", "255"]);
+        RuleFor(x => x.PackageId).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Package]);
+        RuleFor(x => x.PackageId).InclusiveBetween((byte)1, (byte)255).WithMessage(Strings.DynamicBetween, [Strings.Package, "1", "255"]);
     }
 }

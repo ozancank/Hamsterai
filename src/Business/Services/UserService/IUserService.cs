@@ -9,7 +9,7 @@ public interface IUserService : IBusinessService
 
     Task<T> GetUserById<T>(long id, bool tracking = false) where T : class, new();
 
-    Expression<Func<User, bool>> GetPredicateForUser(Expression<Func<User, bool>> expression = null);
+    Expression<Func<User, bool>> GetPredicateForUser(Expression<Func<User, bool>>? expression = null);
 
     Task<User> PassiveUser(User user);
 

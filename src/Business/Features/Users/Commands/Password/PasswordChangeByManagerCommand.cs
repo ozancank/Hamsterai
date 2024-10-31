@@ -10,8 +10,8 @@ namespace Business.Features.Users.Commands.Password;
 
 public class PasswordChangeByManagerCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public long Id { get; set; }
-    public string Password { get; set; }
+    public required long Id { get; set; }
+    public required string Password { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School];
     public string[] HidePropertyNames { get; } = ["Password"];

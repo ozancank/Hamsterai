@@ -10,10 +10,10 @@ public class GetNotificationModel : IResponseModel
     public long ReceiveredUserId { get; set; }
     public bool IsRead { get; set; }
     public DateTime? ReadDate { get; set; }
-    public string Title { get; set; }
-    public string Body { get; set; }
+    public string? Title { get; set; }
+    public string? Body { get; set; }
     public NotificationTypes Type { get; set; }
     public Guid? ReasonId { get; set; }
-    public string SenderName { get; set; }
-    public string ReceiveredName { get; set; }
+    public string? SenderName { get; set; }
+    public string? ReceiveredName { get; set; }
 }

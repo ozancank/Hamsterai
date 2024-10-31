@@ -18,41 +18,41 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
                            IConfiguration configuration) : ICommonService
 {
     public long HttpUserId =>
-        Convert.ToInt64(httpContextAccessor.HttpContext.User.Claims
+        Convert.ToInt64(httpContextAccessor.HttpContext?.User.Claims
             .FirstOrDefault(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
 
     public string HttpUserName =>
-        httpContextAccessor.HttpContext.User.Claims
+        httpContextAccessor.HttpContext?.User.Claims
             .FirstOrDefault(x => x.Type == CustomClaimTypes.UserName)?.Value.IfNullEmptyString("NaN") ?? "NaN";
 
     public UserTypes HttpUserType =>
-        Enum.TryParse(httpContextAccessor.HttpContext.User.Claims
+        Enum.TryParse(httpContextAccessor.HttpContext?.User.Claims
             .FirstOrDefault(x => x.Type == ClaimTypes.UserType)?.Value, out UserTypes userType) ? userType : UserTypes.Student;
 
     public int? HttpSchoolId =>
-        int.TryParse(httpContextAccessor.HttpContext.User.Claims
+        int.TryParse(httpContextAccessor.HttpContext?.User.Claims
             .FirstOrDefault(x => x.Type == ClaimTypes.SchoolId)?.Value, out int schoolId) ? schoolId : null;
 
     public int? HttpConnectionId =>
-        int.TryParse(httpContextAccessor.HttpContext.User.Claims
+        int.TryParse(httpContextAccessor.HttpContext?.User.Claims
             .FirstOrDefault(x => x.Type == ClaimTypes.ConnectionId)?.Value, out int connectionId) ? connectionId : null;
 
-    public byte? HttpGroupId =>
-        byte.TryParse(httpContextAccessor.HttpContext.User.Claims
-            .FirstOrDefault(x => x.Type == ClaimTypes.GroupId)?.Value, out byte groupId) ? groupId : null;
+    public byte? HttpPackageId =>
+        byte.TryParse(httpContextAccessor.HttpContext?.User.Claims
+            .FirstOrDefault(x => x.Type == ClaimTypes.PackageId)?.Value, out byte packageId) ? packageId : null;
 
-    public async Task<string> PictureConvert(string base64, string fileName, string folder)
+    public async Task<string> PictureConvert(string? base64, string? fileName, string? folder)
     {
         if (base64.IsEmpty() || fileName.IsEmpty() || folder.IsEmpty()) return string.Empty;
 
-        await UserRules.PictureShouldAllowedType(fileName);
-        var filePath = System.IO.Path.Combine(folder, fileName);
-        var imageBytes = Convert.FromBase64String(base64);
+        await UserRules.PictureShouldAllowedType(fileName!);
+        var filePath = System.IO.Path.Combine(folder!, fileName!);
+        var imageBytes = Convert.FromBase64String(base64!);
         await File.WriteAllBytesAsync(filePath, imageBytes);
         return filePath;
     }
 
-    public async Task<string> ImageToBase64(string path)
+    public async Task<string> ImageToBase64(string? path)
     {
         try
         {
@@ -67,7 +67,7 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         }
     }
 
-    public async Task<string> TextToImage(string text, string fileName, string folder, IImageEncoder imageEncoder = null)
+    public async Task<string> TextToImage(string? text, string? fileName, string? folder, IImageEncoder? imageEncoder = null)
     {
         if (text.IsEmpty() || fileName.IsEmpty() || folder.IsEmpty()) return string.Empty;
 
@@ -76,7 +76,7 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         text = text.TextSplitLine();
 
         var collection = new FontCollection();
-        var family = collection.Add(System.IO.Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Fonts", "Arial.ttf"));
+        var family = collection.Add(System.IO.Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location)!.FullName, "Fonts", "Arial.ttf"));
         var font = family.CreateFont(20);
 
         var textOptions = new RichTextOptions(font)
@@ -97,7 +97,7 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
             ctx.DrawText(textOptions, text, Color.Black);
         });
 
-        var filePath = System.IO.Path.Combine(folder, fileName);
+        var filePath = System.IO.Path.Combine(folder!, fileName!);
         await image.SaveAsync(filePath, imageEncoder);
 
         return filePath;
@@ -112,7 +112,7 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
     public List<string> GetLogs(PageRequest pageRequest, bool onlyError)
     {
         if (!(HttpUserType == UserTypes.Administator
-            || (httpContextAccessor.HttpContext.Request.Headers.TryGetValue(configuration.GetSection("ByPassOptions:Name")?.Value, out var byPassKey)
+            || (httpContextAccessor.HttpContext!.Request.Headers.TryGetValue(configuration.GetSection("ByPassOptions:Name")?.Value!, out var byPassKey)
             && byPassKey == configuration.GetSection("ByPassOptions:Key")?.Value))) throw new AuthenticationException(Strings.AuthorizationDenied);
         var result = loggerServiceBase.GetLogs(pageRequest, onlyError);
         return result;

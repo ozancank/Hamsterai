@@ -2,5 +2,5 @@
 
 public class DeviceTokenModel : IRequestModel
 {
-    public string DeviceToken { get; set; }
+    public string? DeviceToken { get; set; }
 }

@@ -3,5 +3,5 @@
 public sealed class GetLessonLiteModel : IResponseModel
 {
     public byte Id { get; set; }
-    public string Name { get; set; }
+    public string? Name { get; set; }
 }

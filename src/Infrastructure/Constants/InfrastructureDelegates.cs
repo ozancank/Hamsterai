@@ -15,13 +15,13 @@ public sealed class InfrastructureDelegates
 
     public delegate Task<bool> UpdateQuestionVisualDelegate(QuestionVisualResponseModel model, UpdateQuestionDto dto);
 
-    public static UpdateQuestionOcrImageDelegate UpdateQuestionOcrImage { get; set; }
+    public static UpdateQuestionOcrImageDelegate? UpdateQuestionOcrImage { get; set; }
 
-    public static UpdateSimilarDelegate UpdateSimilarAnswer { get; set; }
+    public static UpdateSimilarDelegate? UpdateSimilarAnswer { get; set; }
 
-    public static UpdateQuestionTextDelegate UpdateQuestionText { get; set; }
+    public static UpdateQuestionTextDelegate? UpdateQuestionText { get; set; }
 
-    public static UpdateSimilarTextDelegate UpdateSimilarText { get; set; }
+    public static UpdateSimilarTextDelegate? UpdateSimilarText { get; set; }
 
-    public static UpdateQuestionVisualDelegate UpdateQuestionVisual { get; set; }
+    public static UpdateQuestionVisualDelegate? UpdateQuestionVisual { get; set; }
 }

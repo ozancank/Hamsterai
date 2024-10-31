@@ -13,12 +13,12 @@ public sealed class GetClassRoomModel : IResponseModel
     public long UpdateUser { get; set; }
     public DateTime UpdateDate { get; set; }
     public short No { get; set; }
-    public string Branch { get; set; }
+    public string? Branch { get; set; }
     public int SchoolId { get; set; }
-    public byte GroupId { get; set; }
-    public string GroupName { get; set; }
+    public byte PackageId { get; set; }
+    public string? PackageName { get; set; }
 
-    public GetSchoolModel School { get; set; }
+    public GetSchoolModel? School { get; set; }
     public List<GetTeacherModel> Teachers { get; set; } = [];
     public List<GetStudentModel> Students { get; set; } = [];
 }

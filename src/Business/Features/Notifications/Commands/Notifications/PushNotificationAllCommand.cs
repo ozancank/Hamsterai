@@ -8,7 +8,7 @@ namespace Business.Features.Notifications.Commands.Notifications;
 
 public class PushNotificationAllCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public MessageRequestModel Model { get; set; }
+    public required MessageRequestModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public string[] HidePropertyNames { get; } = [];
@@ -18,7 +18,7 @@ public class PushNotificationAllCommandHandler(INotificationService notification
 {
     public async Task<bool> Handle(PushNotificationAllCommand request, CancellationToken cancellationToken)
     {
-        var result = await notificationService.PushNotificationAll(request.Model.Title, request.Model.Body);
+        var result = await notificationService.PushNotificationAll(request.Model.Title!, request.Model.Body!);
         return result;
     }
 }

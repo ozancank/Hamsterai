@@ -6,8 +6,8 @@ namespace Business.Features.Schools.Queries.Schools;
 
 public class GetSchoolsByDynamicQuery : IRequest<PageableModel<GetSchoolModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
-    public Dynamic Dynamic { get; set; }
+    public required PageRequest PageRequest { get; set; }
+    public required Dynamic Dynamic { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
 }
@@ -25,7 +25,7 @@ public class GetSchoolsByDynamicQueryHandler(IMapper mapper,
             defaultOrderColumnName: x => x.CreateDate,
             enableTracking: false,
             include: x => x.Include(u => u.Users)
-                           .Include(x => x.SchoolGroups).ThenInclude(u => u.Group),
+                           .Include(x => x.RPackageSchools).ThenInclude(u => u.Package),
             configurationProvider: mapper.ConfigurationProvider,
             index: request.PageRequest.Page, size: request.PageRequest.PageSize,
             cancellationToken: cancellationToken);

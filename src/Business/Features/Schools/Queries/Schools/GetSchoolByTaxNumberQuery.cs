@@ -7,7 +7,7 @@ namespace Business.Features.Schools.Queries.Schools;
 
 public class GetSchoolByTaxNumberQuery : IRequest<GetSchoolModel>, ISecuredRequest<UserTypes>
 {
-    public string TaxNumber { get; set; }
+    public required string TaxNumber { get; set; }
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 
@@ -23,7 +23,7 @@ public class GetSchoolByTaxNumberQueryHandler(IMapper mapper,
             enableTracking: request.Tracking,
             predicate: x => x.TaxNumber == request.TaxNumber,
             include: x => x.Include(u => u.Users)
-                           .Include(x => x.SchoolGroups).ThenInclude(u => u.Group),
+                           .Include(x => x.RPackageSchools).ThenInclude(u => u.Package),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
 

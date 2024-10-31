@@ -8,7 +8,7 @@ namespace Business.Features.Homeworks.Commands;
 
 public class ActiveHomeworkCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public string HomeworkId { get; set; }
+    public required string HomeworkId { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Teacher];
     public string[] HidePropertyNames { get; } = [];

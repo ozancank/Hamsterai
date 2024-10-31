@@ -7,7 +7,7 @@ namespace Business.Features.Lessons.Queries.Lessons;
 
 public class GetLessonsQuery : IRequest<PageableModel<GetLessonModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
+    public required PageRequest PageRequest { get; set; }
 
     public UserTypes[] Roles { get; } = [];
 }
@@ -25,9 +25,9 @@ public class GetLessonsQueryHandler(IMapper mapper,
             index: request.PageRequest.Page,
             predicate: commonService.HttpUserType == UserTypes.Administator
                        ? x => x.IsActive
-                       : x => x.IsActive && x.LessonGroups.Any(a => a.Group.SchoolGroups.Any(b => b.School.Id == commonService.HttpSchoolId)),
+                       : x => x.IsActive && x.RPackageLessons.Any(a => a.Package!.RPackageSchools.Any(b => b.School!.Id == commonService.HttpSchoolId)),
             include: x => x.Include(u => u.TeacherLessons).ThenInclude(u => u.Teacher)
-                           .Include(u => u.LessonGroups).ThenInclude(u => u.Group).ThenInclude(u => u.SchoolGroups).ThenInclude(u => u.School),
+                           .Include(u => u.RPackageLessons).ThenInclude(u => u.Package).ThenInclude(u => u!.RPackageSchools).ThenInclude(u => u.School),
             orderBy: x => x.OrderBy(x => x.SortNo),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

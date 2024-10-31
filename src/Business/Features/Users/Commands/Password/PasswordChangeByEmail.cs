@@ -10,8 +10,8 @@ namespace Business.Features.Users.Commands.Password;
 
 public class PasswordChangeByEmailCommand : IRequest<bool>, ILoggableRequest
 {
-    public string Password { get; set; }
-    public string Token { get; set; }
+    public required string Password { get; set; }
+    public required string Token { get; set; }
 
     public string[] HidePropertyNames { get; } = ["Password"];
 }
@@ -21,7 +21,7 @@ public class PasswordChangeByEmailCommandHandler(IUserDal userDal,
 {
     public async Task<bool> Handle(PasswordChangeByEmailCommand request, CancellationToken cancellationToken)
     {
-        User user = null;
+        User? user = null;
         try
         {
             var passwordToken = passwordTokenDal.Get(

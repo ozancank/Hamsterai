@@ -1,4 +1,4 @@
-﻿using Business.Features.Lessons.Rules;
+﻿using Business.Features.Packages.Rules;
 using Business.Features.Schools.Models.ClassRooms;
 using Business.Features.Schools.Rules;
 using Business.Services.CommonService;
@@ -10,7 +10,7 @@ namespace Business.Features.Schools.Commands.ClassRooms;
 
 public class AddClassRoomCommand : IRequest<GetClassRoomModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public AddClassRoomModel Model { get; set; }
+    public required AddClassRoomModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.School];
     public string[] HidePropertyNames { get; } = [];
 }
@@ -19,22 +19,22 @@ public class AddClassRoomCommandHandler(IMapper mapper,
                                         IClassRoomDal classRoomDal,
                                         ICommonService commonService,
                                         ClassRoomRules classRoomRules,
-                                        GroupRules groupRules) : IRequestHandler<AddClassRoomCommand, GetClassRoomModel>
+                                        PackageRules packageRules) : IRequestHandler<AddClassRoomCommand, GetClassRoomModel>
 {
     public async Task<GetClassRoomModel> Handle(AddClassRoomCommand request, CancellationToken cancellationToken)
     {
-        request.Model.Branch = request.Model.Branch.Trim().ToUpper();
+        request.Model.Branch = request.Model.Branch!.Trim().ToUpper();
         var schoolId = commonService.HttpSchoolId ?? 0;
         var userId = commonService.HttpSchoolId;
         var date = DateTime.Now;
 
         await classRoomRules.ClassRoomNoAndBranchAndSchoolIdCanNotBeDuplicated(request.Model.No, request.Model.Branch, schoolId);
-        await groupRules.GroupShouldExistsAndActiveById(request.Model.GroupId);
+        await packageRules.PackageShouldExistsAndActiveById(request.Model.PackageId);
 
         var classRoom = mapper.Map<ClassRoom>(request.Model);
         classRoom.Id = await classRoomDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
         classRoom.IsActive = true;
-        classRoom.CreateUser = userId.Value;
+        classRoom.CreateUser = userId!.Value;
         classRoom.CreateDate = date;
         classRoom.UpdateUser = userId.Value;
         classRoom.UpdateDate = date;

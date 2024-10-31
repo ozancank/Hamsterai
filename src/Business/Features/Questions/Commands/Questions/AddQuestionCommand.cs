@@ -10,7 +10,7 @@ namespace Business.Features.Questions.Commands.Questions;
 
 public class AddQuestionCommand : IRequest<GetQuestionModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public AddQuestionModel Model { get; set; }
+    public required AddQuestionModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.Student];
     public string[] HidePropertyNames { get; } = ["Model.QuestionPictureBase64"];
@@ -85,6 +85,6 @@ public class AddQuestionCommandValidator : AbstractValidator<AddQuestionCommand>
         RuleFor(x => x.Model.QuestionPictureBase64).MustBeValidBase64().WithMessage(Strings.DynamicNotEmpty, [Strings.Question]);
 
         RuleFor(x => x.Model.QuestionPictureFileName).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.FileName]);
-        RuleFor(x => x.Model.QuestionPictureFileName).Must(x => x.Contains('.')).WithMessage(Strings.FileNameExtension);
+        RuleFor(x => x.Model.QuestionPictureFileName).Must(x => x.EmptyOrTrim().Contains('.')).WithMessage(Strings.FileNameExtension);
     }
 }

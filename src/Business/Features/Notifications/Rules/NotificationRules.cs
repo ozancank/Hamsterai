@@ -10,13 +10,13 @@ public class NotificationRules(INotificationDal notificationDal) : IBusinessRule
 
     internal async Task NotificationShouldExistsById(Guid notificationId)
     {
-        var group = await notificationDal.IsExistsAsync(predicate: x => x.Id == notificationId, enableTracking: false);
-        if (!group) throw new BusinessException(Strings.DynamicNotFound, Strings.Notification);
+        var entity = await notificationDal.IsExistsAsync(predicate: x => x.Id == notificationId, enableTracking: false);
+        if (!entity) throw new BusinessException(Strings.DynamicNotFound, Strings.Notification);
     }
 
     internal async Task NotificationShouldExistsAndActiveById(Guid notificationId)
     {
-        var group = await notificationDal.IsExistsAsync(predicate: x => x.Id == notificationId && x.IsActive, enableTracking: false);
-        if (!group) throw new BusinessException(Strings.DynamicNotFound, Strings.Notification);
+        var entity = await notificationDal.IsExistsAsync(predicate: x => x.Id == notificationId && x.IsActive, enableTracking: false);
+        if (!entity) throw new BusinessException(Strings.DynamicNotFound, Strings.Notification);
     }
 }

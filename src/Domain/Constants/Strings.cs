@@ -15,6 +15,7 @@ public struct Strings
     public const string XApiKey = "HaMsTerAI-Security";
     public const string AuthorizationDenied = "Bu işlem için yetkiniz bulunmamaktadır.";
 
+    public const string DynamicNotNull = "{0} nesnesine değer atanamadı.";
     public const string DynamicNotEmpty = "{0} girilmesi zorunludur.";
     public const string DynamicLength = "{0} {1} karakter olmalıdır.";
     public const string DynamicMinLength = "{0} en az {1} karakter olmalıdır.";
@@ -84,8 +85,8 @@ public struct Strings
     public const string PasswordCode = "Şifre Kodu";
     public const string Answered = "Cevaplandı";
     public const string Prepared = "Hazırlandı";
-    public const string Group = "Grup";
-    public const string LessonGroup = "Ders Grubu";
+    public const string Package = "Paket";
+    //public const string LessonGroup = "Ders Grubu";
     public const string SchoolName = "Okul Adı";
     public const string Token = "Token";
     public const string Title = "Ünvan";
@@ -111,6 +112,7 @@ public struct Strings
     public const string Test = "Test";
     public const string Notification = "Bildirim";
     public const string Picture = "Resim";
+    public const string Group = "Grup";
 
     public const string FileNameExtension = "Dosya adı içerisinde nokta olmalı ve uzantı belirtilmelidir.";
 
@@ -147,5 +149,4 @@ public struct Strings
     public const string WrongLessonIds = "Ders id'leri yanlış girildi.";
     public const string LessonsNotNull = "Dersler belirtilmelidir.";
     public const string NoResponseFromOCR = "OCR'dan yanıt alınamadı.";
-
 }

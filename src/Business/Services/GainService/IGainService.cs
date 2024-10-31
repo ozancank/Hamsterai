@@ -5,5 +5,5 @@ namespace Business.Services.GainService;
 
 public interface IGainService : IBusinessService
 {
-    Task<GetGainModel> GetOrAddGain(AddGainDto dto);
+    Task<GetGainModel?> GetOrAddGain(AddGainDto dto);
 }

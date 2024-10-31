@@ -8,7 +8,7 @@ namespace Business.Features.Questions.Commands.Quizzes;
 
 public class UpdateQuizStartedCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public string Id { get; set; }
+    public required string Id { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Student];
 

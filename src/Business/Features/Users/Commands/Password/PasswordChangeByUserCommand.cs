@@ -11,8 +11,8 @@ namespace Business.Features.Users.Commands.Password;
 
 public class PasswordChangeByUserCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public string OldPassword { get; set; }
-    public string Password { get; set; }
+    public required string OldPassword { get; set; }
+    public required string Password { get; set; }
 
     public UserTypes[] Roles { get; } = [];
     public string[] HidePropertyNames { get; } = ["OldPassword", "Password"];

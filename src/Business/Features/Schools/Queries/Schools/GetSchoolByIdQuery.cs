@@ -23,7 +23,7 @@ public class GetSchoolByIdQueryHandler(IMapper mapper,
             enableTracking: request.Tracking,
             predicate: x => x.Id == request.Id,
             include: x => x.Include(u => u.Users)
-                           .Include(x => x.SchoolGroups).ThenInclude(u => u.Group),
+                           .Include(x => x.RPackageSchools).ThenInclude(u => u.Package),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
 

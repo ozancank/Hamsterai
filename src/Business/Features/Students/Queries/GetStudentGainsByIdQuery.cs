@@ -10,7 +10,7 @@ namespace Business.Features.Students.Queries;
 
 public class GetStudentGainsByIdQuery : IRequest<GetStudentGainsModel>, ISecuredRequest<UserTypes>
 {
-    public StudentGainsRequestModel Model { get; set; }
+    public required StudentGainsRequestModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher];
 }
@@ -44,7 +44,7 @@ public class GetStudentGainsByIdQueryHandler(//ICommonService commonService,
                             && x.CreateDate.Date >= request.Model.StartDate.Value.Date
                             && x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddMilliseconds(-1),
             include: x => x.Include(u => u.Lesson).Include(u => u.Gain),
-            selector: x => new { Lesson = x.Lesson.Name, Gain = x.Gain.Name },
+            selector: x => new { Lesson = x.Lesson!.Name, Gain = x.Gain!.Name },
             cancellationToken: cancellationToken);
 
         var similarQuestions = await similarQuestionDal.GetListAsync(
@@ -55,18 +55,18 @@ public class GetStudentGainsByIdQueryHandler(//ICommonService commonService,
                             && x.CreateDate.Date >= request.Model.StartDate.Value.Date
                             && x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddMilliseconds(-1),
             include: x => x.Include(u => u.Lesson).Include(u => u.Gain),
-            selector: x => new { Lesson = x.Lesson.Name, Gain = x.Gain.Name },
+            selector: x => new { Lesson = x.Lesson!.Name, Gain = x.Gain!.Name },
             cancellationToken: cancellationToken);
 
         var quizQuestions = await quizQuestionDal.GetListAsync(
             enableTracking: false,
             predicate: x => x.CreateUser == userId
-                            && x.Quiz.Status == QuizStatus.Completed
+                            && x.Quiz!.Status == QuizStatus.Completed
                             && x.CreateDate.Date >= request.Model.StartDate.Value.Date
                             && x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddMilliseconds(-1),
-            include: x => x.Include(x => x.Quiz).ThenInclude(u => u.Lesson)
+            include: x => x.Include(x => x.Quiz).ThenInclude(u => u!.Lesson)
                            .Include(u => u.Gain),
-            selector: x => new { Lesson = x.Quiz.Lesson.Name, Gain = x.Gain.Name },
+            selector: x => new { Lesson = x.Quiz!.Lesson!.Name, Gain = x.Gain!.Name },
             cancellationToken: cancellationToken);
 
         var allQuestions = questions.Concat(similarQuestions).Concat(quizQuestions).ToList();
@@ -74,12 +74,12 @@ public class GetStudentGainsByIdQueryHandler(//ICommonService commonService,
         result.ForLessons = allQuestions.Distinct()
             .GroupBy(x => x.Lesson)
             .Select(g => new { Lesson = g.Key, Count = g.Count() })
-            .ToDictionary(x => x.Lesson, x => x.Count);
+            .ToDictionary(x => x.Lesson!, x => x.Count);
 
         result.ForGains = allQuestions
             .GroupBy(x => x.Gain)
             .Select(g => new { Gain = g.Key, Count = g.Count() })
-            .ToDictionary(x => x.Gain, x => x.Count);
+            .ToDictionary(x => x.Gain!, x => x.Count);
 
         result.ForLessonGains = allQuestions
             .GroupBy(x => x.Lesson)
@@ -88,9 +88,9 @@ public class GetStudentGainsByIdQueryHandler(//ICommonService commonService,
                 Lesson = g.Key,
                 Gains = g.GroupBy(y => y.Gain)
                          .Select(y => new { Gain = y.Key, Count = y.Count() })
-                         .ToDictionary(y => y.Gain, y => y.Count)
+                         .ToDictionary(y => y.Gain!, y => y.Count)
             })
-            .ToDictionary(x => x.Lesson, x => x.Gains);
+            .ToDictionary(x => x.Lesson!, x => x.Gains);
            
             result.Info = new Dictionary<string, int>
             {

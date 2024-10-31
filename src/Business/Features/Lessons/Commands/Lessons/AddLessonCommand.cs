@@ -9,7 +9,7 @@ namespace Business.Features.Lessons.Commands.Lessons;
 
 public class AddLessonCommand : IRequest<GetLessonModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public AddLessonModel AddLessonModel { get; set; }
+    public required AddLessonModel AddLessonModel { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public string[] HidePropertyNames { get; } = [];
 }
@@ -21,7 +21,7 @@ public class AddLessonCommandHandler(IMapper mapper,
 {
     public async Task<GetLessonModel> Handle(AddLessonCommand request, CancellationToken cancellationToken)
     {
-        await lessonRules.LessonNameCanNotBeDuplicated(request.AddLessonModel.Name);
+        await lessonRules.LessonNameCanNotBeDuplicated(request.AddLessonModel.Name!);
 
         var lesson = mapper.Map<Lesson>(request.AddLessonModel);
         lesson.Id = await lessonDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);

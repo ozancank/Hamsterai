@@ -6,9 +6,9 @@ namespace Infrastructure.AI.Seduss.Models;
 public class QuizRequestModel : IRequestModel
 {
     [JsonPropertyName("content")]
-    public List<string> QuestionImages { get; set; }
+    public List<string?>? QuestionImages { get; set; }
 
 
     [JsonPropertyName("ders")]
-    public string LessonName { get; set; }
+    public string? LessonName { get; set; }
 }

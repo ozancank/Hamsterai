@@ -10,11 +10,11 @@ public interface ICommonService : IBusinessService
     UserTypes HttpUserType { get; }
     int? HttpSchoolId { get; }
     int? HttpConnectionId { get; }
-    byte? HttpGroupId { get; }
+    byte? HttpPackageId { get; }
 
-    Task<string> PictureConvert(string base64, string fileName, string folder);
-    Task<string> TextToImage(string text, string fileName, string folder, IImageEncoder imageEncoder = null);
-    Task<string> ImageToBase64(string path);
+    Task<string> PictureConvert(string? base64, string? fileName, string? folder);
+    Task<string> TextToImage(string? text, string? fileName, string? folder, IImageEncoder? imageEncoder = null);
+    Task<string> ImageToBase64(string? path);
 
     void ThrowErrorTry(Exception exception);
     List<string> GetLogs(PageRequest pageRequest, bool onlyError);

@@ -8,15 +8,9 @@ namespace Business.Features.Questions.Rules;
 public class SimilarRules(ISimilarDal similarDal,
                           ICommonService commonService) : IBusinessRule
 {
-    internal static Task SimilarQuestionShouldExists(GetSimilarModel model)
+    internal static Task SimilarQuestionShouldExists(object? model)
     {
         if (model == null) throw new BusinessException(Strings.DynamicNotFound, Strings.SimilarQuestion);
-        return Task.CompletedTask;
-    }
-
-    internal static Task SimilarQuestionShouldExists(Similar similar)
-    {
-        if (similar == null) throw new BusinessException(Strings.DynamicNotFound, Strings.SimilarQuestion);
         return Task.CompletedTask;
     }
 

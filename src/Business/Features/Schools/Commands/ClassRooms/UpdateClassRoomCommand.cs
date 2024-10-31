@@ -1,4 +1,4 @@
-﻿using Business.Features.Lessons.Rules;
+﻿using Business.Features.Packages.Rules;
 using Business.Features.Schools.Models.ClassRooms;
 using Business.Features.Schools.Rules;
 using Business.Services.CommonService;
@@ -10,7 +10,7 @@ namespace Business.Features.Schools.Commands.ClassRooms;
 
 public class UpdateClassRoomCommand : IRequest<GetClassRoomModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public UpdateClassRoomModel Model { get; set; }
+    public required UpdateClassRoomModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.School];
     public string[] HidePropertyNames { get; } = [];
 }
@@ -19,17 +19,17 @@ public class UpdateClassRoomCommandHandler(IMapper mapper,
                                            IClassRoomDal classRoomDal,
                                            ICommonService commonService,
                                            ClassRoomRules classRoomRules,
-                                           GroupRules groupRules) : IRequestHandler<UpdateClassRoomCommand, GetClassRoomModel>
+                                           PackageRules packageRules) : IRequestHandler<UpdateClassRoomCommand, GetClassRoomModel>
 {
     public async Task<GetClassRoomModel> Handle(UpdateClassRoomCommand request, CancellationToken cancellationToken)
     {
-        request.Model.Branch = request.Model.Branch.Trim().ToUpper();
+        request.Model.Branch = request.Model.Branch!.Trim().ToUpper();
         var schoolId = commonService.HttpSchoolId ?? 0;
 
         var classRoom = await classRoomDal.GetAsync(x => x.Id == request.Model.Id && x.SchoolId == schoolId, cancellationToken: cancellationToken);
 
         await classRoomRules.ClassRoomNoAndBranchAndSchoolIdCanNotBeDuplicated(request.Model.No, request.Model.Branch, schoolId, classRoom.Id);
-        await groupRules.GroupShouldExistsAndActiveById(request.Model.GroupId);
+        await packageRules.PackageShouldExistsAndActiveById(request.Model.PackageId);
 
         mapper.Map(request.Model, classRoom);
         classRoom.UpdateUser = commonService.HttpUserId;

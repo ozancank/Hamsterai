@@ -6,5 +6,5 @@ namespace Infrastructure.OCR.Gemini.Models;
 public sealed class GeminiOcrRequestModel : IRequestModel
 {
     [JsonPropertyName("fileName")]
-    public string FileName { get; set; }
+    public string? FileName { get; set; }
 }

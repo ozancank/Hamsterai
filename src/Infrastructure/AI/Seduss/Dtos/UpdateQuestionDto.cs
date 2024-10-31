@@ -7,4 +7,4 @@ public record UpdateQuestionDto(Guid QuestionId,
                                 QuestionStatus Status,
                                 long UserId,
                                 string AIIP,
-                                string ErrorMessage = null) : IDto;
+                                string? ErrorMessage = null) : IDto;

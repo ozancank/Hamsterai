@@ -1,5 +1,5 @@
-﻿using Business.Features.Lessons.Models.Groups;
-using Business.Features.Notifications.Models.DeviceToken;
+﻿using Business.Features.Notifications.Models.DeviceToken;
+using Business.Features.Packages.Models;
 using Business.Services.CommonService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
@@ -9,7 +9,7 @@ namespace Business.Features.Notifications.Commands.DeviceToken;
 
 public class AddDeviceTokenCommand : IRequest<DeviceTokenModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public DeviceTokenModel Model { get; set; }
+    public required DeviceTokenModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [];
     public string[] HidePropertyNames { get; } = [];
@@ -47,7 +47,7 @@ public class AddDeviceTokenpCommandHandler(IMapper mapper,
     }
 }
 
-public class AddDeviceTokenpCommandValidator : AbstractValidator<GetGroupModel>
+public class AddDeviceTokenpCommandValidator : AbstractValidator<GetPackageModel>
 {
     public AddDeviceTokenpCommandValidator()
     {

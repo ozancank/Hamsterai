@@ -23,7 +23,7 @@ public class QuizQuestionConfiguration : IEntityTypeConfiguration<QuizQuestion>
         builder.Property(e => e.RightOption).HasColumnName("RightOption").HasMaxLength(1).HasColumnOrder(14).IsRequired();
         builder.Property(e => e.AnswerOption).HasColumnName("AnswerOption").HasMaxLength(1).HasColumnOrder(15);
         builder.Property(e => e.OptionCount).HasColumnName("OptionCount").HasColumnOrder(16).IsRequired();
-        builder.Property(e => e.GainId).HasColumnName("GainId").HasColumnOrder(17).IsRequired();
+        builder.Property(e => e.GainId).HasColumnName("GainId").HasColumnOrder(17);
 
         builder.HasOne(x => x.Quiz).WithMany(x => x.QuizQuestions).HasForeignKey(x => x.QuizId).HasPrincipalKey(x => x.Id);
         builder.HasOne(x => x.Gain).WithMany(x => x.QuizQuestions).HasForeignKey(x => x.GainId).HasPrincipalKey(x => x.Id);

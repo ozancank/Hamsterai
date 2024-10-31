@@ -12,7 +12,7 @@ namespace Business.Features.Students.Commands;
 
 public class UpdateStudentCommand : IRequest<GetStudentModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public UpdateStudentModel Model { get; set; }
+    public required UpdateStudentModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.School];
     public string[] HidePropertyNames { get; } = [];
 }
@@ -30,16 +30,15 @@ public class UpdateStudentCommandHandler(IMapper mapper,
         var student = await studentDal.GetAsync(x => x.Id == request.Model.Id, cancellationToken: cancellationToken);
 
         await StudentRules.StudentShouldExists(student);
-        await studentRules.StudentTcNoCanNotBeDuplicated(request.Model.TcNo, request.Model.Id);
-        await studentRules.StudentEmailCanNotBeDuplicated(request.Model.Email, request.Model.Id);
-        await studentRules.StudentPhoneCanNotBeDuplicated(request.Model.Phone, request.Model.Id);
+        await studentRules.StudentEmailCanNotBeDuplicated(request.Model.Email!, request.Model.Id);
+        await studentRules.StudentPhoneCanNotBeDuplicated(request.Model.Phone!, request.Model.Id);
 
         var user = await userDal.GetAsync(x => x.ConnectionId == student.Id && x.Type == UserTypes.Student, cancellationToken: cancellationToken);
 
         await UserRules.UserShouldExists(user);
-        await userRules.UserNameCanNotBeDuplicated(request.Model.Email, user.Id);
-        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email, user.Id);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone, user.Id);
+        await userRules.UserNameCanNotBeDuplicated(request.Model.Email!, user.Id);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email!, user.Id);
+        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone!, user.Id);
 
         var classRoom = await classRoomDal.GetAsync(
             enableTracking: false,
@@ -55,17 +54,16 @@ public class UpdateStudentCommandHandler(IMapper mapper,
         student.Name = request.Model.Name;
         student.Surname = request.Model.Surname;
         student.StudentNo = request.Model.StudentNo;
-        student.TcNo = request.Model.TcNo;
-        student.Email = request.Model.Email;
+        student.Email = request.Model.Email!.Trim().ToLower();
         student.Phone = request.Model.Phone.TrimForPhone();
         student.ClassRoomId = request.Model.ClassRoomId;
 
         user.Name = student.Name;
         user.Surname = student.Surname;
-        user.UserName = student.Email.Trim().ToLower();
-        user.Email = student.Email.Trim().ToLower();
-        user.Phone = student.Phone.TrimForPhone();
-        user.GroupId = classRoom.GroupId;
+        user.UserName = student.Email;
+        user.Email = student.Email;
+        user.Phone = student.Phone;
+        //user.GroupId = classRoom.PackageId;
 
         var result = await studentDal.ExecuteWithTransactionAsync(async () =>
         {

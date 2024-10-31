@@ -6,5 +6,5 @@ namespace Infrastructure.AI.Seduss.Models;
 public class QuizTextResponseModel : IResponseModel
 {
     [JsonPropertyName("results")]
-    public List<SimilarTextResponseModel> Questions { get; set; }
+    public List<SimilarTextResponseModel> Questions { get; set; } = [];
 }

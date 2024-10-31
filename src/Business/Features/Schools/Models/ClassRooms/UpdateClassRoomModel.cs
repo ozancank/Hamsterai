@@ -4,7 +4,7 @@ public class UpdateClassRoomModel : IRequestModel
 {
     public int Id { get; set; }
     public short No { get; set; }
-    public string Branch { get; set; }
+    public string? Branch { get; set; }
     public int SchoolId { get; set; }
-    public byte GroupId { get; set; }
+    public byte PackageId { get; set; }
 }

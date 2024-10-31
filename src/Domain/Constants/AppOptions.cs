@@ -2,38 +2,38 @@
 
 public class AppOptions
 {
-    public static string ProfilePicturePath { get; set; }
-    public static string QuestionPicturePath { get; set; }
-    public static string AnswerPicturePath { get; set; }
-    public static string SimilarQuestionPicturePath { get; set; }
-    public static string SimilarAnswerPicturePath { get; set; }
-    public static string QuizQuestionPicturePath { get; set; }
-    public static string QuizAnswerPicturePath { get; set; }
-    public static string HomeworkPath { get; set; }
-    public static string HomeworkAnswerPath { get; set; }
-    public static int AITryCount { get; set; }
-    public static int AISendSecond { get; set; }
-    public static string AI_Default { get; set; }
-    public static string AI_Kazim1 { get; set; }
-    public static string AI_Kazim2 { get; set; }
-    public static string AI_Kazim3 { get; set; }
-    public static string ForgetPasswordUrl { get; set; }
-    public static int QuestionLimitForStudent { get; set; }
-    public static int SimilarLimitForStudent { get; set; }
-    public static int QuizMinimumQuestionLimit { get; set; }
-    public static string DefaultPassword { get; set; }
-    public static int SenderCapacity { get; set; }
-    public static string OCR_Url { get; set; }
+    public static string ProfilePicturePath { get; set; } = string.Empty;
+    public static string QuestionPicturePath { get; set; } = string.Empty;
+    public static string AnswerPicturePath { get; set; } = string.Empty;
+    public static string SimilarQuestionPicturePath { get; set; } = string.Empty;
+    public static string SimilarAnswerPicturePath { get; set; } = string.Empty;
+    public static string QuizQuestionPicturePath { get; set; } = string.Empty;
+    public static string QuizAnswerPicturePath { get; set; } = string.Empty;
+    public static string HomeworkPath { get; set; } = string.Empty;
+    public static string HomeworkAnswerPath { get; set; } = string.Empty;
+    public static int AITryCount { get; set; } = 3;
+    public static int AISendSecond { get; set; } = 3;
+    public static string? AI_Default { get; set; } = string.Empty;
+    public static string? AI_Kazim1 { get; set; } = string.Empty;
+    public static string? AI_Kazim2 { get; set; } = string.Empty;
+    public static string? AI_Kazim3 { get; set; } = string.Empty;
+    public static string? ForgetPasswordUrl { get; set; } = string.Empty;
+    public static int QuestionLimitForStudent { get; set; } = 20;
+    public static int SimilarLimitForStudent { get; set; } = 3;
+    public static int QuizMinimumQuestionLimit { get; set; } = 10;
+    public static string DefaultPassword { get; set; } = string.Empty;
+    public static int SenderCapacity { get; set; } = 3;
+    public static string OCR_Url { get; set; } = string.Empty;
 
-    public static string ProfilePictureFolderPath { get; set; }
-    public static string QuestionPictureFolderPath { get; set; }
-    public static string AnswerPictureFolderPath { get; set; }
-    public static string SimilarQuestionPictureFolderPath { get; set; }
-    public static string SimilarAnswerPictureFolderPath { get; set; }
-    public static string QuizQuestionPictureFolderPath { get; set; }
-    public static string QuizAnswerPictureFolderPath { get; set; }
-    public static string HomeworkFolderPath { get; set; }
-    public static string HomeworkAnswerFolderPath { get; set; }
+    public static string ProfilePictureFolderPath { get; set; } = string.Empty;
+    public static string QuestionPictureFolderPath { get; set; } = string.Empty;
+    public static string AnswerPictureFolderPath { get; set; } = string.Empty;
+    public static string SimilarQuestionPictureFolderPath { get; set; } = string.Empty;
+    public static string SimilarAnswerPictureFolderPath { get; set; } = string.Empty;
+    public static string QuizQuestionPictureFolderPath { get; set; } = string.Empty;
+    public static string QuizAnswerPictureFolderPath { get; set; } = string.Empty;
+    public static string HomeworkFolderPath { get; set; } = string.Empty;
+    public static string HomeworkAnswerFolderPath { get; set; } = string.Empty;
 
     public static void CreateFolder()
     {

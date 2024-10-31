@@ -7,7 +7,7 @@ namespace Business.Features.Notifications.Queries;
 
 public class GetNotificationsQuery : IRequest<PageableModel<GetNotificationModel>>, ISecuredRequest<UserTypes>
 {
-    public PageRequest PageRequest { get; set; }
+    public required PageRequest PageRequest { get; set; }
 
     public UserTypes[] Roles { get; } = [];
 }

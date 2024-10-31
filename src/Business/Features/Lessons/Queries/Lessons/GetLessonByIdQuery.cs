@@ -21,13 +21,13 @@ public class GetLessonByIdQueryHandler(IMapper mapper,
 {
     public async Task<GetLessonModel> Handle(GetLessonByIdQuery request, CancellationToken cancellationToken)
     {
-        var groupId=commonService.HttpGroupId;       
+        var packageId=commonService.HttpPackageId;       
 
         var lesson = await lessonDal.GetAsyncAutoMapper<GetLessonModel>(
             enableTracking: request.Tracking,
             predicate: x => x.Id == request.Id,
             include: x => x.Include(u => u.TeacherLessons).ThenInclude(u => u.Teacher)
-                           .Include(u => u.LessonGroups).ThenInclude(u => u.Group),
+                           .Include(u => u.RPackageLessons).ThenInclude(u => u.Package),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
 

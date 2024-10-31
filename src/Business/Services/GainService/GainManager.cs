@@ -7,7 +7,7 @@ namespace Business.Services.GainService;
 
 public class GainManager(IMapper mapper) : IGainService
 {
-    public async Task<GetGainModel> GetOrAddGain(AddGainDto dto)
+    public async Task<GetGainModel?> GetOrAddGain(AddGainDto dto)
     {
         if (dto.GainName.IsEmpty()) return null;
 
