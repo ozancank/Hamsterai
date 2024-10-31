@@ -10,7 +10,7 @@ public class GroupRules(IGroupDal groupDal) : IBusinessRule
         return Task.CompletedTask;
     }
 
-    internal static Task GroupShouldExists(Group group)
+    internal static Task GroupShouldExists(Package group)
     {
         if (group == null) throw new BusinessException(Strings.DynamicNotFound, Strings.Group);
         return Task.CompletedTask;
@@ -58,7 +58,7 @@ public class GroupRules(IGroupDal groupDal) : IBusinessRule
                 throw new BusinessException(Strings.DynamicNotFound, Strings.Group);        
     }
 
-    internal static Task GroupShouldBeRecordInDatabase(IEnumerable<byte> ids, IEnumerable<Group> groups)
+    internal static Task GroupShouldBeRecordInDatabase(IEnumerable<byte> ids, IEnumerable<Package> groups)
     {
         foreach (var id in ids)
             if (!groups.Any(x => x.Id == id))

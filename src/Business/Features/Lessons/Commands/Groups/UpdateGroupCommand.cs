@@ -36,7 +36,7 @@ public class UpdateGroupCommandHandler(IMapper mapper,
 
         var deleteList = await lessonGroupDal.GetListAsync(predicate: x => x.GroupId == group.Id, cancellationToken: cancellationToken);
 
-        var lessonGroups = request.Model.LessonIds.Select(x => new LessonGroup
+        var lessonGroups = request.Model.LessonIds.Select(x => new RPackageGroup
         {
             Id = Guid.NewGuid(),
             IsActive = true,
@@ -59,7 +59,7 @@ public class UpdateGroupCommandHandler(IMapper mapper,
         var result = await groupDal.GetAsyncAutoMapper<GetGroupModel>(
             enableTracking: false,
             predicate: x => x.Id == group.Id,
-            include: x => x.Include(u => u.LessonGroups).ThenInclude(u => u.Lesson),
+            include: x => x.Include(u => u.RPackageLessons).ThenInclude(u => u.Lesson),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
         return result;

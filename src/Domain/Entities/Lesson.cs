@@ -8,7 +8,7 @@ public class Lesson : BaseEntity<byte>
     public byte SortNo { get; set; }
 
     public virtual ICollection<TeacherLesson> TeacherLessons { get; set; }
-    public virtual ICollection<LessonGroup> LessonGroups { get; set; }
+    public virtual ICollection<RPackageGroup> LessonGroups { get; set; }
     public virtual ICollection<Question> Questions { get; set; }
     public virtual ICollection<Similar> SimilarQuestions { get; set; }
     public virtual ICollection<Gain> Gains { get; set; }

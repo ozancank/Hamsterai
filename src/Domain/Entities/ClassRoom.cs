@@ -10,7 +10,7 @@ public class ClassRoom : BaseEntity<int>
     public byte? GroupId { get; set; }
 
     public virtual School School { get; set; }
-    public virtual Group Group { get; set; }
+    public virtual Package Group { get; set; }
     public virtual ICollection<TeacherClassRoom> TeacherClassRooms { get; set; }
     public virtual ICollection<Student> Students { get; set; }
     public virtual ICollection<Homework> Homeworks { get; set; }

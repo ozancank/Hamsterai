@@ -17,7 +17,7 @@ public class User : Security.User
     public int QuestionCount { get; set; }
 
     public virtual School School { get; set; }
-    public virtual Group Group { get; set; }
+    public virtual Package Group { get; set; }
     public virtual ICollection<UserOperationClaim> UserOperationClaims { get; set; }
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
     public virtual ICollection<Question> Questions { get; set; }

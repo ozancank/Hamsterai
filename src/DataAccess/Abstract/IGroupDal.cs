@@ -1,5 +1,5 @@
 ﻿namespace DataAccess.Abstract;
 
-public interface IGroupDal : ISyncRepository<Group>, IAsyncRepository<Group>
+public interface IGroupDal : ISyncRepository<Package>, IAsyncRepository<Package>
 {
 }

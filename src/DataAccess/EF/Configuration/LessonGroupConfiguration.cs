@@ -1,8 +1,8 @@
 ﻿namespace DataAccess.EF.Configuration;
 
-public class LessonGroupConfiguration : IEntityTypeConfiguration<LessonGroup>
+public class LessonGroupConfiguration : IEntityTypeConfiguration<RPackageGroup>
 {
-    public void Configure(EntityTypeBuilder<LessonGroup> builder)
+    public void Configure(EntityTypeBuilder<RPackageGroup> builder)
     {
         builder.ToTable("LessonGroups");
         builder.Property(e => e.Id).HasColumnName("Id").ValueGeneratedNever().HasColumnOrder(0).IsRequired();
@@ -16,7 +16,7 @@ public class LessonGroupConfiguration : IEntityTypeConfiguration<LessonGroup>
         builder.Property(e => e.LessonId).HasColumnName("LessonId").HasColumnOrder(7).IsRequired();
         builder.HasIndex(e => new { e.GroupId, e.LessonId }).HasDatabaseName("IX_LessonGroups_1").IsUnique();
 
-        builder.HasOne(d => d.Group).WithMany(p => p.LessonGroups).HasForeignKey(d => d.GroupId).HasPrincipalKey(x => x.Id);
+        builder.HasOne(d => d.Group).WithMany(p => p.RPackageLessons).HasForeignKey(d => d.GroupId).HasPrincipalKey(x => x.Id);
         builder.HasOne(d => d.Lesson).WithMany(p => p.LessonGroups).HasForeignKey(d => d.LessonId).HasPrincipalKey(x => x.Id);
 
         builder.HasData([

@@ -26,10 +26,10 @@ public class AddLessonInGroupCommandHandler(ILessonDal lessonDal,
 
         var group = await groupDal.GetAsync(
             predicate: x => x.Id == request.Model.GroupId,
-            include: x => x.Include(u => u.LessonGroups).ThenInclude(u => u.Lesson),
+            include: x => x.Include(u => u.RPackageLessons).ThenInclude(u => u.Lesson),
             cancellationToken: cancellationToken);
 
-        await lessonGroupDal.DeleteRangeAsync(group.LessonGroups, cancellationToken);
+        await lessonGroupDal.DeleteRangeAsync(group.RPackageLessons, cancellationToken);
 
         var date = DateTime.Now;
 
@@ -40,11 +40,11 @@ public class AddLessonInGroupCommandHandler(ILessonDal lessonDal,
                 enableTracking: false,
                 cancellationToken: cancellationToken);
             await LessonRules.LessonShouldBeRecordInDatabase(request.Model.LessonIds, lessons);
-            var entities = new List<LessonGroup>();
+            var entities = new List<RPackageGroup>();
 
             foreach (var id in request.Model.LessonIds!)
             {
-                entities.Add(new LessonGroup
+                entities.Add(new RPackageGroup
                 {
                     Id = Guid.NewGuid(),
                     IsActive = true,

@@ -22,7 +22,7 @@ public class GetGroupByIdQueryHandler(IMapper mapper,
         var group = await groupDal.GetAsyncAutoMapper<GetGroupModel>(
             enableTracking: request.Tracking,
             predicate: x => x.Id == request.Id,
-            include: x => x.Include(u => u.LessonGroups).ThenInclude(u => u.Lesson),
+            include: x => x.Include(u => u.RPackageLessons).ThenInclude(u => u.Lesson),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
 

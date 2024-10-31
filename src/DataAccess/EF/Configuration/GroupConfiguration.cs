@@ -1,8 +1,8 @@
 ﻿namespace DataAccess.EF.Configuration;
 
-public class GroupConfiguration : IEntityTypeConfiguration<Group>
+public class GroupConfiguration : IEntityTypeConfiguration<Package>
 {
-    public void Configure(EntityTypeBuilder<Group> builder)
+    public void Configure(EntityTypeBuilder<Package> builder)
     {
         builder.ToTable("Groups");
         builder.Property(e => e.Id).HasColumnName("Id").ValueGeneratedNever().HasColumnOrder(0).IsRequired();

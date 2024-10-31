@@ -21,11 +21,11 @@ public class HamsteraiDbContext : DbContext
 
     public DbSet<ClassRoom> ClassRooms { get; set; }
     public DbSet<Gain> Gains { get; set; }
-    public DbSet<Group> Groups { get; set; }
+    public DbSet<Package> Groups { get; set; }
     public DbSet<Homework> Homeworks { get; set; }
     public DbSet<HomeworkStudent> HomeworkStudents { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
-    public DbSet<LessonGroup> LessonGroups { get; set; }
+    public DbSet<RPackageGroup> LessonGroups { get; set; }
     public DbSet<NotificationDeviceToken> NotificationDeviceTokens { get; set; }
     public DbSet<PasswordToken> PasswordTokens { get; set; }
     public DbSet<Question> Questions { get; set; }

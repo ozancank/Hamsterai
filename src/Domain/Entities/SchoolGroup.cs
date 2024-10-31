@@ -8,7 +8,7 @@ public class SchoolGroup : BaseEntity<Guid>
     public byte GroupId { get; set; }
 
     public virtual School School { get; set; }
-    public virtual Group Group { get; set; }
+    public virtual Package Group { get; set; }
 
     public SchoolGroup() : base()
     { }

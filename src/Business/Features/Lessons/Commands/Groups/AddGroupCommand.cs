@@ -26,13 +26,13 @@ public class AddGroupCommandHandler(IMapper mapper,
         await groupRules.GroupNameCanNotBeDuplicated(request.Model.Name);
         var date = DateTime.Now;
 
-        var group = mapper.Map<Domain.Entities.Group>(request.Model);
+        var group = mapper.Map<Domain.Entities.Package>(request.Model);
         group.Id = await groupDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
         group.IsActive = true;
         group.CreateUser = group.UpdateUser = commonService.HttpUserId;
         group.CreateDate = group.UpdateDate = date;
 
-        List<LessonGroup> lessonGroups = [];
+        List<RPackageGroup> lessonGroups = [];
 
         if (request.Model.LessonIds != null && request.Model.LessonIds.Count != 0)
         {
@@ -41,11 +41,11 @@ public class AddGroupCommandHandler(IMapper mapper,
                 enableTracking: false,
                 cancellationToken: cancellationToken);
             await LessonRules.LessonShouldBeRecordInDatabase(request.Model.LessonIds, lessons);
-            var entities = new List<LessonGroup>();
+            var entities = new List<RPackageGroup>();
 
             foreach (var id in request.Model.LessonIds!)
             {
-                entities.Add(new LessonGroup
+                entities.Add(new RPackageGroup
                 {
                     Id = Guid.NewGuid(),
                     IsActive = true,
