@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace Infrastructure.OCR.Gemini;
 
-public class GeminiApi(IHttpClientFactory httpClientFactory, LoggerServiceBase loggerServiceBase) : IOcrApi
+public sealed class GeminiApi(IHttpClientFactory httpClientFactory, LoggerServiceBase loggerServiceBase) : IOcrApi
 {
     private static readonly JsonSerializerOptions _options = new() { PropertyNameCaseInsensitive = true };
     private readonly int _apiTimeoutSecond = 20;

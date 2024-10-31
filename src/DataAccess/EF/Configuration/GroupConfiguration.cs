@@ -14,6 +14,8 @@ public class GroupConfiguration : IEntityTypeConfiguration<Group>
         builder.Property(e => e.UpdateDate).HasColumnName("UpdateDate").HasColumnOrder(5).IsRequired();
         builder.Property(e => e.Name).HasColumnName("Name").HasMaxLength(50).HasColumnOrder(6).IsRequired();
         builder.HasAlternateKey(e => e.Name).HasName("UK_Groups_Name");
+        builder.Property(e => e.SortNo).HasColumnName("SortNo").HasDefaultValue(0).HasColumnOrder(7).IsRequired();
+        builder.Property(e => e.IsWebVisible).HasColumnName("IsWebVisible").HasDefaultValue(false).HasColumnOrder(8).IsRequired();
 
         builder.HasData([
                 new(1, true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), "Sözel"),

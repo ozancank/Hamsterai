@@ -22,7 +22,7 @@ public class GetGroupsByDynamicQueryHandler(IMapper mapper,
 
         var users = await groupDal.GetPageListAsyncAutoMapperByDynamic<GetGroupModel>(
             dynamic: request.Dynamic,
-            defaultOrderColumnName: x => x.CreateDate,
+            defaultOrderColumnName: x => x.SortNo,
             enableTracking: false,
             include: x => x.Include(u => u.LessonGroups).ThenInclude(u => u.Lesson),
             configurationProvider: mapper.ConfigurationProvider,

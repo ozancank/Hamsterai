@@ -5,7 +5,7 @@ using OCK.Core.Utilities;
 
 namespace Infrastructure.Notification.Firebase;
 
-public class FirebaseApi : INotificationApi
+public sealed class FirebaseApi : INotificationApi
 {
     private static bool? IsNullable = null;
     private static bool? IsString = null;

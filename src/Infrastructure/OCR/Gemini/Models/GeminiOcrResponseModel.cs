@@ -2,7 +2,7 @@
 
 namespace Infrastructure.OCR.Gemini.Models;
 
-public class GeminiOcrResponseModel : IResponseModel
+public sealed class GeminiOcrResponseModel : IResponseModel
 {
     public string Message { get; set; }
 }

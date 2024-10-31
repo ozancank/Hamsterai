@@ -10,6 +10,7 @@ using DataAccess.EF;
 using Infrastructure.AI;
 using Infrastructure.AI.Seduss.Dtos;
 using Infrastructure.AI.Seduss.Models;
+using NPOI.HPSF;
 using OCK.Core.Logging.Serilog;
 using OneOf;
 
@@ -30,7 +31,7 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
         var changeDate = new DateTime(2024, 10, 19, 1, 30, 0);
         try
         {
-            QuestionStatus[] status = [QuestionStatus.Waiting, QuestionStatus.Error, QuestionStatus.SendAgain];
+            QuestionStatus[] status = [QuestionStatus.Waiting, QuestionStatus.Error, QuestionStatus.SendAgain, QuestionStatus.ConnectionError, QuestionStatus.Timeout];
             using var context = contextFactory.CreateDbContext();
 
             var questions = await context.Questions
@@ -61,6 +62,11 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
 
                     if (question.IsT0)
                     {
+                        if (base64.IsEmpty())
+                        {
+                            await UpdateAnswer(new QuestionITOResponseModel(), new UpdateQuestionDto(question.AsT0.Id, QuestionStatus.NotFoundImage, question.AsT0.CreateUser, string.Empty, Strings.DynamicNotFound.Format(Strings.Picture)));
+                            return;
+                        }
                         var model = new QuestionApiModel
                         {
                             Id = question.AsT0.Id,
@@ -73,6 +79,11 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
                     }
                     else if (question.IsT1)
                     {
+                        if (base64.IsEmpty())
+                        {
+                            await UpdateSimilarAnswer(new SimilarResponseModel(), new UpdateQuestionDto(question.AsT1.Id, QuestionStatus.NotFoundImage, question.AsT1.CreateUser, string.Empty, Strings.DynamicNotFound.Format(Strings.Picture)));
+                            return;
+                        }
                         var model = new QuestionApiModel
                         {
                             Id = question.AsT1.Id,
@@ -131,11 +142,18 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
         data.AnswerPictureExtension = extension ?? string.Empty;
         data.Status = dto.Status;
         data.GainId = gain?.Id;
-        data.RightOption = model?.RightOption.FirstOrDefault();
-        if (dto.Status != QuestionStatus.Answered)
+        data.RightOption = model?.RightOption?.FirstOrDefault();
+        data.OcrMethod = model?.OcrMethod.IfNullEmptyString(string.Empty) ?? string.Empty;
+        data.ErrorDescription = dto.ErrorMessage.IfNullEmptyString(string.Empty);
+        data.AIIP = dto.AIIP;
+        if (dto.Status is not QuestionStatus.Answered)
         {
             data.TryCount++;
-            data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;
+            data.Status = data.TryCount < AppOptions.AITryCount
+                ? QuestionStatus.SendAgain
+                : dto.Status == QuestionStatus.SendAgain
+                    ? QuestionStatus.Error
+                    : dto.Status;
         }
 
         context.Questions.Update(data);
@@ -147,6 +165,7 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
         return true;
     }
 
+    [Obsolete(message: "Currently Not Available")]
     public async Task<bool> UpdateAnswer(QuestionTextResponseModel model, UpdateQuestionDto dto)
     {
         using var context = contextFactory.CreateDbContext();
@@ -176,7 +195,7 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
         data.Status = dto.Status;
         data.GainId = gain?.Id;
         data.RightOption = model?.RightOption.FirstOrDefault();
-        if (dto.Status != QuestionStatus.Answered)
+        if (dto.Status is not QuestionStatus.Answered)
         {
             data.TryCount++;
             data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;
@@ -191,6 +210,7 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
         return true;
     }
 
+    [Obsolete(message: "Currently Not Available")]
     public async Task<bool> UpdateAnswer(QuestionVisualResponseModel model, UpdateQuestionDto dto)
     {
         using var context = contextFactory.CreateDbContext();
@@ -222,7 +242,7 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
         data.Status = dto.Status;
         //data.GainId = gain?.Id;
         //data.RightOption = model?.RightOption.FirstOrDefault();
-        if (dto.Status != QuestionStatus.Answered)
+        if (dto.Status is not QuestionStatus.Answered)
         {
             data.TryCount++;
             data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;
@@ -279,12 +299,19 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
         data.ResponseAnswerExtension = extension ?? string.Empty;
         data.Status = dto.Status;
         data.GainId = gain?.Id;
-        data.RightOption = model?.RightOption.FirstOrDefault();
-        if (dto.Status != QuestionStatus.Answered)
+        data.RightOption = model?.RightOption?.FirstOrDefault();
+        data.ErrorDescription = dto.ErrorMessage.IfNullEmptyString(string.Empty);
+        data.AIIP = dto.AIIP;
+        if (dto.Status is not QuestionStatus.Answered)
         {
             data.TryCount++;
-            data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;
+            data.Status = data.TryCount < AppOptions.AITryCount 
+                ? QuestionStatus.SendAgain 
+                : dto.Status == QuestionStatus.SendAgain
+                    ? QuestionStatus.Error
+                    : dto.Status;
         }
+
 
         context.Similars.Update(data);
         await context.SaveChangesAsync();
@@ -295,6 +322,7 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
         return true;
     }
 
+    [Obsolete(message: "Currently Not Available")]
     public async Task<bool> UpdateSimilarAnswer(SimilarTextResponseModel model, UpdateQuestionDto dto)
     {
         using var context = contextFactory.CreateDbContext();
@@ -330,7 +358,7 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
         data.Status = dto.Status;
         data.GainId = gain?.Id;
         data.RightOption = model?.RightOption.FirstOrDefault();
-        if (dto.Status != QuestionStatus.Answered)
+        if (dto.Status is not QuestionStatus.Answered)
         {
             data.TryCount++;
             data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;

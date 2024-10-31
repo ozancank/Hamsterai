@@ -5,4 +5,6 @@ namespace Infrastructure.AI.Seduss.Dtos;
 
 public record UpdateQuestionDto(Guid QuestionId,
                                 QuestionStatus Status,
-                                long UserId) : IDto;
+                                long UserId,
+                                string AIIP,
+                                string ErrorMessage = null) : IDto;

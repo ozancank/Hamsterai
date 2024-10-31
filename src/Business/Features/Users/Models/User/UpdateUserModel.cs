@@ -13,6 +13,7 @@ public sealed class UpdateUserModel : IRequestModel
     public int? ConnectionId { get; set; }
     public int? SchoolId { get; set; }
     public byte GroupId { get; set; }
+    public int QuestionCount { get; set; }
 
     public string ProfilePictureBase64 { get; set; }
     public string ProfilePictureFileName { get; set; }

@@ -63,7 +63,8 @@ public class AddUserCommandHandler(IMapper mapper,
             Type = Enum.Parse<UserTypes>($"{request.Model.Type}"),
             ConnectionId = request.Model.ConnectionId,
             SchoolId = request.Model.SchoolId,
-            GroupId = request.Model.GroupId
+            GroupId = request.Model.GroupId,
+            QuestionCount = request.Model.QuestionCount
         };
 
         await userDal.AddAsync(user, cancellationToken: cancellationToken);

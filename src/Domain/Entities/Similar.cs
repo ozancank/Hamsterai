@@ -23,6 +23,8 @@ public class Similar : BaseEntity<Guid>
     public char? RightOption { get; set; }
     public bool ExcludeQuiz { get; set; }
     public bool ExistsVisualContent { get; set; }
+    public string ErrorDescription { get; set; }
+    public string AIIP { get; set; }
 
     public virtual User User { get; set; }
     public virtual Lesson Lesson { get; set; }

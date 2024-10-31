@@ -11,6 +11,8 @@ public sealed class GetGroupModel : IResponseModel
     public long UpdateUser { get; set; }
     public DateTime UpdateDate { get; set; }
     public string Name { get; set; }
+    public byte SortNo { get; set; }
+    public bool IsWebVisible { get; set; }
 
     public List<byte> LessonIds { get; set; } = [];
     public List<GetLessonLiteModel> Lessons { get; set; }

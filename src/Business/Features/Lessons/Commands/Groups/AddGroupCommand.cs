@@ -26,7 +26,7 @@ public class AddGroupCommandHandler(IMapper mapper,
         await groupRules.GroupNameCanNotBeDuplicated(request.Model.Name);
         var date = DateTime.Now;
 
-        var group = mapper.Map<Group>(request.Model);
+        var group = mapper.Map<Domain.Entities.Group>(request.Model);
         group.Id = await groupDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
         group.IsActive = true;
         group.CreateUser = group.UpdateUser = commonService.HttpUserId;

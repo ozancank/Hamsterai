@@ -7,4 +7,8 @@ public enum QuestionStatus : byte
     Answered = 2,
     Error = 3,
     SendAgain = 4,
+    OcrError = 5,
+    ConnectionError = 6,
+    Timeout = 7,
+    NotFoundImage = 8,
 }

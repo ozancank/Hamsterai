@@ -1,5 +1,4 @@
 ﻿using Business.Features.Users.Rules;
-using OCK.Core.Logging;
 using OCK.Core.Logging.Serilog;
 using OCK.Core.Security.Extensions;
 using SixLabors.Fonts;
@@ -10,7 +9,6 @@ using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using System.Configuration;
 using System.Reflection;
 
 namespace Business.Services.CommonService;
@@ -56,9 +54,17 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
 
     public async Task<string> ImageToBase64(string path)
     {
-        if (path.IsEmpty()) return string.Empty;
-        var imageBytes = await File.ReadAllBytesAsync(path);
-        return Convert.ToBase64String(imageBytes);
+        try
+        {
+            if (path.IsEmpty()) return string.Empty;
+            if (!File.Exists(path)) return string.Empty;
+            var imageBytes = await File.ReadAllBytesAsync(path);
+            return Convert.ToBase64String(imageBytes);
+        }
+        catch
+        {
+            return string.Empty;
+        }
     }
 
     public async Task<string> TextToImage(string text, string fileName, string folder, IImageEncoder imageEncoder = null)
@@ -111,6 +117,4 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         var result = loggerServiceBase.GetLogs(pageRequest, onlyError);
         return result;
     }
-
-  
 }

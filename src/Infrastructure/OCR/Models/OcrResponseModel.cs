@@ -2,7 +2,7 @@
 
 namespace Infrastructure.OCR.Models;
 
-public class OcrResponseModel : IResponseModel
+public sealed class OcrResponseModel : IResponseModel
 {
     public string Text { get; set; }
 }

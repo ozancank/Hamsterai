@@ -2,7 +2,7 @@
 
 namespace Infrastructure.AI;
 
-public class QuestionApiModel : IRequestModel
+public sealed class QuestionApiModel : IRequestModel
 {
     public Guid Id { get; set; }
     public string Base64 { get; set; }

@@ -76,7 +76,7 @@ static void Services(WebApplicationBuilder builder)
     builder.Services.Configure<FormOptions>(options =>
     {
         options.MultipartBodyLengthLimit = 5242880;
-        options.ValueLengthLimit = 1024 * 1024*1024;
+        options.ValueLengthLimit = 1024 * 1024 * 1024;
         options.MemoryBufferThreshold = 1024 * 1024 * 1024;
     });
 
@@ -238,7 +238,7 @@ static void Delegates()
     ControlUserStatusAsync = ServiceTools.GetService<IUserService>().UserStatusAndLicense;
     UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
     UpdateSimilarAnswer = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
-    UpdateQuestionText = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
-    UpdateSimilarText = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
-    UpdateQuestionVisual = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
+    //UpdateQuestionText = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
+    //UpdateSimilarText = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
+    //UpdateQuestionVisual = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
 }

@@ -27,6 +27,8 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
         builder.Property(e => e.RightOption).HasColumnName("RightOption").HasMaxLength(1).HasColumnOrder(18);
         builder.Property(e => e.ExcludeQuiz).HasColumnName("ExcludeQuiz").HasDefaultValue(false).HasColumnOrder(19).IsRequired();
         builder.Property(e => e.ExistsVisualContent).HasColumnName("ExistsVisualContent").HasDefaultValue(false).HasColumnOrder(20).IsRequired();
+        builder.Property(e => e.OcrMethod).HasColumnName("OcrMethod").HasMaxLength(50).HasDefaultValue(string.Empty).HasColumnOrder(21).IsRequired();
+        builder.Property(e => e.ErrorDescription).HasColumnName("ErrorDescription").HasDefaultValue(string.Empty).HasColumnOrder(22);
 
         builder.HasOne(x => x.User).WithMany(x => x.Questions).HasForeignKey(x => x.CreateUser).HasPrincipalKey(x => x.Id);
         builder.HasOne(x => x.Lesson).WithMany(x => x.Questions).HasForeignKey(x => x.LessonId).HasPrincipalKey(x => x.Id);

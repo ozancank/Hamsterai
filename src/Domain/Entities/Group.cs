@@ -5,6 +5,8 @@ namespace Domain.Entities;
 public class Group : BaseEntity<byte>
 {
     public string Name { get; set; }
+    public byte SortNo { get; set; }
+    public bool IsWebVisible { get; set; }
 
     public virtual ICollection<LessonGroup> LessonGroups { get; set; }
     public virtual ICollection<User> Users { get; set; }

@@ -3,6 +3,7 @@ using System;
 using DataAccess.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.EF.Migrations
 {
     [DbContext(typeof(HamsteraiDbContext))]
-    partial class HamsteraiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241030115330_AddQuestionCount")]
+    partial class AddQuestionCount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1597,9 +1600,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("Id")
                         .HasColumnOrder(0);
 
-                    b.Property<string>("AIIP")
-                        .HasColumnType("citext");
-
                     b.Property<string>("AnswerPictureExtension")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -2140,9 +2140,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("Id")
                         .HasColumnOrder(0);
-
-                    b.Property<string>("AIIP")
-                        .HasColumnType("citext");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp without time zone")

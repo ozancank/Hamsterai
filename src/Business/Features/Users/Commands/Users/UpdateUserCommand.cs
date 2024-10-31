@@ -52,6 +52,7 @@ public class UpdateUserCommandHandler(IMapper mapper,
         user.ConnectionId = request.Model.ConnectionId;
         user.SchoolId = request.Model.SchoolId;
         user.GroupId = request.Model.GroupId;
+        user.QuestionCount = request.Model.QuestionCount;
 
         await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
         var result = mapper.Map<GetUserModel>(user);

@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Notification;
 
-public class NotificationModel<T> : IModel
+public sealed class NotificationModel<T> : IModel
 {
     public string Title { get; set; }
     public string Body { get; set; }

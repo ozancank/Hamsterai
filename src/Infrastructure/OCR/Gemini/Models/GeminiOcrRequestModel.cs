@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Infrastructure.OCR.Gemini.Models;
 
-public class GeminiOcrRequestModel : IRequestModel
+public sealed class GeminiOcrRequestModel : IRequestModel
 {
     [JsonPropertyName("fileName")]
     public string FileName { get; set; }

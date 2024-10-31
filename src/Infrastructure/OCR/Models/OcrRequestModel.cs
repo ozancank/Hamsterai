@@ -2,7 +2,7 @@
 
 namespace Infrastructure.OCR.Models;
 
-public class OcrRequestModel : IRequestModel
+public sealed class OcrRequestModel : IRequestModel
 {
     public string FileName { get; set; }
     public string UserName { get; set; }

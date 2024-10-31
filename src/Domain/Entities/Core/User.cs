@@ -14,6 +14,7 @@ public class User : Security.User
     public int? ConnectionId { get; set; }
     public int? SchoolId { get; set; }
     public byte? GroupId { get; set; }
+    public int QuestionCount { get; set; }
 
     public virtual School School { get; set; }
     public virtual Group Group { get; set; }

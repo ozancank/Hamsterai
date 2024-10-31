@@ -3,7 +3,7 @@ using Infrastructure.AI.Seduss.Models;
 
 namespace Infrastructure.Constants;
 
-public class InfrastructureDelegates
+public sealed class InfrastructureDelegates
 {
     public delegate Task<bool> UpdateQuestionOcrImageDelegate(QuestionITOResponseModel model, UpdateQuestionDto dto);
 

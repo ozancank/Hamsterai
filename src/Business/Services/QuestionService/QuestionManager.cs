@@ -16,6 +16,7 @@ using OneOf;
 
 namespace Business.Services.QuestionService;
 
+[Obsolete(message: "Currently Not Available")]
 public class QuestionManager(ICommonService commonService,
                              INotificationService notificationService,
                              IGainService gainService,

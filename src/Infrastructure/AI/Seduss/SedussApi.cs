@@ -5,15 +5,16 @@ using Infrastructure.Constants;
 using OCK.Core.Exceptions.CustomExceptions;
 using OCK.Core.Logging.Serilog;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 
 namespace Infrastructure.AI.Seduss;
 
-public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase loggerServiceBase) : IQuestionApi
+public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase loggerServiceBase) : IQuestionApi
 {
     private static readonly JsonSerializerOptions _options = new() { PropertyNameCaseInsensitive = true };
-    private const double _apiTimeoutMinute = 1;
+    private const double _apiTimeoutSecond = 60;
     private static readonly string[] _answersOptions = ["A", "B", "C", "D", "E"];
     private const byte _tryAgainCount = 3;
 
@@ -50,7 +51,25 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         return Convert.ToBoolean(result);
     }
 
+    private static void LogError(LoggerServiceBase logger, Exception ex, long userId, [CallerMemberName] string methodName = "")
+    {
+        logger.Error($"{methodName} - {DateTime.Now:yyyy-MM-dd HH:mm:ss}*{userId}*{ex?.InnerException?.Message}*{ex?.Message}");
+    }
+
+    private static QuestionStatus GetErrorQuestionStatus(Exception ex)
+    {
+        var status = ex.Message switch
+        {
+            var _ when ex.Message.Contains("Soru algılanamadı. Lütfen tekrar deneyiniz.", StringComparison.OrdinalIgnoreCase) => QuestionStatus.OcrError,
+            var _ when ex.Message.Contains("HttpClient.Timeout", StringComparison.OrdinalIgnoreCase) => QuestionStatus.Timeout,
+            _ => QuestionStatus.Error
+        };
+        if (ex is HttpRequestException) status = QuestionStatus.ConnectionError;
+        return status;
+    }
+
     #region Question
+
     public async Task<QuestionITOResponseModel> AskQuestionOcrImage(QuestionApiModel model)
     {
         var baseUrl = BaseUrl(model.UserId);
@@ -58,16 +77,19 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         try
         {
             using var client = httpClientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
+            client.Timeout = TimeSpan.FromSeconds(_apiTimeoutSecond);
 
-            //var available = await ModelAvailable(baseUrl, client);
-
-            //if (!available)
-            //{
-            //    answer = new QuestionITOResponseModel { QuestionText = model.Base64 };
-            //    await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.SendAgain, model.UserId));
-            //    return answer;
-            //}
+            var url = $"{baseUrl}/Soru_ITO";
+            if (baseUrl.Contains("54.237.224.177")) url = $"{baseUrl}/question/sor";
+            else
+            {
+                //if (!await ModelAvailable(baseUrl, client))
+                //{
+                //    answer = new QuestionITOResponseModel { QuestionText = model.Base64 };
+                //    await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.SendAgain, model.UserId, baseUrl));
+                //    return answer;
+                //}
+            }
 
             var data = new QuestionRequestModel
             {
@@ -75,45 +97,58 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
                 LessonName = model.LessonName?.Trim().ToLower() ?? string.Empty
             };
 
-            var url = $"{baseUrl}/Soru_ITO";
-            if (baseUrl.Contains("54.237.224.177")) url = $"{baseUrl}/question/sor";
-
             var request = new HttpRequestMessage(HttpMethod.Post, url)
             {
                 Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"),
             };
 
             var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
 
-            var content = await response.Content.ReadAsStringAsync();
-            answer = JsonSerializer.Deserialize<QuestionITOResponseModel>(content, _options);
-
-            if (!model.ExcludeQuiz)
+            if (response.IsSuccessStatusCode)
             {
-                answer.RightOption = answer.RightOption.IsNotEmpty()
-                    ? answer.RightOption.Trim("Cevap", ".", ":", ")", "-").ToUpper()[..1]
-                    : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
+                var content = await response.Content.ReadAsStringAsync();
+                answer = JsonSerializer.Deserialize<QuestionITOResponseModel>(content, _options);
 
-                if (!_answersOptions.Contains(answer.RightOption, StringComparer.OrdinalIgnoreCase))
-                    throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
+                if (answer.QuestionText.Contains("Soru algılanamadı. Lütfen tekrar deneyiniz.", StringComparison.OrdinalIgnoreCase))
+                {
+                    await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.OcrError, model.UserId, baseUrl));
+                    return answer;
+                }
+
+                if (!model.ExcludeQuiz)
+                {
+                    answer.RightOption = answer.RightOption.IsNotEmpty()
+                        ? answer.RightOption.Trim("Cevap", ".", ":", ")", "-").ToUpper()[..1]
+                        : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
+
+                    if (!_answersOptions.Contains(answer.RightOption, StringComparer.OrdinalIgnoreCase))
+                        throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
+                }
+
+                answer.AnswerText = answer.AnswerText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);                
+
+                if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
+                    await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId, baseUrl));
             }
-
-            answer.AnswerText = answer.AnswerText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
-
-            if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
-                await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId));
+            else
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                throw new ExternalApiException(content.Trim("{","}"));
+            }
         }
         catch (Exception ex)
         {
-            if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
-                await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.Error, model.UserId));
-            loggerServiceBase.Error($"AskQuestionOcrImage {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            var status = GetErrorQuestionStatus(ex);
+            await InfrastructureDelegates.UpdateQuestionOcrImage?.Invoke(answer, new(model.Id, status, model.UserId, baseUrl, ex.Message));
+            LogError(loggerServiceBase, ex, model.UserId);
         }
 
         return answer;
     }
 
+
+
+    [Obsolete(message: "Currently Not Available")]
     public async Task<QuestionTextResponseModel> AskQuestionText(QuestionApiModel model)
     {
         var baseUrl = BaseUrl(model.UserId);
@@ -121,13 +156,13 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         try
         {
             using var client = httpClientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
+            client.Timeout = TimeSpan.FromSeconds(_apiTimeoutSecond);
 
             var available = await ModelAvailable(baseUrl, client);
 
             if (!available)
             {
-                await InfrastructureDelegates.UpdateQuestionText?.Invoke(new(), new(model.Id, QuestionStatus.SendAgain, model.UserId));
+                await InfrastructureDelegates.UpdateQuestionText?.Invoke(new(), new(model.Id, QuestionStatus.SendAgain, model.UserId, baseUrl));
                 return answer;
             }
 
@@ -166,16 +201,17 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
             answer.AnswerText = answer.AnswerText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
 
             if (InfrastructureDelegates.UpdateQuestionText != null)
-                await InfrastructureDelegates.UpdateQuestionText?.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId));
+                await InfrastructureDelegates.UpdateQuestionText?.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId, baseUrl));
         }
         catch (Exception ex)
         {
-            await InfrastructureDelegates.UpdateQuestionText?.Invoke(answer, new(model.Id, QuestionStatus.Error, model.UserId));
-            loggerServiceBase.Error($"AskQuestionText {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            await InfrastructureDelegates.UpdateQuestionText?.Invoke(answer, new(model.Id, QuestionStatus.Error, model.UserId, baseUrl));
+            LogError(loggerServiceBase, ex, model.UserId);
         }
         return answer;
     }
 
+    [Obsolete(message: "Currently Not Available")]
     public async Task<QuestionVisualResponseModel> AskQuestionVisual(QuestionApiModel model)
     {
         var baseUrl = BaseUrl(model.UserId);
@@ -183,14 +219,14 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         try
         {
             using var client = httpClientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
+            client.Timeout = TimeSpan.FromSeconds(_apiTimeoutSecond);
 
             var available = await ModelAvailable(baseUrl, client);
 
             if (!available)
             {
                 answer = new QuestionVisualResponseModel { QuestionText = model.Base64 };
-                await InfrastructureDelegates.UpdateQuestionVisual.Invoke(answer, new(model.Id, QuestionStatus.SendAgain, model.UserId));
+                await InfrastructureDelegates.UpdateQuestionVisual.Invoke(answer, new(model.Id, QuestionStatus.SendAgain, model.UserId, baseUrl));
                 return answer;
             }
 
@@ -224,20 +260,22 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
             answer.AnswerText = answer.AnswerText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
 
             if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
-                await InfrastructureDelegates.UpdateQuestionVisual.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId));
+                await InfrastructureDelegates.UpdateQuestionVisual.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId, baseUrl));
         }
         catch (Exception ex)
         {
             if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
-                await InfrastructureDelegates.UpdateQuestionVisual.Invoke(answer, new(model.Id, QuestionStatus.Error, model.UserId));
-            loggerServiceBase.Error($"AskQuestionVisual {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+                await InfrastructureDelegates.UpdateQuestionVisual.Invoke(answer, new(model.Id, QuestionStatus.Error, model.UserId, baseUrl));
+            LogError(loggerServiceBase, ex, model.UserId);
         }
 
         return answer;
     }
-    #endregion
+
+    #endregion Question
 
     #region Similar
+
     public async Task<SimilarResponseModel> GetSimilar(QuestionApiModel model)
     {
         var baseUrl = BaseUrl(model.UserId);
@@ -245,14 +283,14 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         try
         {
             using var client = httpClientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
+            client.Timeout = TimeSpan.FromSeconds(_apiTimeoutSecond);
 
             var available = await ModelAvailable(baseUrl, client);
 
             if (!available)
             {
                 similar = new SimilarResponseModel { QuestionText = model.Base64 };
-                await InfrastructureDelegates.UpdateSimilarAnswer.Invoke(new(), new UpdateQuestionDto(model.Id, QuestionStatus.SendAgain, model.UserId));
+                await InfrastructureDelegates.UpdateSimilarAnswer.Invoke(new(), new UpdateQuestionDto(model.Id, QuestionStatus.SendAgain, model.UserId, baseUrl));
                 return similar;
             }
 
@@ -268,36 +306,45 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
             };
 
             var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
 
-            var content = await response.Content.ReadAsStringAsync();
-            similar = JsonSerializer.Deserialize<SimilarResponseModel>(content, _options);
-
-            if (!model.ExcludeQuiz)
+            if (response.IsSuccessStatusCode)
             {
-                similar.RightOption = similar.RightOption.IsNotEmpty()
-                    ? similar.RightOption.Trim("Cevap", ".", ":", ")", "-").ToUpper()[..1]
-                    : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
 
-                if (!_answersOptions.Contains(similar.RightOption, StringComparer.OrdinalIgnoreCase))
-                    throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
+                var content = await response.Content.ReadAsStringAsync();
+                similar = JsonSerializer.Deserialize<SimilarResponseModel>(content, _options);
+
+                if (!model.ExcludeQuiz)
+                {
+                    similar.RightOption = similar.RightOption.IsNotEmpty()
+                        ? similar.RightOption.Trim("Cevap", ".", ":", ")", "-").ToUpper()[..1]
+                        : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
+
+                    if (!_answersOptions.Contains(similar.RightOption, StringComparer.OrdinalIgnoreCase))
+                        throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
+                }
+
+                similar.SimilarQuestionText = similar.SimilarQuestionText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
+                similar.AnswerText = similar.AnswerText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
+
+                if (InfrastructureDelegates.UpdateSimilarAnswer != null)
+                    await InfrastructureDelegates.UpdateSimilarAnswer.Invoke(similar, new(model.Id, QuestionStatus.Answered, model.UserId, baseUrl));
             }
-
-            similar.SimilarQuestionText = similar.SimilarQuestionText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
-            similar.AnswerText = similar.AnswerText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
-
-            if (InfrastructureDelegates.UpdateSimilarAnswer != null)
-                await InfrastructureDelegates.UpdateSimilarAnswer.Invoke(similar, new(model.Id, QuestionStatus.Answered, model.UserId));
+            else
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                throw new ExternalApiException(content.Trim("{", "}"));
+            }
         }
         catch (Exception ex)
         {
-            if (InfrastructureDelegates.UpdateSimilarAnswer != null)
-                await InfrastructureDelegates.UpdateSimilarAnswer.Invoke(similar, new(model.Id, QuestionStatus.Error, model.UserId));
-            loggerServiceBase.Error($"GetSimilar {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            var status = GetErrorQuestionStatus(ex);
+            await InfrastructureDelegates.UpdateSimilarAnswer?.Invoke(similar, new(model.Id, status, model.UserId, baseUrl, ex.Message));
+            LogError(loggerServiceBase, ex, model.UserId);
         }
         return similar;
     }
 
+    [Obsolete(message: "Currently Not Available")]
     public async Task<SimilarTextResponseModel> GetSimilarText(QuestionApiModel model)
     {
         var baseUrl = BaseUrl(model.UserId);
@@ -305,13 +352,13 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         try
         {
             using var client = httpClientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
+            client.Timeout = TimeSpan.FromSeconds(_apiTimeoutSecond);
 
             var available = await ModelAvailable(baseUrl, client);
 
             if (!available)
             {
-                await InfrastructureDelegates.UpdateSimilarText.Invoke(new(), new UpdateQuestionDto(model.Id, QuestionStatus.SendAgain, model.UserId));
+                await InfrastructureDelegates.UpdateSimilarText.Invoke(new(), new UpdateQuestionDto(model.Id, QuestionStatus.SendAgain, model.UserId, baseUrl));
                 return similar;
             }
 
@@ -351,19 +398,21 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
             similar.AnswerText = similar.AnswerText.Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
 
             if (InfrastructureDelegates.UpdateSimilarText != null)
-                await InfrastructureDelegates.UpdateSimilarText.Invoke(similar, new(model.Id, QuestionStatus.Answered, model.UserId));
+                await InfrastructureDelegates.UpdateSimilarText.Invoke(similar, new(model.Id, QuestionStatus.Answered, model.UserId, baseUrl));
         }
         catch (Exception ex)
         {
             if (InfrastructureDelegates.UpdateSimilarText != null)
-                await InfrastructureDelegates.UpdateSimilarText.Invoke(similar, new(model.Id, QuestionStatus.Error, model.UserId));
-            loggerServiceBase.Error($"GetSimilarText {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+                await InfrastructureDelegates.UpdateSimilarText.Invoke(similar, new(model.Id, QuestionStatus.Error, model.UserId, baseUrl));
+            LogError(loggerServiceBase, ex, model.UserId);
         }
         return similar;
     }
-    #endregion
+
+    #endregion Similar
 
     #region Quiz
+
     public async Task<QuizResponseModel> GetQuizQuestions(QuizApiModel model)
     {
         var baseUrl = BaseUrl(model.UserId);
@@ -375,7 +424,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         try
         {
             using var client = httpClientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
+            client.Timeout = TimeSpan.FromSeconds(_apiTimeoutSecond);
 
             var available = await ModelAvailable(baseUrl, client);
 
@@ -409,7 +458,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         }
         catch (Exception ex)
         {
-            loggerServiceBase.Error($"GetQuizQuestions {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            LogError(loggerServiceBase, ex, model.UserId);
         }
 
         return similars;
@@ -426,7 +475,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         try
         {
             using var client = httpClientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
+            client.Timeout = TimeSpan.FromSeconds(_apiTimeoutSecond);
 
             var message = string.Empty;
             for (int i = 0; i < model.QuestionImages.Count; i++)
@@ -501,12 +550,13 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         }
         catch (Exception ex)
         {
-            loggerServiceBase.Error($"GetSimilarForQuiz {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            LogError(loggerServiceBase, ex, model.UserId);
         }
 
         return similars;
     }
 
+    [Obsolete(message: "Currently Not Available")]
     public async Task<QuizTextResponseModel> GetSimilarTextForQuiz(QuizApiModel model)
     {
         var baseUrl = BaseUrl(model.UserId);
@@ -519,7 +569,7 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         try
         {
             using var client = httpClientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromMinutes(_apiTimeoutMinute);
+            client.Timeout = TimeSpan.FromSeconds(_apiTimeoutSecond);
 
             for (int i = 0; i < model.QuestionTexts.Count; i++)
             {
@@ -596,12 +646,11 @@ public class SedussApi(IHttpClientFactory httpClientFactory, LoggerServiceBase l
         }
         catch (Exception ex)
         {
-            loggerServiceBase.Error($"GetSimilarTextForQuiz {model.UserId}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+            LogError(loggerServiceBase, ex, model.UserId);
         }
 
         return similars;
     }
-    #endregion
 
-
+    #endregion Quiz
 }
