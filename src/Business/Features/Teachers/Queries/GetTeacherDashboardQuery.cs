@@ -12,6 +12,7 @@ public class GetTeacherDashboardQuery : IRequest<GetTeacherDashboardModel>, ISec
     public byte Id { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Teacher];
+    public bool AllowByPass => false;
 }
 
 public class GetTeacherDashboardQueryHandler(ITeacherDal teacherDal,

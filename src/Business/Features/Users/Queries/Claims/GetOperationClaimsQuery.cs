@@ -8,6 +8,7 @@ namespace Business.Features.Users.Queries.Claims;
 public class GetOperationClaimsQuery : IRequest<List<GetOperationClaimListModel>>, ISecuredRequest<UserTypes>
 {
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class GetOperationClaimsQueryHandler(IMapper mapper, IOperationClaimDal operationClaimDal)

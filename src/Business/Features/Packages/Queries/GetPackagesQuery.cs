@@ -9,6 +9,7 @@ public class GetPackagesQuery : IRequest<PageableModel<GetPackageModel>>, ISecur
     public required PageRequest PageRequest { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class GetPackagesQueryHandler(IMapper mapper,

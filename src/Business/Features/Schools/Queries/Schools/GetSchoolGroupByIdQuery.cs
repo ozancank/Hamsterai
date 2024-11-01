@@ -8,6 +8,7 @@ namespace Business.Features.Schools.Queries.Schools;
 public class GetPackageSchoolsQuery : IRequest<List<GetPackageModel>>, ISecuredRequest<UserTypes>
 {
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class GetPackageSchoolsQueryHandler(IMapper mapper,

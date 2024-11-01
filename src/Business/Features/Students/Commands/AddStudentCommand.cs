@@ -16,6 +16,7 @@ public class AddStudentCommand : IRequest<GetStudentModel>, ISecuredRequest<User
 {
     public required AddStudentModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.School];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

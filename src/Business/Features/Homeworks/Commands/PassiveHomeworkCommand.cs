@@ -11,6 +11,7 @@ public class PassiveHomeworkCommand : IRequest<bool>, ISecuredRequest<UserTypes>
     public required string HomeworkId { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Teacher];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

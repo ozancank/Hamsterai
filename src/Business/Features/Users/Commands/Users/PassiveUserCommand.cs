@@ -12,6 +12,7 @@ public class PassiveUserCommand : IRequest<bool>, ISecuredRequest<UserTypes>, IL
     public long Id { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

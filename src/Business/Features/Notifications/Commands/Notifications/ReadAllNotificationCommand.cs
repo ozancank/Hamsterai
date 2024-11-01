@@ -8,6 +8,7 @@ namespace Business.Features.Notifications.Commands.Notifications;
 public class ReadAllNotificationCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

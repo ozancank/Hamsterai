@@ -12,6 +12,7 @@ public class AddDeviceTokenCommand : IRequest<DeviceTokenModel>, ISecuredRequest
     public required DeviceTokenModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

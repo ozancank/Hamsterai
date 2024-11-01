@@ -12,6 +12,7 @@ public class GetSchoolByTaxNumberQuery : IRequest<GetSchoolModel>, ISecuredReque
     public bool Tracking { get; set; } = false;
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
 }
 
 public class GetSchoolByTaxNumberQueryHandler(IMapper mapper,

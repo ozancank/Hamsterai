@@ -11,6 +11,7 @@ public class ActivePackageCommand : IRequest<bool>, ISecuredRequest<UserTypes>, 
     public byte Id { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

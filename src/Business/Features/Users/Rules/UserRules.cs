@@ -19,7 +19,7 @@ public class UserRules(IUserDal userDal,
     internal static Task UserShouldExistsAndActive(User? user)
     {
         UserShouldExists(user);
-        if (!user.IsActive) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.User);
+        if (!user!.IsActive) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.User);
         return Task.CompletedTask;
     }
 
@@ -32,7 +32,7 @@ public class UserRules(IUserDal userDal,
     internal static Task UserShouldExistsAndActive(GetUserModel? user)
     {
         UserShouldExists(user);
-        if (!user.IsActive) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.User);
+        if (!user!.IsActive) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.User);
         return Task.CompletedTask;
     }
 

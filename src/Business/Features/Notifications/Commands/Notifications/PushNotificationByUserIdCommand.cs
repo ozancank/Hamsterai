@@ -12,6 +12,7 @@ public class PushNotificationByUserIdCommand : IRequest<bool>, ISecuredRequest<U
     public long UserId { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

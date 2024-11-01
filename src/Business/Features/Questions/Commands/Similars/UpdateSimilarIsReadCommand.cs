@@ -10,6 +10,7 @@ public class UpdateSimilarIsReadCommand : IRequest<bool>, ISecuredRequest<UserTy
     public Guid Id { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class UpdateSimilarIsReadCommandHandler(ISimilarDal similarDal,

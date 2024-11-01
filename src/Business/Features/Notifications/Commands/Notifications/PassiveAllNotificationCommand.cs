@@ -9,6 +9,7 @@ namespace Business.Features.Notifications.Commands.Notifications;
 public class PassiveAllNotificationCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

@@ -16,10 +16,12 @@ public class NotificationDeviceToken : IEntity
     public NotificationDeviceToken()
     { }
 
-    public NotificationDeviceToken(Guid id, bool isActive, long createUser, DateTime createDate) : this()
+    public NotificationDeviceToken(Guid id, DateTime createDate, bool isActive, long userId, string deviceToken) : this()
     {
         Id = id;
-        IsActive = isActive;
         CreateDate = createDate;
+        IsActive = isActive;
+        UserId = userId;
+        DeviceToken = deviceToken;
     }
 }

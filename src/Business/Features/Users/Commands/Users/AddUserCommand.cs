@@ -15,6 +15,7 @@ public class AddUserCommand : IRequest<GetUserModel>, ISecuredRequest<UserTypes>
 {
     public required AddUserModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = ["AddUserModel.Password", "AddUserModel.ProfilePictureBase64"];
 }
 
@@ -64,7 +65,8 @@ public class AddUserCommandHandler(IMapper mapper,
             ConnectionId = request.Model.ConnectionId,
             SchoolId = request.Model.SchoolId,
             //GroupId = request.Model.PackageId,
-            QuestionCount = request.Model.QuestionCount
+            PackageCredit = request.Model.PackageCredit,
+            AddtionalCredit = request.Model.AddtionalCredit,
         };
 
         await userDal.AddAsync(user, cancellationToken: cancellationToken);

@@ -16,6 +16,7 @@ public class AddSchoolCommand : IRequest<GetSchoolModel>, ISecuredRequest<UserTy
 {
     public required AddSchoolModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

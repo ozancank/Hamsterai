@@ -12,6 +12,7 @@ public class AddPackageCommand : IRequest<GetPackageModel>, ISecuredRequest<User
 {
     public required AddPackageModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

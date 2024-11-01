@@ -11,6 +11,7 @@ public class ActiveSimilarCommand : IRequest<bool>, ISecuredRequest<UserTypes>, 
     public Guid QuestionId { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

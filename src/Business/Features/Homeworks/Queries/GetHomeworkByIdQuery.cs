@@ -13,6 +13,7 @@ public class GetHomeworkByIdQuery : IRequest<GetHomeworkModel>, ISecuredRequest<
     public bool Tracking { get; set; } = false;
 
     public UserTypes[] Roles { get; } = [UserTypes.Teacher];
+    public bool AllowByPass => false;
 }
 
 public class GetHomeworkByIdHandler(IMapper mapper,

@@ -12,6 +12,7 @@ public class UpdateHomeworkAnswerCommand : IRequest<bool>, ISecuredRequest<UserT
     public required HomeworkAnswerRequestModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Student];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = ["Model.AnswerPictureBase64"];
 }
 

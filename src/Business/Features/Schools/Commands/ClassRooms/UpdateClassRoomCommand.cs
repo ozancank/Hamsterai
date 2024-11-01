@@ -12,6 +12,7 @@ public class UpdateClassRoomCommand : IRequest<GetClassRoomModel>, ISecuredReque
 {
     public required UpdateClassRoomModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.School];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

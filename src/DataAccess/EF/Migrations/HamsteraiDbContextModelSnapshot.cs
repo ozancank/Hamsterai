@@ -47,11 +47,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("CreateUser")
                         .HasColumnOrder(2);
 
-                    b.Property<byte?>("GroupId")
-                        .HasColumnType("smallint")
-                        .HasColumnName("GroupId")
-                        .HasColumnOrder(9);
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("IsActive")
@@ -61,6 +56,11 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("smallint")
                         .HasColumnName("No")
                         .HasColumnOrder(6);
+
+                    b.Property<byte?>("PackageId")
+                        .HasColumnType("smallint")
+                        .HasColumnName("PackageId")
+                        .HasColumnOrder(9);
 
                     b.Property<int>("SchoolId")
                         .HasColumnType("integer")
@@ -79,7 +79,7 @@ namespace DataAccess.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupId");
+                    b.HasIndex("PackageId");
 
                     b.HasIndex("SchoolId");
 
@@ -96,9 +96,9 @@ namespace DataAccess.EF.Migrations
                             Branch = "A",
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)1,
                             IsActive = true,
                             No = (short)1,
+                            PackageId = (byte)1,
                             SchoolId = 1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -109,9 +109,9 @@ namespace DataAccess.EF.Migrations
                             Branch = "B",
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)1,
                             IsActive = true,
                             No = (short)1,
+                            PackageId = (byte)1,
                             SchoolId = 1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -122,9 +122,9 @@ namespace DataAccess.EF.Migrations
                             Branch = "C",
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
-                            GroupId = (byte)1,
                             IsActive = true,
                             No = (short)1,
+                            PackageId = (byte)1,
                             SchoolId = 1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -248,6 +248,20 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("Id")
                         .HasColumnOrder(0);
 
+                    b.Property<int>("AddtionalCredit")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("AddtionalCredit")
+                        .HasColumnOrder(17);
+
+                    b.Property<bool>("AutomaticPayment")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("AutomaticPayment")
+                        .HasColumnOrder(18);
+
                     b.Property<int?>("ConnectionId")
                         .HasColumnType("integer")
                         .HasColumnName("ConnectionId")
@@ -265,11 +279,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("Email")
                         .HasColumnOrder(11);
 
-                    b.Property<byte?>("GroupId")
-                        .HasColumnType("smallint")
-                        .HasColumnName("GroupId")
-                        .HasColumnOrder(15);
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("IsActive")
@@ -286,6 +295,13 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("citext")
                         .HasColumnName("Name")
                         .HasColumnOrder(7);
+
+                    b.Property<int>("PackageCredit")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("PackageCredit")
+                        .HasColumnOrder(16);
 
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
@@ -310,13 +326,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("citext")
                         .HasColumnName("ProfileUrl")
                         .HasColumnOrder(10);
-
-                    b.Property<int>("QuestionCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("QuestionCount")
-                        .HasColumnOrder(16);
 
                     b.Property<int?>("SchoolId")
                         .HasColumnType("integer")
@@ -348,8 +357,6 @@ namespace DataAccess.EF.Migrations
                         .IsUnique()
                         .HasDatabaseName("UK_Users_Email");
 
-                    b.HasIndex("GroupId");
-
                     b.HasIndex("Phone")
                         .IsUnique()
                         .HasDatabaseName("UK_Users_Phone");
@@ -366,16 +373,17 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 1L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "root@mail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Root",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 169, 145, 33, 161, 147, 58, 15, 169, 19, 31, 236, 3, 128, 147, 151, 45, 188, 253, 68, 70, 153, 152, 73, 88, 253, 225, 151, 194, 216, 163, 110, 253, 172, 109, 2, 180, 132, 19, 48, 181, 217, 89, 227, 138, 159, 251, 96, 176, 113, 54, 11, 219, 157, 136, 251, 120, 124, 56, 153, 29, 36, 35, 129, 141 },
                             PasswordSalt = new byte[] { 22, 25, 49, 68, 114, 216, 25, 253, 239, 196, 230, 130, 40, 214, 153, 94, 28, 188, 154, 225, 50, 31, 161, 21, 4, 230, 179, 118, 232, 155, 171, 114, 197, 6, 252, 53, 35, 172, 165, 92, 20, 162, 101, 242, 248, 163, 238, 160, 154, 196, 49, 79, 75, 39, 86, 23, 235, 103, 53, 30, 125, 117, 85, 109, 131, 66, 2, 219, 134, 223, 230, 64, 180, 36, 225, 254, 237, 167, 255, 137, 54, 86, 113, 27, 104, 47, 172, 200, 53, 23, 217, 143, 228, 57, 211, 92, 242, 99, 140, 90, 93, 1, 134, 181, 53, 38, 226, 125, 45, 80, 44, 8, 43, 67, 20, 84, 161, 155, 150, 7, 31, 182, 239, 204, 76, 162, 82, 81 },
                             Phone = "5000000001",
-                            QuestionCount = 0,
                             Surname = "Kullanıcı",
                             Type = (byte)1,
                             UserName = "root"
@@ -383,16 +391,17 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 2L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@mail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Admin",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
                             PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
                             Phone = "5000000002",
-                            QuestionCount = 0,
                             Surname = "Kullanıcı",
                             Type = (byte)1,
                             UserName = "Admin"
@@ -400,16 +409,17 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 3L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "okul@mail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Okul",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
                             PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
                             Phone = "5000000003",
-                            QuestionCount = 0,
                             SchoolId = 1,
                             Surname = "Kullanıcı",
                             Type = (byte)2,
@@ -418,17 +428,18 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 4L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             ConnectionId = 1,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "hoca1@mail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğretmen 1",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
                             PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
                             Phone = "5000000004",
-                            QuestionCount = 0,
                             SchoolId = 1,
                             Surname = "Kullanıcı",
                             Type = (byte)3,
@@ -437,17 +448,18 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 5L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             ConnectionId = 2,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "hoca2@mail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğretmen 2",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
                             PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
                             Phone = "5000000005",
-                            QuestionCount = 0,
                             SchoolId = 1,
                             Surname = "Kullanıcı",
                             Type = (byte)3,
@@ -456,17 +468,18 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 6L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             ConnectionId = 1,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ogrenci1@mail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğrenci 1",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
                             PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
                             Phone = "5000000006",
-                            QuestionCount = 0,
                             SchoolId = 1,
                             Surname = "Kullanıcı",
                             Type = (byte)4,
@@ -475,17 +488,18 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 7L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             ConnectionId = 2,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ogrenci2@mail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğrenci 2",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
                             PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
                             Phone = "5000000007",
-                            QuestionCount = 0,
                             SchoolId = 1,
                             Surname = "Kullanıcı",
                             Type = (byte)4,
@@ -494,17 +508,18 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 8L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             ConnectionId = 3,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ogrenci3@mail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğrenci 3",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
                             PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
                             Phone = "5000000008",
-                            QuestionCount = 0,
                             SchoolId = 1,
                             Surname = "Kullanıcı",
                             Type = (byte)4,
@@ -513,17 +528,18 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 9L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             ConnectionId = 4,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ogrenci4@mail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğrenci 4",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
                             PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
                             Phone = "5000000009",
-                            QuestionCount = 0,
                             SchoolId = 1,
                             Surname = "Kullanıcı",
                             Type = (byte)4,
@@ -532,17 +548,18 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 10L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             ConnectionId = 5,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ogrenci5@mail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğrenci 5",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
                             PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
                             Phone = "5000000010",
-                            QuestionCount = 0,
                             SchoolId = 1,
                             Surname = "Kullanıcı",
                             Type = (byte)4,
@@ -551,17 +568,18 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 11L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             ConnectionId = 6,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ogrenci6@mail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Öğrenci 6",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
                             PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
                             Phone = "5000000011",
-                            QuestionCount = 0,
                             SchoolId = 1,
                             Surname = "Kullanıcı",
                             Type = (byte)4,
@@ -570,17 +588,18 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 12L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             ConnectionId = 7,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ozancank@gmail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Ozan Can",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
                             PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
                             Phone = "5069151010",
-                            QuestionCount = 0,
                             SchoolId = 1,
                             Surname = "Kösemez",
                             Type = (byte)4,
@@ -589,17 +608,18 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 13L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             ConnectionId = 8,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "942alicankesen@gmail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Alican",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
                             PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
                             Phone = "5313914388",
-                            QuestionCount = 0,
                             SchoolId = 1,
                             Surname = "Kesen",
                             Type = (byte)4,
@@ -608,17 +628,18 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 14L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             ConnectionId = 9,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "balcan1905@gmail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Eyüp",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 91, 194, 62, 143, 170, 150, 7, 228, 50, 239, 166, 107, 207, 24, 2, 7, 203, 74, 96, 38, 172, 98, 246, 47, 95, 139, 182, 129, 194, 123, 154, 92, 176, 160, 43, 225, 40, 197, 64, 221, 241, 92, 215, 64, 33, 0, 43, 23, 69, 19, 45, 253, 198, 229, 249, 127, 17, 216, 37, 153, 50, 186, 168, 162 },
                             PasswordSalt = new byte[] { 110, 138, 57, 138, 8, 214, 100, 204, 96, 244, 112, 122, 216, 29, 143, 233, 207, 44, 246, 94, 145, 242, 43, 105, 129, 206, 65, 48, 233, 219, 35, 237, 138, 38, 46, 252, 49, 89, 130, 30, 31, 164, 44, 32, 185, 212, 83, 225, 98, 112, 163, 142, 69, 255, 194, 130, 80, 230, 18, 42, 105, 158, 161, 163, 212, 99, 63, 48, 166, 190, 0, 193, 209, 227, 88, 214, 227, 127, 237, 209, 34, 245, 113, 202, 224, 237, 193, 49, 143, 88, 2, 63, 145, 186, 148, 230, 187, 10, 74, 170, 207, 173, 100, 18, 117, 202, 224, 138, 24, 82, 148, 101, 188, 135, 109, 153, 7, 7, 30, 140, 252, 99, 195, 195, 20, 24, 253, 151 },
                             Phone = "5550593005",
-                            QuestionCount = 0,
                             SchoolId = 1,
                             Surname = "Balcan",
                             Type = (byte)4,
@@ -627,16 +648,17 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 15L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             CreateDate = new DateTime(2024, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "kazimyildirimeng@gmail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Kazım",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 186, 31, 96, 48, 95, 78, 158, 166, 85, 180, 187, 134, 246, 224, 115, 214, 111, 80, 51, 192, 138, 129, 200, 8, 1, 31, 183, 138, 110, 232, 23, 68, 117, 97, 147, 141, 33, 52, 101, 79, 162, 46, 153, 107, 207, 73, 111, 234, 192, 119, 232, 192, 21, 66, 179, 216, 87, 72, 216, 181, 95, 59, 109, 162 },
                             PasswordSalt = new byte[] { 174, 222, 90, 210, 27, 13, 26, 160, 176, 57, 91, 39, 224, 32, 135, 218, 59, 222, 74, 61, 12, 41, 215, 48, 59, 181, 35, 162, 42, 142, 223, 232, 224, 172, 216, 100, 255, 252, 82, 87, 138, 99, 90, 181, 169, 189, 219, 44, 46, 161, 190, 185, 145, 56, 27, 69, 79, 138, 117, 62, 193, 77, 101, 124, 35, 4, 133, 97, 27, 239, 210, 160, 152, 223, 205, 92, 141, 5, 252, 162, 186, 38, 248, 210, 252, 119, 53, 66, 33, 157, 253, 74, 164, 131, 117, 233, 172, 99, 167, 200, 54, 59, 162, 8, 126, 247, 95, 97, 143, 181, 226, 132, 117, 168, 71, 54, 38, 229, 15, 196, 150, 93, 138, 167, 89, 254, 27, 124 },
                             Phone = "5413695228",
-                            QuestionCount = 0,
                             Surname = "Yıldırım",
                             Type = (byte)1,
                             UserName = "kazim"
@@ -644,16 +666,17 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 18L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             CreateDate = new DateTime(2024, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "kazimyildirimeng1@gmail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Kazım",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 186, 31, 96, 48, 95, 78, 158, 166, 85, 180, 187, 134, 246, 224, 115, 214, 111, 80, 51, 192, 138, 129, 200, 8, 1, 31, 183, 138, 110, 232, 23, 68, 117, 97, 147, 141, 33, 52, 101, 79, 162, 46, 153, 107, 207, 73, 111, 234, 192, 119, 232, 192, 21, 66, 179, 216, 87, 72, 216, 181, 95, 59, 109, 162 },
                             PasswordSalt = new byte[] { 174, 222, 90, 210, 27, 13, 26, 160, 176, 57, 91, 39, 224, 32, 135, 218, 59, 222, 74, 61, 12, 41, 215, 48, 59, 181, 35, 162, 42, 142, 223, 232, 224, 172, 216, 100, 255, 252, 82, 87, 138, 99, 90, 181, 169, 189, 219, 44, 46, 161, 190, 185, 145, 56, 27, 69, 79, 138, 117, 62, 193, 77, 101, 124, 35, 4, 133, 97, 27, 239, 210, 160, 152, 223, 205, 92, 141, 5, 252, 162, 186, 38, 248, 210, 252, 119, 53, 66, 33, 157, 253, 74, 164, 131, 117, 233, 172, 99, 167, 200, 54, 59, 162, 8, 126, 247, 95, 97, 143, 181, 226, 132, 117, 168, 71, 54, 38, 229, 15, 196, 150, 93, 138, 167, 89, 254, 27, 124 },
                             Phone = "54136952281",
-                            QuestionCount = 0,
                             Surname = "Yıldırım",
                             Type = (byte)1,
                             UserName = "kazim1"
@@ -661,16 +684,17 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 19L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             CreateDate = new DateTime(2024, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "kazimyildirimeng2@gmail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Kazım",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 186, 31, 96, 48, 95, 78, 158, 166, 85, 180, 187, 134, 246, 224, 115, 214, 111, 80, 51, 192, 138, 129, 200, 8, 1, 31, 183, 138, 110, 232, 23, 68, 117, 97, 147, 141, 33, 52, 101, 79, 162, 46, 153, 107, 207, 73, 111, 234, 192, 119, 232, 192, 21, 66, 179, 216, 87, 72, 216, 181, 95, 59, 109, 162 },
                             PasswordSalt = new byte[] { 174, 222, 90, 210, 27, 13, 26, 160, 176, 57, 91, 39, 224, 32, 135, 218, 59, 222, 74, 61, 12, 41, 215, 48, 59, 181, 35, 162, 42, 142, 223, 232, 224, 172, 216, 100, 255, 252, 82, 87, 138, 99, 90, 181, 169, 189, 219, 44, 46, 161, 190, 185, 145, 56, 27, 69, 79, 138, 117, 62, 193, 77, 101, 124, 35, 4, 133, 97, 27, 239, 210, 160, 152, 223, 205, 92, 141, 5, 252, 162, 186, 38, 248, 210, 252, 119, 53, 66, 33, 157, 253, 74, 164, 131, 117, 233, 172, 99, 167, 200, 54, 59, 162, 8, 126, 247, 95, 97, 143, 181, 226, 132, 117, 168, 71, 54, 38, 229, 15, 196, 150, 93, 138, 167, 89, 254, 27, 124 },
                             Phone = "54136952282",
-                            QuestionCount = 0,
                             Surname = "Yıldırım",
                             Type = (byte)1,
                             UserName = "kazim2"
@@ -678,16 +702,17 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 20L,
+                            AddtionalCredit = 0,
+                            AutomaticPayment = false,
                             CreateDate = new DateTime(2024, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "kazimyildirimeng3@gmail.com",
-                            GroupId = (byte)5,
                             IsActive = true,
                             MustPasswordChange = false,
                             Name = "Kazım",
+                            PackageCredit = 0,
                             PasswordHash = new byte[] { 186, 31, 96, 48, 95, 78, 158, 166, 85, 180, 187, 134, 246, 224, 115, 214, 111, 80, 51, 192, 138, 129, 200, 8, 1, 31, 183, 138, 110, 232, 23, 68, 117, 97, 147, 141, 33, 52, 101, 79, 162, 46, 153, 107, 207, 73, 111, 234, 192, 119, 232, 192, 21, 66, 179, 216, 87, 72, 216, 181, 95, 59, 109, 162 },
                             PasswordSalt = new byte[] { 174, 222, 90, 210, 27, 13, 26, 160, 176, 57, 91, 39, 224, 32, 135, 218, 59, 222, 74, 61, 12, 41, 215, 48, 59, 181, 35, 162, 42, 142, 223, 232, 224, 172, 216, 100, 255, 252, 82, 87, 138, 99, 90, 181, 169, 189, 219, 44, 46, 161, 190, 185, 145, 56, 27, 69, 79, 138, 117, 62, 193, 77, 101, 124, 35, 4, 133, 97, 27, 239, 210, 160, 152, 223, 205, 92, 141, 5, 252, 162, 186, 38, 248, 210, 252, 119, 53, 66, 33, 157, 253, 74, 164, 131, 117, 233, 172, 99, 167, 200, 54, 59, 162, 8, 126, 247, 95, 97, 143, 181, 226, 132, 117, 168, 71, 54, 38, 229, 15, 196, 150, 93, 138, 167, 89, 254, 27, 124 },
                             Phone = "54136952283",
-                            QuestionCount = 0,
                             Surname = "Yıldırım",
                             Type = (byte)1,
                             UserName = "kazim3"
@@ -781,153 +806,6 @@ namespace DataAccess.EF.Migrations
                         .HasDatabaseName("IX_Gains_1");
 
                     b.ToTable("Gains", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.Group", b =>
-                {
-                    b.Property<byte>("Id")
-                        .HasColumnType("smallint")
-                        .HasColumnName("Id")
-                        .HasColumnOrder(0);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreateDate")
-                        .HasColumnOrder(3);
-
-                    b.Property<long>("CreateUser")
-                        .HasColumnType("bigint")
-                        .HasColumnName("CreateUser")
-                        .HasColumnOrder(2);
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("IsActive")
-                        .HasColumnOrder(1);
-
-                    b.Property<bool>("IsWebVisible")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsWebVisible")
-                        .HasColumnOrder(8);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("citext")
-                        .HasColumnName("Name")
-                        .HasColumnOrder(6);
-
-                    b.Property<byte>("SortNo")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((byte)0)
-                        .HasColumnName("SortNo")
-                        .HasColumnOrder(7);
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("UpdateDate")
-                        .HasColumnOrder(5);
-
-                    b.Property<long>("UpdateUser")
-                        .HasColumnType("bigint")
-                        .HasColumnName("UpdateUser")
-                        .HasColumnOrder(4);
-
-                    b.HasKey("Id");
-
-                    b.HasAlternateKey("Name")
-                        .HasName("UK_Groups_Name");
-
-                    b.ToTable("Groups", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = (byte)1,
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 1L,
-                            IsActive = true,
-                            IsWebVisible = false,
-                            Name = "Sözel",
-                            SortNo = (byte)0,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 1L
-                        },
-                        new
-                        {
-                            Id = (byte)2,
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 1L,
-                            IsActive = true,
-                            IsWebVisible = false,
-                            Name = "Sayısal",
-                            SortNo = (byte)0,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 1L
-                        },
-                        new
-                        {
-                            Id = (byte)3,
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 1L,
-                            IsActive = true,
-                            IsWebVisible = false,
-                            Name = "Eşit Ağırlık",
-                            SortNo = (byte)0,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 1L
-                        },
-                        new
-                        {
-                            Id = (byte)4,
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 1L,
-                            IsActive = true,
-                            IsWebVisible = false,
-                            Name = "Yabancı Dil",
-                            SortNo = (byte)0,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 1L
-                        },
-                        new
-                        {
-                            Id = (byte)5,
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 1L,
-                            IsActive = true,
-                            IsWebVisible = false,
-                            Name = "Hepsi",
-                            SortNo = (byte)0,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 1L
-                        },
-                        new
-                        {
-                            Id = (byte)6,
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 1L,
-                            IsActive = true,
-                            IsWebVisible = false,
-                            Name = "Orta Okul",
-                            SortNo = (byte)0,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 1L
-                        },
-                        new
-                        {
-                            Id = (byte)7,
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 1L,
-                            IsActive = true,
-                            IsWebVisible = false,
-                            Name = "Lise",
-                            SortNo = (byte)0,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 1L
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Homework", b =>
@@ -1251,193 +1129,6 @@ namespace DataAccess.EF.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Entities.LessonGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("Id")
-                        .HasColumnOrder(0);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreateDate")
-                        .HasColumnOrder(3);
-
-                    b.Property<long>("CreateUser")
-                        .HasColumnType("bigint")
-                        .HasColumnName("CreateUser")
-                        .HasColumnOrder(2);
-
-                    b.Property<byte>("GroupId")
-                        .HasColumnType("smallint")
-                        .HasColumnName("GroupId")
-                        .HasColumnOrder(6);
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("IsActive")
-                        .HasColumnOrder(1);
-
-                    b.Property<byte>("LessonId")
-                        .HasColumnType("smallint")
-                        .HasColumnName("LessonId")
-                        .HasColumnOrder(7);
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("UpdateDate")
-                        .HasColumnOrder(5);
-
-                    b.Property<long>("UpdateUser")
-                        .HasColumnType("bigint")
-                        .HasColumnName("UpdateUser")
-                        .HasColumnOrder(4);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LessonId");
-
-                    b.HasIndex("GroupId", "LessonId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_LessonGroups_1");
-
-                    b.ToTable("LessonGroups", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec0"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            GroupId = (byte)1,
-                            IsActive = true,
-                            LessonId = (byte)1,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec1"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            GroupId = (byte)2,
-                            IsActive = true,
-                            LessonId = (byte)2,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec2"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            GroupId = (byte)1,
-                            IsActive = true,
-                            LessonId = (byte)3,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec3"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            GroupId = (byte)2,
-                            IsActive = true,
-                            LessonId = (byte)4,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec4"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            GroupId = (byte)2,
-                            IsActive = true,
-                            LessonId = (byte)5,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec5"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            GroupId = (byte)2,
-                            IsActive = true,
-                            LessonId = (byte)6,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec6"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            GroupId = (byte)2,
-                            IsActive = true,
-                            LessonId = (byte)7,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec7"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            GroupId = (byte)1,
-                            IsActive = true,
-                            LessonId = (byte)8,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec8"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            GroupId = (byte)1,
-                            IsActive = true,
-                            LessonId = (byte)9,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec9"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            GroupId = (byte)1,
-                            IsActive = true,
-                            LessonId = (byte)10,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedeca"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            GroupId = (byte)1,
-                            IsActive = true,
-                            LessonId = (byte)11,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedecb"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            GroupId = (byte)1,
-                            IsActive = true,
-                            LessonId = (byte)12,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        });
-                });
-
             modelBuilder.Entity("Domain.Entities.Notification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1551,6 +1242,761 @@ namespace DataAccess.EF.Migrations
                     b.ToTable("NotificationDeviceTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<double>("Amount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("Amount")
+                        .HasColumnOrder(13);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<double>("DiscountAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("DiscountAmount")
+                        .HasColumnOrder(10);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("OrderNo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("citext")
+                        .HasColumnName("OrderNo")
+                        .HasColumnOrder(7);
+
+                    b.Property<int>("QuestionCredit")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("QuestionCredit")
+                        .HasColumnOrder(8);
+
+                    b.Property<double>("SubTotal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("SubTotal")
+                        .HasColumnOrder(9);
+
+                    b.Property<double>("TaxAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("TaxAmount")
+                        .HasColumnOrder(12);
+
+                    b.Property<double>("TaxBase")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("TaxBase")
+                        .HasColumnOrder(11);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UserId")
+                        .HasColumnOrder(6);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.OrderDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<double>("Amount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("Amount")
+                        .HasColumnOrder(16);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<double>("DiscountAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("DiscountAmount")
+                        .HasColumnOrder(12);
+
+                    b.Property<double>("DiscountRatio")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("DiscountRatio")
+                        .HasColumnOrder(11);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer")
+                        .HasColumnName("OrderId")
+                        .HasColumnOrder(6);
+
+                    b.Property<byte>("PackageId")
+                        .HasColumnType("smallint")
+                        .HasColumnName("PackageId")
+                        .HasColumnOrder(7);
+
+                    b.Property<byte>("Quantity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("Quantity")
+                        .HasColumnOrder(9);
+
+                    b.Property<int>("QuestionCredit")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("QuestionCredit")
+                        .HasColumnOrder(8);
+
+                    b.Property<double>("TaxAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("TaxAmount")
+                        .HasColumnOrder(15);
+
+                    b.Property<double>("TaxBase")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("TaxBase")
+                        .HasColumnOrder(13);
+
+                    b.Property<double>("TaxRatio")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("TaxRatio")
+                        .HasColumnOrder(14);
+
+                    b.Property<double>("UnitPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("UnitPrice")
+                        .HasColumnOrder(10);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("PackageId");
+
+                    b.ToTable("OrderDetails", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Package", b =>
+                {
+                    b.Property<byte>("Id")
+                        .HasColumnType("smallint")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<double>("Amount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("Amount")
+                        .HasColumnOrder(14);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("citext")
+                        .HasColumnName("Description")
+                        .HasColumnOrder(17);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<bool>("IsWebVisible")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsWebVisible")
+                        .HasColumnOrder(8);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("citext")
+                        .HasColumnName("Name")
+                        .HasColumnOrder(6);
+
+                    b.Property<double?>("OldAmount")
+                        .HasColumnType("double precision")
+                        .HasColumnName("OldAmount")
+                        .HasColumnOrder(15);
+
+                    b.Property<string>("PaymentRenewalPeriod")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("None")
+                        .HasColumnName("PaymentRenewalPeriod")
+                        .HasColumnOrder(16);
+
+                    b.Property<string>("PictureUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("citext")
+                        .HasColumnName("PictureUrl")
+                        .HasColumnOrder(18);
+
+                    b.Property<byte>("SortNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("SortNo")
+                        .HasColumnOrder(7);
+
+                    b.Property<double>("TaxAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("TaxAmount")
+                        .HasColumnOrder(12);
+
+                    b.Property<double?>("TaxOldAmount")
+                        .HasColumnType("double precision")
+                        .HasColumnName("TaxOldAmount")
+                        .HasColumnOrder(13);
+
+                    b.Property<double>("TaxRatio")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("TaxRatio")
+                        .HasColumnOrder(11);
+
+                    b.Property<double?>("UnitOldPrice")
+                        .HasColumnType("double precision")
+                        .HasColumnName("UnitOldPrice")
+                        .HasColumnOrder(10);
+
+                    b.Property<double>("UnitPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("UnitPrice")
+                        .HasColumnOrder(9);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name", "PaymentRenewalPeriod")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Packages_1");
+
+                    b.ToTable("Packages", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = (byte)1,
+                            Amount = 0.0,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            IsWebVisible = false,
+                            Name = "Sözel",
+                            PaymentRenewalPeriod = "None",
+                            SortNo = (byte)0,
+                            TaxAmount = 0.0,
+                            TaxRatio = 0.0,
+                            UnitPrice = 0.0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L
+                        },
+                        new
+                        {
+                            Id = (byte)2,
+                            Amount = 0.0,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            IsWebVisible = false,
+                            Name = "Sayısal",
+                            PaymentRenewalPeriod = "None",
+                            SortNo = (byte)0,
+                            TaxAmount = 0.0,
+                            TaxRatio = 0.0,
+                            UnitPrice = 0.0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L
+                        },
+                        new
+                        {
+                            Id = (byte)3,
+                            Amount = 0.0,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            IsWebVisible = false,
+                            Name = "Eşit Ağırlık",
+                            PaymentRenewalPeriod = "None",
+                            SortNo = (byte)0,
+                            TaxAmount = 0.0,
+                            TaxRatio = 0.0,
+                            UnitPrice = 0.0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L
+                        },
+                        new
+                        {
+                            Id = (byte)4,
+                            Amount = 0.0,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            IsWebVisible = false,
+                            Name = "Yabancı Dil",
+                            PaymentRenewalPeriod = "None",
+                            SortNo = (byte)0,
+                            TaxAmount = 0.0,
+                            TaxRatio = 0.0,
+                            UnitPrice = 0.0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L
+                        },
+                        new
+                        {
+                            Id = (byte)5,
+                            Amount = 0.0,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            IsWebVisible = false,
+                            Name = "Hepsi",
+                            PaymentRenewalPeriod = "None",
+                            SortNo = (byte)0,
+                            TaxAmount = 0.0,
+                            TaxRatio = 0.0,
+                            UnitPrice = 0.0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L
+                        },
+                        new
+                        {
+                            Id = (byte)6,
+                            Amount = 0.0,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            IsWebVisible = false,
+                            Name = "Orta Okul",
+                            PaymentRenewalPeriod = "None",
+                            SortNo = (byte)0,
+                            TaxAmount = 0.0,
+                            TaxRatio = 0.0,
+                            UnitPrice = 0.0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L
+                        },
+                        new
+                        {
+                            Id = (byte)7,
+                            Amount = 0.0,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            IsWebVisible = false,
+                            Name = "Lise",
+                            PaymentRenewalPeriod = "None",
+                            SortNo = (byte)0,
+                            TaxAmount = 0.0,
+                            TaxRatio = 0.0,
+                            UnitPrice = 0.0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Entities.PackageUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<byte>("PackageId")
+                        .HasColumnType("smallint")
+                        .HasColumnName("PackageId")
+                        .HasColumnOrder(6);
+
+                    b.Property<int>("RenewCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("RenewCount")
+                        .HasColumnOrder(8);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UserId")
+                        .HasColumnOrder(7);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("PackageId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_RPackageUsers_1");
+
+                    b.ToTable("PackageUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("95427f3c-1228-4a8a-baa8-84ee156dd46f"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 1L
+                        },
+                        new
+                        {
+                            Id = new Guid("e3d47f7d-baf9-43b1-9a44-ca636c3f0d9a"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("509514c9-b66e-4f10-8307-cac9eb2ed1b4"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 3L
+                        },
+                        new
+                        {
+                            Id = new Guid("9d48b435-6699-4abd-9a94-86d98ea4869d"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 4L
+                        },
+                        new
+                        {
+                            Id = new Guid("f8f18ff6-045b-4d50-83af-3819fe9e674a"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 5L
+                        },
+                        new
+                        {
+                            Id = new Guid("2762f9cc-a007-4f0d-96a3-67d7af0a3259"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 6L
+                        },
+                        new
+                        {
+                            Id = new Guid("cc964ed9-ad9c-4260-9062-0083021743f5"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 7L
+                        },
+                        new
+                        {
+                            Id = new Guid("74ea982a-ef8b-4048-8f0c-71e498b45876"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 8L
+                        },
+                        new
+                        {
+                            Id = new Guid("e492b61a-7503-45a4-9163-986cb048415c"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 9L
+                        },
+                        new
+                        {
+                            Id = new Guid("568081ad-b78c-448a-974b-cc4dfddc6f84"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 10L
+                        },
+                        new
+                        {
+                            Id = new Guid("8e2b978b-9672-41c6-a030-0a6b40fb69bf"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 11L
+                        },
+                        new
+                        {
+                            Id = new Guid("282a33b3-4871-450a-9364-ea4a09473663"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 12L
+                        },
+                        new
+                        {
+                            Id = new Guid("c92dd1f5-b3e9-4280-bd47-e56da8544ba7"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 13L
+                        },
+                        new
+                        {
+                            Id = new Guid("88fbf700-c46c-4cff-83fb-c4cde25add5d"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 14L
+                        },
+                        new
+                        {
+                            Id = new Guid("33f62067-25d2-429a-afe5-4ed9c4d4a0e0"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 15L
+                        },
+                        new
+                        {
+                            Id = new Guid("aaf09372-334e-4227-9272-9c1e85cdfbda"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 16L
+                        },
+                        new
+                        {
+                            Id = new Guid("bb64a9a1-60c3-4258-a23c-7fa5a34a7ffa"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 17L
+                        },
+                        new
+                        {
+                            Id = new Guid("aced1f4d-138a-4909-bae2-0e28eb30412f"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 18L
+                        },
+                        new
+                        {
+                            Id = new Guid("97d4d695-bcd4-4766-a388-dc3d8396689d"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 19L
+                        },
+                        new
+                        {
+                            Id = new Guid("ca0c28f0-354e-4e2d-a87c-5adbdb07076d"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            RenewCount = 0,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L,
+                            UserId = 20L
+                        });
+                });
+
             modelBuilder.Entity("Domain.Entities.PasswordToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1588,6 +2034,89 @@ namespace DataAccess.EF.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("PasswordTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<double>("Amount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0)
+                        .HasColumnName("Amount")
+                        .HasColumnOrder(7);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<DateTime>("PaymentDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValue(new DateTime(2024, 11, 1, 10, 41, 26, 89, DateTimeKind.Local).AddTicks(4306))
+                        .HasColumnName("PaymentDate")
+                        .HasColumnOrder(8);
+
+                    b.Property<byte>("PaymentReason")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("PaymentReason")
+                        .HasColumnOrder(9);
+
+                    b.Property<string>("ReasonId")
+                        .HasMaxLength(50)
+                        .HasColumnType("citext")
+                        .HasColumnName("ReasonId")
+                        .HasColumnOrder(10);
+
+                    b.Property<string>("SipayMerchantKey")
+                        .HasMaxLength(100)
+                        .HasColumnType("citext")
+                        .HasColumnName("SipayMerchantKey")
+                        .HasColumnOrder(11);
+
+                    b.Property<string>("SipayPlanCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("citext")
+                        .HasColumnName("SipayPlanCode")
+                        .HasColumnOrder(12);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UserId")
+                        .HasColumnOrder(6);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Question", b =>
@@ -1875,7 +2404,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("CreateUser")
                         .HasColumnOrder(2);
 
-                    b.Property<int>("GainId")
+                    b.Property<int?>("GainId")
                         .HasColumnType("integer")
                         .HasColumnName("GainId")
                         .HasColumnOrder(17);
@@ -1943,6 +2472,435 @@ namespace DataAccess.EF.Migrations
                     b.HasIndex("QuizId");
 
                     b.ToTable("QuizQuestions", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.RPackageLesson", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<byte>("LessonId")
+                        .HasColumnType("smallint")
+                        .HasColumnName("LessonId")
+                        .HasColumnOrder(7);
+
+                    b.Property<byte>("PackageId")
+                        .HasColumnType("smallint")
+                        .HasColumnName("PackageId")
+                        .HasColumnOrder(6);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonId");
+
+                    b.HasIndex("PackageId", "LessonId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_RPackageLesson_1");
+
+                    b.ToTable("RPackageLessons", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec0"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)1,
+                            PackageId = (byte)1,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec1"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)2,
+                            PackageId = (byte)2,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec2"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)3,
+                            PackageId = (byte)1,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec3"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)4,
+                            PackageId = (byte)2,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec4"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)5,
+                            PackageId = (byte)2,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec5"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)6,
+                            PackageId = (byte)2,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec6"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)7,
+                            PackageId = (byte)2,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec7"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)8,
+                            PackageId = (byte)1,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec8"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)9,
+                            PackageId = (byte)1,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec9"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)10,
+                            PackageId = (byte)1,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedeca"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)11,
+                            PackageId = (byte)1,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedecb"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)12,
+                            PackageId = (byte)1,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Entities.RPackageSchool", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<byte>("PackageId")
+                        .HasColumnType("smallint")
+                        .HasColumnName("PackageId")
+                        .HasColumnOrder(7);
+
+                    b.Property<int>("SchoolId")
+                        .HasColumnType("integer")
+                        .HasColumnName("SchoolId")
+                        .HasColumnOrder(6);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolId");
+
+                    b.HasIndex("PackageId", "SchoolId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_RPackageSchools_1");
+
+                    b.ToTable("RPackageSchools", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec0"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 1L,
+                            IsActive = true,
+                            PackageId = (byte)5,
+                            SchoolId = 1,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 1L
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Entities.RTeacherClassRoom", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<int>("ClassRoomId")
+                        .HasColumnType("integer")
+                        .HasColumnName("ClassRoomId")
+                        .HasColumnOrder(7);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("integer")
+                        .HasColumnName("TeacherId")
+                        .HasColumnOrder(6);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassRoomId");
+
+                    b.HasIndex("TeacherId", "ClassRoomId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_TeacherClassRooms_1");
+
+                    b.ToTable("RTeacherClassRooms", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec0"),
+                            ClassRoomId = 1,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            TeacherId = 1,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec1"),
+                            ClassRoomId = 2,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            TeacherId = 2,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec2"),
+                            ClassRoomId = 3,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            TeacherId = 1,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec3"),
+                            ClassRoomId = 3,
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            TeacherId = 2,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Entities.RTeacherLesson", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<byte>("LessonId")
+                        .HasColumnType("smallint")
+                        .HasColumnName("LessonId")
+                        .HasColumnOrder(7);
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("integer")
+                        .HasColumnName("TeacherId")
+                        .HasColumnOrder(6);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonId");
+
+                    b.HasIndex("TeacherId", "LessonId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_TeacherLessons_1");
+
+                    b.ToTable("RTeacherLessons", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec0"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)2,
+                            TeacherId = 1,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        },
+                        new
+                        {
+                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec1"),
+                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreateUser = 2L,
+                            IsActive = true,
+                            LessonId = (byte)1,
+                            TeacherId = 2,
+                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UpdateUser = 2L
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.School", b =>
@@ -2065,72 +3023,6 @@ namespace DataAccess.EF.Migrations
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L,
                             UserCount = 157
-                        });
-                });
-
-            modelBuilder.Entity("Domain.Entities.SchoolGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("Id")
-                        .HasColumnOrder(0);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreateDate")
-                        .HasColumnOrder(3);
-
-                    b.Property<long>("CreateUser")
-                        .HasColumnType("bigint")
-                        .HasColumnName("CreateUser")
-                        .HasColumnOrder(2);
-
-                    b.Property<byte>("GroupId")
-                        .HasColumnType("smallint")
-                        .HasColumnName("GroupId")
-                        .HasColumnOrder(7);
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("IsActive")
-                        .HasColumnOrder(1);
-
-                    b.Property<int>("SchoolId")
-                        .HasColumnType("integer")
-                        .HasColumnName("SchoolId")
-                        .HasColumnOrder(6);
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("UpdateDate")
-                        .HasColumnOrder(5);
-
-                    b.Property<long>("UpdateUser")
-                        .HasColumnType("bigint")
-                        .HasColumnName("UpdateUser")
-                        .HasColumnOrder(4);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SchoolId");
-
-                    b.HasIndex("GroupId", "SchoolId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_SchoolGroups_1");
-
-                    b.ToTable("SchoolGroups", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec0"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 1L,
-                            GroupId = (byte)5,
-                            IsActive = true,
-                            SchoolId = 1,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 1L
                         });
                 });
 
@@ -2362,12 +3254,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("Surname")
                         .HasColumnOrder(7);
 
-                    b.Property<string>("TcNo")
-                        .HasMaxLength(11)
-                        .HasColumnType("citext")
-                        .HasColumnName("TcNo")
-                        .HasColumnOrder(9);
-
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("UpdateDate")
@@ -2390,10 +3276,6 @@ namespace DataAccess.EF.Migrations
                         .IsUnique()
                         .HasDatabaseName("UK_Students_Phone");
 
-                    b.HasIndex("TcNo")
-                        .IsUnique()
-                        .HasDatabaseName("UK_Students_TcNo");
-
                     b.ToTable("Students", (string)null);
 
                     b.HasData(
@@ -2409,7 +3291,6 @@ namespace DataAccess.EF.Migrations
                             Phone = "5000000006",
                             StudentNo = "001",
                             Surname = "Kullanıcı",
-                            TcNo = "33333333333",
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2425,7 +3306,6 @@ namespace DataAccess.EF.Migrations
                             Phone = "5000000007",
                             StudentNo = "002",
                             Surname = "Kullanıcı",
-                            TcNo = "44444444444",
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2441,7 +3321,6 @@ namespace DataAccess.EF.Migrations
                             Phone = "5000000008",
                             StudentNo = "003",
                             Surname = "Kullanıcı",
-                            TcNo = "55555555555",
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2457,7 +3336,6 @@ namespace DataAccess.EF.Migrations
                             Phone = "5000000009",
                             StudentNo = "004",
                             Surname = "Kullanıcı",
-                            TcNo = "66666666666",
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2473,7 +3351,6 @@ namespace DataAccess.EF.Migrations
                             Phone = "5000000010",
                             StudentNo = "005",
                             Surname = "Kullanıcı",
-                            TcNo = "77777777777",
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2489,7 +3366,6 @@ namespace DataAccess.EF.Migrations
                             Phone = "5000000011",
                             StudentNo = "006",
                             Surname = "Kullanıcı",
-                            TcNo = "88888888888",
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2505,7 +3381,6 @@ namespace DataAccess.EF.Migrations
                             Phone = "5069151010",
                             StudentNo = "007",
                             Surname = "Kösemez",
-                            TcNo = "12312312399",
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2521,7 +3396,6 @@ namespace DataAccess.EF.Migrations
                             Phone = "5313914388",
                             StudentNo = "008",
                             Surname = "Kesen",
-                            TcNo = "12312312388",
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2537,7 +3411,6 @@ namespace DataAccess.EF.Migrations
                             Phone = "5550593005",
                             StudentNo = "009",
                             Surname = "Balcan",
-                            TcNo = "12312312377",
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         });
@@ -2608,12 +3481,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("Surname")
                         .HasColumnOrder(7);
 
-                    b.Property<string>("TcNo")
-                        .HasMaxLength(11)
-                        .HasColumnType("citext")
-                        .HasColumnName("TcNo")
-                        .HasColumnOrder(8);
-
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("UpdateDate")
@@ -2638,10 +3505,6 @@ namespace DataAccess.EF.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.HasIndex("TcNo")
-                        .IsUnique()
-                        .HasDatabaseName("UK_Teachers_TcNo");
-
                     b.ToTable("Teachers", (string)null);
 
                     b.HasData(
@@ -2657,7 +3520,6 @@ namespace DataAccess.EF.Migrations
                             Phone = "5000000004",
                             SchoolId = 1,
                             Surname = "Kullanıcı",
-                            TcNo = "11111111111",
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2673,183 +3535,6 @@ namespace DataAccess.EF.Migrations
                             Phone = "5000000005",
                             SchoolId = 1,
                             Surname = "Kullanıcı",
-                            TcNo = "22222222222",
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        });
-                });
-
-            modelBuilder.Entity("Domain.Entities.TeacherClassRoom", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("Id")
-                        .HasColumnOrder(0);
-
-                    b.Property<int>("ClassRoomId")
-                        .HasColumnType("integer")
-                        .HasColumnName("ClassRoomId")
-                        .HasColumnOrder(7);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreateDate")
-                        .HasColumnOrder(3);
-
-                    b.Property<long>("CreateUser")
-                        .HasColumnType("bigint")
-                        .HasColumnName("CreateUser")
-                        .HasColumnOrder(2);
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("IsActive")
-                        .HasColumnOrder(1);
-
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("integer")
-                        .HasColumnName("TeacherId")
-                        .HasColumnOrder(6);
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("UpdateDate")
-                        .HasColumnOrder(5);
-
-                    b.Property<long>("UpdateUser")
-                        .HasColumnType("bigint")
-                        .HasColumnName("UpdateUser")
-                        .HasColumnOrder(4);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClassRoomId");
-
-                    b.HasIndex("TeacherId", "ClassRoomId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_TeacherClassRooms_1");
-
-                    b.ToTable("TeacherClassRooms", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec0"),
-                            ClassRoomId = 1,
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            IsActive = true,
-                            TeacherId = 1,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec1"),
-                            ClassRoomId = 2,
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            IsActive = true,
-                            TeacherId = 2,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec2"),
-                            ClassRoomId = 3,
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            IsActive = true,
-                            TeacherId = 1,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec3"),
-                            ClassRoomId = 3,
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            IsActive = true,
-                            TeacherId = 2,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        });
-                });
-
-            modelBuilder.Entity("Domain.Entities.TeacherLesson", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("Id")
-                        .HasColumnOrder(0);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("CreateDate")
-                        .HasColumnOrder(3);
-
-                    b.Property<long>("CreateUser")
-                        .HasColumnType("bigint")
-                        .HasColumnName("CreateUser")
-                        .HasColumnOrder(2);
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("IsActive")
-                        .HasColumnOrder(1);
-
-                    b.Property<byte>("LessonId")
-                        .HasColumnType("smallint")
-                        .HasColumnName("LessonId")
-                        .HasColumnOrder(7);
-
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("integer")
-                        .HasColumnName("TeacherId")
-                        .HasColumnOrder(6);
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("UpdateDate")
-                        .HasColumnOrder(5);
-
-                    b.Property<long>("UpdateUser")
-                        .HasColumnType("bigint")
-                        .HasColumnName("UpdateUser")
-                        .HasColumnOrder(4);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LessonId");
-
-                    b.HasIndex("TeacherId", "LessonId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_TeacherLessons_1");
-
-                    b.ToTable("TeacherLessons", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec0"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            IsActive = true,
-                            LessonId = (byte)2,
-                            TeacherId = 1,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 2L
-                        },
-                        new
-                        {
-                            Id = new Guid("a1a84a26-a7e4-4671-a979-d65fbbbedec1"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 2L,
-                            IsActive = true,
-                            LessonId = (byte)1,
-                            TeacherId = 2,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         });
@@ -2857,9 +3542,9 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("Domain.Entities.ClassRoom", b =>
                 {
-                    b.HasOne("Domain.Entities.Group", "Group")
+                    b.HasOne("Domain.Entities.Package", "Package")
                         .WithMany()
-                        .HasForeignKey("GroupId");
+                        .HasForeignKey("PackageId");
 
                     b.HasOne("Domain.Entities.School", "School")
                         .WithMany("ClassRooms")
@@ -2867,7 +3552,7 @@ namespace DataAccess.EF.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Group");
+                    b.Navigation("Package");
 
                     b.Navigation("School");
                 });
@@ -2885,15 +3570,9 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("Domain.Entities.Core.User", b =>
                 {
-                    b.HasOne("Domain.Entities.Group", "Group")
-                        .WithMany("Users")
-                        .HasForeignKey("GroupId");
-
                     b.HasOne("Domain.Entities.School", "School")
                         .WithMany("Users")
                         .HasForeignKey("SchoolId");
-
-                    b.Navigation("Group");
 
                     b.Navigation("School");
                 });
@@ -2984,25 +3663,6 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("Domain.Entities.LessonGroup", b =>
-                {
-                    b.HasOne("Domain.Entities.Group", "Group")
-                        .WithMany("LessonGroups")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Lesson", "Lesson")
-                        .WithMany("LessonGroups")
-                        .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Group");
-
-                    b.Navigation("Lesson");
-                });
-
             modelBuilder.Entity("Domain.Entities.Notification", b =>
                 {
                     b.HasOne("Domain.Entities.Core.User", "SenderUser")
@@ -3033,10 +3693,70 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Order", b =>
+                {
+                    b.HasOne("Domain.Entities.Core.User", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.OrderDetail", b =>
+                {
+                    b.HasOne("Domain.Entities.Order", "Order")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Package", "Package")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Package");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PackageUser", b =>
+                {
+                    b.HasOne("Domain.Entities.Package", "Package")
+                        .WithMany("PackageUsers")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Core.User", "User")
+                        .WithMany("PackageUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Package");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Entities.PasswordToken", b =>
                 {
                     b.HasOne("Domain.Entities.Core.User", "User")
                         .WithMany("PasswordTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Payment", b =>
+                {
+                    b.HasOne("Domain.Entities.Core.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -3092,9 +3812,7 @@ namespace DataAccess.EF.Migrations
                 {
                     b.HasOne("Domain.Entities.Gain", "Gain")
                         .WithMany("QuizQuestions")
-                        .HasForeignKey("GainId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("GainId");
 
                     b.HasOne("Domain.Entities.Quiz", "Quiz")
                         .WithMany("QuizQuestions")
@@ -3107,23 +3825,80 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("Quiz");
                 });
 
-            modelBuilder.Entity("Domain.Entities.SchoolGroup", b =>
+            modelBuilder.Entity("Domain.Entities.RPackageLesson", b =>
                 {
-                    b.HasOne("Domain.Entities.Group", "Group")
-                        .WithMany("SchoolGroups")
-                        .HasForeignKey("GroupId")
+                    b.HasOne("Domain.Entities.Lesson", "Lesson")
+                        .WithMany("RPackageLessons")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Package", "Package")
+                        .WithMany("RPackageLessons")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("Package");
+                });
+
+            modelBuilder.Entity("Domain.Entities.RPackageSchool", b =>
+                {
+                    b.HasOne("Domain.Entities.Package", "Package")
+                        .WithMany("RPackageSchools")
+                        .HasForeignKey("PackageId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.School", "School")
-                        .WithMany("SchoolGroups")
+                        .WithMany("RPackageSchools")
                         .HasForeignKey("SchoolId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Group");
+                    b.Navigation("Package");
 
                     b.Navigation("School");
+                });
+
+            modelBuilder.Entity("Domain.Entities.RTeacherClassRoom", b =>
+                {
+                    b.HasOne("Domain.Entities.ClassRoom", "ClassRoom")
+                        .WithMany("TeacherClassRooms")
+                        .HasForeignKey("ClassRoomId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Teacher", "Teacher")
+                        .WithMany("RTeacherClassRooms")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ClassRoom");
+
+                    b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("Domain.Entities.RTeacherLesson", b =>
+                {
+                    b.HasOne("Domain.Entities.Lesson", "Lesson")
+                        .WithMany("TeacherLessons")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Teacher", "Teacher")
+                        .WithMany("RTeacherLessons")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("Domain.Entities.Similar", b =>
@@ -3177,44 +3952,6 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("School");
                 });
 
-            modelBuilder.Entity("Domain.Entities.TeacherClassRoom", b =>
-                {
-                    b.HasOne("Domain.Entities.ClassRoom", "ClassRoom")
-                        .WithMany("TeacherClassRooms")
-                        .HasForeignKey("ClassRoomId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Teacher", "Teacher")
-                        .WithMany("TeacherClassRooms")
-                        .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("ClassRoom");
-
-                    b.Navigation("Teacher");
-                });
-
-            modelBuilder.Entity("Domain.Entities.TeacherLesson", b =>
-                {
-                    b.HasOne("Domain.Entities.Lesson", "Lesson")
-                        .WithMany("TeacherLessons")
-                        .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Teacher", "Teacher")
-                        .WithMany("TeacherLessons")
-                        .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Lesson");
-
-                    b.Navigation("Teacher");
-                });
-
             modelBuilder.Entity("Domain.Entities.ClassRoom", b =>
                 {
                     b.Navigation("Homeworks");
@@ -3234,6 +3971,10 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("Homeworks");
 
                     b.Navigation("NotificationDeviceTokens");
+
+                    b.Navigation("Orders");
+
+                    b.Navigation("PackageUsers");
 
                     b.Navigation("PasswordTokens");
 
@@ -3261,15 +4002,6 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("SimilarQuestions");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Group", b =>
-                {
-                    b.Navigation("LessonGroups");
-
-                    b.Navigation("SchoolGroups");
-
-                    b.Navigation("Users");
-                });
-
             modelBuilder.Entity("Domain.Entities.Homework", b =>
                 {
                     b.Navigation("HomeworkStudents");
@@ -3281,15 +4013,31 @@ namespace DataAccess.EF.Migrations
 
                     b.Navigation("Homeworks");
 
-                    b.Navigation("LessonGroups");
-
                     b.Navigation("Questions");
 
                     b.Navigation("Quizzes");
 
+                    b.Navigation("RPackageLessons");
+
                     b.Navigation("SimilarQuestions");
 
                     b.Navigation("TeacherLessons");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Package", b =>
+                {
+                    b.Navigation("OrderDetails");
+
+                    b.Navigation("PackageUsers");
+
+                    b.Navigation("RPackageLessons");
+
+                    b.Navigation("RPackageSchools");
                 });
 
             modelBuilder.Entity("Domain.Entities.Quiz", b =>
@@ -3303,7 +4051,7 @@ namespace DataAccess.EF.Migrations
 
                     b.Navigation("Homeworks");
 
-                    b.Navigation("SchoolGroups");
+                    b.Navigation("RPackageSchools");
 
                     b.Navigation("Teachers");
 
@@ -3321,9 +4069,9 @@ namespace DataAccess.EF.Migrations
                 {
                     b.Navigation("Homeworks");
 
-                    b.Navigation("TeacherClassRooms");
+                    b.Navigation("RTeacherClassRooms");
 
-                    b.Navigation("TeacherLessons");
+                    b.Navigation("RTeacherLessons");
                 });
 #pragma warning restore 612, 618
         }

@@ -11,6 +11,7 @@ public class GetClassRoomsByDynamicQuery : IRequest<PageableModel<GetClassRoomMo
     public required Dynamic Dynamic { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
+    public bool AllowByPass => false;
 }
 
 public class GetClassRoomsByDynamicQueryHandler(IMapper mapper,

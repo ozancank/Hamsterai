@@ -11,6 +11,7 @@ public class GetHomeworksByDynamicQuery : IRequest<PageableModel<GetHomeworkMode
     public required Dynamic Dynamic { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
+    public bool AllowByPass => false;
 }
 
 public class GetHomeworksByDynamicQueryHandler(IMapper mapper,

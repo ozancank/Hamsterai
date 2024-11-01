@@ -9,6 +9,7 @@ public class GetGainsQuery : IRequest<PageableModel<GetGainModel>>, ISecuredRequ
     public required PageRequest PageRequest { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class GetGainsQueryQueryHandler(IMapper mapper,

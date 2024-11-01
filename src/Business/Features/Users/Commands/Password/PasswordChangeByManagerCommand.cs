@@ -14,6 +14,7 @@ public class PasswordChangeByManagerCommand : IRequest<bool>, ISecuredRequest<Us
     public required string Password { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = ["Password"];
 }
 

@@ -9,6 +9,7 @@ public class GetSchoolsQuery : IRequest<PageableModel<GetSchoolModel>>, ISecured
     public required PageRequest PageRequest { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
 }
 
 public class GetSchoolsQueryHandler(IMapper mapper,

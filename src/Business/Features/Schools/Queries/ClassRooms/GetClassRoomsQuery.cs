@@ -10,6 +10,7 @@ public class GetClassRoomsQuery : IRequest<PageableModel<GetClassRoomModel>>, IS
     public required PageRequest PageRequest { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.School,UserTypes.Teacher];
+    public bool AllowByPass => false;
 }
 
 public class GetClassRoomsQueryHandler(IMapper mapper,

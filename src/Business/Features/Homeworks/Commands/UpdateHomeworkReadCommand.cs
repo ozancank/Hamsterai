@@ -11,6 +11,7 @@ public class UpdateHomeworkReadCommand : IRequest<bool>, ISecuredRequest<UserTyp
     public required string HomeworkStudentId { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Student];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

@@ -13,6 +13,7 @@ public class GetClassRoomByIdQuery : IRequest<GetClassRoomModel>, ISecuredReques
     public bool Tracking { get; set; } = false;
 
     public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
+    public bool AllowByPass => false;
 }
 
 public class GetClassRoomByIdQueryHandler(IMapper mapper,

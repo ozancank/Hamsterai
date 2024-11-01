@@ -10,6 +10,7 @@ public class GetLessonsQuery : IRequest<PageableModel<GetLessonModel>>, ISecured
     public required PageRequest PageRequest { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class GetLessonsQueryHandler(IMapper mapper,

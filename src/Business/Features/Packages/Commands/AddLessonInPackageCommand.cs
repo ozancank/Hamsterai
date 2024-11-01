@@ -12,6 +12,7 @@ public class AddLessonInPackageCommand : IRequest<bool>, ISecuredRequest<UserTyp
 {
     public required AddLessonInPackageModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

@@ -13,6 +13,7 @@ public class GetQuizByIdQuery : IRequest<GetQuizModel>, ISecuredRequest<UserType
     public bool Tracking { get; set; } = false;
 
     public UserTypes[] Roles { get; } = [UserTypes.Student];
+    public bool AllowByPass => false;
 }
 
 public class GetQuizByIdQueryHandler(IMapper mapper,

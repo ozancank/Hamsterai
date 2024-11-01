@@ -26,7 +26,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.Type).HasColumnName("Type").HasColumnOrder(12).IsRequired();
         builder.Property(e => e.SchoolId).HasColumnName("SchoolId").HasColumnOrder(13);
         builder.Property(e => e.ConnectionId).HasColumnName("ConnectionId").HasColumnOrder(14);
-        builder.Property(e => e.QuestionCount).HasColumnName("QuestionCount").HasDefaultValue(0).HasColumnOrder(16).IsRequired();
+        builder.Property(e => e.PackageCredit).HasColumnName("PackageCredit").HasDefaultValue(0).HasColumnOrder(16).IsRequired();
+        builder.Property(e => e.AddtionalCredit).HasColumnName("AddtionalCredit").HasDefaultValue(0).HasColumnOrder(17).IsRequired();
+        builder.Property(e => e.AutomaticPayment).HasColumnName("AutomaticPayment").HasDefaultValue(false).HasColumnOrder(18).IsRequired();
 
         builder.HasOne(e => e.School).WithMany(e => e.Users).HasForeignKey(e => e.SchoolId).HasPrincipalKey(e => e.Id);
 

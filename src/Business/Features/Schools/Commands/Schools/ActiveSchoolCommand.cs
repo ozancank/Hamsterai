@@ -13,6 +13,7 @@ public class ActiveSchoolCommand : IRequest<bool>, ISecuredRequest<UserTypes>, I
     public int Id { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

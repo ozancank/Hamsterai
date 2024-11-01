@@ -13,6 +13,7 @@ public class GetStudentGainsByIdQuery : IRequest<GetStudentGainsModel>, ISecured
     public required StudentGainsRequestModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher];
+    public bool AllowByPass => false;
 }
 
 public class GetStudentGainsByIdQueryHandler(//ICommonService commonService,

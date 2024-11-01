@@ -11,6 +11,7 @@ public class GetQuizzesQuery : IRequest<PageableModel<GetQuizListModel>>, ISecur
     public required QuizRequestModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class GetQuizzesQueryHandler(IMapper mapper,

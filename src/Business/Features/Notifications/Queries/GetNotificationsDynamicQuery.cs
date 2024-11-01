@@ -11,6 +11,7 @@ public class GetNotificationsDynamicQuery : IRequest<PageableModel<GetNotificati
     public required Dynamic Dynamic { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class GetNotificationsByDynamicQueryHandler(IMapper mapper,

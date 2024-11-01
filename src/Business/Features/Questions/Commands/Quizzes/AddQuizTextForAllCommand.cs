@@ -7,6 +7,7 @@ namespace Business.Features.Questions.Commands.Quizzes;
 public class AddQuizTextForAllCommand : IRequest, ISecuredRequest<UserTypes>
 {
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
 }
 
 public class AddQuizTextForAllCommandHandler(IQuestionService questionService) : IRequestHandler<AddQuizTextForAllCommand>

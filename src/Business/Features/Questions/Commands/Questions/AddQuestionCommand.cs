@@ -13,6 +13,7 @@ public class AddQuestionCommand : IRequest<GetQuestionModel>, ISecuredRequest<Us
     public required AddQuestionModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.Student];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = ["Model.QuestionPictureBase64"];
 }
 

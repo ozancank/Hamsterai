@@ -15,6 +15,7 @@ public class AddTeacherCommand : IRequest<GetTeacherModel>, ISecuredRequest<User
 {
     public required AddTeacherModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.School];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

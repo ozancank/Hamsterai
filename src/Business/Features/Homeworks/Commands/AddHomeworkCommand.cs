@@ -15,6 +15,7 @@ public class AddHomeworkCommand : IRequest<GetHomeworkModel>, ISecuredRequest<Us
 {
     public required AddHomeworkModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Teacher];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

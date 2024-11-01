@@ -12,6 +12,7 @@ public class GetSchoolByIdQuery : IRequest<GetSchoolModel>, ISecuredRequest<User
     public bool Tracking { get; set; } = false;
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
 }
 
 public class GetSchoolByIdQueryHandler(IMapper mapper,

@@ -13,7 +13,8 @@ public sealed class AddUserModel : IRequestModel
     public int? ConnectionId { get; set; }
     public int? SchoolId { get; set; }
     public byte PackageId { get; set; }
-    public int QuestionCount { get; set; }
+    public int PackageCredit { get; set; }
+    public int AddtionalCredit { get; set; }
 
     public string? ProfilePictureBase64 { get; set; }
     public string? ProfilePictureFileName { get; set; }

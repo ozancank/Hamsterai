@@ -12,6 +12,7 @@ public class AddClassRoomCommand : IRequest<GetClassRoomModel>, ISecuredRequest<
 {
     public required AddClassRoomModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.School];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

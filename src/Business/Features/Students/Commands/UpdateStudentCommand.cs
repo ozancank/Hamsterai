@@ -14,6 +14,7 @@ public class UpdateStudentCommand : IRequest<GetStudentModel>, ISecuredRequest<U
 {
     public required UpdateStudentModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.School];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

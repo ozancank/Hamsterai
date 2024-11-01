@@ -219,6 +219,7 @@ static void StaticFiles(WebApplication app)
         { "/SimilarAnswerPicture", Domain.Constants.AppOptions.SimilarAnswerPictureFolderPath },
         { "/QuizQuestionPicture", Domain.Constants.AppOptions.QuizQuestionPictureFolderPath },
         { "/QuizAnswerPicture", Domain.Constants.AppOptions.QuizAnswerPictureFolderPath },
+        { "/PackagePicture", Domain.Constants.AppOptions.PackagePictureFolderPath },
         { "/Homework", Domain.Constants.AppOptions.HomeworkFolderPath },
         { "/HomeworkAnswer", Domain.Constants.AppOptions.HomeworkAnswerFolderPath }
     };

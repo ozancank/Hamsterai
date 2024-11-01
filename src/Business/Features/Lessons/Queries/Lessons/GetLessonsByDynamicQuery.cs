@@ -10,6 +10,7 @@ public class GetLessonsByDynamicQuery : IRequest<PageableModel<GetLessonModel>>,
     public required Dynamic Dynamic { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class GetLessonsByDynamicQueryHandler(IMapper mapper,

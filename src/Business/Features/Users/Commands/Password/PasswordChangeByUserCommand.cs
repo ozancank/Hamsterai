@@ -15,6 +15,7 @@ public class PasswordChangeByUserCommand : IRequest<bool>, ISecuredRequest<UserT
     public required string Password { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = ["OldPassword", "Password"];
 }
 

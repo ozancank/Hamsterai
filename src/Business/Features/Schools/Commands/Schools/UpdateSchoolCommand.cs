@@ -16,6 +16,7 @@ public class UpdateSchoolCommand : IRequest<GetSchoolModel>, ISecuredRequest<Use
 {
     public required UpdateSchoolModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 
@@ -79,12 +80,12 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
         var updateList = new List<User>();
         var usersInSchool = await userDal.GetListAsync(
             predicate: x => x.SchoolId == school.Id && x.Type == UserTypes.Student,
-            include: x => x.Include(u => u.RPackageUsers).ThenInclude(u => u.Package),
+            include: x => x.Include(u => u.PackageUsers).ThenInclude(u => u.Package),
             cancellationToken: cancellationToken);
 
         foreach (var studentUser in usersInSchool)
         {
-            if (studentUser.RPackageUsers.Count > 0 && !studentUser.RPackageUsers.Any(x => request.Model.PackageIds.Contains(x.PackageId)))
+            if (studentUser.PackageUsers.Count > 0 && !studentUser.PackageUsers.Any(x => request.Model.PackageIds.Contains(x.PackageId)))
             {
                 //studentUser.PackageId = null;
                 updateList.Add(studentUser);

@@ -11,6 +11,7 @@ public class GetTeachersByDynamicQuery : IRequest<PageableModel<GetTeacherModel>
     public required Dynamic Dynamic { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.School];
+    public bool AllowByPass => false;
 }
 
 public class GetTeachersByDynamicQueryHandler(IMapper mapper,

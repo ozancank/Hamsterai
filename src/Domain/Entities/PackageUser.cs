@@ -2,17 +2,19 @@
 
 namespace Domain.Entities;
 
-public class RPackageUser : BaseEntity<Guid>
+public class PackageUser : BaseEntity<Guid>
 {
     public byte PackageId { get; set; }
     public long UserId { get; set; }
+    public int RenewCount { get; set; }
+
     public virtual Package? Package { get; set; }
     public virtual User? User { get; set; }
 
-    public RPackageUser() : base()
+    public PackageUser() : base()
     { }
 
-    public RPackageUser(Guid id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate, byte packageId, long userId)
+    public PackageUser(Guid id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate, byte packageId, long userId)
         : base(id, isActive, createUser, createDate, updateUser, updateDate)
     {
         PackageId = packageId;

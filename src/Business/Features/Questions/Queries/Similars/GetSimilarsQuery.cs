@@ -12,6 +12,7 @@ public class GetSimilarsQuery : IRequest<PageableModel<GetSimilarModel>>, ISecur
     public required SimilarRequestModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class GetSimilarsQueryHandler(IMapper mapper,

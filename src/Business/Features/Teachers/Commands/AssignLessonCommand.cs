@@ -13,6 +13,7 @@ public class AssignLessonCommand : IRequest<bool>, ISecuredRequest<UserTypes>, I
     public List<byte> LessonIds { get; set; } = [];
 
     public UserTypes[] Roles { get; } = [UserTypes.School];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

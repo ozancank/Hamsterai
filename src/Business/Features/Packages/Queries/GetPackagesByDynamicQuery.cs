@@ -10,6 +10,7 @@ public class GetPackagesByDynamicQuery : IRequest<PageableModel<GetPackageModel>
     public required Dynamic Dynamic { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class GetPackagesByDynamicQueryHandler(IMapper mapper,

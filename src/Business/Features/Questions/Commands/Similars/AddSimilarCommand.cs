@@ -13,6 +13,7 @@ public class AddSimilarCommand : IRequest<GetSimilarModel>, ISecuredRequest<User
     public required AddSimilarModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.Student];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = ["Model.QuestionPictureBase64"];
 }
 

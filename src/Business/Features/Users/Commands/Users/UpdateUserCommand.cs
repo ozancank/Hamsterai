@@ -14,6 +14,7 @@ public class UpdateUserCommand : IRequest<GetUserModel>, ISecuredRequest<UserTyp
     public required UpdateUserModel Model { get; set; }
     public UserTypes[] Roles { get; } = [];
     public string[] HidePropertyNames { get; } = ["UpdateUserModel.Password", "UpdateUserModel.ProfilePictureBase64"];
+    public bool AllowByPass => false;
 }
 
 public class UpdateUserCommandHandler(IMapper mapper,
@@ -52,7 +53,8 @@ public class UpdateUserCommandHandler(IMapper mapper,
         user.ConnectionId = request.Model.ConnectionId;
         user.SchoolId = request.Model.SchoolId;
         //user.GroupId = request.Model.PackageId;
-        user.QuestionCount = request.Model.QuestionCount;
+        user.PackageCredit = request.Model.PackageCredit;
+        user.AddtionalCredit = request.Model.AddtionalCredit;
 
         await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
         var result = mapper.Map<GetUserModel>(user);

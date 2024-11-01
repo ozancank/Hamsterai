@@ -13,12 +13,14 @@ public class User : Security.User
     public UserTypes Type { get; set; }
     public int? ConnectionId { get; set; }
     public int? SchoolId { get; set; }
-    public int QuestionCount { get; set; }
+    public int PackageCredit { get; set; }
+    public int AddtionalCredit { get; set; }
+    public bool AutomaticPayment { get; set; }
 
     public virtual School? School { get; set; }
     public virtual ICollection<UserOperationClaim> UserOperationClaims { get; set; } = [];
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = [];
-    public virtual ICollection<RPackageUser> RPackageUsers { get; set; } = [];
+    public virtual ICollection<PackageUser> PackageUsers { get; set; } = [];
     public virtual ICollection<Question> Questions { get; set; } = [];
     public virtual ICollection<PasswordToken> PasswordTokens { get; set; } = [];
     public virtual ICollection<Similar> SimilarQuestions { get; set; } = [];
@@ -27,6 +29,7 @@ public class User : Security.User
     public virtual ICollection<Homework> Homeworks { get; set; } = [];
     public virtual ICollection<Notification> SendNotification { get; set; } = [];
     public virtual ICollection<Notification> ReceivedNotification { get; set; } = [];
+    public virtual ICollection<Order> Orders { get; set; } = [];
 
     public User() : base()
     {

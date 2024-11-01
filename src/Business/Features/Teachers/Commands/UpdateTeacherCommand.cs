@@ -13,6 +13,7 @@ public class UpdateTeacherCommand : IRequest<GetTeacherModel>, ISecuredRequest<U
 {
     public required UpdateTeacherModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.School];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

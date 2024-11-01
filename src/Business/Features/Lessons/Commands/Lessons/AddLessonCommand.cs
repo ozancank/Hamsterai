@@ -11,6 +11,7 @@ public class AddLessonCommand : IRequest<GetLessonModel>, ISecuredRequest<UserTy
 {
     public required AddLessonModel AddLessonModel { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

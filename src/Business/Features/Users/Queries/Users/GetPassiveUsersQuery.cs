@@ -10,6 +10,7 @@ public class GetPassiveUsersQuery : IRequest<PageableModel<GetUserModel>>, ISecu
 {
     public required PageRequest PageRequest { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher];
+    public bool AllowByPass => false;
 }
 
 public class GetPassiveUsersQueryHandler(IMapper mapper,

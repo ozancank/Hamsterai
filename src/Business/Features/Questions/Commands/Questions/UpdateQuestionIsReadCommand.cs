@@ -11,6 +11,7 @@ public class UpdateQuestionIsReadCommand : IRequest<bool>, ISecuredRequest<UserT
     public Guid Id { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class UpdateQuestionIsReadCommandHandler(IQuestionDal questionDal,

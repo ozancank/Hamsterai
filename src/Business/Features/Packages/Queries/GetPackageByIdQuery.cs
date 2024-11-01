@@ -12,6 +12,7 @@ public class GetPackageByIdQuery : IRequest<GetPackageModel>, ISecuredRequest<Us
     public bool Tracking { get; set; } = false;
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class GetPackageByIdQueryHandler(IMapper mapper,

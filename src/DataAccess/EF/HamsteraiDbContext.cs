@@ -26,14 +26,17 @@ public class HamsteraiDbContext : DbContext
     public required DbSet<Lesson> Lessons { get; set; }
     public required DbSet<Notification> Notifications { get; set; }
     public required DbSet<NotificationDeviceToken> NotificationDeviceTokens { get; set; }
+    public required DbSet<Order> Orders { get; set; }
+    public required DbSet<OrderDetail> OrderDetails { get; set; }
     public required DbSet<Package> Package { get; set; }
+    public required DbSet<PackageUser> PackageUser { get; set; }
     public required DbSet<PasswordToken> PasswordTokens { get; set; }
+    public required DbSet<Payment> Payments { get; set; }
     public required DbSet<Question> Questions { get; set; }
     public required DbSet<Quiz> Quizzes { get; set; }
     public required DbSet<QuizQuestion> QuizQuestions { get; set; }
     public required DbSet<RPackageLesson> RPackageLesson { get; set; }
     public required DbSet<RPackageSchool> RPackageSchools { get; set; }
-    public required DbSet<RPackageUser> RPackageUser { get; set; }
     public required DbSet<RTeacherClassRoom> RTeacherClassRooms { get; set; }
     public required DbSet<RTeacherLesson> RTeacherLessons { get; set; }
     public required DbSet<School> Schools { get; set; }

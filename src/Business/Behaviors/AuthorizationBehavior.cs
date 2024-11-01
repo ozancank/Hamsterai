@@ -18,8 +18,8 @@ public class AuthorizationBehavior<TRequest, TResponse>(IHttpContextAccessor htt
 
         if (_byPassName.IsNotEmpty() && _byPassKey.IsNotEmpty())
         {
-            httpContextAccessor.HttpContext.Request.Headers.TryGetValue(_byPassName, out var byPassKey);
-            if (_byPassKey == byPassKey) return await next();
+            httpContextAccessor.HttpContext.Request.Headers.TryGetValue(_byPassName, out var byPassKey);            
+            if (_byPassKey == byPassKey && request.AllowByPass) return await next();
         }
 
         var isAuthenticated = httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;

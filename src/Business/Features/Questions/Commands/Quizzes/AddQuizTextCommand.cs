@@ -10,6 +10,7 @@ public class AddQuizTextCommand : IRequest<GetQuizModel>, ISecuredRequest<UserTy
     public required AddQuizModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
 }
 
 public class AddQuizTextCommandHandler(IMapper mapper,

@@ -10,6 +10,7 @@ public class GetTeachersQuery : IRequest<PageableModel<GetTeacherModel>>, ISecur
     public required PageRequest PageRequest { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.School];
+    public bool AllowByPass => false;
 }
 
 public class GetTeachersQueryHandler(IMapper mapper,

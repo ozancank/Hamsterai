@@ -11,6 +11,7 @@ public class UpdateLessonCommand : IRequest<GetLessonModel>, ISecuredRequest<Use
 {
     public required UpdateLessonModel UpdateLessonModel { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

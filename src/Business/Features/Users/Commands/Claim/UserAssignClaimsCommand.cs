@@ -13,6 +13,7 @@ public class UserAssignClaimsCommand : IRequest<bool>, ISecuredRequest<UserTypes
     public string[] AssignRoles { get; set; } = [];
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 
@@ -56,7 +57,7 @@ public class UserAssignClaimsCommandHandler(IUserDal userDal,
         return true;
     }
 
-    private static async Task AddClaims(IEnumerable<OperationClaim> operationClaims, List<UserOperationClaim> claims, long userId, string role)
+    private static async Task AddClaims(IEnumerable<OperationClaim> operationClaims, List<UserOperationClaim> claims, long userId, string? role)
     {
         var claim = operationClaims.FirstOrDefault(x => x.Name == role);
         if (claim == null) return;

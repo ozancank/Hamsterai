@@ -12,6 +12,7 @@ public class GetGainByIdQuery : IRequest<GetGainModel>, ISecuredRequest<UserType
     public bool Tracking { get; set; } = false;
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class GetGainByIdQueryHandler(IMapper mapper,

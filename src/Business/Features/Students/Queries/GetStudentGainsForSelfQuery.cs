@@ -8,6 +8,7 @@ namespace Business.Features.Students.Queries;
 public class GetStudentGainsForSelfQuery : IRequest<GetStudentGainsModel>, ISecuredRequest<UserTypes>
 {
     public UserTypes[] Roles { get; } = [UserTypes.Student];
+    public bool AllowByPass => false;
 }
 
 public class GetGainsForStudentIdQueryHandler(ICommonService commonService,

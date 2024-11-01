@@ -11,6 +11,7 @@ public class GetHomeworksForStudentQuery : IRequest<PageableModel<GetHomeworkStu
     public required HomeworkRequestModel Model { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Student];
+    public bool AllowByPass => false;
 }
 
 public class GetHomeworksForStudentQueryHandler(IMapper mapper,

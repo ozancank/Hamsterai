@@ -17,7 +17,7 @@ public interface IAuthService : IBusinessService
 
     public Task RevokeDescendantRefreshTokens(RefreshToken refreshToken, string ipAddress, string reason);
 
-    public Task<RefreshToken> RevokeRefreshToken(RefreshToken refreshToken, string ipAddress, string reason = null, string replacedByToken = null);
+    public Task<RefreshToken> RevokeRefreshToken(RefreshToken refreshToken, string ipAddress, string? reason = null, string? replacedByToken = null);
 
     public Task<RefreshToken> RotateRefreshToken(User user, RefreshToken refreshToken, string ipAddress);
 }

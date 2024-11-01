@@ -40,13 +40,13 @@ public static class DALServiceRegistration
         services.AddScoped<INotificationDal, NotificationDal>();
         services.AddScoped<INotificationDeviceTokenDal, NotificationDeviceTokenDal>();
         services.AddScoped<IPackageDal, PackageDal>();
+        services.AddScoped<IPackageUserDal, PackageUserDal>();
         services.AddScoped<IPasswordTokenDal, PasswordTokenDal>();
         services.AddScoped<IQuestionDal, QuestionDal>();
         services.AddScoped<IQuizDal, QuizDal>();
         services.AddScoped<IQuizQuestionDal, QuizQuestionDal>();
         services.AddScoped<IRPackageLessonDal, RPackageLessonDal>();
         services.AddScoped<IRPackageSchoolDal, RPackageSchoolDal>();
-        services.AddScoped<IRPackageUserDal, RPackageUserDal>();
         services.AddScoped<IRTeacherClassRoomDal, RTeacherClassRoomDal>();
         services.AddScoped<IRTeacherLessonDal, RTeacherLessonDal>();
         services.AddScoped<ISchoolDal, SchoolDal>();

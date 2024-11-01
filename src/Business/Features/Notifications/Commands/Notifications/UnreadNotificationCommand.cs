@@ -11,6 +11,7 @@ public class UnreadNotificationCommand : IRequest<bool>, ISecuredRequest<UserTyp
     public Guid Id { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 

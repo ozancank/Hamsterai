@@ -10,6 +10,7 @@ public class GetNotificationsQuery : IRequest<PageableModel<GetNotificationModel
     public required PageRequest PageRequest { get; set; }
 
     public UserTypes[] Roles { get; } = [];
+    public bool AllowByPass => false;
 }
 
 public class GetNotificationsQueryHandler(IMapper mapper,
