@@ -1,4 +1,4 @@
-﻿using Business.Features.Packages.Models;
+﻿using Business.Features.Packages.Models.Packages;
 using Business.Features.Users.Models.User;
 
 namespace Business.Features.Schools.Models.Schools;

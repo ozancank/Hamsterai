@@ -1,7 +1,10 @@
 using Asp.Versioning;
-using Business.Features.Packages.Commands;
-using Business.Features.Packages.Models;
-using Business.Features.Packages.Queries;
+using Business.Features.Packages.Commands.PackageCategories;
+using Business.Features.Packages.Commands.Packages;
+using Business.Features.Packages.Models.PackageCategories;
+using Business.Features.Packages.Models.Packages;
+using Business.Features.Packages.Queries.PackageCategories;
+using Business.Features.Packages.Queries.Packages;
 
 namespace WebAPI.Controllers.V1;
 
@@ -10,10 +13,20 @@ namespace WebAPI.Controllers.V1;
 [ApiVersion("1")]
 public class PackageController() : BaseController
 {
+    #region Package
+
     [HttpGet("GetPackageById/{id}")]
-    public async Task<IActionResult> GetPackageById([FromRoute] byte id)
+    public async Task<IActionResult> GetPackageById([FromRoute] short id)
     {
         var query = new GetPackageByIdQuery { Id = id };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpGet("GetPackageBySlug/{slug}")]
+    public async Task<IActionResult> GetPackageById([FromRoute] string slug)
+    {
+        var query = new GetPackageBySlugQuery { Slug = slug };
         var result = await Mediator.Send(query);
         return Ok(result);
     }
@@ -35,23 +48,15 @@ public class PackageController() : BaseController
     }
 
     [HttpPost("AddPackage")]
-    public async Task<IActionResult> AddPackage([FromBody] AddPackageModel model)
+    public async Task<IActionResult> AddPackage([FromForm] AddPackageModel model)
     {
         var command = new AddPackageCommand { Model = model };
         var result = await Mediator.Send(command);
         return Ok(result);
     }
 
-    [HttpPost("AddLessonInPackage")]
-    public async Task<IActionResult> AddLessonInPackage([FromBody] AddLessonInPackageModel model)
-    {
-        var command = new AddLessonInPackageCommand { Model = model };
-        var result = await Mediator.Send(command);
-        return Ok(result);
-    }
-
     [HttpPost("UpdatePackage")]
-    public async Task<IActionResult> UpdatePackage([FromBody] UpdatePackageModel model)
+    public async Task<IActionResult> UpdatePackage([FromForm] UpdatePackageModel model)
     {
         var command = new UpdatePackageCommand { Model = model };
         var result = await Mediator.Send(command);
@@ -59,7 +64,7 @@ public class PackageController() : BaseController
     }
 
     [HttpPost("PassivePackage")]
-    public async Task<IActionResult> PassivePackage([FromBody] byte packageId)
+    public async Task<IActionResult> PassivePackage([FromBody] short packageId)
     {
         var command = new PassivePackageCommand { Id = packageId };
         var result = await Mediator.Send(command);
@@ -67,10 +72,104 @@ public class PackageController() : BaseController
     }
 
     [HttpPost("ActivePackage")]
-    public async Task<IActionResult> ActivePackage([FromBody] byte packageId)
+    public async Task<IActionResult> ActivePackage([FromBody] short packageId)
     {
         var command = new ActivePackageCommand { Id = packageId };
         var result = await Mediator.Send(command);
         return Ok(result);
     }
+
+    [HttpGet("GetPackagesForWeb")]
+    public async Task<IActionResult> GetPackagesForWeb([FromQuery] PageRequest model)
+    {
+        var query = new GetPackagesForWebQuery { PageRequest = model };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("GetPackagesForWebByIds")]
+    public async Task<IActionResult> GetPackagesForWebByIds([FromBody] List<short> ids)
+    {
+        var query = new GetPackagesForWebByIdsQuery { PackageIds = ids };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    #endregion Package
+
+    #region Category
+
+    [HttpGet("GetCategoryById/{id}")]
+    public async Task<IActionResult> GetCategoryById([FromRoute] byte id)
+    {
+        var query = new GetPackageCategoryByIdQuery { Id = id };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpGet("GetCategoryBySlug/{slug}")]
+    public async Task<IActionResult> GetCategoryById([FromRoute] string slug)
+    {
+        var query = new GetPackageCategoryBySlugQuery { Slug = slug };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("GetCategories")]
+    public async Task<IActionResult> GetCategories([FromQuery] PageRequest model)
+    {
+        var query = new GetPackageCategoriesQuery { PageRequest = model };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("GetCategoriesDynamic")]
+    public async Task<IActionResult> GetCategoriesDynamic([FromQuery] PageRequest model, [FromBody] Dynamic dynamic)
+    {
+        var query = new GetPackageCategoriesByDynamicQuery { PageRequest = model, Dynamic = dynamic };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("AddCategory")]
+    public async Task<IActionResult> AddCategory([FromForm] AddPackageCategoryModel model)
+    {
+        var command = new AddPackageCategoryCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("UpdateCategory")]
+    public async Task<IActionResult> UpdateCategory([FromForm] UpdatePackageCategoryModel model)
+    {
+        var command = new UpdatePackageCategoryCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("PassiveCategory")]
+    public async Task<IActionResult> PassiveCategory([FromBody] byte categoryId)
+    {
+        var command = new PassivePackageCategoryCommand { Id = categoryId };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("ActiveCategory")]
+    public async Task<IActionResult> ActiveCategory([FromBody] byte categoryId)
+    {
+        var command = new ActivePackageCategoryCommand { Id = categoryId };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpGet("GetCategoriesForWeb")]
+    public async Task<IActionResult> GetCategoriesForWeb([FromQuery] PageRequest model)
+    {
+        var query = new GetPackageCategoriesForWebQuery { PageRequest = model };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    #endregion Category
 }

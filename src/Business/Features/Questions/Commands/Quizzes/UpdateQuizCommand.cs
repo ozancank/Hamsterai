@@ -91,7 +91,7 @@ public class UpdateQuizCommandValidator : AbstractValidator<UpdateQuizCommand>
 
         RuleFor(x => x.Model.QuizId).NotEmpty().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.Model.TimeSecond).GreaterThanOrEqualTo(0).WithMessage(Strings.DynamicGratherThanOrEquals, [Strings.Second, "0"]);
+        RuleFor(x => x.Model.TimeSecond).GreaterThanOrEqualTo(0).WithMessage(Strings.DynamicGratherThanOrEqual, [Strings.Second, "0"]);
 
         RuleFor(x => x.Model.Status).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Status]);
     }

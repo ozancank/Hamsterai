@@ -4,7 +4,7 @@ namespace Domain.Entities;
 
 public class PackageUser : BaseEntity<Guid>
 {
-    public byte PackageId { get; set; }
+    public short PackageId { get; set; }
     public long UserId { get; set; }
     public int RenewCount { get; set; }
 
@@ -14,7 +14,7 @@ public class PackageUser : BaseEntity<Guid>
     public PackageUser() : base()
     { }
 
-    public PackageUser(Guid id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate, byte packageId, long userId)
+    public PackageUser(Guid id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate, short packageId, long userId)
         : base(id, isActive, createUser, createDate, updateUser, updateDate)
     {
         PackageId = packageId;

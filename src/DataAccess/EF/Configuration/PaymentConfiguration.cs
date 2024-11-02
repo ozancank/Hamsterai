@@ -14,7 +14,7 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Property(e => e.UpdateDate).HasColumnName("UpdateDate").HasColumnOrder(5).IsRequired();
         builder.Property(e => e.UserId).HasColumnName("UserId").HasColumnOrder(6).IsRequired();
         builder.Property(e => e.Amount).HasColumnName("Amount").HasDefaultValue(0).HasColumnOrder(7).IsRequired();
-        builder.Property(e => e.PaymentDate).HasColumnName("PaymentDate").HasDefaultValue(DateTime.Now).HasColumnOrder(8).IsRequired();
+        builder.Property(e => e.PaymentDate).HasColumnName("PaymentDate").HasColumnOrder(8).IsRequired();
         builder.Property(e => e.PaymentReason).HasColumnName("PaymentReason").HasDefaultValue(PaymentReason.None).HasColumnOrder(9).IsRequired();
         builder.Property(e => e.ReasonId).HasColumnName("ReasonId").HasMaxLength(50).HasColumnOrder(10);
         builder.Property(e => e.SipayMerchantKey).HasColumnName("SipayMerchantKey").HasMaxLength(100).HasColumnOrder(11);

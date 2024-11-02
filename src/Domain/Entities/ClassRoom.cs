@@ -7,7 +7,7 @@ public class ClassRoom : BaseEntity<int>
     public short No { get; set; }
     public string? Branch { get; set; }
     public int SchoolId { get; set; }
-    public byte? PackageId { get; set; }
+    public short? PackageId { get; set; }
 
     public virtual School? School { get; set; }
     public virtual Package? Package { get; set; }

@@ -1,4 +1,6 @@
-﻿namespace DataAccess.EF.Configuration;
+﻿using OCK.Core.Utilities.Numbers;
+
+namespace DataAccess.EF.Configuration;
 
 public class PackageUserConfiguration : IEntityTypeConfiguration<PackageUser>
 {
@@ -14,8 +16,9 @@ public class PackageUserConfiguration : IEntityTypeConfiguration<PackageUser>
         builder.Property(e => e.UpdateDate).HasColumnName("UpdateDate").HasColumnOrder(5).IsRequired();
         builder.Property(e => e.PackageId).HasColumnName("PackageId").HasColumnOrder(6).IsRequired();
         builder.Property(e => e.UserId).HasColumnName("UserId").HasColumnOrder(7).IsRequired();
-        builder.HasIndex(e => new { e.PackageId, e.UserId }).HasDatabaseName("IX_RPackageUsers_1").IsUnique();
         builder.Property(e => e.RenewCount).HasColumnName("RenewCount").HasDefaultValue(0).HasColumnOrder(8).IsRequired();
+        
+        builder.HasIndex(e => new { e.PackageId, e.UserId }).HasDatabaseName("IX_RPackageUsers_1").IsUnique();
 
         builder.HasOne(d => d.Package).WithMany(p => p.PackageUsers).HasForeignKey(d => d.PackageId).HasPrincipalKey(x => x.Id);
         builder.HasOne(d => d.User).WithMany(p => p.PackageUsers).HasForeignKey(d => d.UserId).HasPrincipalKey(x => x.Id);
@@ -23,7 +26,7 @@ public class PackageUserConfiguration : IEntityTypeConfiguration<PackageUser>
         var seeds = new List<PackageUser>();
         for (int i = 1; i <= 20; i++)
         {
-            seeds.Add(new(Guid.NewGuid(), true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), 5, i));
+            seeds.Add(new(NumberGenerator.IntToGuid(i), true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), 5, i));
         }
 
         builder.HasData(seeds);

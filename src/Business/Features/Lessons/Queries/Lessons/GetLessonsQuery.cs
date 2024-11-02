@@ -26,7 +26,9 @@ public class GetLessonsQueryHandler(IMapper mapper,
             index: request.PageRequest.Page,
             predicate: commonService.HttpUserType == UserTypes.Administator
                        ? x => x.IsActive
-                       : x => x.IsActive && x.RPackageLessons.Any(a => a.Package!.RPackageSchools.Any(b => b.School!.Id == commonService.HttpSchoolId)),
+                       : commonService.HttpUserType==UserTypes.Person
+                         ? x => x.IsActive && x.RPackageLessons.Any(a => a.IsActive)
+                         : x => x.IsActive && x.RPackageLessons.Any(a => a.IsActive && a.Package!.RPackageSchools.Any(b => b.School!.Id == commonService.HttpSchoolId)),
             include: x => x.Include(u => u.TeacherLessons).ThenInclude(u => u.Teacher)
                            .Include(u => u.RPackageLessons).ThenInclude(u => u.Package).ThenInclude(u => u!.RPackageSchools).ThenInclude(u => u.School),
             orderBy: x => x.OrderBy(x => x.SortNo),

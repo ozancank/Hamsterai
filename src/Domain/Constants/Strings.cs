@@ -21,7 +21,7 @@ public struct Strings
     public const string DynamicMinLength = "{0} en az {1} karakter olmalıdır.";
     public const string DynamicMaxLength = "{0} en fazla {1} karakter olmalıdır.";
     public const string DynamicGratherThan = "{0} {1} büyük olmalıdır.";
-    public const string DynamicGratherThanOrEquals = "{0} {1} büyük veya eşit olmalıdır.";
+    public const string DynamicGratherThanOrEqual = "{0} {1} büyük veya eşit olmalıdır.";
     public const string DynamicLessThan = "{0} {1} küçük olmalıdır.";
     public const string DynamicLessThanOrEquals = "{0} {1} küçük veya eşit olmalıdır.";
     public const string DynamicBetween = "{0} {1} - {2} arasında olmalıdır.";
@@ -40,7 +40,6 @@ public struct Strings
     public const string DynamicLessonTestPrepared = "{0} testiniz hazırlandı";
     public const string DynamicLessonTestPreparedForYou = "Hamster AI sizin için {0} testi hazırlandı. İyi çalışmalar :)\nTest No: {1}";
     public const string DynamicUserTypeShouldBe = "Kullanıcı tipi {0} olmalıdır.";
-
 
     public const string Second = "Saniye";
     public const string Minute = "Dakika";
@@ -86,7 +85,6 @@ public struct Strings
     public const string Answered = "Cevaplandı";
     public const string Prepared = "Hazırlandı";
     public const string Package = "Paket";
-    //public const string LessonGroup = "Ders Grubu";
     public const string SchoolName = "Okul Adı";
     public const string Token = "Token";
     public const string Title = "Ünvan";
@@ -113,7 +111,10 @@ public struct Strings
     public const string Notification = "Bildirim";
     public const string Picture = "Resim";
     public const string Group = "Grup";
+    public const string Category = "Kategori";
+    public const string Main = "Ana";
 
+    //public const string LessonGroup = "Ders Grubu";
     public const string FileNameExtension = "Dosya adı içerisinde nokta olmalı ve uzantı belirtilmelidir.";
 
     public const string PasswordNumber = "Şifre içerisinde en az 1 adet sayı bulunmalıdır.";

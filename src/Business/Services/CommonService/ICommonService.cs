@@ -1,5 +1,4 @@
-﻿using OCK.Core.Logging;
-using SixLabors.ImageSharp.Formats;
+﻿using SixLabors.ImageSharp.Formats;
 
 namespace Business.Services.CommonService;
 
@@ -13,9 +12,14 @@ public interface ICommonService : IBusinessService
     byte? HttpPackageId { get; }
 
     Task<string> PictureConvert(string? base64, string? fileName, string? folder);
+
     Task<string> TextToImage(string? text, string? fileName, string? folder, IImageEncoder? imageEncoder = null);
+
     Task<string> ImageToBase64(string? path);
 
     void ThrowErrorTry(Exception exception);
+
     List<string> GetLogs(PageRequest pageRequest, bool onlyError);
+
+    Dictionary<string, Dictionary<string, int>> GetEnums();
 }

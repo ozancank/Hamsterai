@@ -20,18 +20,18 @@ public class RPackageLessonConfiguration : IEntityTypeConfiguration<RPackageLess
         builder.HasOne(d => d.Lesson).WithMany(p => p.RPackageLessons).HasForeignKey(d => d.LessonId).HasPrincipalKey(x => x.Id);
 
         builder.HasData([
-                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec0"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),1,1),
-                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec1"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),2,2),
-                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec2"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),1,3),
-                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec3"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),2,4),
-                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec4"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),2,5),
-                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec5"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),2,6),
-                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec6"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),2,7),
-                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec7"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),1,8),
-                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec8"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),1,9),
-                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec9"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),1,10),
-                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedeca"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),1,11),
-                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedecb"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),1,12),
+                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec0"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),5,1),
+                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec1"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),5,2),
+                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec2"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),5,3),
+                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec3"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),5,4),
+                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec4"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),5,5),
+                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec5"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),5,6),
+                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec6"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),5,7),
+                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec7"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),5,8),
+                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec8"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),5,9),
+                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedec9"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),5,10),
+                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedeca"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),5,11),
+                new(Guid.Parse("a1a84a26-a7e4-4671-a979-d65fbbbedecb"),true,2,new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01),5,12),
             ]);
     }
 }

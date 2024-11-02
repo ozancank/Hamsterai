@@ -5,7 +5,7 @@ namespace Domain.Entities;
 public class OrderDetail : BaseEntity<Guid>
 {
     public int OrderId { get; set; }
-    public byte PackageId { get; set; }
+    public short PackageId { get; set; }
     public int QuestionCredit { get; set; }
     public byte Quantity { get; set; }
     public double UnitPrice { get; set; }

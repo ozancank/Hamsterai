@@ -4,7 +4,7 @@ namespace Domain.Entities;
 
 public class RPackageLesson : BaseEntity<Guid>
 {
-    public byte PackageId { get; set; }
+    public short PackageId { get; set; }
     public byte LessonId { get; set; }
 
     public virtual Package? Package { get; set; }
@@ -13,7 +13,7 @@ public class RPackageLesson : BaseEntity<Guid>
     public RPackageLesson() : base()
     { }
 
-    public RPackageLesson(Guid id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate, byte packageId, byte lessonId)
+    public RPackageLesson(Guid id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate, short packageId, byte lessonId)
     : base(id, isActive, createUser, createDate, updateUser, updateDate)
     {
         PackageId = packageId;

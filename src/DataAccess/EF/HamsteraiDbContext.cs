@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Core;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.Extensions.Configuration;
 using OCK.Core.Utilities;
 using System.Reflection;
@@ -28,6 +29,7 @@ public class HamsteraiDbContext : DbContext
     public required DbSet<NotificationDeviceToken> NotificationDeviceTokens { get; set; }
     public required DbSet<Order> Orders { get; set; }
     public required DbSet<OrderDetail> OrderDetails { get; set; }
+    public required DbSet<PackageCategory> PackageCategories { get; set; }
     public required DbSet<Package> Package { get; set; }
     public required DbSet<PackageUser> PackageUser { get; set; }
     public required DbSet<PasswordToken> PasswordTokens { get; set; }
@@ -58,6 +60,7 @@ public class HamsteraiDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresExtension("citext");
+        modelBuilder.RegisterDbFunctions<PostgresqlFunctions>();
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         foreach (var item in modelBuilder.Model.GetEntityTypes())
         {
@@ -74,6 +77,12 @@ public class HamsteraiDbContext : DbContext
                 }
             }
         }
+
+        //modelBuilder.HasDbFunction(() => Microsoft.EntityFrameworkCore.EF.Functions.TrLower(default))
+        //            .HasTranslation(args => new SqlFunctionExpression("tr_lower", true, typeof(string), null));
+
+        //modelBuilder.HasDbFunction(() => Microsoft.EntityFrameworkCore.EF.Functions.TrUpper(default))
+        //    .HasTranslation(args => new SqlFunctionExpression("tr_upper", true, typeof(string), null));
     }
 }
 

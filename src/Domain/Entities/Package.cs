@@ -3,7 +3,7 @@ using Domain.Entities.Core;
 
 namespace Domain.Entities;
 
-public class Package : BaseEntity<byte>
+public class Package : BaseEntity<short>
 {
     public string? Name { get; set; }
     public byte SortNo { get; set; }
@@ -18,7 +18,10 @@ public class Package : BaseEntity<byte>
     public PaymentRenewalPeriod PaymentRenewalPeriod { get; set; }
     public string? Description { get; set; }
     public string? PictureUrl { get; set; }
+    public string? Slug { get; set; }
+    public byte? CategoryId { get; set; }
 
+    public PackageCategory? PackageCategory { get; set; }
     public virtual ICollection<PackageUser> PackageUsers { get; set; } = [];
     public virtual ICollection<RPackageLesson> RPackageLessons { get; set; } = [];
     public virtual ICollection<RPackageSchool> RPackageSchools { get; set; } = [];

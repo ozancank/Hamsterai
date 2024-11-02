@@ -1,8 +1,8 @@
-﻿using Business.Features.Packages.Models;
+﻿using Business.Features.Packages.Models.Packages;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
-namespace Business.Features.Packages.Queries;
+namespace Business.Features.Packages.Queries.Packages;
 
 public class GetPackagesQuery : IRequest<PageableModel<GetPackageModel>>, ISecuredRequest<UserTypes>
 {

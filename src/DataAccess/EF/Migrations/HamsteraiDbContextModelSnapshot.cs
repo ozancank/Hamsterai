@@ -57,7 +57,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("No")
                         .HasColumnOrder(6);
 
-                    b.Property<byte?>("PackageId")
+                    b.Property<short?>("PackageId")
                         .HasColumnType("smallint")
                         .HasColumnName("PackageId")
                         .HasColumnOrder(9);
@@ -98,7 +98,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             No = (short)1,
-                            PackageId = (byte)1,
+                            PackageId = (short)1,
                             SchoolId = 1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -111,7 +111,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             No = (short)1,
-                            PackageId = (byte)1,
+                            PackageId = (short)1,
                             SchoolId = 1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -124,7 +124,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             No = (short)1,
-                            PackageId = (byte)1,
+                            PackageId = (short)1,
                             SchoolId = 1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -1383,7 +1383,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("OrderId")
                         .HasColumnOrder(6);
 
-                    b.Property<byte>("PackageId")
+                    b.Property<short>("PackageId")
                         .HasColumnType("smallint")
                         .HasColumnName("PackageId")
                         .HasColumnOrder(7);
@@ -1451,7 +1451,7 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("Domain.Entities.Package", b =>
                 {
-                    b.Property<byte>("Id")
+                    b.Property<short>("Id")
                         .HasColumnType("smallint")
                         .HasColumnName("Id")
                         .HasColumnOrder(0);
@@ -1462,6 +1462,11 @@ namespace DataAccess.EF.Migrations
                         .HasDefaultValue(0.0)
                         .HasColumnName("Amount")
                         .HasColumnOrder(14);
+
+                    b.Property<byte?>("CategoryId")
+                        .HasColumnType("smallint")
+                        .HasColumnName("CategoryId")
+                        .HasColumnOrder(20);
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp without time zone")
@@ -1503,11 +1508,10 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("OldAmount")
                         .HasColumnOrder(15);
 
-                    b.Property<string>("PaymentRenewalPeriod")
-                        .IsRequired()
+                    b.Property<byte>("PaymentRenewalPeriod")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("text")
-                        .HasDefaultValue("None")
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((byte)0)
                         .HasColumnName("PaymentRenewalPeriod")
                         .HasColumnOrder(16);
 
@@ -1516,6 +1520,12 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("citext")
                         .HasColumnName("PictureUrl")
                         .HasColumnOrder(18);
+
+                    b.Property<string>("Slug")
+                        .HasMaxLength(50)
+                        .HasColumnType("citext")
+                        .HasColumnName("Slug")
+                        .HasColumnOrder(19);
 
                     b.Property<byte>("SortNo")
                         .ValueGeneratedOnAdd()
@@ -1567,6 +1577,8 @@ namespace DataAccess.EF.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.HasIndex("Name", "PaymentRenewalPeriod")
                         .IsUnique()
                         .HasDatabaseName("IX_Packages_1");
@@ -1576,14 +1588,14 @@ namespace DataAccess.EF.Migrations
                     b.HasData(
                         new
                         {
-                            Id = (byte)1,
+                            Id = (short)1,
                             Amount = 0.0,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
                             IsWebVisible = false,
                             Name = "Sözel",
-                            PaymentRenewalPeriod = "None",
+                            PaymentRenewalPeriod = (byte)0,
                             SortNo = (byte)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
@@ -1593,14 +1605,14 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = (byte)2,
+                            Id = (short)2,
                             Amount = 0.0,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
                             IsWebVisible = false,
                             Name = "Sayısal",
-                            PaymentRenewalPeriod = "None",
+                            PaymentRenewalPeriod = (byte)0,
                             SortNo = (byte)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
@@ -1610,14 +1622,14 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = (byte)3,
+                            Id = (short)3,
                             Amount = 0.0,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
                             IsWebVisible = false,
                             Name = "Eşit Ağırlık",
-                            PaymentRenewalPeriod = "None",
+                            PaymentRenewalPeriod = (byte)0,
                             SortNo = (byte)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
@@ -1627,14 +1639,14 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = (byte)4,
+                            Id = (short)4,
                             Amount = 0.0,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
                             IsWebVisible = false,
                             Name = "Yabancı Dil",
-                            PaymentRenewalPeriod = "None",
+                            PaymentRenewalPeriod = (byte)0,
                             SortNo = (byte)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
@@ -1644,14 +1656,14 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = (byte)5,
+                            Id = (short)5,
                             Amount = 0.0,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
                             IsWebVisible = false,
                             Name = "Hepsi",
-                            PaymentRenewalPeriod = "None",
+                            PaymentRenewalPeriod = (byte)0,
                             SortNo = (byte)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
@@ -1661,14 +1673,14 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = (byte)6,
+                            Id = (short)6,
                             Amount = 0.0,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
                             IsWebVisible = false,
                             Name = "Orta Okul",
-                            PaymentRenewalPeriod = "None",
+                            PaymentRenewalPeriod = (byte)0,
                             SortNo = (byte)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
@@ -1678,14 +1690,14 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = (byte)7,
+                            Id = (short)7,
                             Amount = 0.0,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
                             IsWebVisible = false,
                             Name = "Lise",
-                            PaymentRenewalPeriod = "None",
+                            PaymentRenewalPeriod = (byte)0,
                             SortNo = (byte)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
@@ -1693,6 +1705,83 @@ namespace DataAccess.EF.Migrations
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L
                         });
+                });
+
+            modelBuilder.Entity("Domain.Entities.PackageCategory", b =>
+                {
+                    b.Property<byte>("Id")
+                        .HasColumnType("smallint")
+                        .HasColumnName("Id")
+                        .HasColumnOrder(0);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("CreateDate")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("CreateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreateUser")
+                        .HasColumnOrder(2);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("citext");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive")
+                        .HasColumnOrder(1);
+
+                    b.Property<bool>("IsWebVisible")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsWebVisible")
+                        .HasColumnOrder(8);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("citext")
+                        .HasColumnName("Name")
+                        .HasColumnOrder(6);
+
+                    b.Property<byte>("ParentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("ParentId")
+                        .HasColumnOrder(9);
+
+                    b.Property<string>("PictureUrl")
+                        .HasColumnType("citext");
+
+                    b.Property<string>("Slug")
+                        .HasColumnType("citext");
+
+                    b.Property<byte>("SortNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("SortNo")
+                        .HasColumnOrder(7);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("UpdateDate")
+                        .HasColumnOrder(5);
+
+                    b.Property<long>("UpdateUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("UpdateUser")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name", "ParentId")
+                        .IsUnique();
+
+                    b.ToTable("PackageCategories", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.PackageUser", b =>
@@ -1717,7 +1806,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("IsActive")
                         .HasColumnOrder(1);
 
-                    b.Property<byte>("PackageId")
+                    b.Property<short>("PackageId")
                         .HasColumnType("smallint")
                         .HasColumnName("PackageId")
                         .HasColumnOrder(6);
@@ -1757,11 +1846,11 @@ namespace DataAccess.EF.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("95427f3c-1228-4a8a-baa8-84ee156dd46f"),
+                            Id = new Guid("00000001-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1769,11 +1858,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("e3d47f7d-baf9-43b1-9a44-ca636c3f0d9a"),
+                            Id = new Guid("00000002-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1781,11 +1870,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("509514c9-b66e-4f10-8307-cac9eb2ed1b4"),
+                            Id = new Guid("00000003-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1793,11 +1882,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("9d48b435-6699-4abd-9a94-86d98ea4869d"),
+                            Id = new Guid("00000004-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1805,11 +1894,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("f8f18ff6-045b-4d50-83af-3819fe9e674a"),
+                            Id = new Guid("00000005-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1817,11 +1906,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("2762f9cc-a007-4f0d-96a3-67d7af0a3259"),
+                            Id = new Guid("00000006-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1829,11 +1918,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("cc964ed9-ad9c-4260-9062-0083021743f5"),
+                            Id = new Guid("00000007-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1841,11 +1930,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("74ea982a-ef8b-4048-8f0c-71e498b45876"),
+                            Id = new Guid("00000008-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1853,11 +1942,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("e492b61a-7503-45a4-9163-986cb048415c"),
+                            Id = new Guid("00000009-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1865,11 +1954,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("568081ad-b78c-448a-974b-cc4dfddc6f84"),
+                            Id = new Guid("0000000a-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1877,11 +1966,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("8e2b978b-9672-41c6-a030-0a6b40fb69bf"),
+                            Id = new Guid("0000000b-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1889,11 +1978,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("282a33b3-4871-450a-9364-ea4a09473663"),
+                            Id = new Guid("0000000c-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1901,11 +1990,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("c92dd1f5-b3e9-4280-bd47-e56da8544ba7"),
+                            Id = new Guid("0000000d-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1913,11 +2002,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("88fbf700-c46c-4cff-83fb-c4cde25add5d"),
+                            Id = new Guid("0000000e-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1925,11 +2014,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("33f62067-25d2-429a-afe5-4ed9c4d4a0e0"),
+                            Id = new Guid("0000000f-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1937,11 +2026,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("aaf09372-334e-4227-9272-9c1e85cdfbda"),
+                            Id = new Guid("00000010-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1949,11 +2038,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("bb64a9a1-60c3-4258-a23c-7fa5a34a7ffa"),
+                            Id = new Guid("00000011-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1961,11 +2050,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("aced1f4d-138a-4909-bae2-0e28eb30412f"),
+                            Id = new Guid("00000012-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1973,11 +2062,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("97d4d695-bcd4-4766-a388-dc3d8396689d"),
+                            Id = new Guid("00000013-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -1985,11 +2074,11 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("ca0c28f0-354e-4e2d-a87c-5adbdb07076d"),
+                            Id = new Guid("00000014-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             RenewCount = 0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L,
@@ -2066,9 +2155,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("PaymentDate")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasDefaultValue(new DateTime(2024, 11, 1, 10, 41, 26, 89, DateTimeKind.Local).AddTicks(4306))
                         .HasColumnName("PaymentDate")
                         .HasColumnOrder(8);
 
@@ -2501,7 +2588,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("LessonId")
                         .HasColumnOrder(7);
 
-                    b.Property<byte>("PackageId")
+                    b.Property<short>("PackageId")
                         .HasColumnType("smallint")
                         .HasColumnName("PackageId")
                         .HasColumnOrder(6);
@@ -2534,7 +2621,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             LessonId = (byte)1,
-                            PackageId = (byte)1,
+                            PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2545,7 +2632,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             LessonId = (byte)2,
-                            PackageId = (byte)2,
+                            PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2556,7 +2643,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             LessonId = (byte)3,
-                            PackageId = (byte)1,
+                            PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2567,7 +2654,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             LessonId = (byte)4,
-                            PackageId = (byte)2,
+                            PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2578,7 +2665,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             LessonId = (byte)5,
-                            PackageId = (byte)2,
+                            PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2589,7 +2676,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             LessonId = (byte)6,
-                            PackageId = (byte)2,
+                            PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2600,7 +2687,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             LessonId = (byte)7,
-                            PackageId = (byte)2,
+                            PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2611,7 +2698,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             LessonId = (byte)8,
-                            PackageId = (byte)1,
+                            PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2622,7 +2709,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             LessonId = (byte)9,
-                            PackageId = (byte)1,
+                            PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2633,7 +2720,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             LessonId = (byte)10,
-                            PackageId = (byte)1,
+                            PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2644,7 +2731,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             LessonId = (byte)11,
-                            PackageId = (byte)1,
+                            PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -2655,7 +2742,7 @@ namespace DataAccess.EF.Migrations
                             CreateUser = 2L,
                             IsActive = true,
                             LessonId = (byte)12,
-                            PackageId = (byte)1,
+                            PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         });
@@ -2683,7 +2770,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("IsActive")
                         .HasColumnOrder(1);
 
-                    b.Property<byte>("PackageId")
+                    b.Property<short>("PackageId")
                         .HasColumnType("smallint")
                         .HasColumnName("PackageId")
                         .HasColumnOrder(7);
@@ -2720,7 +2807,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
                             IsActive = true,
-                            PackageId = (byte)5,
+                            PackageId = (short)5,
                             SchoolId = 1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 1L
@@ -3723,6 +3810,15 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("Package");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Package", b =>
+                {
+                    b.HasOne("Domain.Entities.PackageCategory", "PackageCategory")
+                        .WithMany("Packages")
+                        .HasForeignKey("CategoryId");
+
+                    b.Navigation("PackageCategory");
+                });
+
             modelBuilder.Entity("Domain.Entities.PackageUser", b =>
                 {
                     b.HasOne("Domain.Entities.Package", "Package")
@@ -4038,6 +4134,11 @@ namespace DataAccess.EF.Migrations
                     b.Navigation("RPackageLessons");
 
                     b.Navigation("RPackageSchools");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PackageCategory", b =>
+                {
+                    b.Navigation("Packages");
                 });
 
             modelBuilder.Entity("Domain.Entities.Quiz", b =>

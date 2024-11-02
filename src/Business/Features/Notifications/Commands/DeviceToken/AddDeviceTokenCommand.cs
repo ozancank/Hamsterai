@@ -1,5 +1,5 @@
 ﻿using Business.Features.Notifications.Models.DeviceToken;
-using Business.Features.Packages.Models;
+using Business.Features.Packages.Models.Packages;
 using Business.Services.CommonService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;

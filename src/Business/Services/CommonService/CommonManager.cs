@@ -117,4 +117,21 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         var result = loggerServiceBase.GetLogs(pageRequest, onlyError);
         return result;
     }
+
+    public Dictionary<string, Dictionary<string, int>> GetEnums()
+    {
+        if (HttpUserType != UserTypes.Administator) throw new AuthenticationException(Strings.AuthorizationDenied);
+
+        if (AppStatics.Enums.Count != 0) return AppStatics.Enums;
+
+        var enums = typeof(AppStatics).Assembly.GetTypes()
+            .Where(t => t.IsEnum && t.Namespace == "Domain.Constants");
+
+        AppStatics.Enums = enums.ToDictionary(
+            enumType => enumType.Name,
+            enumType => Enum.GetValues(enumType)!.Cast<object>()!.ToDictionary(value => value.ToString()!, value => Convert.ToInt32(value))!
+            ).OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value)!;
+
+        return AppStatics.Enums;
+    }
 }

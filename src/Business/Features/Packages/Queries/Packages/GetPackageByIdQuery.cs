@@ -1,18 +1,18 @@
-﻿using Business.Features.Packages.Models;
+﻿using Business.Features.Packages.Models.Packages;
 using Business.Features.Packages.Rules;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
-namespace Business.Features.Packages.Queries;
+namespace Business.Features.Packages.Queries.Packages;
 
 public class GetPackageByIdQuery : IRequest<GetPackageModel>, ISecuredRequest<UserTypes>
 {
-    public byte Id { get; set; }
+    public short Id { get; set; }
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 
     public UserTypes[] Roles { get; } = [];
-    public bool AllowByPass => false;
+    public bool AllowByPass => true;
 }
 
 public class GetPackageByIdQueryHandler(IMapper mapper,

@@ -1,4 +1,6 @@
-﻿namespace Business.Features.Packages.Rules;
+﻿using DataAccess.EF;
+
+namespace Business.Features.Packages.Rules;
 
 public class PackageRules(IPackageDal packageDal) : IBusinessRule
 {
@@ -14,13 +16,13 @@ public class PackageRules(IPackageDal packageDal) : IBusinessRule
         return Task.CompletedTask;
     }
 
-    internal async Task PackageShouldExistsById(byte id)
+    internal async Task PackageShouldExistsById(short id)
     {
         var entity = await packageDal.IsExistsAsync(predicate: x => x.Id == id, enableTracking: false);
         await PackageShouldExists(entity);
     }
 
-    internal async Task PackageShouldExistsAndActiveById(byte id)
+    internal async Task PackageShouldExistsAndActiveById(short id)
     {
         var entity = await packageDal.IsExistsAsync(predicate: x => x.Id == id && x.IsActive, enableTracking: false);
         await PackageShouldExists(entity);
@@ -37,19 +39,18 @@ public class PackageRules(IPackageDal packageDal) : IBusinessRule
     internal async Task PackageShouldNotExistsAndActiveByName(string name)
     {
         if (name == null) throw new BusinessException($"{Strings.InvalidValue} : {nameof(name)}");
-        var entity = await packageDal.IsExistsAsync(predicate: x => x.Name == name && x.IsActive, enableTracking: false);
+        var entity = await packageDal.IsExistsAsync(predicate: x => PostgresqlFunctions.TrLower(x.Name) == PostgresqlFunctions.TrLower(name) && x.IsActive, enableTracking: false);
         await PackageShouldExists(entity);
     }
 
-    internal async Task PackageNameCanNotBeDuplicated(string name, byte? packageId = null)
+    internal async Task PackageNameAndPeriodCanNotBeDuplicated(string name, PaymentRenewalPeriod period, short? packageId = null)
     {
-        name = name.EmptyOrTrim().ToLower();
-        var entity = await packageDal.GetAsync(predicate: x => x.Name == name, enableTracking: false);
+        var entity = await packageDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.Name) == PostgresqlFunctions.TrLower(name) && x.PaymentRenewalPeriod == period, enableTracking: false);
         if (packageId == null && entity != null) throw new BusinessException(Strings.DynamicExists, name);
         if (packageId != null && entity != null && entity.Id != packageId) throw new BusinessException(Strings.DynamicExists, name);
     }
 
-    internal async Task PackageShouldBeRecordInDatabase(IEnumerable<byte> ids)
+    internal async Task PackageShouldBeRecordInDatabase(IEnumerable<short> ids)
     {
         var entity = await packageDal.GetListAsync(predicate: x => x.IsActive, selector: x => x.Id, enableTracking: false);
         foreach (var id in ids)
@@ -57,7 +58,7 @@ public class PackageRules(IPackageDal packageDal) : IBusinessRule
                 throw new BusinessException(Strings.DynamicNotFound, Strings.Package);
     }
 
-    internal static Task PackageShouldBeRecordInDatabase(IEnumerable<byte> ids, IEnumerable<Package> packages)
+    internal static Task PackageShouldBeRecordInDatabase(IEnumerable<short> ids, IEnumerable<Package> packages)
     {
         foreach (var id in ids)
             if (!packages.Any(x => x.Id == id))

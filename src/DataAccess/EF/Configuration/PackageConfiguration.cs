@@ -22,12 +22,15 @@ public class PackageConfiguration : IEntityTypeConfiguration<Package>
         builder.Property(e => e.TaxOldAmount).HasColumnName("TaxOldAmount").HasColumnOrder(13);
         builder.Property(e => e.Amount).HasColumnName("Amount").HasDefaultValue(0).HasColumnOrder(14).IsRequired();
         builder.Property(e => e.OldAmount).HasColumnName("OldAmount").HasColumnOrder(15);
-        builder.Property(e => e.PaymentRenewalPeriod).HasColumnName("PaymentRenewalPeriod").HasDefaultValue(PaymentRenewalPeriod.None).HasConversion<string>().HasColumnOrder(16).IsRequired();
+        builder.Property(e => e.PaymentRenewalPeriod).HasColumnName("PaymentRenewalPeriod").HasDefaultValue(PaymentRenewalPeriod.None).HasColumnOrder(16).IsRequired();
         builder.Property(e => e.Description).HasColumnName("Description").HasMaxLength(500).HasColumnOrder(17);
         builder.Property(e => e.PictureUrl).HasColumnName("PictureUrl").HasMaxLength(500).HasColumnOrder(18);
+        builder.Property(e => e.Slug).HasColumnName("Slug").HasMaxLength(50).HasColumnOrder(19);
+        builder.Property(e => e.CategoryId).HasColumnName("CategoryId").HasColumnOrder(20);
 
         builder.HasIndex(e => new { e.Name, e.PaymentRenewalPeriod }).HasDatabaseName("IX_Packages_1").IsUnique();
 
+        builder.HasOne(d => d.PackageCategory).WithMany(p => p.Packages).HasForeignKey(d => d.CategoryId).HasPrincipalKey(x => x.Id);
 
         builder.HasData([
                 new(1, true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), "Sözel"),

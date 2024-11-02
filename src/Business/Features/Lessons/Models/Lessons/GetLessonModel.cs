@@ -1,4 +1,4 @@
-﻿using Business.Features.Packages.Models;
+﻿using Business.Features.Packages.Models.Packages;
 
 namespace Business.Features.Lessons.Models.Lessons;
 

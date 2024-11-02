@@ -4,11 +4,11 @@ using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 
-namespace Business.Features.Packages.Commands;
+namespace Business.Features.Packages.Commands.Packages;
 
 public class ActivePackageCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public byte Id { get; set; }
+    public short Id { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public bool AllowByPass => false;

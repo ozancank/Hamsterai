@@ -8,6 +8,13 @@ namespace WebAPI.Controllers.V1;
 [ApiVersion("1")]
 public class CommonController(ICommonService commonService) : BaseController
 {
+    [HttpGet("GetEnums")]
+    public IActionResult MikroTypes()
+    {
+        var result = commonService.GetEnums();
+        return Ok(result);
+    }
+
     [HttpPost("ThrowErrorTry")]
     public IActionResult ThrowErrorTry()
     {
