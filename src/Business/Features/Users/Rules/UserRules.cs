@@ -156,4 +156,11 @@ public class UserRules(IUserDal userDal,
         if (licenceDate.Date <= DateTime.Now.Date) throw new BusinessException(Strings.LicenceExpired);
         await Task.CompletedTask;
     }
+
+    internal Task UserCanNotChangeOwnOrAdminPassword(long userId)
+    {
+        if (userId is 1 or 2) throw new BusinessException(Strings.UserDeniedChangeOwnPassword);
+        if (userId == commonService.HttpUserId) throw new BusinessException(Strings.UserDeniedChangeOwnPassword);
+        return Task.CompletedTask;
+    }
 }

@@ -1,14 +1,15 @@
 ﻿using Business.Features.Teachers.Models;
 using Business.Features.Teachers.Rules;
 using Business.Services.CommonService;
+using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
 namespace Business.Features.Teachers.Queries;
 
-public class GetTeacherByIdQuery : IRequest<GetTeacherModel>, ISecuredRequest<UserTypes>
+public class GetTeacherByIdQuery : IRequest<GetTeacherModel?>, ISecuredRequest<UserTypes>
 {
-    public byte Id { get; set; }
+    public int Id { get; set; }
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 
@@ -18,9 +19,10 @@ public class GetTeacherByIdQuery : IRequest<GetTeacherModel>, ISecuredRequest<Us
 
 public class GetTeacherByIdQueryHandler(IMapper mapper,
                                         ICommonService commonService,
-                                        ITeacherDal teacherDal) : IRequestHandler<GetTeacherByIdQuery, GetTeacherModel>
+                                        IUserDal userDal,
+                                        ITeacherDal teacherDal) : IRequestHandler<GetTeacherByIdQuery, GetTeacherModel?>
 {
-    public async Task<GetTeacherModel> Handle(GetTeacherByIdQuery request, CancellationToken cancellationToken)
+    public async Task<GetTeacherModel?> Handle(GetTeacherByIdQuery request, CancellationToken cancellationToken)
     {
         var teacher = await teacherDal.GetAsyncAutoMapper<GetTeacherModel>(
             enableTracking: request.Tracking,
@@ -30,6 +32,10 @@ public class GetTeacherByIdQueryHandler(IMapper mapper,
             cancellationToken: cancellationToken);
 
         if (request.ThrowException) await TeacherRules.TeacherShouldExists(teacher);
+
+        if (teacher != null)
+            teacher.UserId = (await userDal.GetAsync(x => x.Type == UserTypes.Teacher && x.ConnectionId == teacher.Id, enableTracking: false, cancellationToken: cancellationToken))?.Id ?? 0;
+
         return teacher;
     }
 }

@@ -26,6 +26,7 @@ public class PackageUserConfiguration : IEntityTypeConfiguration<PackageUser>
         var seeds = new List<PackageUser>();
         for (int i = 1; i <= 20; i++)
         {
+            if (i is 16 or 17) continue;
             seeds.Add(new(NumberGenerator.IntToGuid(i), true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), 5, i));
         }
 

@@ -7,7 +7,7 @@ namespace Business.Features.Lessons.Queries.Gains;
 
 public class GetGainByIdQuery : IRequest<GetGainModel>, ISecuredRequest<UserTypes>
 {
-    public byte Id { get; set; }
+    public short Id { get; set; }
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 

@@ -20,6 +20,7 @@ public sealed class GetTeacherModel : IResponseModel
     public int SchoolId { get; set; }
     public string? SchoolName { get; set; }
     public string? FullName { get; set; }
+    public long UserId { get; set; }
 
     public List<GetClassRoomModel> ClassRooms { get; set; } = [];
     public List<GetLessonModel> Lessons { get; set; } = [];

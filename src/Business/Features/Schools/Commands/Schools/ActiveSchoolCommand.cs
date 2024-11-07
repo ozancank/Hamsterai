@@ -4,17 +4,19 @@ using Business.Services.CommonService;
 using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
+using OCK.Core.Pipelines.Caching;
 using OCK.Core.Pipelines.Logging;
 
 namespace Business.Features.Schools.Commands.Schools;
 
-public class ActiveSchoolCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
+public class ActiveSchoolCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest, ICacheRemoverRequest
 {
     public int Id { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
+    public string[] CacheKey { get; } = [$"^{Strings.CacheStatusAndLicence}"];
 }
 
 public class ActiveSchoolCommandHandler(ISchoolDal schoolDal,
@@ -27,7 +29,7 @@ public class ActiveSchoolCommandHandler(ISchoolDal schoolDal,
         await SchoolRules.SchoolShouldExists(school);
 
         var user = await userDal.GetAsync(x => x.SchoolId == school.Id && x.Type == UserTypes.School, cancellationToken: cancellationToken);
-        await UserRules.UserShouldExists(user);        
+        await UserRules.UserShouldExists(user);
 
         school.UpdateUser = commonService.HttpUserId;
         school.UpdateDate = DateTime.Now;

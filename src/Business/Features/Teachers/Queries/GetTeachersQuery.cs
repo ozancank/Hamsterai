@@ -1,5 +1,6 @@
 ﻿using Business.Features.Teachers.Models;
 using Business.Services.CommonService;
+using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
@@ -15,6 +16,7 @@ public class GetTeachersQuery : IRequest<PageableModel<GetTeacherModel>>, ISecur
 
 public class GetTeachersQueryHandler(IMapper mapper,
                                      ICommonService commonService,
+                                     IUserDal userDal,
                                      ITeacherDal teacherDal) : IRequestHandler<GetTeachersQuery, PageableModel<GetTeacherModel>>
 {
     public async Task<PageableModel<GetTeacherModel>> Handle(GetTeachersQuery request, CancellationToken cancellationToken)
@@ -31,6 +33,12 @@ public class GetTeachersQueryHandler(IMapper mapper,
             orderBy: x => x.OrderBy(x => x.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
+
+        await teachers.Items.ForEachAsync(async x =>
+        {
+            x.UserId = (await userDal.GetAsync(u => u.Type == UserTypes.Teacher && u.ConnectionId == x.Id, enableTracking: false, cancellationToken: cancellationToken))?.Id ?? 0;
+        });
+
         var result = mapper.Map<PageableModel<GetTeacherModel>>(teachers);
         return result;
     }

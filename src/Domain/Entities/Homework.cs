@@ -6,7 +6,7 @@ public class Homework : BaseEntity<string>
 {
     public int? SchoolId { get; set; }
     public int? TeacherId { get; set; }
-    public byte LessonId { get; set; }
+    public short LessonId { get; set; }
     public string? FilePath { get; set; }
     public int? ClassRoomId { get; set; }
 

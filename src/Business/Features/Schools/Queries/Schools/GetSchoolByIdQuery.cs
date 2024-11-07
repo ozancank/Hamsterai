@@ -1,13 +1,14 @@
 ﻿using Business.Features.Schools.Models.Schools;
 using Business.Features.Schools.Rules;
+using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
 namespace Business.Features.Schools.Queries.Schools;
 
-public class GetSchoolByIdQuery : IRequest<GetSchoolModel>, ISecuredRequest<UserTypes>
+public class GetSchoolByIdQuery : IRequest<GetSchoolModel?>, ISecuredRequest<UserTypes>
 {
-    public byte Id { get; set; }
+    public int Id { get; set; }
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 
@@ -16,9 +17,10 @@ public class GetSchoolByIdQuery : IRequest<GetSchoolModel>, ISecuredRequest<User
 }
 
 public class GetSchoolByIdQueryHandler(IMapper mapper,
-                                       ISchoolDal schoolDal) : IRequestHandler<GetSchoolByIdQuery, GetSchoolModel>
+                                       IUserDal userDal,
+                                       ISchoolDal schoolDal) : IRequestHandler<GetSchoolByIdQuery, GetSchoolModel?>
 {
-    public async Task<GetSchoolModel> Handle(GetSchoolByIdQuery request, CancellationToken cancellationToken)
+    public async Task<GetSchoolModel?> Handle(GetSchoolByIdQuery request, CancellationToken cancellationToken)
     {
         var school = await schoolDal.GetAsyncAutoMapper<GetSchoolModel>(
             enableTracking: request.Tracking,
@@ -29,6 +31,10 @@ public class GetSchoolByIdQueryHandler(IMapper mapper,
             cancellationToken: cancellationToken);
 
         if (request.ThrowException) await SchoolRules.SchoolShouldExists(school);
+
+        if (school != null)
+            school.UserId = (await userDal.GetAsync(x => x.Type == UserTypes.School && x.SchoolId == school.Id, enableTracking: false, cancellationToken: cancellationToken))?.Id ?? 0;
+
         return school;
     }
 }

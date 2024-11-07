@@ -3,5 +3,5 @@
 public sealed class AddLessonModel : IResponseModel
 {
     public string? Name { get; set; }
-    public byte SortNo { get; set; }
+    public short SortNo { get; set; }
 }

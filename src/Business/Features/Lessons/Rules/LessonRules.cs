@@ -22,13 +22,13 @@ public class LessonRules(ILessonDal lessonDal) : IBusinessRule
         return Task.CompletedTask;
     }
 
-    internal async Task LessonShouldExistsById(byte id)
+    internal async Task LessonShouldExistsById(short id)
     {
         var lesson = await lessonDal.IsExistsAsync(predicate: x => x.Id == id, enableTracking: false);
         if (!lesson) throw new BusinessException(Strings.DynamicNotFound, Strings.Lesson);
     }
 
-    internal async Task LessonShouldExistsAndActiveById(byte id)
+    internal async Task LessonShouldExistsAndActiveById(short id)
     {
         var lesson = await lessonDal.IsExistsAsync(predicate: x => x.Id == id && x.IsActive, enableTracking: false);
         if (!lesson) throw new BusinessException(Strings.DynamicNotFound, Strings.Lesson);
@@ -41,7 +41,7 @@ public class LessonRules(ILessonDal lessonDal) : IBusinessRule
         if (control) throw new BusinessException(Strings.DynamicExists, name);
     }
 
-    internal async Task LessonNameCanNotBeDuplicated(string name, byte? lessonId = null)
+    internal async Task LessonNameCanNotBeDuplicated(string name, short? lessonId = null)
     {
         name = name.Trim().ToLower();
         var university = await lessonDal.GetAsync(predicate: x => x.Name == name, enableTracking: false);
@@ -49,7 +49,7 @@ public class LessonRules(ILessonDal lessonDal) : IBusinessRule
         if (lessonId != null && university != null && university.Id != lessonId) throw new BusinessException(Strings.DynamicExists, name);
     }
 
-    internal static Task LessonShouldBeRecordInDatabase(IEnumerable<byte> ids, IEnumerable<Lesson> lessons)
+    internal static Task LessonShouldBeRecordInDatabase(IEnumerable<short> ids, IEnumerable<Lesson> lessons)
     {
         foreach (var id in ids)
             if (!lessons.Any(x => x.Id == id))

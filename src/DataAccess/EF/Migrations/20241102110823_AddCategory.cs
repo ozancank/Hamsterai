@@ -241,20 +241,6 @@ namespace DataAccess.EF.Migrations
             migrationBuilder.UpdateData(
                 table: "PackageUsers",
                 keyColumn: "Id",
-                keyValue: new Guid("00000010-0000-0000-0000-000000000000"),
-                column: "PackageId",
-                value: (byte)5);
-
-            migrationBuilder.UpdateData(
-                table: "PackageUsers",
-                keyColumn: "Id",
-                keyValue: new Guid("00000011-0000-0000-0000-000000000000"),
-                column: "PackageId",
-                value: (byte)5);
-
-            migrationBuilder.UpdateData(
-                table: "PackageUsers",
-                keyColumn: "Id",
                 keyValue: new Guid("00000012-0000-0000-0000-000000000000"),
                 column: "PackageId",
                 value: (byte)5);

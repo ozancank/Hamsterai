@@ -2,10 +2,10 @@
 
 namespace Domain.Entities;
 
-public class Lesson : BaseEntity<byte>
+public class Lesson : BaseEntity<short>
 {
     public string? Name { get; set; }
-    public byte SortNo { get; set; }
+    public short SortNo { get; set; }
 
     public virtual ICollection<RTeacherLesson> TeacherLessons { get; set; } = [];
     public virtual ICollection<RPackageLesson> RPackageLessons { get; set; } = [];

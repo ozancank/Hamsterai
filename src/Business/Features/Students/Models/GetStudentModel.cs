@@ -18,4 +18,5 @@ public class GetStudentModel : IResponseModel
     public string? FullName { get; set; }
     public string? ClassName { get; set; }
     public List<string> TeacherNames { get; set; } = [];
+    public long UserId { get; set; }
 }

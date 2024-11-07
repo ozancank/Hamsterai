@@ -5,23 +5,25 @@ using Business.Services.CommonService;
 using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
+using OCK.Core.Pipelines.Caching;
 using OCK.Core.Pipelines.Logging;
 
 namespace Business.Features.Users.Commands.Users;
 
-public class UpdateUserCommand : IRequest<GetUserModel>, ISecuredRequest<UserTypes>, ILoggableRequest
+public sealed class UpdateUserCommand : IRequest<GetUserModel>, ISecuredRequest<UserTypes>, ILoggableRequest, ICacheRemoverRequest
 {
     public required UpdateUserModel Model { get; set; }
     public UserTypes[] Roles { get; } = [];
     public string[] HidePropertyNames { get; } = ["UpdateUserModel.Password", "UpdateUserModel.ProfilePictureBase64"];
     public bool AllowByPass => false;
+    public string[] CacheKey { get; } = [$"^{Strings.CacheStatusAndLicence}"];
 }
 
-public class UpdateUserCommandHandler(IMapper mapper,
-                                      ICommonService commonService,
-                                      IUserDal userDal,
-                                      UserRules userRules,
-                                      PackageRules packageRules) : IRequestHandler<UpdateUserCommand, GetUserModel>
+public sealed class UpdateUserCommandHandler(IMapper mapper,
+                                             ICommonService commonService,
+                                             IUserDal userDal,
+                                             UserRules userRules,
+                                             PackageRules packageRules) : IRequestHandler<UpdateUserCommand, GetUserModel>
 {
     public async Task<GetUserModel> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {

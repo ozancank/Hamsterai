@@ -2,7 +2,7 @@
 
 public class QuestionRequestModel : IRequestModel
 {
-    public byte LessonId { get; set; } = 0;
+    public short LessonId { get; set; } = 0;
     public DateTime? StartDate { get; set; } = null;
     public DateTime? EndDate { get; set; } = null;
 }

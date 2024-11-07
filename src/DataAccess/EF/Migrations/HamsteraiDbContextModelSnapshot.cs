@@ -775,7 +775,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("IsActive")
                         .HasColumnOrder(1);
 
-                    b.Property<byte>("LessonId")
+                    b.Property<short>("LessonId")
                         .HasColumnType("smallint")
                         .HasColumnName("LessonId")
                         .HasColumnOrder(7);
@@ -841,7 +841,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("IsActive")
                         .HasColumnOrder(1);
 
-                    b.Property<byte>("LessonId")
+                    b.Property<short>("LessonId")
                         .HasColumnType("smallint")
                         .HasColumnName("LessonId")
                         .HasColumnOrder(8);
@@ -945,7 +945,7 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("Domain.Entities.Lesson", b =>
                 {
-                    b.Property<byte>("Id")
+                    b.Property<short>("Id")
                         .HasColumnType("smallint")
                         .HasColumnName("Id")
                         .HasColumnOrder(0);
@@ -972,7 +972,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("Name")
                         .HasColumnOrder(6);
 
-                    b.Property<byte>("SortNo")
+                    b.Property<short>("SortNo")
                         .HasColumnType("smallint")
                         .HasColumnName("SortNo")
                         .HasColumnOrder(7);
@@ -997,133 +997,133 @@ namespace DataAccess.EF.Migrations
                     b.HasData(
                         new
                         {
-                            Id = (byte)1,
+                            Id = (short)1,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
                             Name = "Türkçe",
-                            SortNo = (byte)1,
+                            SortNo = (short)1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
                         new
                         {
-                            Id = (byte)2,
+                            Id = (short)2,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
                             Name = "Matematik",
-                            SortNo = (byte)2,
+                            SortNo = (short)2,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
                         new
                         {
-                            Id = (byte)3,
+                            Id = (short)3,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
                             Name = "İngilizce",
-                            SortNo = (byte)3,
+                            SortNo = (short)3,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
                         new
                         {
-                            Id = (byte)4,
+                            Id = (short)4,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
                             Name = "Fen Bilimleri",
-                            SortNo = (byte)4,
+                            SortNo = (short)4,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
                         new
                         {
-                            Id = (byte)5,
+                            Id = (short)5,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
                             Name = "Fizik",
-                            SortNo = (byte)5,
+                            SortNo = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
                         new
                         {
-                            Id = (byte)6,
+                            Id = (short)6,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
                             Name = "Kimya",
-                            SortNo = (byte)6,
+                            SortNo = (short)6,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
                         new
                         {
-                            Id = (byte)7,
+                            Id = (short)7,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
                             Name = "Biyoloji",
-                            SortNo = (byte)7,
+                            SortNo = (short)7,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
                         new
                         {
-                            Id = (byte)8,
+                            Id = (short)8,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
                             Name = "Edebiyat",
-                            SortNo = (byte)8,
+                            SortNo = (short)8,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
                         new
                         {
-                            Id = (byte)9,
+                            Id = (short)9,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
                             Name = "Tarih",
-                            SortNo = (byte)9,
+                            SortNo = (short)9,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
                         new
                         {
-                            Id = (byte)10,
+                            Id = (short)10,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
                             Name = "Coğrafya",
-                            SortNo = (byte)10,
+                            SortNo = (short)10,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
                         new
                         {
-                            Id = (byte)11,
+                            Id = (short)11,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
                             Name = "Felsefe",
-                            SortNo = (byte)11,
+                            SortNo = (short)11,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
                         new
                         {
-                            Id = (byte)12,
+                            Id = (short)12,
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
                             Name = "Din Kültürü",
-                            SortNo = (byte)12,
+                            SortNo = (short)12,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         });
@@ -1527,10 +1527,10 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("Slug")
                         .HasColumnOrder(19);
 
-                    b.Property<byte>("SortNo")
+                    b.Property<short>("SortNo")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("smallint")
-                        .HasDefaultValue((byte)0)
+                        .HasDefaultValue((short)0)
                         .HasColumnName("SortNo")
                         .HasColumnOrder(7);
 
@@ -1596,7 +1596,7 @@ namespace DataAccess.EF.Migrations
                             IsWebVisible = false,
                             Name = "Sözel",
                             PaymentRenewalPeriod = (byte)0,
-                            SortNo = (byte)0,
+                            SortNo = (short)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
                             UnitPrice = 0.0,
@@ -1613,7 +1613,7 @@ namespace DataAccess.EF.Migrations
                             IsWebVisible = false,
                             Name = "Sayısal",
                             PaymentRenewalPeriod = (byte)0,
-                            SortNo = (byte)0,
+                            SortNo = (short)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
                             UnitPrice = 0.0,
@@ -1630,7 +1630,7 @@ namespace DataAccess.EF.Migrations
                             IsWebVisible = false,
                             Name = "Eşit Ağırlık",
                             PaymentRenewalPeriod = (byte)0,
-                            SortNo = (byte)0,
+                            SortNo = (short)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
                             UnitPrice = 0.0,
@@ -1647,7 +1647,7 @@ namespace DataAccess.EF.Migrations
                             IsWebVisible = false,
                             Name = "Yabancı Dil",
                             PaymentRenewalPeriod = (byte)0,
-                            SortNo = (byte)0,
+                            SortNo = (short)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
                             UnitPrice = 0.0,
@@ -1664,7 +1664,7 @@ namespace DataAccess.EF.Migrations
                             IsWebVisible = false,
                             Name = "Hepsi",
                             PaymentRenewalPeriod = (byte)0,
-                            SortNo = (byte)0,
+                            SortNo = (short)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
                             UnitPrice = 0.0,
@@ -1681,7 +1681,7 @@ namespace DataAccess.EF.Migrations
                             IsWebVisible = false,
                             Name = "Orta Okul",
                             PaymentRenewalPeriod = (byte)0,
-                            SortNo = (byte)0,
+                            SortNo = (short)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
                             UnitPrice = 0.0,
@@ -1698,7 +1698,7 @@ namespace DataAccess.EF.Migrations
                             IsWebVisible = false,
                             Name = "Lise",
                             PaymentRenewalPeriod = (byte)0,
-                            SortNo = (byte)0,
+                            SortNo = (short)0,
                             TaxAmount = 0.0,
                             TaxRatio = 0.0,
                             UnitPrice = 0.0,
@@ -2026,30 +2026,6 @@ namespace DataAccess.EF.Migrations
                         },
                         new
                         {
-                            Id = new Guid("00000010-0000-0000-0000-000000000000"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 1L,
-                            IsActive = true,
-                            PackageId = (short)5,
-                            RenewCount = 0,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 1L,
-                            UserId = 16L
-                        },
-                        new
-                        {
-                            Id = new Guid("00000011-0000-0000-0000-000000000000"),
-                            CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreateUser = 1L,
-                            IsActive = true,
-                            PackageId = (short)5,
-                            RenewCount = 0,
-                            UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdateUser = 1L,
-                            UserId = 17L
-                        },
-                        new
-                        {
                             Id = new Guid("00000012-0000-0000-0000-000000000000"),
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 1L,
@@ -2287,7 +2263,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("IsRead")
                         .HasColumnOrder(14);
 
-                    b.Property<byte>("LessonId")
+                    b.Property<short>("LessonId")
                         .HasColumnType("smallint")
                         .HasColumnName("LessonId")
                         .HasColumnOrder(6);
@@ -2399,7 +2375,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("IsActive")
                         .HasColumnOrder(1);
 
-                    b.Property<byte>("LessonId")
+                    b.Property<short>("LessonId")
                         .HasColumnType("smallint")
                         .HasColumnName("LessonId")
                         .HasColumnOrder(7);
@@ -2583,7 +2559,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("IsActive")
                         .HasColumnOrder(1);
 
-                    b.Property<byte>("LessonId")
+                    b.Property<short>("LessonId")
                         .HasColumnType("smallint")
                         .HasColumnName("LessonId")
                         .HasColumnOrder(7);
@@ -2620,7 +2596,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)1,
+                            LessonId = (short)1,
                             PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -2631,7 +2607,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)2,
+                            LessonId = (short)2,
                             PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -2642,7 +2618,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)3,
+                            LessonId = (short)3,
                             PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -2653,7 +2629,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)4,
+                            LessonId = (short)4,
                             PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -2664,7 +2640,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)5,
+                            LessonId = (short)5,
                             PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -2675,7 +2651,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)6,
+                            LessonId = (short)6,
                             PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -2686,7 +2662,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)7,
+                            LessonId = (short)7,
                             PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -2697,7 +2673,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)8,
+                            LessonId = (short)8,
                             PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -2708,7 +2684,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)9,
+                            LessonId = (short)9,
                             PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -2719,7 +2695,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)10,
+                            LessonId = (short)10,
                             PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -2730,7 +2706,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)11,
+                            LessonId = (short)11,
                             PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -2741,7 +2717,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)12,
+                            LessonId = (short)12,
                             PackageId = (short)5,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -2935,7 +2911,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("IsActive")
                         .HasColumnOrder(1);
 
-                    b.Property<byte>("LessonId")
+                    b.Property<short>("LessonId")
                         .HasColumnType("smallint")
                         .HasColumnName("LessonId")
                         .HasColumnOrder(7);
@@ -2972,7 +2948,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)2,
+                            LessonId = (short)2,
                             TeacherId = 1,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -2983,7 +2959,7 @@ namespace DataAccess.EF.Migrations
                             CreateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreateUser = 2L,
                             IsActive = true,
-                            LessonId = (byte)1,
+                            LessonId = (short)1,
                             TeacherId = 2,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
@@ -3171,7 +3147,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("IsRead")
                         .HasColumnOrder(17);
 
-                    b.Property<byte>("LessonId")
+                    b.Property<short>("LessonId")
                         .HasColumnType("smallint")
                         .HasColumnName("LessonId")
                         .HasColumnOrder(6);

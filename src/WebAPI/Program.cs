@@ -43,6 +43,10 @@ static void SetAppOptions(WebApplicationBuilder builder)
 
 static void Services(WebApplicationBuilder builder)
 {
+    Console.WriteLine("API Starting...");
+    Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
+    Console.WriteLine(Directory.GetCurrentDirectory());
+
     builder.Services.AddSingleton(FirebaseApp.Create(new FirebaseAdmin.AppOptions()
     {
         Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hamster-private-key.json")),
@@ -51,12 +55,12 @@ static void Services(WebApplicationBuilder builder)
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddHealthChecks();
-    builder.Services.AddMemoryCache();
+    builder.Services.AddDistributedMemoryCache();
     builder.Services.AddHttpClient();
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddSingleton<Stopwatch>();
     builder.Services.AddSingleton<ITokenHelper, JwtHelper>();
-    builder.Services.AddSingleton<ICacheManager, MemoryCacheManager>();
+    builder.Services.AddSingleton<ICacheManager, DistributedCacheManager>();
     builder.Services.AddCustomApiVersioning(x =>
     {
         x.AddUrlSegmentApiVersionReader();
@@ -134,9 +138,12 @@ static async Task Middlewares(WebApplicationBuilder builder, WebApplication app)
 
     app.MapControllers();
 
-    Console.WriteLine("API çalışıyor...");
-    Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
-    Console.WriteLine(Directory.GetCurrentDirectory());
+    Console.WriteLine("API Started...");
+    app.Lifetime.ApplicationStarted.Register(() =>
+    {
+        foreach (var url in app.Urls) Console.WriteLine(url.Replace("[::]","localhost"));
+    });
+
 }
 
 static void SwaggerAndToken(WebApplicationBuilder builder)

@@ -56,6 +56,11 @@
 
 	<ItemGroup>
 	  <Folder Include="Features\Auths\Dtos\" />
+	  <Folder Include="Features\Persons\Commands\" />
+	  <Folder Include="Features\Persons\Models\" />
+	  <Folder Include="Features\Persons\Queries\" />
+	  <Folder Include="Features\Persons\Rules\" />
+	  <Folder Include="Features\Persons\Profiles\" />
 	</ItemGroup>
 
 	<ItemGroup>

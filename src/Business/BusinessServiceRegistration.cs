@@ -21,7 +21,7 @@ public static class BusinessServiceRegistration
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Behaviors.AuthorizationBehavior<,>));
         //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Caching.CachingBehavior<,>));
-        //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Caching.CacheRemovingBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Caching.CacheRemovingBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Logging.LoggingBehavior<,>));
         //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Performance.PerformanceBehavior<,>));
         //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(OCK.Core.Pipelines.Transaction.TransactionScopeBehavior<,>));

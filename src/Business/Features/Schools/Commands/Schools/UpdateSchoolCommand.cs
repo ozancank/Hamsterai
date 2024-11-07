@@ -5,19 +5,20 @@ using Business.Features.Users.Rules;
 using Business.Services.CommonService;
 using DataAccess.Abstract.Core;
 using Domain.Entities.Core;
-using LinqKit;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
+using OCK.Core.Pipelines.Caching;
 using OCK.Core.Pipelines.Logging;
 
 namespace Business.Features.Schools.Commands.Schools;
 
-public class UpdateSchoolCommand : IRequest<GetSchoolModel>, ISecuredRequest<UserTypes>, ILoggableRequest
+public class UpdateSchoolCommand : IRequest<GetSchoolModel>, ISecuredRequest<UserTypes>, ILoggableRequest, ICacheRemoverRequest
 {
     public required UpdateSchoolModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
+    public string[] CacheKey { get; } = [$"^{Strings.CacheStatusAndLicence}"];
 }
 
 public class UpdateSchoolCommandHandler(IMapper mapper,

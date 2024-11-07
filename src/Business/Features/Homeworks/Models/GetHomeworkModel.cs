@@ -12,7 +12,7 @@ public class GetHomeworkModel : IModel
     public string? SchoolName { get; set; }
     public int? TeacherId { get; set; }
     public string? TeacherName { get; set; }
-    public byte LessonId { get; set; }
+    public short LessonId { get; set; }
     public string? LessonName { get; set; }
     public string? FilePath { get; set; }
     public int? ClassRoomId { get; set; }

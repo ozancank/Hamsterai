@@ -2,7 +2,7 @@
 
 public class AddSimilarModel : IRequestModel
 {
-    public byte LessonId { get; set; }
+    public short LessonId { get; set; }
     public string? QuestionPictureBase64 { get; set; }
     public string? QuestionPictureFileName { get; set; }
 }

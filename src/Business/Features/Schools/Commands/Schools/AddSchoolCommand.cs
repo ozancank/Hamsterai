@@ -7,17 +7,19 @@ using DataAccess.Abstract.Core;
 using Domain.Entities.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
+using OCK.Core.Pipelines.Caching;
 using OCK.Core.Pipelines.Logging;
 using OCK.Core.Security.HashingHelper;
 
 namespace Business.Features.Schools.Commands.Schools;
 
-public class AddSchoolCommand : IRequest<GetSchoolModel>, ISecuredRequest<UserTypes>, ILoggableRequest
+public class AddSchoolCommand : IRequest<GetSchoolModel>, ISecuredRequest<UserTypes>, ILoggableRequest, ICacheRemoverRequest
 {
     public required AddSchoolModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
+    public string[] CacheKey { get; } = [$"^{Strings.CacheStatusAndLicence}"];
 }
 
 public class AddSchoolCommandHandler(IMapper mapper,

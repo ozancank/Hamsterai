@@ -20,19 +20,21 @@ public class PasswordChangeByManagerCommand : IRequest<bool>, ISecuredRequest<Us
 
 public class PasswordChangeByManagerCommandHandler(IUserDal userDal,
                                                    IUserService userService,
-                                                   UserRules userBusinessRules) : IRequestHandler<PasswordChangeByManagerCommand, bool>
+                                                   UserRules userRules) : IRequestHandler<PasswordChangeByManagerCommand, bool>
 {
     public async Task<bool> Handle(PasswordChangeByManagerCommand request, CancellationToken cancellationToken)
     {
+        await userRules.UserCanNotChangeOwnOrAdminPassword(request.Id);
+
         var user = await userDal.GetAsync(predicate: userService.GetPredicateForUser(x => x.Id == request.Id), cancellationToken: cancellationToken);
 
         await UserRules.UserShouldExistsAndActive(user);
-        await userBusinessRules.UserTypeAllowed(user.Type, user.Id);
+        await userRules.UserTypeAllowed(user.Type, user.Id);
 
         HashingHelper.CreatePasswordHash(request.Password!, out byte[] passwordHash, out byte[] passwordSalt);
         user.PasswordHash = passwordHash;
         user.PasswordSalt = passwordSalt;
-        user.MustPasswordChange = false;
+        user.MustPasswordChange = true;
 
         var updatedUser = await userDal.UpdateAsyncCallback(user, cancellationToken: cancellationToken);
         return updatedUser != null;

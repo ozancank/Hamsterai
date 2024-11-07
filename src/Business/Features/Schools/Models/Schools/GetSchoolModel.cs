@@ -22,8 +22,9 @@ public sealed class GetSchoolModel : IResponseModel
     public int UserCount { get; set; }
     public int TeacherCount { get; set; }
     public int StudentCount { get; set; }
+    public long UserId { get; set; }
 
-    public List<byte> PackageIds { get; set; } = [];
+    public List<short> PackageIds { get; set; } = [];
     public List<GetPackageLiteModel> Packages { get; set; } = [];
     public List<GetUserModel> Users { get; set; } = [];
     public List<Teacher> Teachers { get; set; } = [];

@@ -148,7 +148,7 @@ namespace DataAccess.EF.Migrations
                     TaxOldAmount = table.Column<double>(type: "double precision", nullable: true),
                     Amount = table.Column<double>(type: "double precision", nullable: false, defaultValue: 0.0),
                     OldAmount = table.Column<double>(type: "double precision", nullable: true),
-                    PaymentRenewalPeriod = table.Column<string>(type: "text", nullable: false, defaultValue: "None"),
+                    PaymentRenewalPeriod = table.Column<byte>(type: "smallint", nullable: false, defaultValue: (byte)0),
                     Description = table.Column<string>(type: "citext", maxLength: 500, nullable: true),
                     PictureUrl = table.Column<string>(type: "citext", maxLength: 500, nullable: true)
                 },
@@ -413,9 +413,7 @@ namespace DataAccess.EF.Migrations
                     { new Guid("95427f3c-1228-4a8a-baa8-84ee156dd46f"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, true, (byte)5, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, 1L },
                     { new Guid("97d4d695-bcd4-4766-a388-dc3d8396689d"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, true, (byte)5, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, 19L },
                     { new Guid("9d48b435-6699-4abd-9a94-86d98ea4869d"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, true, (byte)5, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, 4L },
-                    { new Guid("aaf09372-334e-4227-9272-9c1e85cdfbda"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, true, (byte)5, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, 16L },
                     { new Guid("aced1f4d-138a-4909-bae2-0e28eb30412f"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, true, (byte)5, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, 18L },
-                    { new Guid("bb64a9a1-60c3-4258-a23c-7fa5a34a7ffa"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, true, (byte)5, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, 17L },
                     { new Guid("c92dd1f5-b3e9-4280-bd47-e56da8544ba7"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, true, (byte)5, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, 13L },
                     { new Guid("ca0c28f0-354e-4e2d-a87c-5adbdb07076d"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, true, (byte)5, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, 20L },
                     { new Guid("cc964ed9-ad9c-4260-9062-0083021743f5"), new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, true, (byte)5, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1L, 7L },

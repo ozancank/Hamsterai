@@ -5,7 +5,7 @@ namespace Domain.Entities;
 public class RTeacherLesson : BaseEntity<Guid>
 {
     public int TeacherId { get; set; }
-    public byte LessonId { get; set; }
+    public short LessonId { get; set; }
 
     public virtual Teacher? Teacher { get; set; }
     public virtual Lesson? Lesson { get; set; }

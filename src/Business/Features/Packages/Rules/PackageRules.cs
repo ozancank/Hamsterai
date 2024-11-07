@@ -32,7 +32,7 @@ public class PackageRules(IPackageDal packageDal) : IBusinessRule
     internal async Task PackageShouldNotExistsByName(string name)
     {
         if (name == null) throw new BusinessException($"{Strings.InvalidValue} : {nameof(name)}");
-        var entity = await packageDal.IsExistsAsync(predicate: x => x.Name == name, enableTracking: false);
+        var entity = await packageDal.IsExistsAsync(predicate: x => PostgresqlFunctions.TrLower(x.Name) == PostgresqlFunctions.TrLower(name), enableTracking: false);
         await PackageShouldExists(entity);
     }
 

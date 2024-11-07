@@ -5,7 +5,7 @@ namespace Domain.Entities;
 public class Gain : BaseEntity<int>
 {
     public string? Name { get; set; }
-    public byte LessonId { get; set; }
+    public short LessonId { get; set; }
 
     public virtual Lesson? Lesson { get; set; }
     public virtual ICollection<Question> Questions { get; set; } = [];

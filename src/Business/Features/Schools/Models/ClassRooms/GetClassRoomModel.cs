@@ -15,7 +15,7 @@ public sealed class GetClassRoomModel : IResponseModel
     public short No { get; set; }
     public string? Branch { get; set; }
     public int SchoolId { get; set; }
-    public byte PackageId { get; set; }
+    public short PackageId { get; set; }
     public string? PackageName { get; set; }
 
     public GetSchoolModel? School { get; set; }

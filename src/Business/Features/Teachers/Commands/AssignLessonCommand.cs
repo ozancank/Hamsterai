@@ -10,7 +10,7 @@ namespace Business.Features.Teachers.Commands;
 public class AssignLessonCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
     public int Id { get; set; }
-    public List<byte> LessonIds { get; set; } = [];
+    public List<short> LessonIds { get; set; } = [];
 
     public UserTypes[] Roles { get; } = [UserTypes.School];
     public bool AllowByPass => false;

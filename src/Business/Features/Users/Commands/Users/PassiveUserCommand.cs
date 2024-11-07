@@ -3,17 +3,19 @@ using Business.Services.UserService;
 using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
+using OCK.Core.Pipelines.Caching;
 using OCK.Core.Pipelines.Logging;
 
 namespace Business.Features.Users.Commands.Users;
 
-public class PassiveUserCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
+public class PassiveUserCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest, ICacheRemoverRequest
 {
     public long Id { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
+    public string[] CacheKey { get; } = [$"^{Strings.CacheStatusAndLicence}"];
 }
 
 public class PassiveUserCommandHandler(IUserDal userDal,

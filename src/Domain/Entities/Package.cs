@@ -6,7 +6,7 @@ namespace Domain.Entities;
 public class Package : BaseEntity<short>
 {
     public string? Name { get; set; }
-    public byte SortNo { get; set; }
+    public short SortNo { get; set; }
     public bool IsWebVisible { get; set; }
     public double UnitPrice { get; set; }
     public double? UnitOldPrice { get; set; }

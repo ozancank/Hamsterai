@@ -1,7 +1,5 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Business.Features.Students.Models;
+﻿using Business.Features.Students.Models;
 using Business.Features.Users.Rules;
-using Business.Services.CommonService;
 using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
@@ -92,13 +90,13 @@ public class GetStudentGainsByIdQueryHandler(//ICommonService commonService,
                          .ToDictionary(y => y.Gain!, y => y.Count)
             })
             .ToDictionary(x => x.Lesson!, x => x.Gains);
-           
-            result.Info = new Dictionary<string, int>
+
+        result.Info = new Dictionary<string, int>
             {
                 { "TotalQuestion", allQuestions.Count },
                 { "TotalGain", result.ForLessons.Sum(x=>x.Value) }
             };
-        
+
         return result;
     }
 }

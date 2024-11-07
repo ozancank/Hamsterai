@@ -12,7 +12,7 @@ public sealed class GetPackageModel : IResponseModel
     public long UpdateUser { get; set; }
     public DateTime UpdateDate { get; set; }
     public string? Name { get; set; }
-    public byte SortNo { get; set; }
+    public short SortNo { get; set; }
     public bool IsWebVisible { get; set; }
     public double UnitPrice { get; set; }
     public double? UnitOldPrice { get; set; }
@@ -28,6 +28,6 @@ public sealed class GetPackageModel : IResponseModel
     public byte? CategoryId { get; set; }
 
     public GetPackageCategoryLiteModel? Category { get; set; }
-    public List<byte> LessonIds { get; set; } = [];
+    public List<short> LessonIds { get; set; } = [];
     public List<GetLessonLiteModel> Lessons { get; set; } = [];
 }

@@ -3,7 +3,7 @@
 public class GetQuizQuestionModel : IResponseModel
 {
     public string? Id { get; set; }
-    public byte SortNo { get; set; }
+    public short SortNo { get; set; }
     public string? QuizId { get; set; }
     public string? Question { get; set; }
     public string? QuestionPictureFileName { get; set; }

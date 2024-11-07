@@ -1,4 +1,5 @@
 ﻿using Business.Features.Schools.Models.Schools;
+using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
@@ -14,6 +15,7 @@ public class GetSchoolsByDynamicQuery : IRequest<PageableModel<GetSchoolModel>>,
 }
 
 public class GetSchoolsByDynamicQueryHandler(IMapper mapper,
+                                             IUserDal userDal,
                                              ISchoolDal schoolDal) : IRequestHandler<GetSchoolsByDynamicQuery, PageableModel<GetSchoolModel>>
 {
     public async Task<PageableModel<GetSchoolModel>> Handle(GetSchoolsByDynamicQuery request, CancellationToken cancellationToken)
@@ -30,6 +32,12 @@ public class GetSchoolsByDynamicQueryHandler(IMapper mapper,
             configurationProvider: mapper.ConfigurationProvider,
             index: request.PageRequest.Page, size: request.PageRequest.PageSize,
             cancellationToken: cancellationToken);
+
+        await schools.Items.ForEachAsync(async x =>
+        {
+            x.UserId = (await userDal.GetAsync(s => s.Type == UserTypes.School && s.SchoolId == x.Id, enableTracking: false, cancellationToken: cancellationToken))?.Id ?? 0;
+        });
+
         var list = mapper.Map<PageableModel<GetSchoolModel>>(schools);
         return list;
     }

@@ -4,17 +4,19 @@ using Business.Services.CommonService;
 using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
+using OCK.Core.Pipelines.Caching;
 using OCK.Core.Pipelines.Logging;
 
 namespace Business.Features.Schools.Commands.Schools;
 
-public class PassiveSchoolCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
+public class PassiveSchoolCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest, ICacheRemoverRequest
 {
     public int Id { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
+    public string[] CacheKey { get; } = [$"^{Strings.CacheStatusAndLicence}"];
 }
 
 public class PassiveSchoolCommandHandler(ISchoolDal schoolDal,

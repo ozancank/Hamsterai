@@ -1,5 +1,6 @@
 ﻿using Business.Features.Teachers.Models;
 using Business.Services.CommonService;
+using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
@@ -16,6 +17,7 @@ public class GetTeachersByDynamicQuery : IRequest<PageableModel<GetTeacherModel>
 
 public class GetTeachersByDynamicQueryHandler(IMapper mapper,
                                               ICommonService commonService,
+                                              IUserDal userDal,
                                               ITeacherDal teacherDal) : IRequestHandler<GetTeachersByDynamicQuery, PageableModel<GetTeacherModel>>
 {
     public async Task<PageableModel<GetTeacherModel>> Handle(GetTeachersByDynamicQuery request, CancellationToken cancellationToken)
@@ -34,6 +36,12 @@ public class GetTeachersByDynamicQueryHandler(IMapper mapper,
             include: x => x.Include(u => u.School).Include(u => u.RTeacherLessons).Include(u => u.RTeacherLessons),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
+
+        await teachers.Items.ForEachAsync(async x =>
+        {
+            x.UserId = (await userDal.GetAsync(u => u.Type == UserTypes.Teacher && u.ConnectionId == x.Id, enableTracking: false, cancellationToken: cancellationToken))?.Id ?? 0;
+        });
+
         var result = mapper.Map<PageableModel<GetTeacherModel>>(teachers);
 
         return result;

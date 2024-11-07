@@ -15,6 +15,8 @@ public struct Strings
     public const string XApiKey = "HaMsTerAI-Security";
     public const string AuthorizationDenied = "Bu işlem için yetkiniz bulunmamaktadır.";
 
+    public const string CacheStatusAndLicence = "CacheStatusAndLicence";
+
     public const string DynamicNotNull = "{0} nesnesine değer atanamadı.";
     public const string DynamicNotEmpty = "{0} girilmesi zorunludur.";
     public const string DynamicLength = "{0} {1} karakter olmalıdır.";
@@ -137,6 +139,7 @@ public struct Strings
     public const string PasswordCodeExpired = "Şifre sıfırlama kodunun süresi doldu.";
     public const string UserTypeNotAllowed = "Kullanıcı tipine izin verilmiyor.";
     public const string UserDeniedPassiveForAdmin = "Admin kullanıcısı pasif yapılamaz.";
+    public const string UserDeniedChangeOwnPassword = "Bu kullanıcının şifrenizi değiştirmek için şifre değiştir methodunu kullanınız.";
 
     public const string ModelBusy = "Model meşgul!";
     public const string QuestionLimitForStudentAndLesson = "Bu ders için günlük soru limitinize ulaştınız.";

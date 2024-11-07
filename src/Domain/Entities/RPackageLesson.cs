@@ -5,7 +5,7 @@ namespace Domain.Entities;
 public class RPackageLesson : BaseEntity<Guid>
 {
     public short PackageId { get; set; }
-    public byte LessonId { get; set; }
+    public short LessonId { get; set; }
 
     public virtual Package? Package { get; set; }
     public virtual Lesson? Lesson { get; set; }

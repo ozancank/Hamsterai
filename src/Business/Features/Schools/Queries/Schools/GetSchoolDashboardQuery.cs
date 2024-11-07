@@ -9,7 +9,7 @@ namespace Business.Features.Schools.Queries.Schools;
 
 public class GetSchoolDashboardQuery : IRequest<GetSchoolDashboardModel>, ISecuredRequest<UserTypes>
 {
-    public byte Id { get; set; }
+    public int Id { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.School];
     public bool AllowByPass => false;
@@ -87,7 +87,7 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
                                                           .Select(x => new { Key = $"{x.Key.No}-{x.Key.Branch}", Count = x.Count() })
                                                           .ToDictionaryAsync(x => x.Key, x => x.Count, cancellationToken: cancellationToken);
         result.SendQuestionByGain = await questionDal.Query().AsNoTracking()
-                                                     .Include(x=>x.Gain)
+                                                     .Include(x => x.Gain)
                                                      .Include(x => x.User).ThenInclude(x => x!.School)
                                                      .Where(x => x.User!.IsActive && x.User.School!.Id == school.Id && x.User.Type == UserTypes.Student && x.Gain != null)
                                                      .GroupBy(x => x.Gain!.Name)
@@ -97,10 +97,17 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
         result.SendQuestionByName = await questionDal.Query().AsNoTracking()
                                                      .Include(x => x.User).ThenInclude(x => x!.School)
                                                      .Where(x => x.User!.IsActive && x.User.School!.Id == school.Id && x.User.Type == UserTypes.Student)
-                                                     .GroupBy(x => new { x.User!.Name, x.User.Surname})
-                                                     .Select(x => new { Key=$"{x.Key.Name} {x.Key.Surname}", Count = x.Count() })
+                                                     .GroupBy(x => new { x.User!.Name, x.User.Surname })
+                                                     .Select(x => new { Key = $"{x.Key.Name} {x.Key.Surname}", Count = x.Count() })
                                                      .ToDictionaryAsync(x => x.Key, x => x.Count, cancellationToken);
 
+        result.SendQuestionByDay = (await questionDal.Query().AsNoTracking()
+                                                            .Include(x => x.User).ThenInclude(x => x!.School)
+                                                            .Where(x => x.User!.IsActive && x.User.School!.Id == school.Id && x.User.Type == UserTypes.Student)
+                                                            .GroupBy(x => x.CreateDate.Date)
+                                                            .Select(x => new { x.Key, Count = x.Count() })
+                                                            .ToDictionaryAsync(x => x.Key, x => x.Count, cancellationToken))
+                                   .GroupBy(x => x.Key.ToStringDayOfWeek()).ToDictionary(x => x.Key, x => x.Sum(s => s.Value));
 
         result.SendSimilarByLesson = await similarQuestionDal.Query().AsNoTracking()
                                                              .Include(x => x.Lesson)
@@ -128,7 +135,7 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
         result.SendSimilarByGain = await similarQuestionDal.Query().AsNoTracking()
                                                            .Include(x => x.Gain)
                                                            .Include(x => x.User).ThenInclude(x => x!.School)
-                                                           .Where(x => x.User!.IsActive && x.User.School!.Id == school.Id && x.User.Type == UserTypes.Student && x.Gain!=null)
+                                                           .Where(x => x.User!.IsActive && x.User.School!.Id == school.Id && x.User.Type == UserTypes.Student && x.Gain != null)
                                                            .GroupBy(x => x.Gain!.Name)
                                                            .Select(x => new { x.Key, Count = x.Count() })
                                                            .ToDictionaryAsync(x => x.Key!, x => x.Count, cancellationToken);
@@ -138,6 +145,13 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
                                                            .GroupBy(x => new { x.User!.Name, x.User.Surname })
                                                            .Select(x => new { Key = $"{x.Key.Name} {x.Key.Surname}", Count = x.Count() })
                                                            .ToDictionaryAsync(x => x.Key, x => x.Count, cancellationToken);
+        result.SendSimilarByDay = (await similarQuestionDal.Query().AsNoTracking()
+                                                           .Include(x => x.User).ThenInclude(x => x!.School)
+                                                           .Where(x => x.User!.IsActive && x.User.School!.Id == school.Id && x.User.Type == UserTypes.Student)
+                                                           .GroupBy(x => x.CreateDate.Date)
+                                                           .Select(x => new { x.Key, Count = x.Count() })
+                                                           .ToDictionaryAsync(x => x.Key, x => x.Count, cancellationToken))
+                                  .GroupBy(x => x.Key.ToStringDayOfWeek()).ToDictionary(x => x.Key, x => x.Sum(s => s.Value));
 
         result.HomeworkByTeacher = await homeworkDal.Query().AsNoTracking()
                                                     .Include(x => x.User).ThenInclude(x => x!.School)
@@ -162,6 +176,7 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
         result.TotalQuestionByPackage = result.SendQuestionByPackage.Concat(result.SendSimilarByPackage).GroupBy(x => x.Key).ToDictionary(x => x.Key, x => x.Sum(s => s.Value));
         result.TotalQuestionByClassRoom = result.SendQuestionByClassRoom.Concat(result.SendSimilarByClassRoom).GroupBy(x => x.Key).ToDictionary(x => x.Key, x => x.Sum(s => s.Value));
         result.TotalQuestionByGain = result.SendQuestionByGain.Concat(result.SendSimilarByGain).GroupBy(x => x.Key).ToDictionary(x => x.Key, x => x.Sum(s => s.Value));
+        result.TotalQuestionByName = result.SendQuestionByName.Concat(result.SendSimilarByName).GroupBy(x => x.Key).ToDictionary(x => x.Key, x => x.Sum(s => s.Value));
 
         return result;
     }

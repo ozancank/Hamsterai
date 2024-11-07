@@ -5,7 +5,7 @@ public class GetSimilarModel : IResponseModel
     public Guid Id { get; set; }
     public long CreateUser { get; set; }
     public DateTime CreateDate { get; set; }
-    public byte LessonId { get; set; }
+    public short LessonId { get; set; }
     public string? QuestionPictureFileName { get; set; }
     public string? QuestionPictureExtension { get; set; }
     public string? ResponseQuestion { get; set; }

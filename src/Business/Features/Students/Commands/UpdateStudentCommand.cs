@@ -6,16 +6,18 @@ using Business.Services.CommonService;
 using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
+using OCK.Core.Pipelines.Caching;
 using OCK.Core.Pipelines.Logging;
 
 namespace Business.Features.Students.Commands;
 
-public class UpdateStudentCommand : IRequest<GetStudentModel>, ISecuredRequest<UserTypes>, ILoggableRequest
+public class UpdateStudentCommand : IRequest<GetStudentModel>, ISecuredRequest<UserTypes>, ILoggableRequest, ICacheRemoverRequest
 {
     public required UpdateStudentModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.School];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
+    public string[] CacheKey { get; } = [$"^{Strings.CacheStatusAndLicence}"];
 }
 
 public class UpdateStudentCommandHandler(IMapper mapper,

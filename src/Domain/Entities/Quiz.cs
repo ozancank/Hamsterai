@@ -6,7 +6,7 @@ namespace Domain.Entities;
 public class Quiz : BaseEntity<string>
 {
     public long UserId { get; set; }
-    public byte LessonId { get; set; }
+    public short LessonId { get; set; }
     public int TimeSecond { get; set; }
     public QuizStatus Status { get; set; }
     public byte CorrectCount { get; set; }

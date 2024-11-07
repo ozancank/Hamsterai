@@ -14,7 +14,10 @@ public class GetUserModel : IResponseModel
     public int? ConnectionId { get; set; }
     public int? SchoolId { get; set; }
     public byte Type { get; set; }
-    public byte PackageId { get; set; }
-    public int QuestionCount { get; set; }
+    public short PackageId { get; set; }
+    public int PackageCredit { get; set; }
+    public int AddtionalCredit { get; set; }
+    public bool AutomaticPayment { get; set; }
+
     public List<string> OperationClaims { get; set; } = [];
 }

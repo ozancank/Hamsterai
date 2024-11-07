@@ -1,4 +1,6 @@
-﻿namespace Business.Features.Packages.Rules;
+﻿using DataAccess.EF;
+
+namespace Business.Features.Packages.Rules;
 
 public class PackageCategoryRules(IPackageCategoryDal packageCategoryDal) : IBusinessRule
 {
@@ -30,21 +32,20 @@ public class PackageCategoryRules(IPackageCategoryDal packageCategoryDal) : IBus
     internal async Task PackageCategoryShouldNotExistsByName(string name)
     {
         if (name == null) throw new BusinessException($"{Strings.InvalidValue} : {nameof(name)}");
-        var entity = await packageCategoryDal.IsExistsAsync(predicate: x => x.Name == name, enableTracking: false);
+        var entity = await packageCategoryDal.IsExistsAsync(predicate: x => PostgresqlFunctions.TrLower(x.Name) == PostgresqlFunctions.TrLower(name), enableTracking: false);
         await PackageCategoryShouldExists(entity);
     }
 
     internal async Task PackageCategoryShouldNotExistsAndActiveByName(string name)
     {
         if (name == null) throw new BusinessException($"{Strings.InvalidValue} : {nameof(name)}");
-        var entity = await packageCategoryDal.IsExistsAsync(predicate: x => x.Name == name && x.IsActive, enableTracking: false);
+        var entity = await packageCategoryDal.IsExistsAsync(predicate: x => PostgresqlFunctions.TrLower(x.Name) == PostgresqlFunctions.TrLower(name) && x.IsActive, enableTracking: false);
         await PackageCategoryShouldExists(entity);
     }
 
     internal async Task PackageCategoryNameAndParentIdCanNotBeDuplicated(string name, byte parentId, byte? packageCategoryId = null)
     {
-        name = name.EmptyOrTrim().ToLower();
-        var entity = await packageCategoryDal.GetAsync(predicate: x => x.Name == name && x.ParentId == parentId, enableTracking: false);
+        var entity = await packageCategoryDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.Name) == PostgresqlFunctions.TrLower(name) && x.ParentId == parentId, enableTracking: false);
         if (packageCategoryId == null && entity != null) throw new BusinessException(Strings.DynamicExists, name);
         if (packageCategoryId != null && entity != null && entity.Id != packageCategoryId) throw new BusinessException(Strings.DynamicExists, name);
     }

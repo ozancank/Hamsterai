@@ -8,7 +8,7 @@ namespace Business.Features.Lessons.Commands.Lessons;
 
 public class ActiveLessonCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public byte Id { get; set; }
+    public short Id { get; set; }
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public bool AllowByPass => false;

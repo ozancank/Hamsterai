@@ -1,4 +1,5 @@
 ﻿using Business.Features.Schools.Models.Schools;
+using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
@@ -13,6 +14,7 @@ public class GetSchoolsQuery : IRequest<PageableModel<GetSchoolModel>>, ISecured
 }
 
 public class GetSchoolsQueryHandler(IMapper mapper,
+                                    IUserDal userDal,
                                     ISchoolDal schoolDal) : IRequestHandler<GetSchoolsQuery, PageableModel<GetSchoolModel>>
 {
     public async Task<PageableModel<GetSchoolModel>> Handle(GetSchoolsQuery request, CancellationToken cancellationToken)
@@ -28,6 +30,12 @@ public class GetSchoolsQueryHandler(IMapper mapper,
             orderBy: x => x.OrderBy(x => x.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
+
+        await schools.Items.ForEachAsync(async x =>
+        {
+            x.UserId = (await userDal.GetAsync(s => s.Type == UserTypes.School && s.SchoolId == x.Id, enableTracking: false, cancellationToken: cancellationToken))?.Id ?? 0;
+        });
+
         var result = mapper.Map<PageableModel<GetSchoolModel>>(schools);
         return result;
     }

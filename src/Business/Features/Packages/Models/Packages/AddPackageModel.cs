@@ -3,7 +3,7 @@
 public sealed class AddPackageModel : IResponseModel
 {
     public string? Name { get; set; }
-    public byte SortNo { get; set; }
+    public short SortNo { get; set; }
     public bool IsWebVisible { get; set; }
     public double TaxRatio { get; set; }
     public double Amount { get; set; }
@@ -13,5 +13,5 @@ public sealed class AddPackageModel : IResponseModel
     public IFormFile? PictureFile { get; set; }
     public byte CategoryId { get; set; }
 
-    public List<byte> LessonIds { get; set; } = [];
+    public List<short> LessonIds { get; set; } = [];
 }
