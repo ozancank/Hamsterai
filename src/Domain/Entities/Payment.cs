@@ -3,7 +3,7 @@ using Domain.Entities.Core;
 
 namespace Domain.Entities;
 
-public class Payment : BaseEntity<int>
+public class Payment : BaseEntity<Guid>
 {
     public long UserId { get; set; }
     public double Amount { get; set; }
@@ -18,7 +18,7 @@ public class Payment : BaseEntity<int>
     public Payment() : base()
     { }
 
-    public Payment(int id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate)
+    public Payment(Guid id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate)
         : base(id, isActive, createUser, createDate, updateUser, updateDate)
     { }
 }

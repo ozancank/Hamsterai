@@ -7,6 +7,7 @@ public sealed class GetPackageLiteModel : IResponseModel
     public short SortNo { get; set; }
     public bool IsWebVisible { get; set; }
     public string? Slug { get; set; }
+    public int QuestionCredit { get; set; }
 
     public List<short> LessonIds { get; set; } = [];
 }

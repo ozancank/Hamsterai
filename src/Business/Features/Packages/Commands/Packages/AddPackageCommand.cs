@@ -119,5 +119,7 @@ public class AddPackageCommandValidator : AbstractValidator<AddPackageCommand>
         RuleFor(x => x.Model.Name).MaximumLength(50).WithMessage(Strings.DynamicMaxLength, [Strings.Name, "50"]);
 
         RuleFor(x => x.Model.CategoryId).InclusiveBetween((byte)0, byte.MaxValue).WithMessage(Strings.DynamicBetween, [$"{Strings.Main} {Strings.Category}", "0", "255"]);
+
+        RuleFor(x => x.Model.QuestionCredit).GreaterThanOrEqualTo(0).WithMessage(Strings.DynamicGratherThanOrEqual, [$"{Strings.Question} {Strings.OfCount}", "0"]);
     }
 }

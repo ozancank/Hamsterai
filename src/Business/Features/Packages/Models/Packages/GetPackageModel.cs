@@ -26,6 +26,7 @@ public sealed class GetPackageModel : IResponseModel
     public string? PictureUrl { get; set; }
     public string? Slug { get; set; }
     public byte? CategoryId { get; set; }
+    public int QuestionCredit { get; set; }
 
     public GetPackageCategoryLiteModel? Category { get; set; }
     public List<short> LessonIds { get; set; } = [];

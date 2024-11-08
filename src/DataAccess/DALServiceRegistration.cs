@@ -40,6 +40,7 @@ public static class DALServiceRegistration
         services.AddScoped<INotificationDal, NotificationDal>();
         services.AddScoped<INotificationDeviceTokenDal, NotificationDeviceTokenDal>();
         services.AddScoped<IOrderDal, OrderDal>();
+        services.AddScoped<IOrderDetailDal, OrderDetailDal>();
         services.AddScoped<IPackageCategoryDal, PackageCategoryDal>();
         services.AddScoped<IPackageDal, PackageDal>();
         services.AddScoped<IPackageUserDal, PackageUserDal>();

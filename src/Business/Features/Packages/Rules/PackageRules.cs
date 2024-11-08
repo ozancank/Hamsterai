@@ -10,6 +10,13 @@ public class PackageRules(IPackageDal packageDal) : IBusinessRule
         return Task.CompletedTask;
     }
 
+    internal static Task PackageShouldExistsAndActive(Package package)
+    {
+        PackageShouldExists(package);
+        if (!package.IsActive) throw new BusinessException(Strings.DynamicNotFound, Strings.Package);
+        return Task.CompletedTask;
+    }
+
     internal static Task PackageShouldExists(bool isExists)
     {
         if (!isExists) throw new BusinessException(Strings.DynamicNotFound, Strings.Package);

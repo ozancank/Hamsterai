@@ -27,6 +27,8 @@ public class PackageConfiguration : IEntityTypeConfiguration<Package>
         builder.Property(e => e.PictureUrl).HasColumnName("PictureUrl").HasMaxLength(500).HasColumnOrder(18);
         builder.Property(e => e.Slug).HasColumnName("Slug").HasMaxLength(50).HasColumnOrder(19);
         builder.Property(e => e.CategoryId).HasColumnName("CategoryId").HasColumnOrder(20);
+        builder.Property(e => e.Type).HasColumnName("Type").HasDefaultValue(PackageType.Base).HasColumnOrder(21).IsRequired();
+        builder.Property(e => e.QuestionCredit).HasColumnName("QuestionCredit").HasDefaultValue(0).HasColumnOrder(22).IsRequired();
 
         builder.HasIndex(e => new { e.Name, e.PaymentRenewalPeriod }).HasDatabaseName("IX_Packages_1").IsUnique();
 

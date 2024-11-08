@@ -1,4 +1,6 @@
-﻿namespace Business.Features.Users.Models.User;
+﻿using Business.Features.Packages.Models.Packages;
+
+namespace Business.Features.Users.Models.User;
 
 public class GetUserModel : IResponseModel
 {
@@ -17,6 +19,7 @@ public class GetUserModel : IResponseModel
     public int PackageCredit { get; set; }
     public int AddtionalCredit { get; set; }
     public bool AutomaticPayment { get; set; }
+    public List<GetPackageModel> Packages { get; set; } = [];
 
     public List<string> OperationClaims { get; set; } = [];
 }

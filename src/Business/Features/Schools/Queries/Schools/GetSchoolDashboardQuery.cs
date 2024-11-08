@@ -177,6 +177,7 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
         result.TotalQuestionByClassRoom = result.SendQuestionByClassRoom.Concat(result.SendSimilarByClassRoom).GroupBy(x => x.Key).ToDictionary(x => x.Key, x => x.Sum(s => s.Value));
         result.TotalQuestionByGain = result.SendQuestionByGain.Concat(result.SendSimilarByGain).GroupBy(x => x.Key).ToDictionary(x => x.Key, x => x.Sum(s => s.Value));
         result.TotalQuestionByName = result.SendQuestionByName.Concat(result.SendSimilarByName).GroupBy(x => x.Key).ToDictionary(x => x.Key, x => x.Sum(s => s.Value));
+        result.TotalQuestionByDay = result.SendQuestionByDay.Concat(result.SendSimilarByDay).GroupBy(x => x.Key).ToDictionary(x => x.Key, x => x.Sum(s => s.Value));
 
         return result;
     }

@@ -20,6 +20,8 @@ public class Package : BaseEntity<short>
     public string? PictureUrl { get; set; }
     public string? Slug { get; set; }
     public byte? CategoryId { get; set; }
+    public PackageType Type { get; set; }
+    public int QuestionCredit { get; set; }
 
     public PackageCategory? PackageCategory { get; set; }
     public virtual ICollection<PackageUser> PackageUsers { get; set; } = [];

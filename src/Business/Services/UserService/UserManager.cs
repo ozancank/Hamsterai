@@ -73,7 +73,8 @@ public class UserManager(IUserDal userDal,
 
             bool result = false;
 
-            if (schoolId != null && userType is UserTypes.School or UserTypes.Teacher or UserTypes.Student)
+            if (userType is UserTypes.Administator) result = true;
+            else if (schoolId != null && userType is UserTypes.School or UserTypes.Teacher or UserTypes.Student)
             {
                 var school = await schoolDal.GetAsync(
                     enableTracking: false,

@@ -120,7 +120,14 @@ public struct Strings
     public const string OfDetail = "Detayı";
     public const string Detail = "Detay";
     public const string Payment = "Ödeme";
-
+    public const string Reason = "Sebep";
+    public const string Count = "Sayı";
+    public const string OfCount = "Sayısı";
+    public const string Quantity = "Miktar";
+    public const string Discount = "İndirim";
+    public const string Ratio = "Oran";
+    public const string OfRatio = "Oranı";
+    public const string Amount = "Yekün";
 
     //public const string LessonGroup = "Ders Grubu";
     public const string FileNameExtension = "Dosya adı içerisinde nokta olmalı ve uzantı belirtilmelidir.";

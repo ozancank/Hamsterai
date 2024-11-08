@@ -1,22 +1,23 @@
-﻿//namespace Business.Features.Students.Models;
+﻿using Business.Features.Users.Models.User;
 
-//public class GetOrderModel : IResponseModel
-//{
-//    public int Id { get; set; }
-//    public bool IsActive { get; set; }
-//    public long CreateUser { get; set; }
-//    public DateTime CreateDate { get; set; }
-//    public long UpdateUser { get; set; }
-//    public DateTime UpdateDate { get; set; }
-//    public string? Name { get; set; }
-//    public string? Surname { get; set; }
-//    public string? StudentNo { get; set; }
-//    public string? TcNo { get; set; }
-//    public string? Phone { get; set; }
-//    public string? Email { get; set; }
-//    public int ClassRoomId { get; set; }
-//    public string? FullName { get; set; }
-//    public string? ClassName { get; set; }
-//    public List<string> TeacherNames { get; set; } = [];
-//    public long UserId { get; set; }
-//}
+namespace Business.Features.Orders.Models;
+
+public class GetOrderModel : IResponseModel
+{
+    public int Id { get; set; }
+    public bool IsActive { get; set; }
+    public long CreateUser { get; set; }
+    public DateTime CreateDate { get; set; }
+    public long UpdateUser { get; set; }
+    public DateTime UpdateDate { get; set; }
+    public long UserId { get; set; }
+    public string? OrderNo { get; set; }
+    public int QuestionCredit { get; set; }
+    public double SubTotal { get; set; }
+    public double DiscountAmount { get; set; }
+    public double TaxBase { get; set; }
+    public double TaxAmount { get; set; }
+    public double Amount { get; set; }
+    public GetUserModel? User { get; set; }
+    public List<GetOrderDetailModel> Details { get; set; } = [];    
+}
