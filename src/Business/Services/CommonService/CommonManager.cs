@@ -1,4 +1,5 @@
 ﻿using Business.Features.Users.Rules;
+using Domain.Entities.Core;
 using OCK.Core.Logging.Serilog;
 using OCK.Core.Security.Extensions;
 using SixLabors.Fonts;
@@ -9,6 +10,7 @@ using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 namespace Business.Services.CommonService;
@@ -133,5 +135,30 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
             ).OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value)!;
 
         return AppStatics.Enums;
+    }
+
+    public Dictionary<string, List<AppStatics.PropertyDto>> GetEntities()
+    {
+        if (HttpUserType != UserTypes.Administator) throw new AuthenticationException(Strings.AuthorizationDenied);
+
+        if (AppStatics.Entities.Count != 0) return AppStatics.Entities;
+
+        var entityProperties = typeof(AppStatics).Assembly.GetTypes()
+            .Where(type => typeof(IEntity).IsAssignableFrom(type) && !type.IsAbstract)
+            .ToDictionary(
+                type => type.Name,
+                type => type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                            .Select(p => new AppStatics.PropertyDto(
+                                p.Name,
+                                p.PropertyType.Name,
+                                ReflectionTools.IsNullable(p),
+                                !p.CanWrite,
+                                p.GetMethod?.IsVirtual ?? false
+                            ))
+                            .ToList()
+            );
+
+        AppStatics.Entities = entityProperties;
+        return entityProperties;
     }
 }

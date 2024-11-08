@@ -25,6 +25,7 @@ public class AddStudentCommand : IRequest<GetStudentModel>, ISecuredRequest<User
 public class AddStudentCommandHandler(IMapper mapper,
                                       IStudentDal studentDal,
                                       ICommonService commonService,
+                                      ISchoolDal schoolDal,
                                       IUserDal userDal,
                                       UserRules userRules,
                                       StudentRules studentRules,
@@ -45,7 +46,15 @@ public class AddStudentCommandHandler(IMapper mapper,
         await ClassRoomRules.ClassRoomShouldExistsAndActive(classRoom);
 
         var userId = commonService.HttpUserId;
+        var schoolId = commonService.HttpSchoolId;
         var date = DateTime.Now;
+
+        var school = await schoolDal.GetAsync(
+            enableTracking: false,
+            predicate: x => x.Id == schoolId,
+            selector: x => new { x.Id, x.LicenseEndDate },
+            cancellationToken: cancellationToken);
+        await SchoolRules.SchoolShouldExists(school);
 
         var student = mapper.Map<Student>(request.Model);
         student.Id = await studentDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
@@ -72,8 +81,9 @@ public class AddStudentCommandHandler(IMapper mapper,
             ProfileUrl = string.Empty,
             Email = student.Email!.Trim().ToLower(),
             Type = UserTypes.Student,
-            SchoolId = commonService.HttpSchoolId,
+            SchoolId = school.Id,
             ConnectionId = student.Id,
+            LicenceEndDate = school.LicenseEndDate,
             //GroupId = classRoom.PackageId ?? 1,
         };
 

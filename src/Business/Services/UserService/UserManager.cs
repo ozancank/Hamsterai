@@ -49,7 +49,9 @@ public class UserManager(IUserDal userDal,
             UserTypes.Administator => x => x.Id != 1,
             UserTypes.School => x => x.Id != 1 && x.SchoolId == commonService.HttpSchoolId,
             UserTypes.Teacher => x => (x.Id != 1 && x.SchoolId == commonService.HttpSchoolId && x.Type == UserTypes.Student) || x.Id == commonService.HttpUserId,
-            UserTypes.Student or _ => x => x.Id != 1 && x.Type == UserTypes.Student,
+            UserTypes.Student => x => x.Id != 1 && x.Type == UserTypes.Student,
+            UserTypes.Person => x => x.Id != 1 && x.Type == UserTypes.Person,
+            _ => throw new NotImplementedException(),
         });
 
         return predicate;
@@ -80,9 +82,18 @@ public class UserManager(IUserDal userDal,
 
                 await UserRules.LicenceIsValid(school.LicenseEndDate);
                 await SchoolRules.SchoolShouldExists(school.IsActive);
+                result = await userDal.IsExistsAsync(predicate: x => x.Id == id && x.IsActive, enableTracking: false);
+            }
+            else if (userType is UserTypes.Person)
+            {
+                var user = await userDal.GetAsync(
+                    enableTracking: false,
+                    predicate: x => x.Id == id && x.IsActive,
+                    selector: x => new { x.IsActive, x.LicenceEndDate });
+                await UserRules.LicenceIsValid(user.LicenceEndDate);
+                result = true;
             }
 
-            result = await userDal.IsExistsAsync(predicate: x => x.Id == id && x.IsActive, enableTracking: false);
             return result;
         }, 60);
     }

@@ -1,4 +1,4 @@
-﻿using Business.Features.Lessons.Dto.Gain;
+﻿using Business.Features.Lessons.Dto;
 using Business.Features.Lessons.Models.Gains;
 using Business.Features.Lessons.Rules;
 using DataAccess.EF;

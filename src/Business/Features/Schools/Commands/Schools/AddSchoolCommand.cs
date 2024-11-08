@@ -69,7 +69,9 @@ public class AddSchoolCommandHandler(IMapper mapper,
             Email = school.AuthorizedEmail!.Trim(),
             Type = UserTypes.School,
             SchoolId = school.Id,
-            ConnectionId = null
+            ConnectionId = null,
+            TaxNumber = school.TaxNumber!.Trim(),
+            LicenceEndDate = school.LicenseEndDate,
         };
 
         var packageSchools = request.Model.PackageIds.Select(x => new RPackageSchool

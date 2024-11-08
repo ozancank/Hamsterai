@@ -1,4 +1,5 @@
-﻿using Business.Features.Teachers.Models;
+﻿using Business.Features.Schools.Rules;
+using Business.Features.Teachers.Models;
 using Business.Features.Teachers.Rules;
 using Business.Features.Users.Rules;
 using Business.Services.CommonService;
@@ -23,6 +24,7 @@ public class UpdateTeacherCommandHandler(IMapper mapper,
                                          ITeacherDal teacherDal,
                                          ICommonService commonService,
                                          IUserDal userDal,
+                                         ISchoolDal schoolDal,
                                          UserRules userRules,
                                          TeacherRules teacherRules) : IRequestHandler<UpdateTeacherCommand, GetTeacherModel>
 {
@@ -42,7 +44,15 @@ public class UpdateTeacherCommandHandler(IMapper mapper,
         await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone!, user.Id);
 
         var userId = commonService.HttpUserId;
+        var schoolId = commonService.HttpSchoolId;
         var date = DateTime.Now;
+
+        var school = await schoolDal.GetAsync(
+            enableTracking: false,
+            predicate: x => x.Id == schoolId,
+            selector: x => new { x.Id, x.LicenseEndDate },
+            cancellationToken: cancellationToken);
+        await SchoolRules.SchoolShouldExists(school);
 
         teacher.Name = request.Model.Name;
         teacher.Surname = request.Model.Surname;
@@ -54,6 +64,7 @@ public class UpdateTeacherCommandHandler(IMapper mapper,
         user.UserName = teacher.Email!.Trim().ToLower();
         user.Email = teacher.Email.Trim().ToLower();
         user.Phone = teacher.Phone.TrimForPhone();
+        user.LicenceEndDate = school.LicenseEndDate;
 
         var result = await teacherDal.ExecuteWithTransactionAsync(async () =>
         {

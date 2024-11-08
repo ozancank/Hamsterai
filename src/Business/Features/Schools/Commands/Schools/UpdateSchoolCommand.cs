@@ -63,6 +63,8 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
         user.UserName = school.TaxNumber!.Trim().ToLower();
         user.Email = school.AuthorizedEmail!.Trim().ToLower();
         user.Phone = school.AuthorizedPhone.TrimForPhone();
+        user.TaxNumber = school.TaxNumber;
+        user.LicenceEndDate = school.LicenseEndDate;
 
         var deleteList = await packageSchoolDal.GetListAsync(predicate: x => x.SchoolId == school.Id, cancellationToken: cancellationToken);
 

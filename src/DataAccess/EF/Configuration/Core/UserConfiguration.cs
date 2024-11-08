@@ -29,6 +29,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.PackageCredit).HasColumnName("PackageCredit").HasDefaultValue(0).HasColumnOrder(16).IsRequired();
         builder.Property(e => e.AddtionalCredit).HasColumnName("AddtionalCredit").HasDefaultValue(0).HasColumnOrder(17).IsRequired();
         builder.Property(e => e.AutomaticPayment).HasColumnName("AutomaticPayment").HasDefaultValue(false).HasColumnOrder(18).IsRequired();
+        builder.Property(e => e.TaxNumber).HasColumnName("TaxNumber").HasMaxLength(11).HasColumnOrder(19);
+        builder.Property(e => e.LicenceEndDate).HasColumnName("LicenceEndDate").HasDefaultValue(new DateTime(2000, 01, 01)).HasColumnOrder(20);
 
         builder.HasOne(e => e.School).WithMany(e => e.Users).HasForeignKey(e => e.SchoolId).HasPrincipalKey(e => e.Id);
 
@@ -53,6 +55,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Administator,
                 SchoolId=null,
                 ConnectionId=null,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(2,"Admin",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Admin",
@@ -62,6 +65,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Administator,
                 SchoolId=null,
                 ConnectionId=null,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(3,"Okul",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Okul",
@@ -71,6 +75,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.School,
                 SchoolId=1,
                 ConnectionId=null,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(4,"Hoca1",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğretmen 1",
@@ -80,6 +85,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Teacher,
                 SchoolId=1,
                 ConnectionId=1,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(5,"Hoca2",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğretmen 2",
@@ -89,6 +95,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Teacher,
                 SchoolId=1,
                 ConnectionId=2,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(6,"Öğrenci1",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğrenci 1",
@@ -98,6 +105,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=1,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(7,"Öğrenci2",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğrenci 2",
@@ -107,6 +115,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=2,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(8,"Öğrenci3",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğrenci 3",
@@ -116,6 +125,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=3,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(9,"Öğrenci4",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğrenci 4",
@@ -125,6 +135,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=4,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(10,"Öğrenci5",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğrenci 5",
@@ -134,6 +145,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=5,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(11,"Öğrenci6",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Öğrenci 6",
@@ -143,6 +155,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=6,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(12,"ozancank@gmail.com",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Ozan Can",
@@ -152,6 +165,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=7,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(13,"942alicankesen@gmail.com",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Alican",
@@ -161,6 +175,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=8,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(14,"balcan1905@gmail.com",passwordSalt2,passwordHash2,false,new DateTime(2000,01,01),true){
                 Name="Eyüp",
@@ -170,6 +185,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Student,
                 SchoolId=1,
                 ConnectionId=9,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(15,"kazim",passwordSalt3,passwordHash3,false,new DateTime(2024,09,14),true){
                 Name="Kazım",
@@ -179,6 +195,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Administator,
                 SchoolId=null,
                 ConnectionId=null,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             //16 Ahmet Çelik
             //17 Göksel Gündüz
@@ -190,6 +207,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Administator,
                 SchoolId=null,
                 ConnectionId=null,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(19,"kazim2",passwordSalt3,passwordHash3,false,new DateTime(2024,09,14),true){
                 Name="Kazım",
@@ -199,6 +217,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Administator,
                 SchoolId=null,
                 ConnectionId=null,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
             new(20,"kazim3",passwordSalt3,passwordHash3,false,new DateTime(2024,09,14),true){
                 Name="Kazım",
@@ -208,6 +227,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Type=UserTypes.Administator,
                 SchoolId=null,
                 ConnectionId=null,
+                LicenceEndDate=DateTime.MaxValue.Date,
              },
         ]);
     }

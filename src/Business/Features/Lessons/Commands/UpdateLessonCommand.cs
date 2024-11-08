@@ -5,7 +5,7 @@ using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 
-namespace Business.Features.Lessons.Commands.Lessons;
+namespace Business.Features.Lessons.Commands;
 
 public class UpdateLessonCommand : IRequest<GetLessonModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {

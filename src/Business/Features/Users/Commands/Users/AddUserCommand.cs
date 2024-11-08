@@ -69,6 +69,8 @@ public class AddUserCommandHandler(IMapper mapper,
             //GroupId = request.Model.PackageId,
             PackageCredit = request.Model.PackageCredit,
             AddtionalCredit = request.Model.AddtionalCredit,
+            TaxNumber = request.Model.TaxNumber,
+            LicenceEndDate = request.Model.LicenceEndDate
         };
 
         await userDal.AddAsync(user, cancellationToken: cancellationToken);

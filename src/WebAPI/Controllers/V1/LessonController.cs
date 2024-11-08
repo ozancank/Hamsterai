@@ -1,5 +1,5 @@
 using Asp.Versioning;
-using Business.Features.Lessons.Commands.Lessons;
+using Business.Features.Lessons.Commands;
 using Business.Features.Lessons.Models.Lessons;
 using Business.Features.Lessons.Queries.Gains;
 using Business.Features.Lessons.Queries.Lessons;

@@ -16,6 +16,8 @@ public class User : Security.User
     public int PackageCredit { get; set; }
     public int AddtionalCredit { get; set; }
     public bool AutomaticPayment { get; set; }
+    public string? TaxNumber { get; set; }
+    public DateTime LicenceEndDate { get; set; }
 
     public virtual School? School { get; set; }
     public virtual ICollection<UserOperationClaim> UserOperationClaims { get; set; } = [];

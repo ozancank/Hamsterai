@@ -115,6 +115,12 @@ public struct Strings
     public const string Group = "Grup";
     public const string Category = "Kategori";
     public const string Main = "Ana";
+    public const string Sub = "Alt";
+    public const string Order = "Sipariş";
+    public const string OfDetail = "Detayı";
+    public const string Detail = "Detay";
+    public const string Payment = "Ödeme";
+
 
     //public const string LessonGroup = "Ders Grubu";
     public const string FileNameExtension = "Dosya adı içerisinde nokta olmalı ve uzantı belirtilmelidir.";

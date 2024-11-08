@@ -57,6 +57,8 @@ public sealed class UpdateUserCommandHandler(IMapper mapper,
         //user.GroupId = request.Model.PackageId;
         user.PackageCredit = request.Model.PackageCredit;
         user.AddtionalCredit = request.Model.AddtionalCredit;
+        user.TaxNumber = request.Model.TaxNumber;
+        user.LicenceEndDate = request.Model.LicenceEndDate;
 
         await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
         var result = mapper.Map<GetUserModel>(user);

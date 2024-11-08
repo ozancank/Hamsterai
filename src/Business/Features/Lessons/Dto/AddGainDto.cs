@@ -1,5 +1,5 @@
 ﻿using DataAccess.EF;
 
-namespace Business.Features.Lessons.Dto.Gain;
+namespace Business.Features.Lessons.Dto;
 
 public record AddGainDto(string? GainName, short LessonId, long UserId, HamsteraiDbContext? Context = null);

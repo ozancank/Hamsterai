@@ -4,9 +4,9 @@ using Domain.Entities.Core;
 
 namespace Business.Features.Users.Profiles;
 
-public class MappingProfiles : Profile
+public class UserProfiles : Profile
 {
-    public MappingProfiles()
+    public UserProfiles()
     {
         CreateMap<User, GetUserModel>()
             .ForMember(dest => dest.OperationClaims, opt => opt.MapFrom(src => src.UserOperationClaims.Select(o => o.OperationClaim!.Name).ToList()))

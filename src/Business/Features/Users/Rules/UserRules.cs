@@ -130,7 +130,9 @@ public class UserRules(IUserDal userDal,
             UserTypes.Administator => true,
             UserTypes.School => type == UserTypes.Teacher || type == UserTypes.Student,
             UserTypes.Teacher => type == UserTypes.Student || (userId.HasValue && commonService.HttpUserId == userId && type == UserTypes.Teacher),
-            UserTypes.Student or _ => userId.HasValue && commonService.HttpUserId == userId && type == UserTypes.Student
+            UserTypes.Student => userId.HasValue && commonService.HttpUserId == userId && type == UserTypes.Student,
+            UserTypes.Person => userId.HasValue && commonService.HttpUserId == userId && type == UserTypes.Student,
+            _ => false
         };
 
         if (!control) throw new BusinessException(Strings.UserTypeNotAllowed);

@@ -23,6 +23,7 @@ public class UpdateStudentCommand : IRequest<GetStudentModel>, ISecuredRequest<U
 public class UpdateStudentCommandHandler(IMapper mapper,
                                          IStudentDal studentDal,
                                          ICommonService commonService,
+                                         ISchoolDal schoolDal,
                                          IUserDal userDal,
                                          UserRules userRules,
                                          StudentRules studentRules,
@@ -50,7 +51,15 @@ public class UpdateStudentCommandHandler(IMapper mapper,
         await ClassRoomRules.ClassRoomShouldExistsAndActive(classRoom);
 
         var userId = commonService.HttpUserId;
+        var schoolId = commonService.HttpSchoolId;
         var date = DateTime.Now;
+
+        var school = await schoolDal.GetAsync(
+            enableTracking: false,
+            predicate: x => x.Id == schoolId,
+            selector: x => new { x.Id, x.LicenseEndDate },
+            cancellationToken: cancellationToken);
+        await SchoolRules.SchoolShouldExists(school);
 
         student.UpdateUser = userId;
         student.UpdateDate = date;
@@ -66,6 +75,7 @@ public class UpdateStudentCommandHandler(IMapper mapper,
         user.UserName = student.Email;
         user.Email = student.Email;
         user.Phone = student.Phone;
+        user.LicenceEndDate = school.LicenseEndDate;
         //user.GroupId = classRoom.PackageId;
 
         var result = await studentDal.ExecuteWithTransactionAsync(async () =>

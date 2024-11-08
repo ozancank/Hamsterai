@@ -1,4 +1,4 @@
-﻿using Business.Features.Lessons.Dto.Gain;
+﻿using Business.Features.Lessons.Dto;
 using Business.Features.Lessons.Models.Gains;
 
 namespace Business.Services.GainService;
