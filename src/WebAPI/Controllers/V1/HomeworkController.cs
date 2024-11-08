@@ -1,7 +1,7 @@
 using Asp.Versioning;
-using Business.Features.Homeworks.Commands;
-using Business.Features.Homeworks.Models;
-using Business.Features.Homeworks.Queries;
+using Application.Features.Homeworks.Commands;
+using Application.Features.Homeworks.Models;
+using Application.Features.Homeworks.Queries;
 
 namespace WebAPI.Controllers.V1;
 

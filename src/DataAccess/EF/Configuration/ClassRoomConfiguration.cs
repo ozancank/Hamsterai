@@ -19,7 +19,7 @@ public class ClassRoomConfiguration : IEntityTypeConfiguration<ClassRoom>
         builder.Property(e => e.PackageId).HasColumnName("PackageId").HasColumnOrder(9);
 
         builder.HasOne(d => d.School).WithMany(p => p.ClassRooms).HasForeignKey(d => d.SchoolId).HasPrincipalKey(x => x.Id);
-        builder.HasOne(d => d.Package).WithMany().HasForeignKey(d => d.PackageId).HasPrincipalKey(x => x.Id);
+        builder.HasOne(d => d.Package).WithMany(p => p.ClassRooms).HasForeignKey(d => d.PackageId).HasPrincipalKey(x => x.Id);
 
         builder.HasData(
             new ClassRoom(1, true, 2, new DateTime(2000, 1, 1), 2, new(2000, 1, 1))

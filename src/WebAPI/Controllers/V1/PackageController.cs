@@ -1,10 +1,10 @@
 using Asp.Versioning;
-using Business.Features.Packages.Commands.PackageCategories;
-using Business.Features.Packages.Commands.Packages;
-using Business.Features.Packages.Models.PackageCategories;
-using Business.Features.Packages.Models.Packages;
-using Business.Features.Packages.Queries.PackageCategories;
-using Business.Features.Packages.Queries.Packages;
+using Application.Features.Packages.Commands.PackageCategories;
+using Application.Features.Packages.Commands.Packages;
+using Application.Features.Packages.Models.PackageCategories;
+using Application.Features.Packages.Models.Packages;
+using Application.Features.Packages.Queries.PackageCategories;
+using Application.Features.Packages.Queries.Packages;
 
 namespace WebAPI.Controllers.V1;
 

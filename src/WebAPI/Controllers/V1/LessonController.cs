@@ -1,8 +1,8 @@
 using Asp.Versioning;
-using Business.Features.Lessons.Commands;
-using Business.Features.Lessons.Models.Lessons;
-using Business.Features.Lessons.Queries.Gains;
-using Business.Features.Lessons.Queries.Lessons;
+using Application.Features.Lessons.Commands;
+using Application.Features.Lessons.Models.Lessons;
+using Application.Features.Lessons.Queries.Gains;
+using Application.Features.Lessons.Queries.Lessons;
 
 namespace WebAPI.Controllers.V1;
 

@@ -1,13 +1,13 @@
 using Asp.Versioning;
-using Business.Features.Schools.Commands.ClassRooms;
-using Business.Features.Schools.Commands.Schools;
-using Business.Features.Schools.Models.ClassRooms;
-using Business.Features.Schools.Models.Schools;
-using Business.Features.Schools.Queries.ClassRooms;
-using Business.Features.Schools.Queries.Schools;
-using Business.Features.Teachers.Commands;
-using Business.Features.Teachers.Models;
-using Business.Features.Teachers.Queries;
+using Application.Features.Schools.Commands.ClassRooms;
+using Application.Features.Schools.Commands.Schools;
+using Application.Features.Schools.Models.ClassRooms;
+using Application.Features.Schools.Models.Schools;
+using Application.Features.Schools.Queries.ClassRooms;
+using Application.Features.Schools.Queries.Schools;
+using Application.Features.Teachers.Commands;
+using Application.Features.Teachers.Models;
+using Application.Features.Teachers.Queries;
 
 namespace WebAPI.Controllers.V1;
 

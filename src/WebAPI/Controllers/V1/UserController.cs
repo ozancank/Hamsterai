@@ -1,12 +1,12 @@
 using Asp.Versioning;
-using Business.Features.Users.Commands.Claim;
-using Business.Features.Users.Commands.Password;
-using Business.Features.Users.Commands.Users;
-using Business.Features.Users.Models.Claim;
-using Business.Features.Users.Models.Password;
-using Business.Features.Users.Models.User;
-using Business.Features.Users.Queries.Claims;
-using Business.Features.Users.Queries.Users;
+using Application.Features.Users.Commands.Claim;
+using Application.Features.Users.Commands.Password;
+using Application.Features.Users.Commands.Users;
+using Application.Features.Users.Models.Claim;
+using Application.Features.Users.Models.Password;
+using Application.Features.Users.Models.User;
+using Application.Features.Users.Queries.Claims;
+using Application.Features.Users.Queries.Users;
 
 namespace WebAPI.Controllers.V1;
 

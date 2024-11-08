@@ -1,10 +1,10 @@
 using Asp.Versioning;
-using Business.Features.Questions.Commands.Questions;
-using Business.Features.Questions.Commands.Similars;
-using Business.Features.Questions.Models.Questions;
-using Business.Features.Questions.Models.Similars;
-using Business.Features.Questions.Queries.Questions;
-using Business.Features.Questions.Queries.Similars;
+using Application.Features.Questions.Commands.Questions;
+using Application.Features.Questions.Commands.Similars;
+using Application.Features.Questions.Models.Questions;
+using Application.Features.Questions.Models.Similars;
+using Application.Features.Questions.Queries.Questions;
+using Application.Features.Questions.Queries.Similars;
 
 namespace WebAPI.Controllers.V1;
 

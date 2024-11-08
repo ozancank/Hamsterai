@@ -3665,7 +3665,7 @@ namespace DataAccess.EF.Migrations
             modelBuilder.Entity("Domain.Entities.ClassRoom", b =>
                 {
                     b.HasOne("Domain.Entities.Package", "Package")
-                        .WithMany()
+                        .WithMany("ClassRooms")
                         .HasForeignKey("PackageId");
 
                     b.HasOne("Domain.Entities.School", "School")
@@ -4162,6 +4162,8 @@ namespace DataAccess.EF.Migrations
 
             modelBuilder.Entity("Domain.Entities.Package", b =>
                 {
+                    b.Navigation("ClassRooms");
+
                     b.Navigation("OrderDetails");
 
                     b.Navigation("PackageUsers");

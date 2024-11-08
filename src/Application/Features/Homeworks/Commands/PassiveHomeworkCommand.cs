@@ -1,0 +1,51 @@
+﻿using Application.Features.Homeworks.Rules;
+using Application.Services.CommonService;
+using MediatR;
+using OCK.Core.Pipelines.Authorization;
+using OCK.Core.Pipelines.Logging;
+
+namespace Application.Features.Homeworks.Commands;
+
+public class PassiveHomeworkCommand : IRequest<bool>, ISecuredRequest<UserTypes>, ILoggableRequest
+{
+    public required string HomeworkId { get; set; }
+
+    public UserTypes[] Roles { get; } = [UserTypes.Teacher];
+    public bool AllowByPass => false;
+    public string[] HidePropertyNames { get; } = [];
+}
+
+public class PassiveHomeworkCommandHandler(IHomeworkDal homeworkDal,
+                                           IHomeworkStudentDal homeworkStudentDal,
+                                           ICommonService commonService) : IRequestHandler<PassiveHomeworkCommand, bool>
+{
+    public async Task<bool> Handle(PassiveHomeworkCommand request, CancellationToken cancellationToken)
+    {
+        var userId = commonService.HttpUserId;
+        var date = DateTime.Now;
+
+        var homework = await homeworkDal.GetAsync(predicate: x => x.Id == request.HomeworkId, cancellationToken: cancellationToken);
+        await HomeworkRules.HomeworkShouldExists(homework);
+
+        var homeworkStudents = await homeworkStudentDal.GetListAsync(predicate: x => x.HomeworkId == request.HomeworkId, cancellationToken: cancellationToken);
+
+        homework.UpdateUser = userId;
+        homework.UpdateDate = date;
+        homework.IsActive = false;
+
+        foreach (var item in homeworkStudents)
+        {
+            item.UpdateUser = userId;
+            item.UpdateDate = date;
+            item.IsActive = false;
+        }
+
+        await homeworkDal.ExecuteWithTransactionAsync(async () =>
+        {
+            await homeworkStudentDal.UpdateRangeAsync(homeworkStudents, cancellationToken: cancellationToken);
+            await homeworkDal.UpdateAsync(homework, cancellationToken: cancellationToken);
+        }, cancellationToken: cancellationToken);
+
+        return true;
+    }
+}

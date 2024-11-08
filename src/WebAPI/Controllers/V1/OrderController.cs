@@ -1,6 +1,6 @@
 using Asp.Versioning;
-using Business.Features.Orders.Commands;
-using Business.Features.Orders.Models;
+using Application.Features.Orders.Commands;
+using Application.Features.Orders.Models;
 
 namespace WebAPI.Controllers.V1;
 

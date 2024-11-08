@@ -10,13 +10,6 @@
 		<DockerfileContext>..\..</DockerfileContext>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<None Remove="Batchs\Install.bat" />
-		<None Remove="Batchs\Restart.bat" />
-		<None Remove="Batchs\Stop.bat" />
-		<None Remove="Batchs\Uninstall.bat" />
-	</ItemGroup>
-
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<DebugType>portable</DebugType>
 		<DebugSymbols>true</DebugSymbols>
@@ -45,11 +38,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <ProjectReference Include="..\Business\Business.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Include="Batchs\*.*" />
+	  <ProjectReference Include="..\Application\Application.csproj" />
 	</ItemGroup>
 	
 	<ItemGroup>

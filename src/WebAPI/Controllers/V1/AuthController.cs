@@ -1,7 +1,7 @@
 using Asp.Versioning;
-using Business.Features.Auths.Commands.Logins;
-using Business.Features.Auths.Commands.RefreshTokens;
-using Business.Features.Auths.Models;
+using Application.Features.Auths.Commands.Logins;
+using Application.Features.Auths.Commands.RefreshTokens;
+using Application.Features.Auths.Models;
 using OCK.Core.Security.JWT;
 
 namespace WebAPI.Controllers.V1;

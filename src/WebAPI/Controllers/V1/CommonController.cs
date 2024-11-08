@@ -1,5 +1,5 @@
 using Asp.Versioning;
-using Business.Services.CommonService;
+using Application.Services.CommonService;
 
 namespace WebAPI.Controllers.V1;
 
