@@ -5,7 +5,7 @@ using System.Text.Json;
 
 internal class Program
 {
-    private const string BASE_URL = "https://api.hamsterai.com.tr";
+    private const string BASE_URL = "https://testapi.hamsterai.com.tr";
 
     private static async Task Main()
     {
@@ -14,7 +14,7 @@ internal class Program
         client.DefaultRequestHeaders.Add("X-Api-Key", "HaMsTerAI-Security");
 
         await AddTeachers(client);
-        await AddStudents(client);
+        //await AddStudents(client);
 
         Console.WriteLine("İşlem tamamlandı.");
         Console.ReadLine();
