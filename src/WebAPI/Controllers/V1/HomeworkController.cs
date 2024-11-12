@@ -1,7 +1,7 @@
-using Asp.Versioning;
 using Application.Features.Homeworks.Commands;
 using Application.Features.Homeworks.Models;
 using Application.Features.Homeworks.Queries;
+using Asp.Versioning;
 
 namespace WebAPI.Controllers.V1;
 
@@ -29,7 +29,7 @@ public class HomeworkController : BaseController
     [HttpPost("GetHomeworks")]
     public async Task<IActionResult> GetHomeworksDynamic([FromQuery] PageRequest pageRequest, [FromBody] HomeworkRequestModel model)
     {
-        var command = new GetHomeworksQuery { PageRequest = pageRequest, Model=model };
+        var command = new GetHomeworksQuery { PageRequest = pageRequest, Model = model };
         var result = await Mediator.Send(command);
         return Ok(result);
     }
@@ -37,7 +37,7 @@ public class HomeworkController : BaseController
     [HttpPost("GetHomeworksForStudent")]
     public async Task<IActionResult> GetHomeworksForStudent([FromQuery] PageRequest pageRequest, [FromBody] HomeworkRequestModel model)
     {
-        var command = new GetHomeworksForStudentQuery { PageRequest = pageRequest, Model= model};
+        var command = new GetHomeworksForStudentQuery { PageRequest = pageRequest, Model = model };
         var result = await Mediator.Send(command);
         return Ok(result);
     }

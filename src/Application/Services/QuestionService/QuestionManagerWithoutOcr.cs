@@ -109,6 +109,26 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
         }
     }
 
+    //User => Decrease credit, increase credit
+    private async Task UpdateUserCredit(long userId, int credit, bool increase)
+    {
+        using var context = contextFactory.CreateDbContext();
+        var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        await UserRules.UserShouldExistsAndActive(user);
+        if (increase) user!.AddtionalCredit += credit;
+        else
+        {
+            if (user!.PackageCredit > 0)
+                user.AddtionalCredit -= credit;
+            else if (user.AddtionalCredit > 0)
+                user.PackageCredit -= credit;
+            else
+                throw new BusinessException(Strings.CreditNotEnough);
+        }
+        context.Users.Update(user);
+        await context.SaveChangesAsync();
+    }
+
     #region Question
 
     public async Task<bool> UpdateAnswer(QuestionITOResponseModel model, UpdateQuestionDto dto)
@@ -153,6 +173,9 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
                 : dto.Status == QuestionStatus.SendAgain
                     ? QuestionStatus.Error
                     : dto.Status;
+
+            if (data.TryCount >= AppOptions.AITryCount)
+                await UpdateUserCredit(data.CreateUser, 1, true);
         }
 
         context.Questions.Update(data);
@@ -197,7 +220,14 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
         if (dto.Status is not QuestionStatus.Answered)
         {
             data.TryCount++;
-            data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;
+            data.Status = data.TryCount < AppOptions.AITryCount
+                ? QuestionStatus.SendAgain
+                : dto.Status == QuestionStatus.SendAgain
+                    ? QuestionStatus.Error
+                    : dto.Status;
+
+            if (data.TryCount >= AppOptions.AITryCount)
+                await UpdateUserCredit(data.CreateUser, 1, true);
         }
 
         context.Questions.Update(data);
@@ -244,7 +274,14 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
         if (dto.Status is not QuestionStatus.Answered)
         {
             data.TryCount++;
-            data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;
+            data.Status = data.TryCount < AppOptions.AITryCount
+                ? QuestionStatus.SendAgain
+                : dto.Status == QuestionStatus.SendAgain
+                    ? QuestionStatus.Error
+                    : dto.Status;
+
+            if (data.TryCount >= AppOptions.AITryCount)
+                await UpdateUserCredit(data.CreateUser, 1, true);
         }
 
         context.Questions.Update(data);
@@ -309,6 +346,9 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
                 : dto.Status == QuestionStatus.SendAgain
                     ? QuestionStatus.Error
                     : dto.Status;
+
+            if (data.TryCount >= AppOptions.AITryCount)
+                await UpdateUserCredit(data.CreateUser, 1, true);
         }
 
         context.Similars.Update(data);
@@ -359,7 +399,14 @@ public class QuestionManagerWithoutOcr(ICommonService commonService,
         if (dto.Status is not QuestionStatus.Answered)
         {
             data.TryCount++;
-            data.Status = data.TryCount < AppOptions.AITryCount ? QuestionStatus.SendAgain : QuestionStatus.Error;
+            data.Status = data.TryCount < AppOptions.AITryCount
+                ? QuestionStatus.SendAgain
+                : dto.Status == QuestionStatus.SendAgain
+                    ? QuestionStatus.Error
+                    : dto.Status;
+
+            if (data.TryCount >= AppOptions.AITryCount)
+                await UpdateUserCredit(data.CreateUser, 1, true);
         }
 
         context.Similars.Update(data);

@@ -3,7 +3,6 @@ using Application.Features.Packages.Models.Packages;
 using Application.Features.Packages.Rules;
 using Application.Services.CommonService;
 using MediatR;
-using NPOI.SS.Formula.Functions;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 
@@ -51,8 +50,11 @@ public class AddPackageCommandHandler(IMapper mapper,
 
         if (package.OldAmount != null && package.OldAmount > 0)
         {
-            package.UnitOldPrice = Math.Round((package.OldAmount ?? 0) / (1.0 + package.TaxRatio / 100.0), 2);
-            package.TaxOldAmount = package.OldAmount!.Value - package.UnitOldPrice;
+            var oldAmount = package.OldAmount.Value;
+            var unitOldAmount = (oldAmount / (1.0 + package.TaxRatio / 100.0)).RoundDouble();
+            var taxOldAmount = (oldAmount - unitOldAmount).RoundDouble();
+            package.UnitOldPrice = unitOldAmount;
+            package.TaxOldAmount = taxOldAmount;
         }
         else
         {
@@ -60,8 +62,11 @@ public class AddPackageCommandHandler(IMapper mapper,
             package.TaxOldAmount = null;
         }
 
-        package.UnitPrice = Math.Round(package.Amount / (1.0 + package.TaxRatio / 100.0), 2);
-        package.TaxAmount = package.Amount - package.UnitPrice;
+        var amount = package.Amount;
+        var unitAmount = (amount / (1.0 + package.TaxRatio / 100.0)).RoundDouble();
+        var taxAmount = (amount - unitAmount).RoundDouble();
+        package.UnitPrice = unitAmount;
+        package.TaxAmount = taxAmount;
 
         List<RPackageLesson> packageLessons = [];
 

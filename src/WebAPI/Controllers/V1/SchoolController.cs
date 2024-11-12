@@ -1,4 +1,3 @@
-using Asp.Versioning;
 using Application.Features.Schools.Commands.ClassRooms;
 using Application.Features.Schools.Commands.Schools;
 using Application.Features.Schools.Models.ClassRooms;
@@ -8,6 +7,7 @@ using Application.Features.Schools.Queries.Schools;
 using Application.Features.Teachers.Commands;
 using Application.Features.Teachers.Models;
 using Application.Features.Teachers.Queries;
+using Asp.Versioning;
 
 namespace WebAPI.Controllers.V1;
 

@@ -6,8 +6,8 @@ public class RefreshToken : Security.RefreshToken
 {
     public virtual User? User { get; set; }
 
-    public RefreshToken():base()
-    {    }
+    public RefreshToken() : base()
+    { }
 
     public RefreshToken(long id, long userId, string token, DateTime expires, DateTime created, string createdByIp, DateTime? revoked,
                     string revokedByIp, string replacedByToken, string reasonRevoked) : this()

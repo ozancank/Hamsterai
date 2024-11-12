@@ -12,6 +12,7 @@ public sealed class AddPackageModel : IResponseModel
     public string? Description { get; set; }
     public IFormFile? PictureFile { get; set; }
     public byte CategoryId { get; set; }
+    public PackageType Type { get; set; }
     public int QuestionCredit { get; set; }
 
     public List<short> LessonIds { get; set; } = [];

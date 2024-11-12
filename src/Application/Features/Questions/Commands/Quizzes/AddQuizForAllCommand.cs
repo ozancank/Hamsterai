@@ -1,5 +1,4 @@
-﻿using Application.Features.Questions.Models.Quizzes;
-using Application.Services.QuestionService;
+﻿using Application.Services.QuestionService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -13,12 +12,12 @@ namespace DataAccess.EF.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-             migrationBuilder.AddColumn<byte>(
-                name: "CategoryId",
-                table: "Packages",
-                type: "smallint",
-                nullable: true)
-                .Annotation("Relational:ColumnOrder", 20);
+            migrationBuilder.AddColumn<byte>(
+               name: "CategoryId",
+               table: "Packages",
+               type: "smallint",
+               nullable: true)
+               .Annotation("Relational:ColumnOrder", 20);
 
             migrationBuilder.CreateTable(
                 name: "PackageCategories",
@@ -38,7 +37,7 @@ namespace DataAccess.EF.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PackageCategories", x => x.Id);
-                });                        
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Packages_CategoryId",

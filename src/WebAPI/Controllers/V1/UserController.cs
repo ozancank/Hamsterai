@@ -1,4 +1,3 @@
-using Asp.Versioning;
 using Application.Features.Users.Commands.Claim;
 using Application.Features.Users.Commands.Password;
 using Application.Features.Users.Commands.Users;
@@ -7,6 +6,7 @@ using Application.Features.Users.Models.Password;
 using Application.Features.Users.Models.User;
 using Application.Features.Users.Queries.Claims;
 using Application.Features.Users.Queries.Users;
+using Asp.Versioning;
 
 namespace WebAPI.Controllers.V1;
 
@@ -51,6 +51,14 @@ public class UserController() : BaseController
     public async Task<IActionResult> Register([FromBody] AddUserModel addUser)
     {
         var command = new AddUserCommand { Model = addUser };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("RegisterForWeb")]
+    public async Task<IActionResult> RegisterForWeb([FromBody] AddUserForWebModel addUser)
+    {
+        var command = new AddUserForWebCommand { Model = addUser };
         var result = await Mediator.Send(command);
         return Ok(result);
     }

@@ -11,7 +11,7 @@ public class UpdateQuizCommand : IRequest<GetQuizModel>, ISecuredRequest<UserTyp
 {
     public required UpdateQuizModel Model { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.Student];
+    public UserTypes[] Roles { get; } = [UserTypes.Student, UserTypes.Person];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }

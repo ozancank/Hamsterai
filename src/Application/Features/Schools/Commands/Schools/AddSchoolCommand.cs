@@ -36,6 +36,7 @@ public class AddSchoolCommandHandler(IMapper mapper,
         await schoolRules.SchoolNameAndCityCanNotBeDuplicated(request.Model.Name!, request.Model.City!);
         await schoolRules.SchoolTaxNumberCanNotBeDuplicated(request.Model.TaxNumber!);
         await userRules.UserNameCanNotBeDuplicated(request.Model.TaxNumber!);
+
         await userRules.UserEmailCanNotBeDuplicated(request.Model.AuthorizedEmail!);
         await userRules.UserPhoneCanNotBeDuplicated(request.Model.AuthorizedPhone!);
         await packageRules.PackageShouldBeRecordInDatabase(request.Model.PackageIds);

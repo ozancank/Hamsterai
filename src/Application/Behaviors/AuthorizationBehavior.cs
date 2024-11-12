@@ -14,11 +14,11 @@ public class AuthorizationBehavior<TRequest, TResponse>(IHttpContextAccessor htt
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if(httpContextAccessor.HttpContext == null) throw new AuthenticationException(Strings.AuthorizationDenied);
+        if (httpContextAccessor.HttpContext == null) throw new AuthenticationException(Strings.AuthorizationDenied);
 
         if (_byPassName.IsNotEmpty() && _byPassKey.IsNotEmpty())
         {
-            httpContextAccessor.HttpContext.Request.Headers.TryGetValue(_byPassName, out var byPassKey);            
+            httpContextAccessor.HttpContext.Request.Headers.TryGetValue(_byPassName, out var byPassKey);
             if (_byPassKey == byPassKey && request.AllowByPass) return await next();
         }
 

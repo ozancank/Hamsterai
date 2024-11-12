@@ -22,7 +22,7 @@ public class GetLessonByIdQueryHandler(IMapper mapper,
 {
     public async Task<GetLessonModel> Handle(GetLessonByIdQuery request, CancellationToken cancellationToken)
     {
-        var packageId=commonService.HttpPackageId;       
+        var packageId = commonService.HttpPackageId;
 
         var lesson = await lessonDal.GetAsyncAutoMapper<GetLessonModel>(
             enableTracking: request.Tracking,

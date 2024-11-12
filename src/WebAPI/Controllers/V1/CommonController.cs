@@ -1,5 +1,5 @@
-using Asp.Versioning;
 using Application.Services.CommonService;
+using Asp.Versioning;
 
 namespace WebAPI.Controllers.V1;
 
@@ -35,6 +35,4 @@ public class CommonController(ICommonService commonService) : BaseController
         var result = commonService.GetEntities();
         return Ok(result);
     }
-
-
 }

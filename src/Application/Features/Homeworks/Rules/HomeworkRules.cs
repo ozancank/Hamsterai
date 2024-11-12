@@ -1,7 +1,4 @@
-﻿
-using DataAccess.EF.Concrete.Core;
-
-namespace Application.Features.Homeworks.Rules;
+﻿namespace Application.Features.Homeworks.Rules;
 
 public class HomeworkRules(IHomeworkDal homeworkDal,
                            IHomeworkStudentDal homeworkStudentDal) : IBusinessRule
@@ -40,7 +37,7 @@ public class HomeworkRules(IHomeworkDal homeworkDal,
 
     internal static Task HomeworkSendUserShouldBeTeacher(UserTypes httpUserType)
     {
-        if(httpUserType != UserTypes.Teacher) throw new BusinessException(Strings.DynamicUserTypeShouldBe, Strings.Teacher);
+        if (httpUserType != UserTypes.Teacher) throw new BusinessException(Strings.DynamicUserTypeShouldBe, Strings.Teacher);
         return Task.CompletedTask;
     }
 }

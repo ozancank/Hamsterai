@@ -49,8 +49,11 @@ public class UpdatePackageCommandHandler(IMapper mapper,
 
         if (package.OldAmount != null && package.OldAmount > 0)
         {
-            package.UnitOldPrice = Math.Round((package.OldAmount ?? 0) / (1.0 + package.TaxRatio / 100.0), 2);
-            package.TaxOldAmount = package.OldAmount!.Value - package.UnitOldPrice;
+            var oldAmount = package.OldAmount.Value;
+            var unitOldAmount = (oldAmount / (1.0 + package.TaxRatio / 100.0)).RoundDouble();
+            var taxOldAmount = (oldAmount - unitOldAmount).RoundDouble();
+            package.UnitOldPrice = unitOldAmount;
+            package.TaxOldAmount = taxOldAmount;
         }
         else
         {
@@ -58,8 +61,11 @@ public class UpdatePackageCommandHandler(IMapper mapper,
             package.TaxOldAmount = null;
         }
 
-        package.UnitPrice = Math.Round(package.Amount / (1.0 + package.TaxRatio / 100.0), 2);
-        package.TaxAmount = package.Amount - package.UnitPrice;
+        var amount = package.Amount;
+        var unitAmount = (amount / (1.0 + package.TaxRatio / 100.0)).RoundDouble();
+        var taxAmount = (amount - unitAmount).RoundDouble();
+        package.UnitPrice = unitAmount;
+        package.TaxAmount = taxAmount;
 
         var deleteList = await packageLessonDal.GetListAsync(predicate: x => x.PackageId == package.Id, cancellationToken: cancellationToken);
 
@@ -108,7 +114,7 @@ public class UpdatePackageCommandValidator : AbstractValidator<UpdatePackageComm
         RuleFor(x => x.Model.Name).MaximumLength(50).WithMessage(Strings.DynamicMaxLength, [Strings.Name, "50"]);
 
         RuleFor(x => x.Model.CategoryId).InclusiveBetween((byte)0, byte.MaxValue).WithMessage(Strings.DynamicBetween, [$"{Strings.Main} {Strings.Category}", "0", "255"]);
-     
+
         RuleFor(x => x.Model.QuestionCredit).GreaterThanOrEqualTo(0).WithMessage(Strings.DynamicGratherThanOrEqual, [$"{Strings.Question} {Strings.OfCount}", "0"]);
     }
 }

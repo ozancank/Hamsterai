@@ -163,6 +163,7 @@ public class QuestionManager(ICommonService commonService,
             return result;
         }
     }
+
     #region Question
 
     public async Task<bool> UpdateAnswer(QuestionITOResponseModel model, UpdateQuestionDto dto)
@@ -366,9 +367,6 @@ public class QuestionManager(ICommonService commonService,
     }
 
     #endregion SimilarQuestion
-
-
-
 
     #region Quiz
 

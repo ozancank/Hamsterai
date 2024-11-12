@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -75,7 +74,6 @@ namespace DataAccess.EF.Migrations
                 keyValue: (byte)11,
                 column: "Name",
                 value: "Felsefe");
-
 
             migrationBuilder.InsertData(
                 table: "Lessons",

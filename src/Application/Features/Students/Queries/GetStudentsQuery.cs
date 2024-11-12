@@ -3,7 +3,6 @@ using Application.Services.CommonService;
 using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
-using OCK.Core.Utilities.Numbers;
 
 namespace Application.Features.Students.Queries;
 

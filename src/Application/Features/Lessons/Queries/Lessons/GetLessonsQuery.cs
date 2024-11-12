@@ -19,15 +19,14 @@ public class GetLessonsQueryHandler(IMapper mapper,
 {
     public async Task<PageableModel<GetLessonModel>> Handle(GetLessonsQuery request, CancellationToken cancellationToken)
     {
-
         var lesson = await lessonDal.GetPageListAsyncAutoMapper<GetLessonModel>(
             enableTracking: false,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
             predicate: commonService.HttpUserType == UserTypes.Administator
                        ? x => x.IsActive
-                       : commonService.HttpUserType==UserTypes.Person
-                         ? x => x.IsActive && x.RPackageLessons.Any(a => a.IsActive)
+                       : commonService.HttpUserType == UserTypes.Person
+                         ? x => x.IsActive && x.RPackageLessons.Any(a => a.IsActive && a.Package!.PackageUsers.Any(p => p.UserId == commonService.HttpUserId))
                          : x => x.IsActive && x.RPackageLessons.Any(a => a.IsActive && a.Package!.RPackageSchools.Any(b => b.School!.Id == commonService.HttpSchoolId)),
             include: x => x.Include(u => u.TeacherLessons).ThenInclude(u => u.Teacher)
                            .Include(u => u.RPackageLessons).ThenInclude(u => u.Package).ThenInclude(u => u!.RPackageSchools).ThenInclude(u => u.School),

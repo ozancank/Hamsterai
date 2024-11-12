@@ -17,7 +17,7 @@ public class PackageUserConfiguration : IEntityTypeConfiguration<PackageUser>
         builder.Property(e => e.PackageId).HasColumnName("PackageId").HasColumnOrder(6).IsRequired();
         builder.Property(e => e.UserId).HasColumnName("UserId").HasColumnOrder(7).IsRequired();
         builder.Property(e => e.RenewCount).HasColumnName("RenewCount").HasDefaultValue(0).HasColumnOrder(8).IsRequired();
-        
+
         builder.HasIndex(e => new { e.PackageId, e.UserId }).HasDatabaseName("IX_RPackageUsers_1").IsUnique();
 
         builder.HasOne(d => d.Package).WithMany(p => p.PackageUsers).HasForeignKey(d => d.PackageId).HasPrincipalKey(x => x.Id);

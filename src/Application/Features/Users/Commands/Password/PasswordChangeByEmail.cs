@@ -2,7 +2,6 @@
 using DataAccess.Abstract.Core;
 using Domain.Entities.Core;
 using MediatR;
-using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 using OCK.Core.Security.HashingHelper;
 

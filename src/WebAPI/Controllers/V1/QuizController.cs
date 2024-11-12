@@ -1,7 +1,7 @@
-using Asp.Versioning;
 using Application.Features.Questions.Commands.Quizzes;
 using Application.Features.Questions.Models.Quizzes;
 using Application.Features.Questions.Queries.Quizzes;
+using Asp.Versioning;
 
 namespace WebAPI.Controllers.V1;
 

@@ -3,12 +3,10 @@ using Application.Features.Orders.Rules;
 using Application.Features.Packages.Rules;
 using Application.Features.Users.Rules;
 using DataAccess.Abstract.Core;
-using Domain.Entities.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Caching;
 using OCK.Core.Pipelines.Logging;
-using OCK.Core.Security.HashingHelper;
 
 namespace Application.Features.Orders.Commands;
 
@@ -29,50 +27,18 @@ public class AddOrderCommandHandler(IMapper mapper,
                                     IOrderDal orderDal,
                                     IOrderDetailDal orderDetailDal,
                                     IPaymentDal paymentDal,
-                                    IPackageUserDal packageUserDal,
-                                    //ICommonService commonService,
-                                    UserRules userRules) : IRequestHandler<AddOrderCommand, GetOrderModel>
+                                    IPackageUserDal packageUserDal) : IRequestHandler<AddOrderCommand, GetOrderModel>
 {
     public async Task<GetOrderModel> Handle(AddOrderCommand request, CancellationToken cancellationToken)
     {
         var date = DateTime.Now;
-        request.Model.User!.Email = request.Model.User.Email!.Trim().ToLower();
-        request.Model.User.Phone = request.Model.User.Phone?.TrimForPhone();
-
-        await userRules.UserNameCanNotBeDuplicated(request.Model.User!.Email!);
-        await userRules.UserEmailCanNotBeDuplicated(request.Model.User.Email!);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.User.Phone!);
-
-        HashingHelper.CreatePasswordHash(request.Model.User.Password, out byte[] passwordHash, out byte[] passwordSalt);
+        request.Model.Email = request.Model.Email!.Trim().ToLower();
 
         var user = await userDal.GetAsync(
             enableTracking: false,
-            predicate: x => x.Email == request.Model.User.Email,
-            cancellationToken: cancellationToken) ?? new User();
-
-        if (user.Id <= 0)
-        {
-            user.Id = await userDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
-            user.IsActive = false;
-            user.CreateDate = date;
-            user.UserName = request.Model.User.Email;
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
-            user.MustPasswordChange = false;
-            user.Name = request.Model.User.Name;
-            user.Surname = request.Model.User.Surname;
-            user.Phone = request.Model.User.Phone;
-            user.ProfileUrl = string.Empty;
-            user.Email = request.Model.User.Email;
-            user.Type = UserTypes.Person;
-            user.SchoolId = null;
-            user.ConnectionId = null;
-            user.PackageCredit = 0;
-            user.AddtionalCredit = 0;
-            user.AutomaticPayment = request.Model.User.AutomaticPayment;
-            user.TaxNumber = request.Model.User.TaxNumber;
-            user.LicenceEndDate = date;
-        }
+            predicate: x => x.Email == request.Model.Email,
+            cancellationToken: cancellationToken);
+        await UserRules.UserShouldExists(user);
 
         var orderCount = await orderDal.CountOfRecordAsync(
             enableTracking: false,
@@ -91,7 +57,7 @@ public class AddOrderCommandHandler(IMapper mapper,
         };
 
         var orderDetail = new List<OrderDetail>();
-        var packageUsers = new List<PackageUser>();
+        var packageUsers = new List<(bool, PackageUser)>();
         var subTotal = 0.0;
         foreach (var detail in request.Model.OrderDetails)
         {
@@ -105,11 +71,11 @@ public class AddOrderCommandHandler(IMapper mapper,
             var price = quantity * package.UnitPrice;
             subTotal += price;
             var discountRatio = detail.DiscountRatio;
-            var discountAmount = Math.Round(price * discountRatio / 100.0, 2);
-            var taxBase = price - discountAmount;
+            var discountAmount = (price * discountRatio / 100.0).RoundDouble();
+            var taxBase = (price - discountAmount).RoundDouble();
             var taxRatio = package.TaxRatio;
-            var taxAmount = Math.Round(taxBase * taxRatio / 100.0, 2);
-            var realAmount = Math.Round(taxBase + taxAmount, 2);
+            var taxAmount = (taxBase * taxRatio / 100.0).RoundDouble();
+            var realAmount = (taxBase + taxAmount).RoundDouble();
 
             await OrderRules.OrderDetailPricesShouldEqual(realAmount, detail.Amount, package.Name!);
 
@@ -185,8 +151,9 @@ public class AddOrderCommandHandler(IMapper mapper,
                 enableTracking: false,
                 predicate: x => x.PackageId == package.Id && x.UserId == user.Id,
                 cancellationToken: cancellationToken) ?? new PackageUser();
+            var packageUserIsExists = packageUser.Id != Guid.Empty;
 
-            if (packageUser != null)
+            if (packageUserIsExists)
             {
                 packageUser.UpdateUser = 1;
                 packageUser.UpdateDate = date;
@@ -208,13 +175,13 @@ public class AddOrderCommandHandler(IMapper mapper,
                 };
             }
 
-            packageUsers.Add(packageUser);
+            packageUsers.Add((packageUserIsExists, packageUser));
         }
 
         var totalDiscount = orderDetail.Sum(x => x.DiscountAmount);
         var totalTaxBase = subTotal - totalDiscount;
         var totalTaxAmount = orderDetail.Sum(x => x.TaxAmount);
-        var totalPrice = Math.Round(totalTaxBase + totalTaxAmount, 2);
+        var totalPrice = (totalTaxBase + totalTaxAmount).RoundDouble();
 
         await OrderRules.OrderTotalricesShouldEqual(totalPrice, request.Model.Payment!.Amount);
 
@@ -248,21 +215,17 @@ public class AddOrderCommandHandler(IMapper mapper,
         {
             result = await orderDal.ExecuteWithTransactionAsync(async () =>
             {
-                if (user.Id <= 0)
-                    await userDal.AddAsync(user, cancellationToken: cancellationToken);
-                else
-                    await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
-
+                await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
                 await orderDal.AddAsync(order, cancellationToken: cancellationToken);
                 await orderDetailDal.AddRangeAsync(orderDetail, cancellationToken: cancellationToken);
                 await paymentDal.AddAsync(payment, cancellationToken: cancellationToken);
 
                 foreach (var packageUser in packageUsers)
                 {
-                    if (packageUser.CreateDate == date)
-                        await packageUserDal.AddAsync(packageUser, cancellationToken: cancellationToken);
+                    if (packageUser.Item1)
+                        await packageUserDal.UpdateAsync(packageUser.Item2, cancellationToken: cancellationToken);
                     else
-                        await packageUserDal.UpdateAsync(packageUser, cancellationToken: cancellationToken);
+                        await packageUserDal.AddAsync(packageUser.Item2, cancellationToken: cancellationToken);
                 }
 
                 return await orderDal.GetAsyncAutoMapper<GetOrderModel>(
@@ -286,33 +249,33 @@ public class AddOrderCommandValidator : AbstractValidator<AddOrderCommand>
 
         RuleFor(x => x.Model).NotNull().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.Model.User).NotNull().WithMessage(Strings.InvalidValue);
+        //RuleFor(x => x.Model.User).NotNull().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.Model.User!.Name).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Name]);
-        RuleFor(x => x.Model.User!.Name).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Name, "2"]);
-        RuleFor(x => x.Model.User!.Name).MaximumLength(250).WithMessage(Strings.DynamicMaxLength, [Strings.Name, "250"]);
+        //RuleFor(x => x.Model.User!.Name).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Name]);
+        //RuleFor(x => x.Model.User!.Name).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Name, "2"]);
+        //RuleFor(x => x.Model.User!.Name).MaximumLength(250).WithMessage(Strings.DynamicMaxLength, [Strings.Name, "250"]);
 
-        RuleFor(x => x.Model.User!.Surname).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Surname]);
-        RuleFor(x => x.Model.User!.Surname).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Surname, "2"]);
-        RuleFor(x => x.Model.User!.Surname).MaximumLength(250).WithMessage(Strings.DynamicMaxLength, [Strings.Surname, "100"]);
+        //RuleFor(x => x.Model.User!.Surname).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Surname]);
+        //RuleFor(x => x.Model.User!.Surname).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Surname, "2"]);
+        //RuleFor(x => x.Model.User!.Surname).MaximumLength(250).WithMessage(Strings.DynamicMaxLength, [Strings.Surname, "100"]);
 
-        RuleFor(x => x.Model.User!.Email).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Authorized} {Strings.OfEmail}"]);
-        RuleFor(x => x.Model.User!.Email).MinimumLength(5).WithMessage(Strings.DynamicMinLength, [$"{Strings.Authorized} {Strings.OfEmail}", "5"]);
-        RuleFor(x => x.Model.User!.Email).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Authorized} {Strings.OfEmail}", "100"]);
-        RuleFor(x => x.Model.User!.Email).EmailAddress().WithMessage(Strings.EmailWrongFormat);
+        RuleFor(x => x.Model.Email).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Authorized} {Strings.OfEmail}"]);
+        RuleFor(x => x.Model.Email).MinimumLength(5).WithMessage(Strings.DynamicMinLength, [$"{Strings.Authorized} {Strings.OfEmail}", "5"]);
+        RuleFor(x => x.Model.Email).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Authorized} {Strings.OfEmail}", "100"]);
+        RuleFor(x => x.Model.Email).EmailAddress().WithMessage(Strings.EmailWrongFormat);
 
-        RuleFor(x => x.Model.User!.Password)
-            .NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Password])
-            .MinimumLength(8).WithMessage(Strings.DynamicMinLength, [Strings.Password, "8"])
-            .Matches("[a-zA-Z]").WithMessage(Strings.PasswordLetter)
-            .Matches("[0-9]").WithMessage(Strings.PasswordNumber);
+        //RuleFor(x => x.Model.User!.Password)
+        //    .NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Password])
+        //    .MinimumLength(8).WithMessage(Strings.DynamicMinLength, [Strings.Password, "8"])
+        //    .Matches("[a-zA-Z]").WithMessage(Strings.PasswordLetter)
+        //    .Matches("[0-9]").WithMessage(Strings.PasswordNumber);
 
-        RuleFor(x => x.Model.User!.Phone).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Authorized} {Strings.OfPhone}"]);
-        RuleFor(x => x.Model.User!.Phone).MinimumLength(10).WithMessage(Strings.DynamicMinLength, [$"{Strings.Authorized} {Strings.OfPhone}", "10"]);
-        RuleFor(x => x.Model.User!.Phone).MaximumLength(15).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Authorized} {Strings.OfPhone}", "15"]);
-        RuleFor(x => x.Model.User!.Phone).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [$"{Strings.Authorized} {Strings.OfPhone}"]);
+        //RuleFor(x => x.Model.User!.Phone).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Authorized} {Strings.OfPhone}"]);
+        //RuleFor(x => x.Model.User!.Phone).MinimumLength(10).WithMessage(Strings.DynamicMinLength, [$"{Strings.Authorized} {Strings.OfPhone}", "10"]);
+        //RuleFor(x => x.Model.User!.Phone).MaximumLength(15).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Authorized} {Strings.OfPhone}", "15"]);
+        //RuleFor(x => x.Model.User!.Phone).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [$"{Strings.Authorized} {Strings.OfPhone}"]);
 
-        RuleFor(x => x.Model.User!.TaxNumber).MaximumLength(11).WithMessage(Strings.DynamicMaxLength, [$"{Strings.TaxNumber}/{Strings.Identity} {Strings.No}", "11"]);
+        //RuleFor(x => x.Model.User!.TaxNumber).MaximumLength(11).WithMessage(Strings.DynamicMaxLength, [$"{Strings.TaxNumber}/{Strings.Identity} {Strings.No}", "11"]);
 
         RuleFor(x => x.Model.OrderDetails).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Detail]);
         RuleForEach(x => x.Model.OrderDetails).SetValidator(new AddOrderDetailForAddOrderModelValidator());

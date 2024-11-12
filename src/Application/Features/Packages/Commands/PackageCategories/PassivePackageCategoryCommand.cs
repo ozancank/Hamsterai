@@ -1,5 +1,4 @@
-﻿using Application.Features.Packages.Commands.Packages;
-using Application.Features.Packages.Rules;
+﻿using Application.Features.Packages.Rules;
 using Application.Services.CommonService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
@@ -17,9 +16,9 @@ public class PassivePackageCategoryCommand : IRequest<bool>, ISecuredRequest<Use
 }
 
 public class PassivePackageCategoryCommandHandler(IPackageCategoryDal packageCategoryDal,
-                                                  ICommonService commonService) : IRequestHandler<PassivePackageCommand, bool>
+                                                  ICommonService commonService) : IRequestHandler<PassivePackageCategoryCommand, bool>
 {
-    public async Task<bool> Handle(PassivePackageCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(PassivePackageCategoryCommand request, CancellationToken cancellationToken)
     {
         var entity = await packageCategoryDal.GetAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
         await PackageRules.PackageShouldExists(entity);

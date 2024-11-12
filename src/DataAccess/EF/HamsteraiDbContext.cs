@@ -1,5 +1,4 @@
 ﻿using Domain.Entities.Core;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.Extensions.Configuration;
 using OCK.Core.Utilities;
 using System.Reflection;

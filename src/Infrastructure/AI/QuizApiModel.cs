@@ -9,5 +9,4 @@ public sealed class QuizApiModel : IRequestModel
     public List<bool>? VisualList { get; set; }
     public string? LessonName { get; set; }
     public long UserId { get; set; }
-
 }

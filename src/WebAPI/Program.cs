@@ -7,6 +7,7 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -39,6 +40,7 @@ static void SetAppOptions(WebApplicationBuilder builder)
     AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     builder.Configuration.GetSection("AppOptions").Get<Domain.Constants.AppOptions>();
     Domain.Constants.AppOptions.CreateFolder();
+    if (Environment.OSVersion.Platform == PlatformID.Unix) RunLinuxCommands();
 }
 
 static void Services(WebApplicationBuilder builder)
@@ -95,6 +97,11 @@ static async Task Middlewares(WebApplicationBuilder builder, WebApplication app)
 {
     app.UseCors("AllowEveryThing");
 
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    });
+
     if (!app.Environment.IsDevelopment())
         app.UseMiddleware<HeaderAuthMiddleware>([Strings.XApiKey, Strings.SwaggerPath, Strings.Domain]);
 
@@ -141,9 +148,8 @@ static async Task Middlewares(WebApplicationBuilder builder, WebApplication app)
     Console.WriteLine("API Started...");
     app.Lifetime.ApplicationStarted.Register(() =>
     {
-        foreach (var url in app.Urls) Console.WriteLine(url.Replace("[::]","localhost"));
+        foreach (var url in app.Urls) Console.WriteLine(url.Replace("[::]", "localhost"));
     });
-
 }
 
 static void SwaggerAndToken(WebApplicationBuilder builder)
@@ -236,7 +242,13 @@ static void StaticFiles(WebApplication app)
         app.UseStaticFiles(new StaticFileOptions
         {
             FileProvider = new PhysicalFileProvider(path.Value),
-            RequestPath = path.Key
+            RequestPath = path.Key,
+            OnPrepareResponse = context =>
+            {
+                Console.WriteLine($"Dosya istek zamanı: {DateTime.Now}");
+                Console.WriteLine($"Dosya sunuluyor: {context.File.Name}");
+                Console.WriteLine($"Dosya yolu: {context.File.PhysicalPath}");
+            }
         });
     }
 }
@@ -249,4 +261,45 @@ static void Delegates()
     //UpdateQuestionText = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
     //UpdateSimilarText = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
     //UpdateQuestionVisual = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
+}
+
+static void RunLinuxCommands()
+{
+    string[] commands =
+    [
+            $"sudo chown -R www-data:www-data {Directory.GetParent(Domain.Constants.AppOptions.ProfilePictureFolderPath).FullName}",
+            $"sudo chown -R www-data:www-data {Domain.Constants.AppOptions.HomeworkFolderPath}",
+            $"sudo chown -R www-data:www-data {Domain.Constants.AppOptions.HomeworkAnswerFolderPath}",
+            $"sudo chmod -R 755 {Directory.GetParent(Domain.Constants.AppOptions.ProfilePictureFolderPath).FullName}",
+            $"sudo chmod -R 755 {Domain.Constants.AppOptions.HomeworkFolderPath}",
+            $"sudo chmod -R 755 {Domain.Constants.AppOptions.HomeworkAnswerFolderPath}",
+    ];
+
+    foreach (var command in commands)
+    {
+        ExecuteBashCommand(command);
+    }
+}
+
+static void ExecuteBashCommand(string command)
+{
+    var processInfo = new ProcessStartInfo("bash", $"-c \"{command}\"")
+    {
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        UseShellExecute = false,
+        CreateNoWindow = true
+    };
+
+    using var process = new Process { StartInfo = processInfo };
+    process.Start();
+    process.WaitForExit();
+
+    string output = process.StandardOutput.ReadToEnd();
+    string error = process.StandardError.ReadToEnd();
+
+    if (!string.IsNullOrEmpty(error))
+    {
+        Console.WriteLine($"Error: {error}");
+    }
 }

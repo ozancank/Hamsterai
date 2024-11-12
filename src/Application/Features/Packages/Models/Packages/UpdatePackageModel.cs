@@ -13,6 +13,7 @@ public sealed class UpdatePackageModel : IResponseModel
     public string? Description { get; set; }
     public byte CategoryId { get; set; }
     public IFormFile? PictureFile { get; set; }
+    public PackageType Type { get; set; }
     public int QuestionCredit { get; set; }
 
     public List<byte> LessonIds { get; set; } = [];

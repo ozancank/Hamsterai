@@ -1,7 +1,6 @@
 ﻿using Application.Features.Packages.Models.PackageCategories;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
-using System.Collections.Generic;
 
 namespace Application.Features.Packages.Queries.PackageCategories;
 

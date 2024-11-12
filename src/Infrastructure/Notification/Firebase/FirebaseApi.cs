@@ -34,7 +34,7 @@ public sealed class FirebaseApi : INotificationApi
                 Body = notificationModel.Body,
             },
             Tokens = tokens as List<string>,
-        };        
+        };
 
         var messaging = FirebaseMessaging.DefaultInstance;
         _ = await messaging.SendEachForMulticastAsync(message);

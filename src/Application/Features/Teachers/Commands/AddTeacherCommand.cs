@@ -32,14 +32,15 @@ public class AddTeacherCommandHandler(IMapper mapper,
 {
     public async Task<GetTeacherModel> Handle(AddTeacherCommand request, CancellationToken cancellationToken)
     {
-        await teacherRules.TeacherEmailCanNotBeDuplicated(request.Model.Email!);
-        await teacherRules.TeacherPhoneCanNotBeDuplicated(request.Model.Phone!);
-        await userRules.UserNameCanNotBeDuplicated(request.Model.Email!);
-        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email!);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone!);
+        request.Model.Email = request.Model.Email!.Trim().ToLower();
+
+        await teacherRules.TeacherEmailCanNotBeDuplicated(request.Model.Email);
+
+        await userRules.UserNameCanNotBeDuplicated(request.Model.Email);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email);
 
         var userId = commonService.HttpUserId;
-        var schoolId = commonService.HttpSchoolId; 
+        var schoolId = commonService.HttpSchoolId;
         var date = DateTime.Now;
 
         var school = await schoolDal.GetAsync(
@@ -113,10 +114,10 @@ public class AddTeacherCommandValidator : AbstractValidator<AddTeacherCommand>
         RuleFor(x => x.Model.Email).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Authorized} {Strings.OfEmail}", "100"]);
         RuleFor(x => x.Model.Email).EmailAddress().WithMessage(Strings.EmailWrongFormat);
 
-        RuleFor(x => x.Model.Phone).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Authorized} {Strings.OfPhone}"]);
-        RuleFor(x => x.Model.Phone).MinimumLength(10).WithMessage(Strings.DynamicMinLength, [$"{Strings.Authorized} {Strings.OfPhone}", "10"]);
+        //RuleFor(x => x.Model.Phone).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Authorized} {Strings.OfPhone}"]);
+        //RuleFor(x => x.Model.Phone).MinimumLength(10).WithMessage(Strings.DynamicMinLength, [$"{Strings.Authorized} {Strings.OfPhone}", "10"]);
         RuleFor(x => x.Model.Phone).MaximumLength(15).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Authorized} {Strings.OfPhone}", "15"]);
-        RuleFor(x => x.Model.Phone).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [$"{Strings.Authorized} {Strings.OfPhone}"]);
+        //RuleFor(x => x.Model.Phone).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [$"{Strings.Authorized} {Strings.OfPhone}"]);
 
         RuleFor(x => x.Model.Branch).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Branch]);
         RuleFor(x => x.Model.Branch).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Branch, "2"]);

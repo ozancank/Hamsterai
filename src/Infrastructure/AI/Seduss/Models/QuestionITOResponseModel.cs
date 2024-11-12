@@ -21,5 +21,5 @@ public class QuestionITOResponseModel : IResponseModel
     public string? RightOption { get; set; }
 
     [JsonPropertyName("ocr_method")]
-    public string OcrMethod { get; set; } = string.Empty;    
+    public string OcrMethod { get; set; } = string.Empty;
 }

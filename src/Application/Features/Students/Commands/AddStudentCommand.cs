@@ -33,11 +33,12 @@ public class AddStudentCommandHandler(IMapper mapper,
 {
     public async Task<GetStudentModel> Handle(AddStudentCommand request, CancellationToken cancellationToken)
     {
-        await studentRules.StudentEmailCanNotBeDuplicated(request.Model.Email!);
-        await studentRules.StudentPhoneCanNotBeDuplicated(request.Model.Phone!);
-        await userRules.UserNameCanNotBeDuplicated(request.Model.Email!);
-        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email!);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone!);
+        request.Model.Email = request.Model.Email!.Trim().ToLower();
+
+        await studentRules.StudentEmailCanNotBeDuplicated(request.Model.Email);
+
+        await userRules.UserNameCanNotBeDuplicated(request.Model.Email);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email);
 
         var classRoom = await classRoomDal.GetAsync(
             enableTracking: false,
@@ -129,9 +130,9 @@ public class AddStudentCommandValidator : AbstractValidator<AddStudentCommand>
         RuleFor(x => x.Model.Email).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Authorized} {Strings.OfEmail}", "100"]);
         RuleFor(x => x.Model.Email).EmailAddress().WithMessage(Strings.EmailWrongFormat);
 
-        RuleFor(x => x.Model.Phone).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Authorized} {Strings.OfPhone}"]);
-        RuleFor(x => x.Model.Phone).MinimumLength(10).WithMessage(Strings.DynamicMinLength, [$"{Strings.Authorized} {Strings.OfPhone}", "10"]);
+        //RuleFor(x => x.Model.Phone).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Authorized} {Strings.OfPhone}"]);
+        //RuleFor(x => x.Model.Phone).MinimumLength(10).WithMessage(Strings.DynamicMinLength, [$"{Strings.Authorized} {Strings.OfPhone}", "10"]);
         RuleFor(x => x.Model.Phone).MaximumLength(15).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Authorized} {Strings.OfPhone}", "15"]);
-        RuleFor(x => x.Model.Phone).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [$"{Strings.Authorized} {Strings.OfPhone}"]);
+        //RuleFor(x => x.Model.Phone).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [$"{Strings.Authorized} {Strings.OfPhone}"]);
     }
 }

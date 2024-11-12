@@ -1,0 +1,106 @@
+﻿using Application.Features.Users.Models.User;
+using Application.Features.Users.Rules;
+using DataAccess.Abstract.Core;
+using Domain.Entities.Core;
+using MediatR;
+using OCK.Core.Pipelines.Authorization;
+using OCK.Core.Pipelines.Caching;
+using OCK.Core.Pipelines.Logging;
+using OCK.Core.Security.HashingHelper;
+
+namespace Application.Features.Users.Commands.Users;
+
+public class AddUserForWebCommand : IRequest<GetUserModel>, ISecuredRequest<UserTypes>, ILoggableRequest, ICacheRemoverRequest
+{
+    public required AddUserForWebModel Model { get; set; }
+    public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => true;
+    public string[] HidePropertyNames { get; } = ["AddUserModel.Password"];
+    public string[] CacheKey { get; } = [$"^{Strings.CacheStatusAndLicence}"];
+}
+
+public class AddUserForWebCommandHandler(IMapper mapper,
+                                         IUserDal userDal,
+                                         UserRules userRules) : IRequestHandler<AddUserForWebCommand, GetUserModel>
+{
+    public async Task<GetUserModel> Handle(AddUserForWebCommand request, CancellationToken cancellationToken)
+    {
+        request.Model!.Email = request.Model.Email!.Trim().ToLower();
+        request.Model.Password = request.Model.Password!.Trim();
+
+        await userRules.UserNameCanNotBeDuplicated(request.Model.Email);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email!);
+        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone!);
+
+        var id = await userDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
+        var date = DateTime.Now;
+
+        HashingHelper.CreatePasswordHash(request.Model.Password, out byte[] passwordHash, out byte[] passwordSalt);
+        var user = new User
+        {
+            Id = id,
+            UserName = request.Model.Email?.Trim(),
+            PasswordHash = passwordHash,
+            PasswordSalt = passwordSalt,
+            MustPasswordChange = false,
+            CreateDate = date,
+            IsActive = true,
+            Name = request.Model.Name,
+            Surname = request.Model.Surname,
+            Phone = request.Model.Phone?.Trim(),
+            ProfileUrl = string.Empty,
+            Email = request.Model.Email?.Trim(),
+            Type = UserTypes.Person,
+            ConnectionId = null,
+            SchoolId = null,
+            PackageCredit = 0,
+            AddtionalCredit = 0,
+            TaxNumber = request.Model.TaxNumber,
+            LicenceEndDate = date.Date.AddDays(1),
+        };
+
+        var result = await userDal.ExecuteWithTransactionAsync(async () =>
+        {
+            await userDal.AddAsync(user, cancellationToken: cancellationToken);
+            var result = mapper.Map<GetUserModel>(user);
+            return result;
+        }, cancellationToken: cancellationToken);
+        return result;
+    }
+}
+
+public class AddUserForWebCommandValidator : AbstractValidator<AddUserForWebCommand>
+{
+    public AddUserForWebCommandValidator()
+    {
+        RuleFor(x => x).NotEmpty().WithMessage(Strings.InvalidValue);
+
+        RuleFor(x => x.Model).NotEmpty().WithMessage(Strings.InvalidValue);
+
+        RuleFor(x => x.Model.Password)
+                .NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Password])
+                .MinimumLength(8).WithMessage(Strings.DynamicMinLength, [Strings.Password, "8"])
+                .Matches("[a-zA-Z]").WithMessage(Strings.PasswordLetter)
+                .Matches("[0-9]").WithMessage(Strings.PasswordNumber);
+
+        RuleFor(x => x.Model.Name).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Name]);
+        RuleFor(x => x.Model.Name).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Name, "2"]);
+        RuleFor(x => x.Model.Name).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Name, "100"]);
+
+        RuleFor(x => x.Model.Surname).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Surname]);
+        RuleFor(x => x.Model.Surname).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Surname, "2"]);
+        RuleFor(x => x.Model.Surname).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Surname, "100"]);
+
+        //RuleFor(x => x.Phone).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Phone]);
+        //RuleFor(x => x.Phone.EmptyOrTrim(" ")).MinimumLength(10).WithMessage(Strings.DynamicMinLength, [Strings.Phone, "10"]);
+        RuleFor(x => x.Model.Phone.EmptyOrTrim(" ")).MaximumLength(10).WithMessage(Strings.DynamicMaxLength, [Strings.Phone, "15"]);
+        //RuleFor(x => x.Phone).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [Strings.PhoneNumber]);
+
+        RuleFor(x => x.Model.Email).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Email]);
+        RuleFor(x => x.Model.Email).EmailAddress().WithMessage(Strings.EmailWrongFormat);
+        RuleFor(x => x.Model.Email).MinimumLength(6).WithMessage(Strings.DynamicMinLength, [Strings.Email, "6"]);
+        RuleFor(x => x.Model.Email).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Email, "100"]);
+
+        RuleFor(x => x.Model.TaxNumber).MaximumLength(11).WithMessage(Strings.DynamicMaxLength, [Strings.TaxNumber, "11"]);
+    }
+}

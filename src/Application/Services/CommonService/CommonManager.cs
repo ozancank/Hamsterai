@@ -1,5 +1,4 @@
 ﻿using Application.Features.Users.Rules;
-using Domain.Entities.Core;
 using OCK.Core.Logging.Serilog;
 using OCK.Core.Security.Extensions;
 using SixLabors.Fonts;
@@ -10,7 +9,6 @@ using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 namespace Application.Services.CommonService;

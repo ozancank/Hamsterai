@@ -10,7 +10,7 @@ public class UpdateQuizStartedCommand : IRequest<bool>, ISecuredRequest<UserType
 {
     public required string Id { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.Student];
+    public UserTypes[] Roles { get; } = [UserTypes.Student, UserTypes.Person];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }

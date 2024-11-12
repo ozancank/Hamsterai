@@ -130,6 +130,10 @@ public struct Strings
     public const string Amount = "Yekün";
 
     //public const string LessonGroup = "Ders Grubu";
+    public const string NoQuestionCredit = "Soru krediniz bulunmamaktadır.";
+
+    public const string CreditNotEnough = "Soru krediniz yetersiz.";
+
     public const string FileNameExtension = "Dosya adı içerisinde nokta olmalı ve uzantı belirtilmelidir.";
 
     public const string PasswordNumber = "Şifre içerisinde en az 1 adet sayı bulunmalıdır.";

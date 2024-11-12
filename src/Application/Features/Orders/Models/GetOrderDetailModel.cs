@@ -6,9 +6,7 @@ public class GetOrderDetailModel : IResponseModel
 {
     public Guid Id { get; set; }
     public bool IsActive { get; set; }
-    public long CreateUser { get; set; }
     public DateTime CreateDate { get; set; }
-    public long UpdateUser { get; set; }
     public int OrderId { get; set; }
     public short PackageId { get; set; }
     public int QuestionCredit { get; set; }

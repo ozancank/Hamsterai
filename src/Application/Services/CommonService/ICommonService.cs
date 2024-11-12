@@ -22,5 +22,6 @@ public interface ICommonService : IBusinessService
     List<string> GetLogs(PageRequest pageRequest, bool onlyError);
 
     Dictionary<string, Dictionary<string, int>> GetEnums();
+
     Dictionary<string, List<AppStatics.PropertyDto>> GetEntities();
 }

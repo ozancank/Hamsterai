@@ -1,5 +1,4 @@
 ﻿using Application.Features.Orders.Models;
-using Application.Features.Students.Models;
 
 namespace Application.Features.Orders.Profiles;
 

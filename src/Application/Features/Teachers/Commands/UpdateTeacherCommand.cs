@@ -30,18 +30,18 @@ public class UpdateTeacherCommandHandler(IMapper mapper,
 {
     public async Task<GetTeacherModel> Handle(UpdateTeacherCommand request, CancellationToken cancellationToken)
     {
+        request.Model.Email = request.Model.Email!.Trim().ToLower();
+
         var teacher = await teacherDal.GetAsync(x => x.Id == request.Model.Id, cancellationToken: cancellationToken);
 
         await TeacherRules.TeacherShouldExists(teacher);
-        await teacherRules.TeacherEmailCanNotBeDuplicated(request.Model.Email!, request.Model.Id);
-        await teacherRules.TeacherPhoneCanNotBeDuplicated(request.Model.Phone!, request.Model.Id);
+        await teacherRules.TeacherEmailCanNotBeDuplicated(request.Model.Email, request.Model.Id);
 
         var user = await userDal.GetAsync(x => x.ConnectionId == teacher.Id && x.Type == UserTypes.Teacher, cancellationToken: cancellationToken);
 
         await UserRules.UserShouldExists(user);
-        await userRules.UserNameCanNotBeDuplicated(request.Model.Email!, user.Id);
-        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email!, user.Id);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone!, user.Id);
+        await userRules.UserNameCanNotBeDuplicated(request.Model.Email, user.Id);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email, user.Id);
 
         var userId = commonService.HttpUserId;
         var schoolId = commonService.HttpSchoolId;
@@ -99,10 +99,10 @@ public class UpdateTeacherCommandValidator : AbstractValidator<UpdateTeacherComm
         RuleFor(x => x.Model.Email).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Authorized} {Strings.OfEmail}", "100"]);
         RuleFor(x => x.Model.Email).EmailAddress().WithMessage(Strings.EmailWrongFormat);
 
-        RuleFor(x => x.Model.Phone).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Authorized} {Strings.OfPhone}"]);
-        RuleFor(x => x.Model.Phone).MinimumLength(10).WithMessage(Strings.DynamicMinLength, [$"{Strings.Authorized} {Strings.OfPhone}", "10"]);
+        //RuleFor(x => x.Model.Phone).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Authorized} {Strings.OfPhone}"]);
+        //RuleFor(x => x.Model.Phone).MinimumLength(10).WithMessage(Strings.DynamicMinLength, [$"{Strings.Authorized} {Strings.OfPhone}", "10"]);
         RuleFor(x => x.Model.Phone).MaximumLength(15).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Authorized} {Strings.OfPhone}", "15"]);
-        RuleFor(x => x.Model.Phone).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [$"{Strings.Authorized} {Strings.OfPhone}"]);
+        //RuleFor(x => x.Model.Phone).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [$"{Strings.Authorized} {Strings.OfPhone}"]);
 
         RuleFor(x => x.Model.Branch).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Branch]);
         RuleFor(x => x.Model.Branch).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Branch, "2"]);

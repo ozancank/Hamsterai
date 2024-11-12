@@ -8,7 +8,6 @@ public class QuestionRequestModel : IRequestModel
     [JsonPropertyName("content")]
     public string? QuestionImage { get; set; }
 
-
     [JsonPropertyName("ders")]
     public string? LessonName { get; set; }
 }

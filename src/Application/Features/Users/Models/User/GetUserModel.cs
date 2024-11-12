@@ -19,6 +19,8 @@ public class GetUserModel : IResponseModel
     public int PackageCredit { get; set; }
     public int AddtionalCredit { get; set; }
     public bool AutomaticPayment { get; set; }
+    public string? TaxNumber { get; set; }
+    public DateTime LicenceEndDate { get; set; }
     public List<GetPackageModel> Packages { get; set; } = [];
     public List<string> OperationClaims { get; set; } = [];
 }

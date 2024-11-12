@@ -323,7 +323,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnOrder(4);
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("citext")
                         .HasColumnName("Phone")
@@ -369,10 +368,6 @@ namespace DataAccess.EF.Migrations
                     b.HasIndex("Email")
                         .IsUnique()
                         .HasDatabaseName("UK_Users_Email");
-
-                    b.HasIndex("Phone")
-                        .IsUnique()
-                        .HasDatabaseName("UK_Users_Phone");
 
                     b.HasIndex("SchoolId");
 
@@ -3356,7 +3351,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnOrder(6);
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("citext")
                         .HasColumnName("Phone")
@@ -3393,10 +3387,6 @@ namespace DataAccess.EF.Migrations
                     b.HasIndex("Email")
                         .IsUnique()
                         .HasDatabaseName("UK_Students_Email");
-
-                    b.HasIndex("Phone")
-                        .IsUnique()
-                        .HasDatabaseName("UK_Students_Phone");
 
                     b.ToTable("Students", (string)null);
 
@@ -3582,7 +3572,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnOrder(6);
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("citext")
                         .HasColumnName("Phone")
@@ -3618,10 +3607,6 @@ namespace DataAccess.EF.Migrations
                     b.HasIndex("Email")
                         .IsUnique()
                         .HasDatabaseName("UK_Teachers_Email");
-
-                    b.HasIndex("Phone")
-                        .IsUnique()
-                        .HasDatabaseName("UK_Teachers_Phone");
 
                     b.HasIndex("SchoolId");
 

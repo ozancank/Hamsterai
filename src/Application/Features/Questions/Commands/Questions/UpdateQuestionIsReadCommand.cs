@@ -1,5 +1,4 @@
-﻿using Application.Features.Lessons.Rules;
-using Application.Features.Questions.Rules;
+﻿using Application.Features.Questions.Rules;
 using Application.Services.CommonService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;

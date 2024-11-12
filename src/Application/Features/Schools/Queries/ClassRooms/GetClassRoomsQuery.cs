@@ -9,7 +9,7 @@ public class GetClassRoomsQuery : IRequest<PageableModel<GetClassRoomModel>>, IS
 {
     public required PageRequest PageRequest { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.School,UserTypes.Teacher];
+    public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
     public bool AllowByPass => false;
 }
 
@@ -26,8 +26,8 @@ public class GetClassRoomsQueryHandler(IMapper mapper,
             predicate: x => commonService.HttpUserType == UserTypes.Administator || x.School!.Id == commonService.HttpSchoolId,
             include: x => x/*.Include(u => u.School).ThenInclude(u=>u.PackageSchools).ThenInclude(u => u.Package)*/
                            .Include(u => u.Package),
-                           //.Include(u => u.TeacherClassRooms).ThenInclude(u => u.Teacher)
-                           //.Include(u => u.Students),
+            //.Include(u => u.TeacherClassRooms).ThenInclude(u => u.Teacher)
+            //.Include(u => u.Students),
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
             orderBy: x => x.OrderBy(x => x.CreateDate),

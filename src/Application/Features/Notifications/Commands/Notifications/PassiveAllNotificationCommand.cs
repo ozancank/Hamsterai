@@ -1,5 +1,4 @@
-﻿using Application.Features.Users.Rules;
-using Application.Services.CommonService;
+﻿using Application.Services.CommonService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;

@@ -1,6 +1,4 @@
-﻿using System.Timers;
-
-class Program
+﻿internal class Program
 {
     private static readonly HttpClient client = new();
     private static readonly System.Timers.Timer timer = new(10000);

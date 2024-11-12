@@ -24,19 +24,18 @@ public class AddUserCommand : IRequest<GetUserModel>, ISecuredRequest<UserTypes>
 public class AddUserCommandHandler(IMapper mapper,
                                    ICommonService commonService,
                                    IUserDal userDal,
+                                   IPackageUserDal packageUserDal,
                                    UserRules userRules,
                                    PackageRules packageRules) : IRequestHandler<AddUserCommand, GetUserModel>
 {
     public async Task<GetUserModel> Handle(AddUserCommand request, CancellationToken cancellationToken)
     {
-        request.Model!.UserName = request.Model.UserName!.Trim().ToLower();
+        request.Model!.Email = request.Model.Email!.Trim().ToLower();
         request.Model.Password = request.Model.Password!.Trim();
 
-        await userRules.UserNameCanNotBeDuplicated(request.Model.UserName);
-        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email!);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone!);
+        await userRules.UserNameCanNotBeDuplicated(request.Model.Email);
+        await userRules.UserEmailCanNotBeDuplicated(request.Model.Email);
         await userRules.UserTypeAllowed(request.Model.Type);
-        await packageRules.PackageShouldExistsById(request.Model.PackageId);
 
         var id = await userDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
         var date = DateTime.Now;
@@ -52,7 +51,7 @@ public class AddUserCommandHandler(IMapper mapper,
         var user = new User
         {
             Id = id,
-            UserName = request.Model.UserName?.Trim(),
+            UserName = request.Model.Email,
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
             MustPasswordChange = false,
@@ -60,61 +59,83 @@ public class AddUserCommandHandler(IMapper mapper,
             IsActive = true,
             Name = request.Model.Name,
             Surname = request.Model.Surname,
-            Phone = request.Model.Phone?.Trim(),
+            Phone = request.Model.Phone?.TrimForPhone(),
             ProfileUrl = request.Model.ProfileUrl,
-            Email = request.Model.Email?.Trim(),
+            Email = request.Model.Email,
             Type = Enum.Parse<UserTypes>($"{request.Model.Type}"),
             ConnectionId = request.Model.ConnectionId,
             SchoolId = request.Model.SchoolId,
-            //GroupId = request.Model.PackageId,
             PackageCredit = request.Model.PackageCredit,
             AddtionalCredit = request.Model.AddtionalCredit,
             TaxNumber = request.Model.TaxNumber,
             LicenceEndDate = request.Model.LicenceEndDate
         };
 
-        await userDal.AddAsync(user, cancellationToken: cancellationToken);
-        var result = mapper.Map<GetUserModel>(user);
+        var packageUsers = new List<PackageUser>();
+
+        foreach (var packageId in request.Model.PackageIds)
+        {
+            await packageRules.PackageShouldExistsById(packageId);
+
+            var packageUser = new PackageUser
+            {
+                Id = Guid.NewGuid(),
+                IsActive = true,
+                CreateUser = commonService.HttpUserId,
+                CreateDate = date,
+                UpdateUser = commonService.HttpUserId,
+                UpdateDate = date,
+                UserId = id,
+                PackageId = packageId,
+            };
+            packageUsers.Add(packageUser);
+        }
+
+        var result = await userDal.ExecuteWithTransactionAsync(async () =>
+        {
+            await userDal.AddAsync(user, cancellationToken: cancellationToken);
+            await packageUserDal.AddRangeAsync(packageUsers, cancellationToken: cancellationToken);
+            var result = mapper.Map<GetUserModel>(user);
+            return result;
+        }, cancellationToken: cancellationToken);
         return result;
     }
 }
 
-public class AddUserCommandValidator : AbstractValidator<AddUserModel>
+public class AddUserCommandValidator : AbstractValidator<AddUserCommand>
 {
     public AddUserCommandValidator()
     {
         RuleFor(x => x).NotEmpty().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.UserName).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.UserName]);
-        RuleFor(x => x.UserName.EmptyOrTrim()).Must(x => !x.Trim().Contains(' ')).WithMessage(Strings.UserNameSpace);
+        RuleFor(x => x.Model).NotEmpty().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.Password)
+        RuleFor(x => x.Model.Password)
                 .NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Password])
                 .MinimumLength(8).WithMessage(Strings.DynamicMinLength, [Strings.Password, "8"])
                 .Matches("[a-zA-Z]").WithMessage(Strings.PasswordLetter)
                 .Matches("[0-9]").WithMessage(Strings.PasswordNumber);
 
-        RuleFor(x => x.Name).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Name]);
-        RuleFor(x => x.Name).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Name, "2"]);
-        RuleFor(x => x.Name).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Name, "100"]);
+        RuleFor(x => x.Model.Name).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Name]);
+        RuleFor(x => x.Model.Name).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Name, "2"]);
+        RuleFor(x => x.Model.Name).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Name, "100"]);
 
-        RuleFor(x => x.Surname).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Surname]);
-        RuleFor(x => x.Surname).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Surname, "2"]);
-        RuleFor(x => x.Surname).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Surname, "100"]);
+        RuleFor(x => x.Model.Surname).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Surname]);
+        RuleFor(x => x.Model.Surname).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Surname, "2"]);
+        RuleFor(x => x.Model.Surname).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Surname, "100"]);
 
-        RuleFor(x => x.Phone).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Phone]);
-        RuleFor(x => x.Phone.EmptyOrTrim(" ")).MinimumLength(10).WithMessage(Strings.DynamicMinLength, [Strings.Phone, "10"]);
-        RuleFor(x => x.Phone.EmptyOrTrim(" ")).MaximumLength(10).WithMessage(Strings.DynamicMaxLength, [Strings.Phone, "15"]);
-        RuleFor(x => x.Phone).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [Strings.PhoneNumber]);
+        //RuleFor(x => x.Phone).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Phone]);
+        //RuleFor(x => x.Phone.EmptyOrTrim(" ")).MinimumLength(10).WithMessage(Strings.DynamicMinLength, [Strings.Phone, "10"]);
+        RuleFor(x => x.Model.Phone.EmptyOrTrim(" ")).MaximumLength(10).WithMessage(Strings.DynamicMaxLength, [Strings.Phone, "15"]);
+        //RuleFor(x => x.Phone).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [Strings.PhoneNumber]);
 
-        RuleFor(x => x.Email).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Email]);
-        RuleFor(x => x.Email).EmailAddress().WithMessage(Strings.EmailWrongFormat);
-        RuleFor(x => x.Email).MinimumLength(6).WithMessage(Strings.DynamicMinLength, [Strings.Email, "6"]);
-        RuleFor(x => x.Email).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Email, "100"]);
+        RuleFor(x => x.Model.Email).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Email]);
+        RuleFor(x => x.Model.Email).EmailAddress().WithMessage(Strings.EmailWrongFormat);
+        RuleFor(x => x.Model.Email).MinimumLength(6).WithMessage(Strings.DynamicMinLength, [Strings.Email, "6"]);
+        RuleFor(x => x.Model.Email).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Email, "100"]);
 
-        RuleFor(x => (byte)x.Type).InclusiveBetween((byte)1, (byte)4).WithMessage(Strings.DynamicBetween, [Strings.UserType, "1", "4"]);
+        RuleFor(x => (byte)x.Model.Type).InclusiveBetween((byte)1, (byte)4).WithMessage(Strings.DynamicBetween, [Strings.UserType, "1", "4"]);
 
-        RuleFor(x => x.PackageId).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Package]);
-        RuleFor(x => x.PackageId).InclusiveBetween((byte)1, (byte)255).WithMessage(Strings.DynamicBetween, [Strings.Package, "1", "255"]);
+        RuleFor(x => x.Model.TaxNumber).MaximumLength(11).WithMessage(Strings.DynamicMaxLength, [Strings.TaxNumber, "11"]);
     }
 }

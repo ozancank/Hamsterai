@@ -1,7 +1,7 @@
-using Asp.Versioning;
 using Application.Features.Students.Commands;
 using Application.Features.Students.Models;
 using Application.Features.Students.Queries;
+using Asp.Versioning;
 
 namespace WebAPI.Controllers.V1;
 

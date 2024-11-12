@@ -5,7 +5,6 @@ namespace Infrastructure.AI.Seduss.Models;
 
 public class QuestionTextResponseModel : IResponseModel
 {
-    
     [JsonPropertyName("Cevap_Text")]
     public string? AnswerText { get; set; }
 

@@ -2,6 +2,7 @@
 using Application.Features.Questions.Models.Similars;
 using Application.Features.Questions.Rules;
 using Application.Services.CommonService;
+using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
@@ -12,7 +13,7 @@ public class AddSimilarCommand : IRequest<GetSimilarModel>, ISecuredRequest<User
 {
     public required AddSimilarModel Model { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.Student];
+    public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.Student, UserTypes.Person];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = ["Model.QuestionPictureBase64"];
 }
@@ -21,6 +22,7 @@ public class AddSimilarCommandHandler(IMapper mapper,
                                       ISimilarDal similarDal,
                                       ICommonService commonService,
                                       ILessonDal lessonDal,
+                                      IUserDal userDal,
                                       SimilarRules similarRules) : IRequestHandler<AddSimilarCommand, GetSimilarModel>
 {
     public async Task<GetSimilarModel> Handle(AddSimilarCommand request, CancellationToken cancellationToken)
@@ -40,6 +42,9 @@ public class AddSimilarCommandHandler(IMapper mapper,
         var extension = Path.GetExtension(request.Model.QuestionPictureFileName);
         var fileName = $"Q_{userId}_{request.Model.LessonId}_{id}{extension}";
         await commonService.PictureConvert(request.Model.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath);
+
+        if (commonService.HttpUserType != UserTypes.Administator)
+            await similarRules.UserShouldHaveCredit(commonService.HttpUserId);
 
         var question = new Similar
         {
@@ -69,8 +74,20 @@ public class AddSimilarCommandHandler(IMapper mapper,
             ExistsVisualContent = true,
         };
 
-        var added = await similarDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
-        var result = mapper.Map<GetSimilarModel>(added);
+        var result = await similarDal.ExecuteWithTransactionAsync(async () =>
+        {
+            var added = await similarDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
+            if (commonService.HttpUserType != UserTypes.Administator)
+            {
+                var user = await userDal.GetAsync(predicate: x => x.Id == userId, cancellationToken: cancellationToken);
+                if (user.PackageCredit > 0) user.PackageCredit--;
+                else if (user.AddtionalCredit > 0) user.AddtionalCredit--;
+                else throw new BusinessException(Strings.NoQuestionCredit);
+                await userDal.UpdateAsync(user);
+            }
+            var result = mapper.Map<GetSimilarModel>(added);
+            return result;
+        }, cancellationToken: cancellationToken);
 
         return result;
     }
