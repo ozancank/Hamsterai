@@ -25,7 +25,9 @@ public class GetPackageCategoriesForWebQueryHandler(IMapper mapper,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
             orderBy: x => x.OrderBy(x => x.SortNo).ThenBy(x => x.CreateDate),
-            include: x => x.Include(u => u.Packages).ThenInclude(u => u.RPackageLessons).ThenInclude(u => u.Lesson),
+            include: x => x.Include(u => u.Packages.Where(p => p.IsWebVisible && p.IsActive))
+                           .ThenInclude(u => u.RPackageLessons.Where(p => p.IsActive && p.Lesson != null && p.Lesson.IsActive))
+                           .ThenInclude(u => u.Lesson),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
         var list = mapper.Map<PageableModel<GetPackageCategoryModel>>(entities);
@@ -36,14 +38,14 @@ public class GetPackageCategoriesForWebQueryHandler(IMapper mapper,
             {
                 item.TopCategory = await packageCategoryDal.GetAsyncAutoMapper<GetPackageCategoryLiteModel>(
                     enableTracking: false,
-                    predicate: x => x.Id == item.ParentId,
+                    predicate: x => x.Id == item.ParentId && x.IsWebVisible && x.IsActive,
                     configurationProvider: mapper.ConfigurationProvider,
                     cancellationToken: cancellationToken);
             }
 
             item.SubCategories = await packageCategoryDal.GetListAsyncAutoMapper<GetPackageCategoryLiteModel>(
                 enableTracking: false,
-                predicate: x => x.ParentId == item.Id,
+                predicate: x => x.ParentId == item.Id && x.IsWebVisible && x.IsActive,
                 configurationProvider: mapper.ConfigurationProvider,
                 cancellationToken: cancellationToken);
 

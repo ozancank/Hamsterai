@@ -1,6 +1,6 @@
 ﻿namespace Application.Features.Homeworks.Models;
 
-public class AddHomeworkModel : IModel
+public class AddHomeworkModel : IRequestModel
 {
     public short LessonId { get; set; }
     public IFormFile? File { get; set; }

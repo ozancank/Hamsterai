@@ -33,6 +33,7 @@ public class HamsteraiDbContext : DbContext
     public required DbSet<PackageUser> PackageUser { get; set; }
     public required DbSet<PasswordToken> PasswordTokens { get; set; }
     public required DbSet<Payment> Payments { get; set; }
+    public required DbSet<PaymentSipay> PaymentSipays { get; set; }
     public required DbSet<Question> Questions { get; set; }
     public required DbSet<Quiz> Quizzes { get; set; }
     public required DbSet<QuizQuestion> QuizQuestions { get; set; }

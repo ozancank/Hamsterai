@@ -2,24 +2,21 @@
 using OCK.Core.Constants;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Security.Extensions;
+using OCK.Core.Security.Headers;
 
 namespace Application.Behaviors;
 
-public class AuthorizationBehavior<TRequest, TResponse>(IHttpContextAccessor httpContextAccessor,
-                                                        IConfiguration configuration)
+public class AuthorizationBehavior<TRequest, TResponse>(IHttpContextAccessor httpContextAccessor)
     : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>, ISecuredRequest<UserTypes>
 {
-    private readonly string _byPassName = configuration.GetSection("ByPassOptions:Name")?.Value ?? string.Empty;
-    private readonly string _byPassKey = configuration.GetSection("ByPassOptions:Key")?.Value ?? string.Empty;
-
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         if (httpContextAccessor.HttpContext == null) throw new AuthenticationException(Strings.AuthorizationDenied);
 
-        if (_byPassName.IsNotEmpty() && _byPassKey.IsNotEmpty())
+        if (ByPassOptions.IsValid)
         {
-            httpContextAccessor.HttpContext.Request.Headers.TryGetValue(_byPassName, out var byPassKey);
-            if (_byPassKey == byPassKey && request.AllowByPass) return await next();
+            httpContextAccessor.HttpContext.Request.Headers.TryGetValue(ByPassOptions.Name, out var byPassKey);
+            if (ByPassOptions.Key == byPassKey && request.AllowByPass) return await next();
         }
 
         var isAuthenticated = httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;

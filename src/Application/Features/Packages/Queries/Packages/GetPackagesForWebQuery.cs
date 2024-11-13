@@ -25,7 +25,7 @@ public class GetPackagesForWebQueryHandler(IMapper mapper,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
             orderBy: x => x.OrderBy(x => x.SortNo).ThenBy(x => x.CreateDate),
-            include: x => x.Include(u => u.RPackageLessons).ThenInclude(u => u.Lesson),
+            include: x => x.Include(u => u.RPackageLessons.Where(x => x.IsActive && x.Lesson != null && x.Lesson.IsActive)).ThenInclude(u => u.Lesson),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
         var result = mapper.Map<PageableModel<GetPackageModel>>(entities);

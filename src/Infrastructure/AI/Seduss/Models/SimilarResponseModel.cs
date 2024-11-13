@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Infrastructure.AI.Seduss.Models;
 
-public class SimilarResponseModel : IModel
+public class SimilarResponseModel : IResponseModel
 {
     [JsonPropertyName("Soru_OCR")]
     public string? QuestionText { get; set; }

@@ -23,4 +23,8 @@
     <Using Include="OCK.Core.Extensions" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Payment\Sipay\" />
+  </ItemGroup>
+
 </Project>

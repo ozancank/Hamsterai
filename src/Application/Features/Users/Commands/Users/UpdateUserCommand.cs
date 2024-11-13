@@ -35,7 +35,6 @@ public sealed class UpdateUserCommandHandler(IMapper mapper,
         await UserRules.UserShouldExistsAndActive(user);
         await userRules.UserNameCanNotBeDuplicated(request.Model.Email, request.Model.Id);
         await userRules.UserEmailCanNotBeDuplicated(request.Model.Email, request.Model.Id);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone, request.Model.Id);
         await userRules.UserTypeAllowed(user.Type, user.Id);
 
         var date = DateTime.Now;
@@ -130,7 +129,7 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
         RuleFor(x => x.Model.Email).MinimumLength(6).WithMessage(Strings.DynamicMinLength, [Strings.Email, "6"]);
         RuleFor(x => x.Model.Email).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Email, "100"]);
 
-        RuleFor(x => (byte)x.Model.Type).InclusiveBetween((byte)1, (byte)4).WithMessage(Strings.DynamicBetween, [Strings.UserType, "1", "4"]);
+        RuleFor(x => (byte)x.Model.Type).InclusiveBetween((byte)1, (byte)5).WithMessage(Strings.DynamicBetween, [Strings.UserType, "1", "5"]);
 
         RuleFor(x => x.Model.TaxNumber).MaximumLength(11).WithMessage(Strings.DynamicMaxLength, [Strings.TaxNumber, "11"]);
     }

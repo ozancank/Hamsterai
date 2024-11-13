@@ -134,7 +134,7 @@ public class AddUserCommandValidator : AbstractValidator<AddUserCommand>
         RuleFor(x => x.Model.Email).MinimumLength(6).WithMessage(Strings.DynamicMinLength, [Strings.Email, "6"]);
         RuleFor(x => x.Model.Email).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Email, "100"]);
 
-        RuleFor(x => (byte)x.Model.Type).InclusiveBetween((byte)1, (byte)4).WithMessage(Strings.DynamicBetween, [Strings.UserType, "1", "4"]);
+        RuleFor(x => (byte)x.Model.Type).InclusiveBetween((byte)1, (byte)5).WithMessage(Strings.DynamicBetween, [Strings.UserType, "1", "5"]);
 
         RuleFor(x => x.Model.TaxNumber).MaximumLength(11).WithMessage(Strings.DynamicMaxLength, [Strings.TaxNumber, "11"]);
     }

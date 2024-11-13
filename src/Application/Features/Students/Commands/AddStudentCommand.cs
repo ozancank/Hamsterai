@@ -85,7 +85,6 @@ public class AddStudentCommandHandler(IMapper mapper,
             SchoolId = school.Id,
             ConnectionId = student.Id,
             LicenceEndDate = school.LicenseEndDate,
-            //GroupId = classRoom.PackageId ?? 1,
         };
 
         var result = await studentDal.ExecuteWithTransactionAsync(async () =>

@@ -8,7 +8,7 @@ public class PackageCategoryMappingProfiles : Profile
     {
         CreateMap<PackageCategory, GetPackageCategoryModel>()
             .ForMember(dest => dest.Packages, opt => opt.MapFrom(src => src.Packages.Where(x => x.IsActive).OrderBy(x => x!.SortNo).ThenBy(x => x!.Name)))
-            .ForMember(dest => dest.PackageIds, opt => opt.MapFrom(src => src.Packages.OrderBy(x => x.SortNo).ThenBy(x => x.Name).Select(x => x.Id)));
+            .ForMember(dest => dest.PackageIds, opt => opt.MapFrom(src => src.Packages.Where(x => x.IsActive).OrderBy(x => x.SortNo).ThenBy(x => x.Name).Select(x => x.Id)));
         CreateMap<PackageCategory, GetPackageCategoryLiteModel>();
         CreateMap<IPaginate<GetPackageCategoryModel>, PageableModel<GetPackageCategoryModel>>();
 

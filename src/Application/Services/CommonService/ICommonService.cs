@@ -10,6 +10,7 @@ public interface ICommonService : IBusinessService
     int? HttpSchoolId { get; }
     int? HttpConnectionId { get; }
     byte? HttpPackageId { get; }
+    bool IsByPass { get; }
 
     Task<string> PictureConvert(string? base64, string? fileName, string? folder);
 

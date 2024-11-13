@@ -6,5 +6,7 @@ public sealed class GetPackageCategoryLiteModel : IResponseModel
     public string? Name { get; set; }
     public byte SortNo { get; set; }
     public byte? ParentId { get; set; }
+    public string? Description { get; set; }
+    public string? PictureUrl { get; set; }
     public string? Slug { get; set; }
 }

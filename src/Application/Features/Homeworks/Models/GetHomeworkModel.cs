@@ -1,6 +1,6 @@
 ﻿namespace Application.Features.Homeworks.Models;
 
-public class GetHomeworkModel : IModel
+public class GetHomeworkModel : IResponseModel
 {
     public string? Id { get; set; }
     public bool IsActive { get; set; }

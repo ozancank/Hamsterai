@@ -30,7 +30,6 @@ public class AddUserForWebCommandHandler(IMapper mapper,
 
         await userRules.UserNameCanNotBeDuplicated(request.Model.Email);
         await userRules.UserEmailCanNotBeDuplicated(request.Model.Email!);
-        await userRules.UserPhoneCanNotBeDuplicated(request.Model.Phone!);
 
         var id = await userDal.GetNextPrimaryKeyAsync(x => x.Id, cancellationToken: cancellationToken);
         var date = DateTime.Now;

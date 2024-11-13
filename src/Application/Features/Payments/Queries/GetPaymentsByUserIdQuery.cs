@@ -11,12 +11,12 @@ public class GetPaymentsByUserIdQuery : IRequest<PageableModel<GetPaymentModel>>
     public long UserId { get; set; }
 
     public UserTypes[] Roles { get; } = [];
-    public bool AllowByPass => false;
+    public bool AllowByPass => true;
 }
 
 public class GetPaymentsByUserIdQueryHandler(IMapper mapper,
-                                           ICommonService commonService,
-                                           IPaymentDal orderDal) : IRequestHandler<GetPaymentsByUserIdQuery, PageableModel<GetPaymentModel>>
+                                             ICommonService commonService,
+                                             IPaymentDal orderDal) : IRequestHandler<GetPaymentsByUserIdQuery, PageableModel<GetPaymentModel>>
 {
     public async Task<PageableModel<GetPaymentModel>> Handle(GetPaymentsByUserIdQuery request, CancellationToken cancellationToken)
     {
@@ -24,7 +24,7 @@ public class GetPaymentsByUserIdQueryHandler(IMapper mapper,
             enableTracking: false,
             index: request.PageRequest.Page,
             size: request.PageRequest.PageSize,
-            predicate: x => x.UserId == request.UserId && (commonService.HttpUserType == UserTypes.Administator || x.UserId == commonService.HttpUserId),
+            predicate: x => x.UserId == request.UserId && (commonService.IsByPass || commonService.HttpUserType == UserTypes.Administator || x.UserId == commonService.HttpUserId),
             orderBy: x => x.OrderByDescending(x => x.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

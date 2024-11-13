@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Infrastructure.AI.Seduss.Models;
 
-public class SimilarTextResponseModel : IModel
+public class SimilarTextResponseModel : IResponseModel
 {
     [JsonIgnore]
     public string? QuestionText { get; set; }

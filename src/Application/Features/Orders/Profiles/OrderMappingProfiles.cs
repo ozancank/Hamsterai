@@ -13,5 +13,7 @@ public class OrderMappingProfiles : Profile
         CreateMap<OrderDetail, GetOrderDetailModel>()
             .ForMember(dest => dest.Package, opt => opt.MapFrom(src => src.Package));
         CreateMap<IPaginate<GetOrderDetailModel>, PageableModel<GetOrderDetailModel>>();
+
+        CreateMap<AddPaymentSipayModelForAddOrderModel, PaymentSipay>();
     }
 }

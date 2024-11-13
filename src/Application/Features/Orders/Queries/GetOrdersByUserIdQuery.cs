@@ -11,7 +11,7 @@ public class GetOrdersByUserIdQuery : IRequest<PageableModel<GetOrderModel>>, IS
     public long UserId { get; set; }
 
     public UserTypes[] Roles { get; } = [];
-    public bool AllowByPass => false;
+    public bool AllowByPass => true;
 }
 
 public class GetOrdersByUserIdQueryHandler(IMapper mapper,
@@ -22,7 +22,7 @@ public class GetOrdersByUserIdQueryHandler(IMapper mapper,
     {
         var entities = await orderDal.GetPageListAsyncAutoMapper<GetOrderModel>(
             enableTracking: false,
-            predicate: x => x.UserId == request.UserId && (commonService.HttpUserType == UserTypes.Administator || x.UserId == commonService.HttpUserId),
+            predicate: x => x.UserId == request.UserId && (commonService.IsByPass || commonService.HttpUserType == UserTypes.Administator || x.UserId == commonService.HttpUserId),
             include: x => x.Include(u => u.User).ThenInclude(u => u!.PackageUsers).ThenInclude(u => u.Package)
                            .Include(u => u.OrderDetails),
             orderBy: x => x.OrderByDescending(x => x.CreateDate),

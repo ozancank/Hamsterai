@@ -32,6 +32,7 @@ public class User : Security.User
     public virtual ICollection<Notification> SendNotification { get; set; } = [];
     public virtual ICollection<Notification> ReceivedNotification { get; set; } = [];
     public virtual ICollection<Order> Orders { get; set; } = [];
+    public virtual ICollection<Payment> Payments { get; set; } = [];
 
     public User() : base()
     {

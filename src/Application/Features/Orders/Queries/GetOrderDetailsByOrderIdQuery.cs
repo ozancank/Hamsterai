@@ -10,7 +10,7 @@ public class GetOrderDetailsByOrderIdQuery : IRequest<List<GetOrderDetailModel>>
     public int OrderId { get; set; }
 
     public UserTypes[] Roles { get; } = [];
-    public bool AllowByPass => false;
+    public bool AllowByPass => true;
 }
 
 public class GetOrderDetailsByOrderIdQueryHandler(IMapper mapper,
@@ -21,7 +21,7 @@ public class GetOrderDetailsByOrderIdQueryHandler(IMapper mapper,
     {
         var entities = await orderDetailDal.GetListAsyncAutoMapper<GetOrderDetailModel>(
             enableTracking: false,
-            predicate: x => x.OrderId == request.OrderId && (commonService.HttpUserType == UserTypes.Administator || x.Order!.UserId == commonService.HttpUserId),
+            predicate: x => x.OrderId == request.OrderId && (commonService.IsByPass || commonService.HttpUserType == UserTypes.Administator || x.Order!.UserId == commonService.HttpUserId),
             include: x => x.Include(u => u.Order).Include(u => u.Package),
             orderBy: x => x.OrderByDescending(x => x.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,

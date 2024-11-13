@@ -1,6 +1,7 @@
 ﻿using Application.Features.Users.Rules;
 using OCK.Core.Logging.Serilog;
 using OCK.Core.Security.Extensions;
+using OCK.Core.Security.Headers;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
@@ -40,6 +41,8 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
     public byte? HttpPackageId =>
         byte.TryParse(httpContextAccessor.HttpContext?.User.Claims
             .FirstOrDefault(x => x.Type == ClaimTypes.PackageId)?.Value, out byte packageId) ? packageId : null;
+
+    public bool IsByPass => httpContextAccessor.HttpContext?.Request.Headers.TryGetValue(ByPassOptions.Name, out var byPassKey) ?? false && byPassKey == ByPassOptions.Key;
 
     public async Task<string> PictureConvert(string? base64, string? fileName, string? folder)
     {
@@ -159,4 +162,5 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         AppStatics.Entities = entityProperties;
         return entityProperties;
     }
+
 }

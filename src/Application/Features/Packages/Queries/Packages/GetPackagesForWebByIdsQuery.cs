@@ -21,7 +21,7 @@ public class GetPackagesForWebByIdsQueryHandler(IMapper mapper,
             enableTracking: false,
             predicate: x => x.IsActive && x.IsWebVisible && request.PackageIds.Contains(x.Id),
             orderBy: x => x.OrderBy(x => x.SortNo).ThenBy(x => x.CreateDate),
-            include: x => x.Include(u => u.RPackageLessons).ThenInclude(u => u.Lesson),
+            include: x => x.Include(u => u.RPackageLessons.Where(x => x.IsActive && x.Lesson != null && x.Lesson.IsActive)).ThenInclude(u => u.Lesson),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
         return entities;

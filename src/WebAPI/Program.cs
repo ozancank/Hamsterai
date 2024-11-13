@@ -15,6 +15,7 @@ using OCK.Core.Caching;
 using OCK.Core.Caching.Microsoft;
 using OCK.Core.Exceptions;
 using OCK.Core.Security.Encryption;
+using OCK.Core.Security.Headers;
 using OCK.Core.Security.JWT;
 using OCK.Core.Utilities;
 using OCK.Core.Versioning;
@@ -38,6 +39,7 @@ app.Run();
 static void SetAppOptions(WebApplicationBuilder builder)
 {
     AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+    builder.Configuration.GetSection("ByPassOptions").Get<ByPassOptions>();
     builder.Configuration.GetSection("AppOptions").Get<Domain.Constants.AppOptions>();
     Domain.Constants.AppOptions.CreateFolder();
     if (Environment.OSVersion.Platform == PlatformID.Unix) RunLinuxCommands();
@@ -97,10 +99,10 @@ static async Task Middlewares(WebApplicationBuilder builder, WebApplication app)
 {
     app.UseCors("AllowEveryThing");
 
-    app.UseForwardedHeaders(new ForwardedHeadersOptions
-    {
-        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-    });
+    //app.UseForwardedHeaders(new ForwardedHeadersOptions
+    //{
+    //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    //});
 
     if (!app.Environment.IsDevelopment())
         app.UseMiddleware<HeaderAuthMiddleware>([Strings.XApiKey, Strings.SwaggerPath, Strings.Domain]);

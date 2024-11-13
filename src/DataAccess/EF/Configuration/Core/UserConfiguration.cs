@@ -19,7 +19,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.Name).HasColumnName("Name").HasMaxLength(250).HasColumnOrder(7).IsRequired();
         builder.Property(e => e.Surname).HasColumnName("Surname").HasMaxLength(250).HasColumnOrder(8).IsRequired();
         builder.Property(e => e.Phone).HasColumnName("Phone").HasMaxLength(15).HasColumnOrder(9);
-        //builder.HasIndex(e => e.Phone).HasDatabaseName("UK_Users_Phone").IsUnique();
         builder.Property(e => e.ProfileUrl).HasColumnName("ProfileUrl").HasColumnOrder(10);
         builder.Property(e => e.Email).HasColumnName("Email").HasMaxLength(100).HasColumnOrder(11).IsRequired();
         builder.HasIndex(e => e.Email).HasDatabaseName("UK_Users_Email").IsUnique();

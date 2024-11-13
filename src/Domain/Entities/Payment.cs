@@ -10,10 +10,10 @@ public class Payment : BaseEntity<Guid>
     public DateTime PaymentDate { get; set; }
     public PaymentReason PaymentReason { get; set; }
     public string? ReasonId { get; set; }
-    public string? SipayMerchantKey { get; set; }
-    public string? SipayPlanCode { get; set; }
+    public Guid? PaymentSipayId { get; set; }
 
     public virtual User? User { get; set; }
+    public virtual PaymentSipay? PaymentSipay { get; set; }
 
     public Payment() : base()
     { }

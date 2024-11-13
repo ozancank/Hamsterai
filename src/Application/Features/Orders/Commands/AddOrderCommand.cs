@@ -1,4 +1,5 @@
-﻿using Application.Features.Orders.Models;
+﻿using Application.Features.Orders.Constants;
+using Application.Features.Orders.Models;
 using Application.Features.Orders.Rules;
 using Application.Features.Packages.Rules;
 using Application.Features.Users.Rules;
@@ -27,7 +28,8 @@ public class AddOrderCommandHandler(IMapper mapper,
                                     IOrderDal orderDal,
                                     IOrderDetailDal orderDetailDal,
                                     IPaymentDal paymentDal,
-                                    IPackageUserDal packageUserDal) : IRequestHandler<AddOrderCommand, GetOrderModel>
+                                    IPackageUserDal packageUserDal,
+                                    IPaymentSipayDal paymentSipayDal) : IRequestHandler<AddOrderCommand, GetOrderModel>
 {
     public async Task<GetOrderModel> Handle(AddOrderCommand request, CancellationToken cancellationToken)
     {
@@ -59,6 +61,8 @@ public class AddOrderCommandHandler(IMapper mapper,
         var orderDetail = new List<OrderDetail>();
         var packageUsers = new List<(bool, PackageUser)>();
         var subTotal = 0.0;
+        if (user.LicenceEndDate <= date) user.LicenceEndDate = date;
+
         foreach (var detail in request.Model.OrderDetails)
         {
             var package = await packageDal.GetAsync(
@@ -183,7 +187,22 @@ public class AddOrderCommandHandler(IMapper mapper,
         var totalTaxAmount = orderDetail.Sum(x => x.TaxAmount);
         var totalPrice = (totalTaxBase + totalTaxAmount).RoundDouble();
 
+        foreach (var property in OrderStatics.AddPaymentSipayModelForAddOrderModelStringProperties)
+        {
+            var value = property.GetValue(request.Model.Payment) as string;
+            if (value.IsNotEmpty()) property.SetValue(request.Model.Payment, value?.UrlDecode());
+        }
+
         await OrderRules.OrderTotalricesShouldEqual(totalPrice, request.Model.Payment!.Amount);
+
+        var paymentSipay = mapper.Map<PaymentSipay>(request.Model.Payment);
+        paymentSipay.Id = Guid.NewGuid();
+        paymentSipay.IsActive = true;
+        paymentSipay.CreateUser = 1;
+        paymentSipay.CreateDate = date;
+        paymentSipay.UpdateUser = 1;
+        paymentSipay.UpdateDate = date;
+        paymentSipay.UserId = user.Id;
 
         var payment = new Payment
         {
@@ -198,8 +217,7 @@ public class AddOrderCommandHandler(IMapper mapper,
             PaymentReason = PaymentReason.FirstPayment,
             ReasonId = order.Id.ToString(),
             Amount = totalPrice,
-            SipayMerchantKey = request.Model.Payment.SipayMerchantKey,
-            SipayPlanCode = request.Model.Payment.SipayPlanCode,
+            PaymentSipayId = paymentSipay.Id
         };
 
         order.SubTotal = subTotal;
@@ -218,6 +236,7 @@ public class AddOrderCommandHandler(IMapper mapper,
                 await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
                 await orderDal.AddAsync(order, cancellationToken: cancellationToken);
                 await orderDetailDal.AddRangeAsync(orderDetail, cancellationToken: cancellationToken);
+                await paymentSipayDal.AddAsync(paymentSipay, cancellationToken: cancellationToken);
                 await paymentDal.AddAsync(payment, cancellationToken: cancellationToken);
 
                 foreach (var packageUser in packageUsers)

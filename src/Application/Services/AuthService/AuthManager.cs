@@ -23,7 +23,7 @@ public class AuthManager(IConfiguration configuration,
 
         user.Type = user.Type == 0 ? UserTypes.Student : user.Type;
 
-        List<Claim> claims = [
+         List<Claim> claims = [
                 new(Domain.Constants.ClaimTypes.UserType, $"{(int)user.Type}", ClaimValueTypes.Integer),
                 new(Domain.Constants.ClaimTypes.SchoolId, $"{user.SchoolId}", ClaimValueTypes.String),
                 new(Domain.Constants.ClaimTypes.ConnectionId, $"{user.ConnectionId}", ClaimValueTypes.String),
