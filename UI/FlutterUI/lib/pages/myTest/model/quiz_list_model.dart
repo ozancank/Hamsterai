@@ -93,7 +93,7 @@ class QuizItem {
         userFullName: json["userFullName"],
         schoolName: json["schoolName"],
         lessonName: json["lessonName"],
-        gainNames: List<String>.from(json["gainNames"].map((x) => x)),
+        gainNames: List<String>.from(json["gainNames"].map((x) => x ?? "")),
       );
 
   Map<String, dynamic> toJson() => {

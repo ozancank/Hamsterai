@@ -30,6 +30,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.AutomaticPayment).HasColumnName("AutomaticPayment").HasDefaultValue(false).HasColumnOrder(18).IsRequired();
         builder.Property(e => e.TaxNumber).HasColumnName("TaxNumber").HasMaxLength(11).HasColumnOrder(19);
         builder.Property(e => e.LicenceEndDate).HasColumnName("LicenceEndDate").HasDefaultValue(new DateTime(2000, 01, 01)).HasColumnOrder(20);
+        builder.Property(e => e.AIUrl).HasColumnName("AIUrl").HasColumnOrder(21);
 
         builder.HasOne(e => e.School).WithMany(e => e.Users).HasForeignKey(e => e.SchoolId).HasPrincipalKey(e => e.Id);
 
@@ -207,6 +208,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 SchoolId=null,
                 ConnectionId=null,
                 LicenceEndDate=DateTime.MaxValue.Date,
+                AIUrl="http://185.195.255.124:8001"
              },
             new(19,"kazim2",passwordSalt3,passwordHash3,false,new DateTime(2024,09,14),true){
                 Name="Kazım",
@@ -217,6 +219,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 SchoolId=null,
                 ConnectionId=null,
                 LicenceEndDate=DateTime.MaxValue.Date,
+                AIUrl="http://185.195.255.124:8001"
              },
             new(20,"kazim3",passwordSalt3,passwordHash3,false,new DateTime(2024,09,14),true){
                 Name="Kazım",
@@ -227,6 +230,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 SchoolId=null,
                 ConnectionId=null,
                 LicenceEndDate=DateTime.MaxValue.Date,
+                AIUrl="http://54.237.224.177:3030",
              },
         ]);
     }

@@ -3,6 +3,7 @@ using Application.Features.Questions.Rules;
 using Application.Services.CommonService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
+using OneOf.Types;
 
 namespace Application.Features.Questions.Queries.Quizzes;
 
@@ -12,7 +13,7 @@ public class GetQuizByIdQuery : IRequest<GetQuizModel>, ISecuredRequest<UserType
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 
-    public UserTypes[] Roles { get; } = [UserTypes.Student];
+    public UserTypes[] Roles { get; } = [UserTypes.Student, UserTypes.Person];
     public bool AllowByPass => false;
 }
 
@@ -23,7 +24,7 @@ public class GetQuizByIdQueryHandler(IMapper mapper,
     public async Task<GetQuizModel> Handle(GetQuizByIdQuery request, CancellationToken cancellationToken)
     {
         var quiz = await quizDal.GetAsyncAutoMapper<GetQuizModel>(
-            predicate: x => x.Id == request.Id && x.UserId == commonService.HttpUserId && x.IsActive,
+            predicate: x => x.Id == request.Id && (commonService.HttpUserType == UserTypes.Administator || (x.UserId == commonService.HttpUserId && x.IsActive)),
             enableTracking: request.Tracking,
             include: x => x.Include(u => u.Lesson)
                            .Include(u => u.User).ThenInclude(u => u!.School)
@@ -31,7 +32,14 @@ public class GetQuizByIdQueryHandler(IMapper mapper,
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
 
-        if (request.ThrowException) await QuizRules.QuizShouldExists(quiz);
+        quiz.GainNames = quiz.GainNames.Distinct().ToList();
+
+        if (request.ThrowException)
+        {
+            await QuizRules.QuizShouldExists(quiz);
+            if (quiz.Questions.Count == 0)
+                throw new BusinessException(Strings.DynamicNotFound, $"{Strings.Quiz} {Strings.OfQuestion}");
+        }
         return quiz;
     }
 }

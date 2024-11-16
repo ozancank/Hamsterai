@@ -1,0 +1,116 @@
+﻿using Application.Features.Lessons.Rules;
+using Application.Features.Questions.Models.Questions;
+using Application.Features.Questions.Rules;
+using Application.Services.CommonService;
+using DataAccess.Abstract.Core;
+using MediatR;
+using OCK.Core.Pipelines.Authorization;
+using OCK.Core.Pipelines.Logging;
+
+namespace Application.Features.Questions.Commands.Questions;
+
+public class AddRangeQuestionCommand : IRequest<List<GetQuestionModel>>, ISecuredRequest<UserTypes>, ILoggableRequest
+{
+    public required List<AddQuestionModel> Models { get; set; }
+
+    public UserTypes[] Roles { get; } = [UserTypes.Administator];
+    public bool AllowByPass => false;
+    public string[] HidePropertyNames { get; } = ["Model.QuestionPictureBase64"];
+}
+
+public class AddRangeQuestionCommandHandler(IMapper mapper,
+                                            IQuestionDal questionDal,
+                                            ICommonService commonService,
+                                            ILessonDal lessonDal,
+                                            IUserDal userDal,
+                                            QuestionRules questionRules) : IRequestHandler<AddRangeQuestionCommand, List<GetQuestionModel>>
+{
+    public async Task<List<GetQuestionModel>> Handle(AddRangeQuestionCommand request, CancellationToken cancellationToken)
+    {
+        await questionRules.QuestionLimitControl();
+
+        var questions = new List<Question>();
+
+        foreach (var item in request.Models)
+        {
+            var lessonName = await lessonDal.GetAsync(
+                predicate: x => x.Id == item.LessonId,
+                enableTracking: false,
+                selector: x => x.Name,
+                cancellationToken: cancellationToken);
+            await LessonRules.LessonShouldExists(lessonName);
+
+            var id = Guid.NewGuid();
+            var date = DateTime.Now;
+            var userId = commonService.HttpUserId;
+            var extension = Path.GetExtension(item.QuestionPictureFileName);
+            var fileName = $"Q_{userId}_{item.LessonId}_{id}{extension}";
+            await commonService.PictureConvert(item.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath);
+
+            if (commonService.HttpUserType != UserTypes.Administator)
+                await questionRules.UserShouldHaveCredit(commonService.HttpUserId);
+
+            var question = new Question
+            {
+                Id = id,
+                IsActive = true,
+                CreateDate = date,
+                CreateUser = userId,
+                UpdateDate = date,
+                UpdateUser = userId,
+                LessonId = item.LessonId,
+                QuestionPictureBase64 = item.QuestionPictureBase64,
+                QuestionPictureFileName = fileName,
+                QuestionPictureExtension = extension,
+                AnswerText = string.Empty,
+                AnswerPictureFileName = string.Empty,
+                AnswerPictureExtension = string.Empty,
+                Status = QuestionStatus.Waiting,
+                IsRead = false,
+                SendForQuiz = false,
+                TryCount = 0,
+                GainId = null,
+                RightOption = null,
+                ExcludeQuiz = false,
+                ExistsVisualContent = true,
+            };
+
+            questions.Add(question);
+        }
+
+        var added = await questionDal.AddRangeAsyncCallback(questions, cancellationToken: cancellationToken);
+        var result = mapper.Map<List<GetQuestionModel>>(added);
+
+        Console.WriteLine($"Added {questions.Count} questions.");
+        return result;
+    }
+}
+
+public class AddRangeQuestionCommandValidator : AbstractValidator<AddRangeQuestionCommand>
+{
+    public AddRangeQuestionCommandValidator()
+    {
+        RuleFor(x => x).NotEmpty().WithMessage(Strings.InvalidValue);
+
+        RuleFor(x => x.Models).NotEmpty().WithMessage(Strings.InvalidValue);
+
+        RuleForEach(x => x.Models).ChildRules(models =>
+        {
+            models.RuleFor(x => x.LessonId)
+                  .InclusiveBetween((byte)1, (byte)255)
+                  .WithMessage(Strings.DynamicBetween, [Strings.Lesson, "1", "255"]);
+
+            models.RuleFor(x => x.QuestionPictureBase64)
+                  .MustBeValidBase64()
+                  .WithMessage(Strings.DynamicNotEmpty, [Strings.Question]);
+
+            models.RuleFor(x => x.QuestionPictureFileName)
+                  .NotEmpty()
+                  .WithMessage(Strings.DynamicNotEmpty, [Strings.FileName]);
+
+            models.RuleFor(x => x.QuestionPictureFileName)
+                  .Must(x => x.EmptyOrTrim().Contains('.'))
+                  .WithMessage(Strings.FileNameExtension);
+        });
+    }
+}

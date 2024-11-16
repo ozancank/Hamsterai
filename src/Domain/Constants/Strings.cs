@@ -11,6 +11,7 @@ public struct Strings
     public const string ExternalApiError = "Harici servis hatası";
     public const string ExternalApiBusy = "Harici servis meşgul";
     public const string Domain = "hamsterai.com.tr";
+    public const string Domain2 = "seduss.com";
     public const string SwaggerPath = "/swagger";
     public const string XApiKey = "HaMsTerAI-Security";
     public const string AuthorizationDenied = "Bu işlem için yetkiniz bulunmamaktadır.";
@@ -70,6 +71,7 @@ public struct Strings
     public const string School = "Okul";
     public const string Lesson = "Ders";
     public const string Question = "Soru";
+    public const string OfQuestion = "Sorusu";
     public const string Answer = "Cevap";
     public const string SimilarQuestion = "Benzer Soru";
     public const string FileName = "Dosya adı";
@@ -128,6 +130,16 @@ public struct Strings
     public const string Ratio = "Oran";
     public const string OfRatio = "Oranı";
     public const string Amount = "Yekün";
+    public const string Total = "Toplam";
+    public const string Price = "Fiyat";
+    public const string OfPrice = "Fiyatı";
+    public const string Commission = "Komisyon";
+    public const string Percentage = "Yüzde";
+    public const string Fixed = "Sabit";
+    public const string Installment = "Taksit";
+    public const string Type = "Tip";
+    public const string OfType = "Tipi";
+    public const string Option = "Seçenek";
 
     //public const string LessonGroup = "Ders Grubu";
     public const string NoQuestionCredit = "Soru krediniz bulunmamaktadır.";

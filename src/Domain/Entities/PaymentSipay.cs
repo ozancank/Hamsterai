@@ -31,6 +31,7 @@ public class PaymentSipay : BaseEntity<Guid>
     public string? MdStatus { get; set; }
     public string? OriginalBankErrorCode { get; set; }
     public string? OriginalBankErrorDescription { get; set; }
+    public string? WebHookString { get; set; }
 
     public virtual ICollection<Payment> Payments { get; set; } = [];
 

@@ -22,6 +22,7 @@ public class Package : BaseEntity<short>
     public byte? CategoryId { get; set; }
     public PackageType Type { get; set; }
     public int QuestionCredit { get; set; }
+    public string? Content { get; set; }
 
     public PackageCategory? PackageCategory { get; set; }
     public virtual ICollection<PackageUser> PackageUsers { get; set; } = [];

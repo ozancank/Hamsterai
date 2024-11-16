@@ -8,7 +8,7 @@ public class GainMappingProfiles : Profile
     public GainMappingProfiles()
     {
         CreateMap<Gain, GetGainModel>()
-            .ForMember(dest => dest.LessonName, opt => opt.MapFrom(src => src.Lesson!.Name));
-        CreateMap<IPaginate<GetLessonModel>, PageableModel<GetLessonModel>>();
+            .ForMember(dest => dest.LessonName, opt => opt.MapFrom(src => src.Lesson != null ? src.Lesson.Name : default));
+        CreateMap<IPaginate<GetGainModel>, PageableModel<GetGainModel>>();
     }
 }

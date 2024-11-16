@@ -3,6 +3,7 @@ using Application.Features.Auths.Rules;
 using Application.Features.Users.Models.User;
 using Application.Services.AuthService;
 using DataAccess.Abstract.Core;
+using DataAccess.EF;
 using Domain.Entities.Core;
 using MediatR;
 using System.Linq.Expressions;
@@ -22,11 +23,9 @@ public class LoginCommandHandler(IUserDal userDal,
 {
     public async Task<TokenModel> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        request.LoginModel.UserName = request.LoginModel.UserName!.ToLower();
-
         Expression<Func<User, bool>> predicate = request.WebLogin
-            ? x => x.UserName == request.LoginModel.UserName && x.Type != UserTypes.Student
-            : x => x.UserName == request.LoginModel.UserName;
+            ? x => PostgresqlFunctions.TrLower(x.UserName) == PostgresqlFunctions.TrLower(request.LoginModel.UserName) && x.Type != UserTypes.Student
+            : x => PostgresqlFunctions.TrLower(x.UserName) == PostgresqlFunctions.TrLower(request.LoginModel.UserName);
 
         var user = await userDal.GetAsync(
             predicate: predicate,

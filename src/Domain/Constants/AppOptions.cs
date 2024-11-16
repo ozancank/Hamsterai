@@ -25,6 +25,7 @@ public class AppOptions
     public static string DefaultPassword { get; set; } = string.Empty;
     public static int SenderCapacity { get; set; } = 3;
     public static string OCR_Url { get; set; } = string.Empty;
+    public static int QueueCapacity { get; set; } = 30;
 
     public static string ProfilePictureFolderPath { get; set; } = string.Empty;
     public static string QuestionPictureFolderPath { get; set; } = string.Empty;

@@ -3,6 +3,7 @@ using System;
 using DataAccess.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.EF.Migrations
 {
     [DbContext(typeof(HamsteraiDbContext))]
-    partial class HamsteraiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241114160931_AddAIUrl")]
+    partial class AddAIUrl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1501,11 +1504,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("smallint")
                         .HasColumnName("CategoryId")
                         .HasColumnOrder(20);
-
-                    b.Property<string>("Content")
-                        .HasColumnType("citext")
-                        .HasColumnName("Content")
-                        .HasColumnOrder(23);
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp without time zone")

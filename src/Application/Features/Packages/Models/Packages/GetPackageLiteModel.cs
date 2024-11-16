@@ -3,6 +3,7 @@
 public sealed class GetPackageLiteModel : IResponseModel
 {
     public short Id { get; set; }
+    public bool IsActive { get; set; }
     public string? Name { get; set; }
     public short SortNo { get; set; }
     public bool IsWebVisible { get; set; }
@@ -15,6 +16,7 @@ public sealed class GetPackageLiteModel : IResponseModel
     public int QuestionCredit { get; set; }
     public byte? CategoryId { get; set; }
     public PackageType Type { get; set; }
+    public string? Content { get; set; }
 
     public List<short> LessonIds { get; set; } = [];
 }

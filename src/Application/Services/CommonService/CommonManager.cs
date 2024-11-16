@@ -1,4 +1,5 @@
 ﻿using Application.Features.Users.Rules;
+using DataAccess.Abstract.Core;
 using OCK.Core.Logging.Serilog;
 using OCK.Core.Security.Extensions;
 using OCK.Core.Security.Headers;
@@ -16,7 +17,8 @@ namespace Application.Services.CommonService;
 
 public class CommonManager(IHttpContextAccessor httpContextAccessor,
                            LoggerServiceBase loggerServiceBase,
-                           IConfiguration configuration) : ICommonService
+                           IConfiguration configuration,
+                           IUserDal userDal) : ICommonService
 {
     public long HttpUserId =>
         Convert.ToInt64(httpContextAccessor.HttpContext?.User.Claims
@@ -163,4 +165,13 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         return entityProperties;
     }
 
+    public async Task<string?> GetUserAIUrl(long userId)
+    {
+        var url = await userDal.GetAsync(
+            enableTracking: false,
+            predicate: x => x.Id == userId,
+            selector: x => x.AIUrl);
+
+        return url;
+    }
 }

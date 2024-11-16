@@ -14,6 +14,7 @@ public sealed class AddPackageModel : IResponseModel
     public byte CategoryId { get; set; }
     public PackageType Type { get; set; }
     public int QuestionCredit { get; set; }
+    public string? Content { get; set; }
 
     public List<short> LessonIds { get; set; } = [];
 }

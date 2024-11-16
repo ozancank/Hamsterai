@@ -15,6 +15,7 @@ public sealed class UpdatePackageModel : IResponseModel
     public IFormFile? PictureFile { get; set; }
     public PackageType Type { get; set; }
     public int QuestionCredit { get; set; }
+    public string? Content { get; set; }
 
     public List<byte> LessonIds { get; set; } = [];
 }

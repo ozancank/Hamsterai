@@ -65,4 +65,5 @@ public sealed class AddPaymentSipayModelForAddOrderModel : IRequestModel
     public string? MdStatus { get; set; }
     public string? OriginalBankErrorCode { get; set; }
     public string? OriginalBankErrorDescription { get; set; }
+    public string? WebHookString { get; set; }
 }

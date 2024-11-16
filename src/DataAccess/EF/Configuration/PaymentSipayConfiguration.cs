@@ -39,5 +39,6 @@ public class PaymentSipayConfiguration : IEntityTypeConfiguration<PaymentSipay>
         builder.Property(e => e.MdStatus).HasColumnName("MdStatus").HasColumnOrder(30);
         builder.Property(e => e.OriginalBankErrorCode).HasColumnName("OriginalBankErrorCode").HasColumnOrder(31);
         builder.Property(e => e.OriginalBankErrorDescription).HasColumnName("OriginalBankErrorDescription").HasColumnOrder(32);
+        builder.Property(e => e.WebHookString).HasColumnName("WebHookString").HasColumnOrder(33);
     }
 }

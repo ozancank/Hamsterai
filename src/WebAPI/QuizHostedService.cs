@@ -22,7 +22,7 @@ public class QuizHostedService(IServiceProvider serviceProvider, LoggerServiceBa
                 {
                     using var scope = serviceProvider.CreateScope();
                     var questionService = scope.ServiceProvider.GetRequiredService<IQuestionService>();
-                    await questionService.AddQuizText(false, stoppingToken);
+                    await questionService.AddQuiz(false, stoppingToken);
                 }
 
                 await Task.Delay(TimeSpan.FromHours(1), stoppingToken);

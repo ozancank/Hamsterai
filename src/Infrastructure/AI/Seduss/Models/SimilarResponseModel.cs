@@ -28,4 +28,7 @@ public class SimilarResponseModel : IResponseModel
 
     [JsonPropertyName("opsiyon")]
     public int OptionCount { get; set; }
+
+    [JsonPropertyName("ocr_method")]
+    public string OcrMethod { get; set; } = string.Empty;
 }

@@ -35,7 +35,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<Services.EmailService.IEmailService, Services.EmailService.EmailManager>();
         services.AddScoped<Services.GainService.IGainService, Services.GainService.GainManager>();
         services.AddScoped<Services.NotificationService.INotificationService, Services.NotificationService.NotificationManager>();
-        services.AddScoped<Services.QuestionService.IQuestionService, Services.QuestionService.QuestionManagerWithoutOcr>();
+        services.AddScoped<Services.QuestionService.IQuestionService, Services.QuestionService.QuestionManager>();
         services.AddScoped<Services.UserService.IUserService, Services.UserService.UserManager>();
 
         services.AddDALServices();

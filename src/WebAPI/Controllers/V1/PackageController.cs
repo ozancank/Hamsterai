@@ -23,6 +23,14 @@ public class PackageController() : BaseController
         return Ok(result);
     }
 
+    [HttpGet("GetPackageByIdForWeb/{id}")]
+    public async Task<IActionResult> GetPackageByIdForWeb([FromRoute] short id)
+    {
+        var query = new GetPackageByIdQuery { Id = id, ForWeb = true };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
     [HttpGet("GetPackageBySlug/{slug}")]
     public async Task<IActionResult> GetPackageById([FromRoute] string slug)
     {
@@ -82,7 +90,7 @@ public class PackageController() : BaseController
     [HttpGet("GetPackagesForWeb")]
     public async Task<IActionResult> GetPackagesForWeb([FromQuery] PageRequest model)
     {
-        var query = new GetPackagesForWebQuery { PageRequest = model };
+        var query = new GetPackagesQuery { PageRequest = model, ForWeb = true };
         var result = await Mediator.Send(query);
         return Ok(result);
     }
@@ -103,6 +111,14 @@ public class PackageController() : BaseController
     public async Task<IActionResult> GetCategoryById([FromRoute] byte id)
     {
         var query = new GetPackageCategoryByIdQuery { Id = id };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpGet("GetCategoryByIdForWeb/{id}")]
+    public async Task<IActionResult> GetCategoryByIdForWeb([FromRoute] byte id)
+    {
+        var query = new GetPackageCategoryByIdQuery { Id = id, ForWeb = true };
         var result = await Mediator.Send(query);
         return Ok(result);
     }
@@ -166,7 +182,7 @@ public class PackageController() : BaseController
     [HttpGet("GetCategoriesForWeb")]
     public async Task<IActionResult> GetCategoriesForWeb([FromQuery] PageRequest model)
     {
-        var query = new GetPackageCategoriesForWebQuery { PageRequest = model };
+        var query = new GetPackageCategoriesQuery { PageRequest = model, ForWeb = true };
         var result = await Mediator.Send(query);
         return Ok(result);
     }

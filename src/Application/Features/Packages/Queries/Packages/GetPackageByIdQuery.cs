@@ -10,6 +10,7 @@ public class GetPackageByIdQuery : IRequest<GetPackageModel>, ISecuredRequest<Us
     public short Id { get; set; }
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
+    public bool ForWeb { get; set; } = false;
 
     public UserTypes[] Roles { get; } = [];
     public bool AllowByPass => true;
@@ -22,12 +23,16 @@ public class GetPackageByIdQueryHandler(IMapper mapper,
     {
         var entity = await packageDal.GetAsyncAutoMapper<GetPackageModel>(
             enableTracking: request.Tracking,
-            predicate: x => x.Id == request.Id,
+            predicate: x => x.Id == request.Id && (!request.ForWeb || x.IsWebVisible),
             include: x => x.Include(u => u.RPackageLessons).ThenInclude(u => u.Lesson),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
 
         if (request.ThrowException) await PackageRules.PackageShouldExists(entity);
+
+        if (request.ForWeb && entity.Category != null && !entity.Category.IsActive && !entity.Category.IsWebVisible)
+            entity.Category = null;
+
         return entity;
     }
 }

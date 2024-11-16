@@ -174,7 +174,7 @@ class QuizController extends GetxController {
     EasyLoading.show(
         status: 'Teste giriş Yapılıyor', maskType: EasyLoadingMaskType.black);
     loading.value = true;
-    var getQuizQuestions = await _quizService.quizStarted(quizModel.value!.id);
+    var getQuizQuestions = await _quizService.quizStarted(quizId);
     if (getQuizQuestions) {
       EasyLoading.dismiss();
       startTimer();

@@ -1,5 +1,6 @@
 using Application.Features.Questions.Commands.Questions;
 using Application.Features.Questions.Commands.Similars;
+using Application.Features.Questions.Models;
 using Application.Features.Questions.Models.Questions;
 using Application.Features.Questions.Models.Similars;
 using Application.Features.Questions.Queries.Questions;
@@ -35,6 +36,14 @@ public class QuestionController() : BaseController
     public async Task<IActionResult> AddQuestion([FromBody] AddQuestionModel model)
     {
         var command = new AddQuestionCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("AddRangeQuestion")]
+    public async Task<IActionResult> AddRangeQuestion([FromBody] List<AddQuestionModel> models)
+    {
+        var command = new AddRangeQuestionCommand { Models = models };
         var result = await Mediator.Send(command);
         return Ok(result);
     }
@@ -116,4 +125,12 @@ public class QuestionController() : BaseController
     }
 
     #endregion SimilarQuestion
+
+    [HttpPost("AddManuel")]
+    public async Task<IActionResult> AddManuel([FromBody] AddManuelModel model)
+    {
+        var command = new AddManuelCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
 }

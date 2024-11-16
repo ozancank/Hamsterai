@@ -39,7 +39,10 @@ public class GetQuizzesQueryHandler(IMapper mapper,
             configurationProvider: mapper.ConfigurationProvider,
             index: request.PageRequest.Page, size: request.PageRequest.PageSize,
             cancellationToken: cancellationToken);
+
         var result = mapper.Map<PageableModel<GetQuizListModel>>(quizzes);
+        result.Items = result.Items.Where(x => x.QuestionCount > 0);
+        result.Items.ForEach(x => { x.GainNames = x.GainNames.Distinct().ToList(); });
         return result;
     }
 }

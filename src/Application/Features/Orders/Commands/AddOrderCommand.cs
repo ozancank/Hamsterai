@@ -206,7 +206,7 @@ public class AddOrderCommandHandler(IMapper mapper,
 
         var payment = new Payment
         {
-            Id = new Guid(),
+            Id = Guid.NewGuid(),
             IsActive = true,
             CreateDate = date,
             CreateUser = 1,

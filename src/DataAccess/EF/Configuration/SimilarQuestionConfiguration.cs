@@ -31,6 +31,7 @@ public class SimilarQuestionConfiguration : IEntityTypeConfiguration<Similar>
         builder.Property(e => e.ExcludeQuiz).HasColumnName("ExcludeQuiz").HasDefaultValue(false).HasColumnOrder(22).IsRequired();
         builder.Property(e => e.ExistsVisualContent).HasConversion<bool>().HasColumnName("ExistsVisualContent").HasDefaultValue(false).HasColumnOrder(23).IsRequired();
         builder.Property(e => e.ErrorDescription).HasColumnName("ErrorDescription").HasDefaultValue(string.Empty).HasColumnOrder(24);
+        builder.Property(e => e.OcrMethod).HasColumnName("OcrMethod").HasDefaultValue(string.Empty).HasColumnOrder(25);
 
         builder.HasOne(x => x.User).WithMany(x => x.SimilarQuestions).HasForeignKey(x => x.CreateUser).HasPrincipalKey(x => x.Id);
         builder.HasOne(x => x.Lesson).WithMany(x => x.SimilarQuestions).HasForeignKey(x => x.LessonId).HasPrincipalKey(x => x.Id);

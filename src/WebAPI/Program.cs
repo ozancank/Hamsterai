@@ -7,7 +7,7 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -20,24 +20,27 @@ using OCK.Core.Security.JWT;
 using OCK.Core.Utilities;
 using OCK.Core.Versioning;
 using System.Diagnostics;
+using System.Globalization;
 using WebAPI;
 using static Infrastructure.Constants.InfrastructureDelegates;
 using static OCK.Core.Constants.Delegates;
 
 var builder = WebApplication.CreateBuilder(args);
 
-SetAppOptions(builder);
+SetAppOptions(builder, out CultureInfo defaultCulture);
 
 Services(builder);
 
 Delegates();
 
 var app = builder.Build();
-await Middlewares(builder, app);
+await Middlewares(builder, app, defaultCulture);
 app.Run();
 
-static void SetAppOptions(WebApplicationBuilder builder)
+static void SetAppOptions(WebApplicationBuilder builder, out CultureInfo defaultCulture)
 {
+    defaultCulture = new CultureInfo("tr-TR");
+    CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
     AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     builder.Configuration.GetSection("ByPassOptions").Get<ByPassOptions>();
     builder.Configuration.GetSection("AppOptions").Get<Domain.Constants.AppOptions>();
@@ -83,7 +86,7 @@ static void Services(WebApplicationBuilder builder)
 
     builder.Services.Configure<FormOptions>(options =>
     {
-        options.MultipartBodyLengthLimit = 5242880;
+        options.MultipartBodyLengthLimit = 524288000;
         options.ValueLengthLimit = 1024 * 1024 * 1024;
         options.MemoryBufferThreshold = 1024 * 1024 * 1024;
     });
@@ -95,17 +98,26 @@ static void Services(WebApplicationBuilder builder)
     ServiceTools.Create(builder);
 }
 
-static async Task Middlewares(WebApplicationBuilder builder, WebApplication app)
+static async Task Middlewares(WebApplicationBuilder builder, WebApplication app, CultureInfo defaultCulture)
 {
+    var localizationOptions = new RequestLocalizationOptions
+    {
+        DefaultRequestCulture = new RequestCulture("tr-TR"),
+        SupportedCultures = [defaultCulture],
+        SupportedUICultures = [defaultCulture]
+    };
+    app.UseRequestLocalization(localizationOptions);
+
     app.UseCors("AllowEveryThing");
 
     //app.UseForwardedHeaders(new ForwardedHeadersOptions
     //{
     //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
     //});
+    //});
 
     if (!app.Environment.IsDevelopment())
-        app.UseMiddleware<HeaderAuthMiddleware>([Strings.XApiKey, Strings.SwaggerPath, Strings.Domain]);
+        app.UseMiddleware<HeaderAuthMiddleware>([Strings.XApiKey, Strings.SwaggerPath, new string[] { Strings.Domain, Strings.Domain2 }]);
 
     app.UseSwagger();
 
@@ -260,9 +272,6 @@ static void Delegates()
     ControlUserStatusAsync = ServiceTools.GetService<IUserService>().UserStatusAndLicense;
     UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
     UpdateSimilarAnswer = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
-    //UpdateQuestionText = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
-    //UpdateSimilarText = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
-    //UpdateQuestionVisual = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
 }
 
 static void RunLinuxCommands()

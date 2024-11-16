@@ -4,7 +4,7 @@ namespace Application.Features.Packages.Rules;
 
 public class PackageRules(IPackageDal packageDal) : IBusinessRule
 {
-    internal static Task PackageShouldExists(object model)
+    internal static Task PackageShouldExists(object? model)
     {
         if (model == null) throw new BusinessException(Strings.DynamicNotFound, Strings.Package);
         return Task.CompletedTask;

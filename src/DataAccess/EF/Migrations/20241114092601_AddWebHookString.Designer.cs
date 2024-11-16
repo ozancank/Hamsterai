@@ -3,6 +3,7 @@ using System;
 using DataAccess.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.EF.Migrations
 {
     [DbContext(typeof(HamsteraiDbContext))]
-    partial class HamsteraiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241114092601_AddWebHookString")]
+    partial class AddWebHookString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -247,11 +250,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("Id")
                         .HasColumnOrder(0);
-
-                    b.Property<string>("AIUrl")
-                        .HasColumnType("citext")
-                        .HasColumnName("AIUrl")
-                        .HasColumnOrder(21);
 
                     b.Property<int>("AddtionalCredit")
                         .ValueGeneratedOnAdd()
@@ -694,7 +692,6 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 18L,
-                            AIUrl = "http://185.195.255.124:8001",
                             AddtionalCredit = 0,
                             AutomaticPayment = false,
                             CreateDate = new DateTime(2024, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -714,7 +711,6 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 19L,
-                            AIUrl = "http://185.195.255.124:8001",
                             AddtionalCredit = 0,
                             AutomaticPayment = false,
                             CreateDate = new DateTime(2024, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -734,7 +730,6 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 20L,
-                            AIUrl = "http://54.237.224.177:3030",
                             AddtionalCredit = 0,
                             AutomaticPayment = false,
                             CreateDate = new DateTime(2024, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -1501,11 +1496,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("smallint")
                         .HasColumnName("CategoryId")
                         .HasColumnOrder(20);
-
-                    b.Property<string>("Content")
-                        .HasColumnType("citext")
-                        .HasColumnName("Content")
-                        .HasColumnOrder(23);
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp without time zone")

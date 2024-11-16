@@ -10,4 +10,5 @@ public sealed class QuestionApiModel : IRequestModel
     public long UserId { get; set; }
     public string? QuestionText { get; set; }
     public bool ExcludeQuiz { get; set; }
+    public string? AIUrl { get; set; }
 }

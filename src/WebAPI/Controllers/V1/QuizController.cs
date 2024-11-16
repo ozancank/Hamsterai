@@ -29,7 +29,7 @@ public class QuizController : BaseController
     [HttpPost("AddQuiz")]
     public async Task<IActionResult> AddQuiz([FromBody] AddQuizModel model)
     {
-        var command = new AddQuizTextCommand { Model = model };
+        var command = new AddQuizCommand { Model = model };
         var result = await Mediator.Send(command);
         return Ok(result);
     }
@@ -37,7 +37,7 @@ public class QuizController : BaseController
     [HttpPost("AddQuizForAll")]
     public async Task<IActionResult> AddQuizForAll()
     {
-        var command = new AddQuizTextForAllCommand();
+        var command = new AddQuizForAllCommand();
         await Mediator.Send(command);
         return Ok();
     }

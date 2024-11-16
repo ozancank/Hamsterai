@@ -18,6 +18,7 @@ public class User : Security.User
     public bool AutomaticPayment { get; set; }
     public string? TaxNumber { get; set; }
     public DateTime LicenceEndDate { get; set; }
+    public string? AIUrl { get; set; }
 
     public virtual School? School { get; set; }
     public virtual ICollection<UserOperationClaim> UserOperationClaims { get; set; } = [];

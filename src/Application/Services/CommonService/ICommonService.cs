@@ -25,4 +25,6 @@ public interface ICommonService : IBusinessService
     Dictionary<string, Dictionary<string, int>> GetEnums();
 
     Dictionary<string, List<AppStatics.PropertyDto>> GetEntities();
+
+    Task<string?> GetUserAIUrl(long userId);
 }

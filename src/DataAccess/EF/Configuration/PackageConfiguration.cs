@@ -29,6 +29,7 @@ public class PackageConfiguration : IEntityTypeConfiguration<Package>
         builder.Property(e => e.CategoryId).HasColumnName("CategoryId").HasColumnOrder(20);
         builder.Property(e => e.Type).HasColumnName("Type").HasDefaultValue(PackageType.None).HasColumnOrder(21).IsRequired();
         builder.Property(e => e.QuestionCredit).HasColumnName("QuestionCredit").HasDefaultValue(0).HasColumnOrder(22).IsRequired();
+        builder.Property(e => e.Content).HasColumnName("Content").HasColumnOrder(23);
 
         builder.HasIndex(e => new { e.Name, e.PaymentRenewalPeriod }).HasDatabaseName("IX_Packages_1").IsUnique();
 

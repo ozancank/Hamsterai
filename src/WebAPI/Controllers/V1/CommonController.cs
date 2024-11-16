@@ -1,5 +1,6 @@
 using Application.Services.CommonService;
 using Asp.Versioning;
+using OCK.Core.Utilities;
 
 namespace WebAPI.Controllers.V1;
 
@@ -33,6 +34,13 @@ public class CommonController(ICommonService commonService) : BaseController
     public IActionResult GetEntities()
     {
         var result = commonService.GetEntities();
+        return Ok(result);
+    }
+
+    [HttpGet("GetCulture")]
+    public IActionResult GetCulture()
+    {
+        var result = TimeTools.GetCultureInfo();
         return Ok(result);
     }
 }
