@@ -19,7 +19,7 @@ public class AddQuizCommandHandler(IMapper mapper,
 {
     public async Task<GetQuizModel> Handle(AddQuizCommand request, CancellationToken cancellationToken)
     {
-        var quizId = await questionService.AddQuiz(request.Model, cancellationToken);
+        var quizId = await questionService.AddQuiz(request.Model, null, cancellationToken);
 
         var result = await quizDal.GetAsyncAutoMapper<GetQuizModel>(
             enableTracking: false,

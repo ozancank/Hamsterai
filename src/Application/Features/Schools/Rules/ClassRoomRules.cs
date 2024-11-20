@@ -1,4 +1,5 @@
 ﻿using Application.Features.Schools.Models.ClassRooms;
+using DataAccess.EF;
 
 namespace Application.Features.Schools.Rules;
 
@@ -39,7 +40,7 @@ public class ClassRoomRules(IClassRoomDal classRoomDal) : IBusinessRule
     internal async Task ClassRoomNoAndBranchAndSchoolIdCanNotBeDuplicated(short no, string branch, int schoolId, int? classRoomId = null)
     {
         branch = branch.Trim().ToUpper();
-        var classRoom = await classRoomDal.GetAsync(predicate: x => x.No == no && x.Branch == branch && x.SchoolId == schoolId, enableTracking: false);
+        var classRoom = await classRoomDal.GetAsync(predicate: x => x.No == no && PostgresqlFunctions.TrLower(x.Branch) == PostgresqlFunctions.TrLower(branch) && x.SchoolId == schoolId, enableTracking: false);
         if (classRoomId == null && classRoom != null) throw new BusinessException(Strings.DynamicExists, Strings.ClassRoom);
         if (classRoomId != null && classRoom != null && classRoom.Id != classRoomId) throw new BusinessException(Strings.DynamicExists, Strings.ClassRoom);
     }

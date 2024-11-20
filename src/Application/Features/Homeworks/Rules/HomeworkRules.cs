@@ -1,4 +1,6 @@
-﻿namespace Application.Features.Homeworks.Rules;
+﻿using DataAccess.EF;
+
+namespace Application.Features.Homeworks.Rules;
 
 public class HomeworkRules(IHomeworkDal homeworkDal,
                            IHomeworkStudentDal homeworkStudentDal) : IBusinessRule
@@ -11,7 +13,7 @@ public class HomeworkRules(IHomeworkDal homeworkDal,
 
     internal async Task HomeworkShouldNotExistsById(string id)
     {
-        var control = await homeworkDal.IsExistsAsync(predicate: x => x.Id == id, enableTracking: false);
+        var control = await homeworkDal.IsExistsAsync(predicate: x => PostgresqlFunctions.TrLower(x.Id) == PostgresqlFunctions.TrLower(id), enableTracking: false);
         if (control) throw new BusinessException(Strings.DynamicExists, $"{Strings.Homework} Id");
     }
 
@@ -23,7 +25,7 @@ public class HomeworkRules(IHomeworkDal homeworkDal,
 
     internal async Task HomeworkStudentShouldNotExistsById(string id)
     {
-        var control = await homeworkStudentDal.IsExistsAsync(predicate: x => x.Id == id, enableTracking: false);
+        var control = await homeworkStudentDal.IsExistsAsync(predicate: x => PostgresqlFunctions.TrLower(x.Id) == PostgresqlFunctions.TrLower(id), enableTracking: false);
         if (control) throw new BusinessException(Strings.DynamicExists, $"{Strings.Homework}-{Strings.Student} Id ");
     }
 

@@ -26,21 +26,21 @@ public class QuizController : BaseController
         return Ok(result);
     }
 
-    [HttpPost("AddQuiz")]
-    public async Task<IActionResult> AddQuiz([FromBody] AddQuizModel model)
-    {
-        var command = new AddQuizCommand { Model = model };
-        var result = await Mediator.Send(command);
-        return Ok(result);
-    }
+    //[HttpPost("AddQuiz")]
+    //public async Task<IActionResult> AddQuiz([FromBody] AddQuizModel model)
+    //{
+    //    var command = new AddQuizCommand { Model = model };
+    //    var result = await Mediator.Send(command);
+    //    return Ok(result);
+    //}
 
-    [HttpPost("AddQuizForAll")]
-    public async Task<IActionResult> AddQuizForAll()
-    {
-        var command = new AddQuizForAllCommand();
-        await Mediator.Send(command);
-        return Ok();
-    }
+    //[HttpPost("AddQuizForAll")]
+    //public async Task<IActionResult> AddQuizForAll()
+    //{
+    //    var command = new AddQuizForAllCommand();
+    //    await Mediator.Send(command);
+    //    return Ok();
+    //}
 
     [HttpPost("UpdateQuiz")]
     public async Task<IActionResult> UpdateQuiz([FromBody] UpdateQuizModel model)

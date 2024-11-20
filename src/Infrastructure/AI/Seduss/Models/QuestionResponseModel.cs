@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Infrastructure.AI.Seduss.Models;
 
-public class QuestionVisualResponseModel : IResponseModel
+public class QuestionResponseModel : IResponseModel
 {
     [JsonPropertyName("Soru_OCR")]
     public string? QuestionText { get; set; }
@@ -13,4 +13,13 @@ public class QuestionVisualResponseModel : IResponseModel
 
     [JsonPropertyName("Cevap_Image")]
     public string? AnswerImage { get; set; }
+
+    [JsonPropertyName("Kazanim")]
+    public string? GainName { get; set; }
+
+    [JsonPropertyName("Cevap")]
+    public string? RightOption { get; set; }
+
+    [JsonPropertyName("ocr_method")]
+    public string OcrMethod { get; set; } = string.Empty;
 }

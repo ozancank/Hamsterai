@@ -13,7 +13,7 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
         builder.Property(e => e.UpdateUser).HasColumnName("UpdateUser").HasColumnOrder(4).IsRequired();
         builder.Property(e => e.UpdateDate).HasColumnName("UpdateDate").HasColumnOrder(5).IsRequired();
         builder.Property(e => e.Name).HasColumnName("Name").HasMaxLength(50).HasColumnOrder(6).IsRequired();
-        builder.HasAlternateKey(e => e.Name).HasName("UK_Lessons_Name");
+        builder.HasIndex(e => e.Name).HasDatabaseName("IX_Lesson_Name").IsUnique();
         builder.Property(e => e.SortNo).HasColumnName("SortNo").HasColumnOrder(7).IsRequired();
 
         builder.HasData([

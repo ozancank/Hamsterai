@@ -1,4 +1,5 @@
 ﻿using Application.Features.Lessons.Models.Lessons;
+using DataAccess.EF;
 
 namespace Application.Features.Lessons.Rules;
 
@@ -37,16 +38,15 @@ public class LessonRules(ILessonDal lessonDal) : IBusinessRule
     internal async Task LessonShouldNotExistsByName(string name)
     {
         if (name == null) throw new BusinessException($"{Strings.InvalidValue} : {nameof(name)}");
-        var control = await lessonDal.IsExistsAsync(predicate: x => x.Name == name, enableTracking: false);
+        var control = await lessonDal.IsExistsAsync(predicate: x => PostgresqlFunctions.TrLower(x.Name) == PostgresqlFunctions.TrLower(name), enableTracking: false);
         if (control) throw new BusinessException(Strings.DynamicExists, name);
     }
 
     internal async Task LessonNameCanNotBeDuplicated(string name, short? lessonId = null)
     {
-        name = name.Trim().ToLower();
-        var university = await lessonDal.GetAsync(predicate: x => x.Name == name, enableTracking: false);
-        if (lessonId == null && university != null) throw new BusinessException(Strings.DynamicExists, name);
-        if (lessonId != null && university != null && university.Id != lessonId) throw new BusinessException(Strings.DynamicExists, name);
+        var lesson = await lessonDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.Name) == PostgresqlFunctions.TrLower(name));
+        if (lessonId == null && lesson != null) throw new BusinessException(Strings.DynamicExists, name);
+        if (lessonId != null && lesson != null && lesson.Id != lessonId) throw new BusinessException(Strings.DynamicExists, name);
     }
 
     internal static Task LessonShouldBeRecordInDatabase(IEnumerable<short> ids, IEnumerable<Lesson> lessons)

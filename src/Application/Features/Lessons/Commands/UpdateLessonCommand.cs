@@ -9,7 +9,7 @@ namespace Application.Features.Lessons.Commands;
 
 public class UpdateLessonCommand : IRequest<GetLessonModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
-    public required UpdateLessonModel UpdateLessonModel { get; set; }
+    public required UpdateLessonModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
@@ -22,11 +22,12 @@ public class UpdateLessonCommandHandler(IMapper mapper,
 {
     public async Task<GetLessonModel> Handle(UpdateLessonCommand request, CancellationToken cancellationToken)
     {
-        var lesson = await lessonDal.GetAsync(x => x.Id == request.UpdateLessonModel.Id, cancellationToken: cancellationToken);
+        request.Model.Name = request.Model.Name!.Trim();
+        var lesson = await lessonDal.GetAsync(x => x.Id == request.Model.Id, cancellationToken: cancellationToken);
 
-        await lessonRules.LessonNameCanNotBeDuplicated(request.UpdateLessonModel.Name!, request.UpdateLessonModel.Id);
+        await lessonRules.LessonNameCanNotBeDuplicated(request.Model.Name, request.Model.Id);
 
-        mapper.Map(request.UpdateLessonModel, lesson);
+        mapper.Map(request.Model, lesson);
         lesson.UpdateUser = commonService.HttpUserId;
         lesson.UpdateDate = DateTime.Now;
 

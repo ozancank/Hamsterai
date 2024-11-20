@@ -66,6 +66,7 @@ public class UpdatePackageCommandHandler(IMapper mapper,
         var taxAmount = (amount - unitAmount).RoundDouble();
         package.UnitPrice = unitAmount;
         package.TaxAmount = taxAmount;
+        package.PictureUrl ??= string.Empty;
 
         var deleteList = await packageLessonDal.GetListAsync(predicate: x => x.PackageId == package.Id, cancellationToken: cancellationToken);
 

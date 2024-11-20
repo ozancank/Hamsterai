@@ -173,8 +173,8 @@ public struct Strings
     public const string ModelBusy = "Model meşgul!";
     public const string QuestionLimitForStudentAndLesson = "Bu ders için günlük soru limitinize ulaştınız.";
     public const string SimilarLimitForStudentAndLesson = "Bu ders için günlük benzer soru limitinize ulaştınız.";
-    public const string QuestionLimitForStudent = "Bu günlük soru limitinize ulaştınız.";
-    public const string SimilarLimitForStudent = "Bu günlük benzer soru limitinize ulaştınız.";
+    public const string QuestionLimitForStudent = "Bu aylık soru limitinize ulaştınız.";
+    public const string SimilarLimitForStudent = "Bu aylık benzer soru limitinize ulaştınız.";
     public const string OldPasswordWrong = "Eski şifre yanlış girildi.";
     public const string LicenceExpired = "Lisans süresi doldu. Lütfen firma ile iletişime geçiniz.";
     public const string WrongClassRoomIds = "Sınıf id'leri yanlış girildi.";

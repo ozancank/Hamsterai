@@ -3,7 +3,7 @@
 public class AddQuizModel : IRequestModel
 {
     public short LessonId { get; set; }
+    public string? LessonName { get; set; }
     public long UserId { get; set; }
-    public List<string> QuestionList { get; set; } = [];
-    public List<bool> VisualList { get; set; } = [];
+    public List<Similar> QuestionList { get; set; } = [];
 }

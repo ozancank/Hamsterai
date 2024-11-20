@@ -22,7 +22,6 @@ public class AddRangeQuestionCommandHandler(IMapper mapper,
                                             IQuestionDal questionDal,
                                             ICommonService commonService,
                                             ILessonDal lessonDal,
-                                            IUserDal userDal,
                                             QuestionRules questionRules) : IRequestHandler<AddRangeQuestionCommand, List<GetQuestionModel>>
 {
     public async Task<List<GetQuestionModel>> Handle(AddRangeQuestionCommand request, CancellationToken cancellationToken)

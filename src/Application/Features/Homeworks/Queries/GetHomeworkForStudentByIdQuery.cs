@@ -12,7 +12,7 @@ public class GetHomeworkForStudentByIdQuery : IRequest<GetHomeworkStudentModel>,
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 
-    public UserTypes[] Roles { get; } = [UserTypes.Student];
+    public UserTypes[] Roles { get; } = [UserTypes.Student, UserTypes.Person];
     public bool AllowByPass => false;
 }
 

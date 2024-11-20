@@ -1,4 +1,5 @@
 ﻿using DataAccess.Abstract.Core;
+using DataAccess.EF;
 using Domain.Entities.Core;
 using OCK.Core.Security.HashingHelper;
 
@@ -14,7 +15,7 @@ public class AuthRules(IUserDal userDal) : IBusinessRule
 
     internal async Task UserShouldExistsByUserNameWhenLogin(string userName)
     {
-        var control = await userDal.IsExistsAsync(predicate: x => x.UserName == userName);
+        var control = await userDal.IsExistsAsync(predicate: x => PostgresqlFunctions.TrLower(x.UserName) == PostgresqlFunctions.TrLower(userName));
         if (!control) throw new BusinessException(Strings.UserOrPasswordNotWrong);
     }
 

@@ -82,7 +82,7 @@ static void Services(WebApplicationBuilder builder)
     });
     //if (!builder.Environment.IsDevelopment())
     builder.Services.AddHostedService<SenderHostedService>();
-    builder.Services.AddHostedService<QuizHostedService>();
+    builder.Services.AddHostedService<SimilarHostedService>();
 
     builder.Services.Configure<FormOptions>(options =>
     {
@@ -270,8 +270,8 @@ static void StaticFiles(WebApplication app)
 static void Delegates()
 {
     ControlUserStatusAsync = ServiceTools.GetService<IUserService>().UserStatusAndLicense;
-    UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
-    UpdateSimilarAnswer = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
+    UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateQuestion;
+    AddSimilarAnswer = ServiceTools.GetService<IQuestionService>().AddSimilarQuestion;
 }
 
 static void RunLinuxCommands()

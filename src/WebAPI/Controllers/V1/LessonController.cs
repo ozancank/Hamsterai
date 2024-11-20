@@ -40,7 +40,7 @@ public class LessonController() : BaseController
     [HttpPost("AddLesson")]
     public async Task<IActionResult> AddLesson([FromBody] AddLessonModel model)
     {
-        var command = new AddLessonCommand { AddLessonModel = model };
+        var command = new AddLessonCommand { Model = model };
         var result = await Mediator.Send(command);
         return Ok(result);
     }
@@ -48,7 +48,7 @@ public class LessonController() : BaseController
     [HttpPost("UpdateLesson")]
     public async Task<IActionResult> UpdateLesson([FromBody] UpdateLessonModel model)
     {
-        var command = new UpdateLessonCommand { UpdateLessonModel = model };
+        var command = new UpdateLessonCommand { Model = model };
         var result = await Mediator.Send(command);
         return Ok(result);
     }

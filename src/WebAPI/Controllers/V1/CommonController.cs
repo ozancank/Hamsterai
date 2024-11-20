@@ -43,4 +43,11 @@ public class CommonController(ICommonService commonService) : BaseController
         var result = TimeTools.GetCultureInfo();
         return Ok(result);
     }
+
+    [HttpGet("GetLessonNamesForAI")]
+    public async Task<IActionResult> GetLessonNamesForAI()
+    {
+        var result = await commonService.GetLessonNamesForAI();
+        return Ok(result);
+    }
 }

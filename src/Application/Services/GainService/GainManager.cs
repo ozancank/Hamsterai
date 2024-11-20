@@ -11,7 +11,7 @@ public class GainManager(IMapper mapper) : IGainService
     {
         if (dto.GainName.IsEmpty()) return null;
 
-        bool isNull = dto.Context == null;
+        var isNull = dto.Context == null;
         var context = dto.Context ?? ServiceTools.GetService<IDbContextFactory<HamsteraiDbContext>>().CreateDbContext();
 
         try
@@ -35,7 +35,7 @@ public class GainManager(IMapper mapper) : IGainService
 
             var gain = await context.Gains
                 .AsNoTracking()
-                .Where(x => x.Name == gainName && x.LessonId == dto.LessonId)
+                .Where(x => PostgresqlFunctions.TrLower(x.Name) == PostgresqlFunctions.TrLower(gainName) && x.LessonId == dto.LessonId)
                 .FirstOrDefaultAsync();
 
             var date = DateTime.Now;

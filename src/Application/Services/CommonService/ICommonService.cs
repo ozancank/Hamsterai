@@ -27,4 +27,6 @@ public interface ICommonService : IBusinessService
     Dictionary<string, List<AppStatics.PropertyDto>> GetEntities();
 
     Task<string?> GetUserAIUrl(long userId);
+
+    Task<string?> GetLessonNamesForAI();
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Features.Students.Models;
+using DataAccess.EF;
 
 namespace Application.Features.Students.Rules;
 
@@ -39,7 +40,7 @@ public class StudentRules(IStudentDal studentDal) : IBusinessRule
     internal async Task StudentNoCanNotBeDuplicated(string no, int? studentId = null)
     {
         no = no.Trim();
-        var student = await studentDal.GetAsync(predicate: x => x.StudentNo == no, enableTracking: false);
+        var student = await studentDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.StudentNo) == PostgresqlFunctions.TrLower(no), enableTracking: false);
         if (studentId == null && student != null) throw new BusinessException(Strings.DynamicExists, no);
         if (studentId != null && student != null && student.Id != studentId) throw new BusinessException(Strings.DynamicExists, no);
     }
@@ -47,7 +48,7 @@ public class StudentRules(IStudentDal studentDal) : IBusinessRule
     internal async Task StudentEmailCanNotBeDuplicated(string email, int? studentId = null)
     {
         email = email.Trim();
-        var student = await studentDal.GetAsync(predicate: x => x.Email == email, enableTracking: false);
+        var student = await studentDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.Email) == PostgresqlFunctions.TrLower(email), enableTracking: false);
         if (studentId == null && student != null) throw new BusinessException(Strings.DynamicExists, email);
         if (studentId != null && student != null && student.Id != studentId) throw new BusinessException(Strings.DynamicExists, email);
     }
@@ -55,7 +56,7 @@ public class StudentRules(IStudentDal studentDal) : IBusinessRule
     internal async Task StudentPhoneCanNotBeDuplicated(string phone, int? studentId = null)
     {
         phone = phone.Trim();
-        var student = await studentDal.GetAsync(predicate: x => x.Phone == phone, enableTracking: false);
+        var student = await studentDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.Phone) == PostgresqlFunctions.TrLower(phone), enableTracking: false);
         if (studentId == null && student != null) throw new BusinessException(Strings.DynamicExists, phone);
         if (studentId != null && student != null && student.Id != studentId) throw new BusinessException(Strings.DynamicExists, phone);
     }

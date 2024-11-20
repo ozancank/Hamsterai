@@ -4,7 +4,7 @@ using OCK.Core.Logging.Serilog;
 
 namespace WebAPI;
 
-public class SenderHostedService(IServiceProvider serviceProvider, LoggerServiceBase loggerServiceBase) : BackgroundService
+public class SimilarHostedService(IServiceProvider serviceProvider, LoggerServiceBase loggerServiceBase) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -12,13 +12,13 @@ public class SenderHostedService(IServiceProvider serviceProvider, LoggerService
         {
             try
             {
-                await Task.Delay(AppOptions.AIQuestionSendSecond * 1000, stoppingToken);
+                await Task.Delay(AppOptions.AISimilarSendSecond * 1000, stoppingToken);
 
-                if (!AppStatics.SenderQuestionAllow) continue;
+                if (!AppStatics.SenderSimilarAllow) continue;
 
                 using var scope = serviceProvider.CreateScope();
                 var questionService = scope.ServiceProvider.GetRequiredService<IQuestionService>();
-                await questionService.SendQuestions(stoppingToken);
+                await questionService.SendSimilar(stoppingToken);
             }
             catch (Exception ex)
             {

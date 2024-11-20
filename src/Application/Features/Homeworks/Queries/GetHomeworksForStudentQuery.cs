@@ -10,7 +10,7 @@ public class GetHomeworksForStudentQuery : IRequest<PageableModel<GetHomeworkStu
     public required PageRequest PageRequest { get; set; }
     public required HomeworkRequestModel Model { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.Student];
+    public UserTypes[] Roles { get; } = [UserTypes.Student, UserTypes.Person];
     public bool AllowByPass => false;
 }
 

@@ -18,7 +18,8 @@ namespace Application.Services.CommonService;
 public class CommonManager(IHttpContextAccessor httpContextAccessor,
                            LoggerServiceBase loggerServiceBase,
                            IConfiguration configuration,
-                           IUserDal userDal) : ICommonService
+                           IUserDal userDal,
+                           ILessonDal lessonDal) : ICommonService
 {
     public long HttpUserId =>
         Convert.ToInt64(httpContextAccessor.HttpContext?.User.Claims
@@ -173,5 +174,15 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
             selector: x => x.AIUrl);
 
         return url;
+    }
+
+    public async Task<string?> GetLessonNamesForAI()
+    {
+        if (HttpUserType != UserTypes.Administator) throw new AuthenticationException(Strings.AuthorizationDenied);
+
+        var lessonNames = await lessonDal.GetListAsync(
+            enableTracking: false,
+            selector: x => x.Name!.ToLower().Replace(" ", "_"));
+        return string.Join(",", lessonNames);
     }
 }

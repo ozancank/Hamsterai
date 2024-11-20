@@ -1,6 +1,7 @@
 ﻿using Application.Features.Users.Models.User;
 using Application.Services.CommonService;
 using DataAccess.Abstract.Core;
+using DataAccess.EF;
 using Domain.Entities.Core;
 using OCK.Core.Security.HashingHelper;
 
@@ -51,7 +52,7 @@ public class UserRules(IUserDal userDal,
     internal async Task UserNameCanNotBeDuplicated(string userName, long? userId = null)
     {
         userName = userName.Trim().ToLower();
-        var user = await userDal.GetAsync(predicate: x => x.UserName == userName, enableTracking: false);
+        var user = await userDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.UserName) == PostgresqlFunctions.TrLower(userName), enableTracking: false);
         if (userId == null && user != null) throw new BusinessException(Strings.DynamicExists, Strings.UserName);
         if (userId != null && user != null && user.Id != userId) throw new BusinessException(Strings.DynamicExists, Strings.UserName);
     }
@@ -59,7 +60,7 @@ public class UserRules(IUserDal userDal,
     internal async Task UserEmailCanNotBeDuplicated(string email, long? userId = null)
     {
         email = email.Trim().ToLower();
-        var user = await userDal.GetAsync(predicate: x => x.Email == email, enableTracking: false);
+        var user = await userDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.Email) == PostgresqlFunctions.TrLower(email), enableTracking: false);
         if (userId == null && user != null) throw new BusinessException(Strings.DynamicExists, Strings.Email);
         if (userId != null && user != null && user.Id != userId) throw new BusinessException(Strings.DynamicExists, Strings.Email);
     }
@@ -67,7 +68,7 @@ public class UserRules(IUserDal userDal,
     internal async Task UserPhoneCanNotBeDuplicated(string phone, long? userId = null)
     {
         phone = phone.TrimForPhone();
-        var user = await userDal.GetAsync(predicate: x => x.Phone == phone, enableTracking: false);
+        var user = await userDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.Phone) == PostgresqlFunctions.TrLower(phone), enableTracking: false);
         if (userId == null && user != null) throw new BusinessException(Strings.DynamicExists, Strings.Phone);
         if (userId != null && user != null && user.Id != userId) throw new BusinessException(Strings.DynamicExists, Strings.Phone);
     }
@@ -131,7 +132,7 @@ public class UserRules(IUserDal userDal,
             UserTypes.School => type == UserTypes.Teacher || type == UserTypes.Student,
             UserTypes.Teacher => type == UserTypes.Student || (userId.HasValue && commonService.HttpUserId == userId && type == UserTypes.Teacher),
             UserTypes.Student => userId.HasValue && commonService.HttpUserId == userId && type == UserTypes.Student,
-            UserTypes.Person => userId.HasValue && commonService.HttpUserId == userId && type == UserTypes.Student,
+            UserTypes.Person => userId.HasValue && commonService.HttpUserId == userId && type == UserTypes.Person,
             _ => false
         };
 

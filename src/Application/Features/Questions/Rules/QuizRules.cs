@@ -1,4 +1,5 @@
-﻿using Infrastructure.AI.Seduss.Models;
+﻿using DataAccess.EF;
+using Infrastructure.AI.Seduss.Models;
 
 namespace Application.Features.Questions.Rules;
 
@@ -16,13 +17,13 @@ public class QuizRules(IQuizDal quizDal, IQuizQuestionDal quizQuestionDal) : IBu
         return Task.CompletedTask;
     }
 
-    internal static Task QuizQuestionsShouldExists(List<SimilarResponseModel> responses)
+    internal static Task QuizQuestionShouldExists(List<Similar> questionImages)
     {
-        if (responses == null || responses.Count <= 0) throw new BusinessException(Strings.DynamicNotEmpty, Strings.Question);
+        if (questionImages == null || questionImages.Count <= 0) throw new BusinessException(Strings.DynamicNotEmpty, Strings.Question);
         return Task.CompletedTask;
     }
 
-    internal static Task QuizQuestionsShouldExists(List<SimilarTextResponseModel> responses)
+    internal static Task QuizQuestionsShouldExists(List<SimilarResponseModel> responses)
     {
         if (responses == null || responses.Count <= 0) throw new BusinessException(Strings.DynamicNotEmpty, Strings.Question);
         return Task.CompletedTask;
@@ -30,13 +31,13 @@ public class QuizRules(IQuizDal quizDal, IQuizQuestionDal quizQuestionDal) : IBu
 
     internal async Task QuizShouldNotExistsById(string id)
     {
-        var control = await quizDal.IsExistsAsync(predicate: x => x.Id == id, enableTracking: false);
+        var control = await quizDal.IsExistsAsync(predicate: x => PostgresqlFunctions.TrLower(x.Id) == PostgresqlFunctions.TrLower(id), enableTracking: false);
         if (control) throw new BusinessException(Strings.DynamicExists, $"{Strings.Quiz} Id");
     }
 
     internal async Task QuizQuestionShouldNotExistsById(string id)
     {
-        var control = await quizQuestionDal.IsExistsAsync(predicate: x => x.Id == id, enableTracking: false);
+        var control = await quizQuestionDal.IsExistsAsync(predicate: x => PostgresqlFunctions.TrLower(x.Id) == PostgresqlFunctions.TrLower(id), enableTracking: false);
         if (control) throw new BusinessException(Strings.DynamicExists, $"{Strings.Quiz}-{Strings.Question} Id");
     }
 }

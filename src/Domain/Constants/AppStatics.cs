@@ -2,8 +2,10 @@
 
 public class AppStatics
 {
-    public static readonly SemaphoreSlim SenderSemaphore = new(AppOptions.SenderCapacity);
+    public static readonly SemaphoreSlim QuestionSemaphore = new(AppOptions.QuestionSenderCapacity);
+    public static readonly SemaphoreSlim SimilarSemaphore = new(AppOptions.SimilarSenderCapacity);
     public static bool SenderQuestionAllow { get; set; } = true;
+    public static bool SenderSimilarAllow { get; set; } = true;
     public static Dictionary<string, Dictionary<string, int>> Enums { get; set; } = [];
     public static Dictionary<string, List<PropertyDto>> Entities { get; set; } = [];
 

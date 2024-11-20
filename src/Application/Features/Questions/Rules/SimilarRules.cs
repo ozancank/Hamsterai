@@ -23,9 +23,9 @@ public class SimilarRules(ISimilarDal similarDal,
             .Where(x => x.CreateUser == commonService.HttpUserId
                         && x.Status != QuestionStatus.Error
                         && x.CreateDate >= date
-                        && x.CreateDate <= date.AddDays(1).AddMilliseconds(-1)).CountAsync();
+                        && x.CreateDate <= date.AddMonths(1).AddMilliseconds(-1)).CountAsync();
 
-        if (count >= AppOptions.SimilarLimitForStudent) throw new BusinessException(Strings.SimilarLimitForStudent);
+        if (count >= AppOptions.SimilarMonthLimitForStudent) throw new BusinessException(Strings.SimilarLimitForStudent);
     }
 
     internal static Task OCRShouldBeFilled(OcrResponseModel ocr)

@@ -23,9 +23,9 @@ public class QuestionRules(IQuestionDal questionDal,
             .Where(x => x.CreateUser == commonService.HttpUserId
                                     && x.Status != QuestionStatus.Error
                                     && x.CreateDate >= date
-                                    && x.CreateDate <= date.AddDays(1).AddMilliseconds(-1)).CountAsync();
+                                    && x.CreateDate <= date.AddMonths(1).AddMilliseconds(-1)).CountAsync();
 
-        if (count >= AppOptions.QuestionLimitForStudent) throw new BusinessException(Strings.QuestionLimitForStudent);
+        if (count >= AppOptions.QuestionMonthLimitForStudent) throw new BusinessException(Strings.QuestionLimitForStudent);
     }
 
     internal static Task OCRShouldBeFilled(OcrResponseModel ocr)

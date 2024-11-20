@@ -1,19 +1,19 @@
-﻿using Application.Services.QuestionService;
-using MediatR;
-using OCK.Core.Pipelines.Authorization;
+﻿//using Application.Services.QuestionService;
+//using MediatR;
+//using OCK.Core.Pipelines.Authorization;
 
-namespace Application.Features.Questions.Commands.Quizzes;
+//namespace Application.Features.Questions.Commands.Quizzes;
 
-public class AddQuizForAllCommand : IRequest, ISecuredRequest<UserTypes>
-{
-    public UserTypes[] Roles { get; } = [UserTypes.Administator];
-    public bool AllowByPass => false;
-}
+//public class AddQuizForAllCommand : IRequest, ISecuredRequest<UserTypes>
+//{
+//    public UserTypes[] Roles { get; } = [UserTypes.Administator];
+//    public bool AllowByPass => false;
+//}
 
-public class AddQuizForAllCommandHandler(IQuestionService questionService) : IRequestHandler<AddQuizForAllCommand>
-{
-    public async Task Handle(AddQuizForAllCommand request, CancellationToken cancellationToken)
-    {
-        await questionService.AddQuiz(true, cancellationToken);
-    }
-}
+//public class AddQuizForAllCommandHandler(IQuestionService questionService) : IRequestHandler<AddQuizForAllCommand>
+//{
+//    public async Task Handle(AddQuizForAllCommand request, CancellationToken cancellationToken)
+//    {
+//        await questionService.AddQuiz(true, cancellationToken);
+//    }
+//}

@@ -1,4 +1,5 @@
 ﻿using Application.Features.Teachers.Models;
+using DataAccess.EF;
 
 namespace Application.Features.Teachers.Rules;
 
@@ -31,7 +32,7 @@ public class TeacherRules(ITeacherDal teacherDal) : IBusinessRule
     internal async Task TeacherEmailCanNotBeDuplicated(string email, int? teacherId = null)
     {
         email = email.Trim();
-        var teacher = await teacherDal.GetAsync(predicate: x => x.Email == email, enableTracking: false);
+        var teacher = await teacherDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.Email) == PostgresqlFunctions.TrLower(email), enableTracking: false);
         if (teacherId == null && teacher != null) throw new BusinessException(Strings.DynamicExists, email);
         if (teacherId != null && teacher != null && teacher.Id != teacherId) throw new BusinessException(Strings.DynamicExists, email);
     }
@@ -39,7 +40,7 @@ public class TeacherRules(ITeacherDal teacherDal) : IBusinessRule
     internal async Task TeacherPhoneCanNotBeDuplicated(string phone, int? teacherId = null)
     {
         phone = phone.Trim();
-        var teacher = await teacherDal.GetAsync(predicate: x => x.Phone == phone, enableTracking: false);
+        var teacher = await teacherDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.Phone) == PostgresqlFunctions.TrLower(phone), enableTracking: false);
         if (teacherId == null && teacher != null) throw new BusinessException(Strings.DynamicExists, phone);
         if (teacherId != null && teacher != null && teacher.Id != teacherId) throw new BusinessException(Strings.DynamicExists, phone);
     }

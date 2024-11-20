@@ -15,7 +15,7 @@ public sealed class GeminiApi(IHttpClientFactory httpClientFactory, LoggerServic
 
     public async Task<OcrResponseModel> GetTextFromImage(OcrRequestModel model)
     {
-        var baseUrl = AppOptions.OCR_Url;
+        var baseUrl = string.Empty;//AppOptions.OCR_Url;
         var result = new OcrResponseModel();
         try
         {
