@@ -55,12 +55,12 @@ public class NotificationManager(INotificationApi notificationApi,
 
     public async Task<bool> PushNotificationByUserId(NotificationUserDto dto)
     {
-        using var context = contextFactory.CreateDbContext();
+        using var context = contextFactory.CreateDbContext();        
 
         var tokens = await context.NotificationDeviceTokens.AsNoTracking()
             .Include(x => x.User)
-            .Where(x => x.UserId == dto.ReceivedUserId && x.IsActive && x.User!.IsActive)
-            .Select(x => x.DeviceToken)
+            .Where(x => dto.ReceivedUserId.Contains(x.UserId) && x.IsActive && x.User!.IsActive)
+            .Select(x => new { x.User!.Id, x.DeviceToken })
             .ToListAsync();
 
         if (tokens.Count == 0) return false;
@@ -69,7 +69,7 @@ public class NotificationManager(INotificationApi notificationApi,
         {
             Title = dto.Title,
             Body = dto.Body,
-            List = tokens
+            List = tokens.Select(x=>x.DeviceToken)
         };
 
         await notificationApi.PushNotification(message);
@@ -84,7 +84,7 @@ public class NotificationManager(INotificationApi notificationApi,
             CreateUser = dto.SenderUserId,
             UpdateDate = date,
             UpdateUser = dto.SenderUserId,
-            ReceiveredUserId = dto.ReceivedUserId,
+            ReceiveredUserId = x.Id,
             IsRead = false,
             ReadDate = null,
             Title = dto.Title,

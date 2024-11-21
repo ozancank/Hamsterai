@@ -21,7 +21,7 @@ public class PushNotificationByUserIdCommandHandler(INotificationService notific
 {
     public async Task<bool> Handle(PushNotificationByUserIdCommand request, CancellationToken cancellationToken)
     {
-        var result = await notificationService.PushNotificationByUserId(new(request.Model.Title!, request.Model.Body!, request.UserId, NotificationTypes.Undifined));
+        var result = await notificationService.PushNotificationByUserId(new(request.Model.Title!, request.Model.Body!, NotificationTypes.Undifined, [request.UserId]));
         return result;
     }
 }

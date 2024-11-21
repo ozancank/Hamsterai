@@ -13,6 +13,7 @@ public class School : BaseEntity<int>
     public string? AuthorizedEmail { get; set; }
     public DateTime LicenseEndDate { get; set; }
     public int UserCount { get; set; }
+    public bool AccessStundents { get; set; }
 
     public virtual ICollection<User> Users { get; set; } = [];
     public virtual ICollection<Teacher> Teachers { get; set; } = [];

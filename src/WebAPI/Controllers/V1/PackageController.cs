@@ -39,7 +39,7 @@ public class PackageController() : BaseController
         return Ok(result);
     }
 
-    [HttpPost("GetPackages")]
+    [HttpGet("GetPackages")]
     public async Task<IActionResult> GetPackages([FromQuery] PageRequest model)
     {
         var query = new GetPackagesQuery { PageRequest = model };

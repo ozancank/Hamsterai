@@ -16,11 +16,12 @@ public class GetPaymentsByUserIdQuery : IRequest<PageableModel<GetPaymentModel>>
 
 public class GetPaymentsByUserIdQueryHandler(IMapper mapper,
                                              ICommonService commonService,
-                                             IPaymentDal orderDal) : IRequestHandler<GetPaymentsByUserIdQuery, PageableModel<GetPaymentModel>>
+                                             IOrderDal orderDal,
+                                             IPaymentDal paymentDal) : IRequestHandler<GetPaymentsByUserIdQuery, PageableModel<GetPaymentModel>>
 {
     public async Task<PageableModel<GetPaymentModel>> Handle(GetPaymentsByUserIdQuery request, CancellationToken cancellationToken)
     {
-        var entities = await orderDal.GetPageListAsyncAutoMapper<GetPaymentModel>(
+        var entities = await paymentDal.GetPageListAsyncAutoMapper<GetPaymentModel>(
             enableTracking: false,
             index: request.PageRequest.Page,
             size: request.PageRequest.PageSize,
@@ -28,6 +29,15 @@ public class GetPaymentsByUserIdQueryHandler(IMapper mapper,
             orderBy: x => x.OrderByDescending(x => x.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
+
+        await entities.Items.ForEachAsync(async (x) =>
+        {
+            if (x.PaymentReason == PaymentReason.FirstPayment)
+            {
+                var orderId = Convert.ToInt32(x.ReasonId ?? "0");
+                x.OrderNo = await orderDal.Query().AsNoTracking().Where(o => o.UserId == x.UserId && o.Id == orderId).Select(x => x.OrderNo).FirstOrDefaultAsync(cancellationToken);
+            }
+        });
 
         var result = mapper.Map<PageableModel<GetPaymentModel>>(entities);
         return result;

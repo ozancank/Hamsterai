@@ -12,4 +12,6 @@ public class GetPaymentModel : IResponseModel
     public string? ReasonId { get; set; }
     public string? SipayMerchantKey { get; set; }
     public string? SipayPlanCode { get; set; }
+
+    public string? OrderNo { get; set; }
 }

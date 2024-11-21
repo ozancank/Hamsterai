@@ -10,13 +10,14 @@ public class PassiveHomeworkCommand : IRequest<bool>, ISecuredRequest<UserTypes>
 {
     public required string HomeworkId { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.Teacher];
+    public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.Teacher];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }
 
 public class PassiveHomeworkCommandHandler(IHomeworkDal homeworkDal,
                                            IHomeworkStudentDal homeworkStudentDal,
+                                           IHomeworkUserDal homeworkUserDal,
                                            ICommonService commonService) : IRequestHandler<PassiveHomeworkCommand, bool>
 {
     public async Task<bool> Handle(PassiveHomeworkCommand request, CancellationToken cancellationToken)
@@ -28,6 +29,7 @@ public class PassiveHomeworkCommandHandler(IHomeworkDal homeworkDal,
         await HomeworkRules.HomeworkShouldExists(homework);
 
         var homeworkStudents = await homeworkStudentDal.GetListAsync(predicate: x => x.HomeworkId == request.HomeworkId, cancellationToken: cancellationToken);
+        var homeworkUsers = await homeworkUserDal.GetListAsync(predicate: x => x.HomeworkId == request.HomeworkId, cancellationToken: cancellationToken);
 
         homework.UpdateUser = userId;
         homework.UpdateDate = date;
@@ -40,9 +42,17 @@ public class PassiveHomeworkCommandHandler(IHomeworkDal homeworkDal,
             item.IsActive = false;
         }
 
+        foreach (var item in homeworkUsers)
+        {
+            item.UpdateUser = userId;
+            item.UpdateDate = date;
+            item.IsActive = false;
+        }
+
         await homeworkDal.ExecuteWithTransactionAsync(async () =>
         {
-            await homeworkStudentDal.UpdateRangeAsync(homeworkStudents, cancellationToken: cancellationToken);
+            if (homeworkUsers.Count > 0) await homeworkUserDal.UpdateRangeAsync(homeworkUsers, cancellationToken: cancellationToken);
+            if (homeworkStudents.Count > 0) await homeworkStudentDal.UpdateRangeAsync(homeworkStudents, cancellationToken: cancellationToken);
             await homeworkDal.UpdateAsync(homework, cancellationToken: cancellationToken);
         }, cancellationToken: cancellationToken);
 

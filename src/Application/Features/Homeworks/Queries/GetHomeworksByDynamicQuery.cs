@@ -10,7 +10,7 @@ public class GetHomeworksByDynamicQuery : IRequest<PageableModel<GetHomeworkMode
     public required PageRequest PageRequest { get; set; }
     public required Dynamic Dynamic { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
+    public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher];
     public bool AllowByPass => false;
 }
 
@@ -34,7 +34,8 @@ public class GetHomeworksByDynamicQueryHandler(IMapper mapper,
                            .Include(u => u.Teacher)
                            .Include(u => u.Lesson)
                            .Include(u => u.ClassRoom)
-                           .Include(u => u.HomeworkStudents).ThenInclude(u => u.Student),
+                           .Include(u => u.HomeworkStudents).ThenInclude(u => u.Student)
+                           .Include(u => u.HomeworkUsers).ThenInclude(u => u.User),
             defaultOrderColumnName: x => x.CreateDate,
             defaultDescending: true,
             configurationProvider: mapper.ConfigurationProvider,

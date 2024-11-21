@@ -2,6 +2,7 @@
 using Application.Services.CommonService;
 using DataAccess.Abstract.Core;
 using DataAccess.EF;
+using DataAccess.EF.Concrete;
 using Domain.Entities.Core;
 using OCK.Core.Security.HashingHelper;
 
@@ -165,5 +166,11 @@ public class UserRules(IUserDal userDal,
         if (userId is 1 or 2) throw new BusinessException(Strings.UserDeniedChangeOwnPassword);
         if (userId == commonService.HttpUserId) throw new BusinessException(Strings.UserDeniedChangeOwnPassword);
         return Task.CompletedTask;
+    }
+
+    internal async Task UserShouldExistsAndActiveByIds(List<long> userIds)
+    {
+        var userss = !userIds.Except(await userDal.Query().AsNoTracking().Where(x => x.IsActive).Select(x => x.Id).ToListAsync()).Any();
+        if (!userss) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.User);
     }
 }

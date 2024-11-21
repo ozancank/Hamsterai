@@ -3,6 +3,7 @@ using System;
 using DataAccess.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.EF.Migrations
 {
     [DbContext(typeof(HamsteraiDbContext))]
-    partial class HamsteraiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241121104027_AddHomeworkUsers")]
+    partial class AddHomeworkUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3276,13 +3279,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("Id")
                         .HasColumnOrder(0);
 
-                    b.Property<bool>("AccessStundents")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("AccessStundents")
-                        .HasColumnOrder(15);
-
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("citext")
@@ -3382,7 +3378,6 @@ namespace DataAccess.EF.Migrations
                         new
                         {
                             Id = 1,
-                            AccessStundents = false,
                             Address = "TeknoPark",
                             AuthorizedEmail = "okul@mail.com",
                             AuthorizedName = "Yetkili",

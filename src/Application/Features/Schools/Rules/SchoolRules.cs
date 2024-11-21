@@ -45,7 +45,7 @@ public class SchoolRules(ISchoolDal schoolDal) : IBusinessRule
     {
         name = name.Trim().ToLower();
         city = city.Trim().ToLower();
-        var school = await schoolDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.Name) == PostgresqlFunctions.TrLower(name) 
+        var school = await schoolDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.Name) == PostgresqlFunctions.TrLower(name)
                                                            && PostgresqlFunctions.TrLower(x.City) == PostgresqlFunctions.TrLower(city), enableTracking: false);
         if (schoolId == null && school != null) throw new BusinessException(Strings.DynamicExists, name);
         if (schoolId != null && school != null && school.Id != schoolId) throw new BusinessException(Strings.DynamicExists, name);
@@ -57,5 +57,11 @@ public class SchoolRules(ISchoolDal schoolDal) : IBusinessRule
         var school = await schoolDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.TaxNumber) == PostgresqlFunctions.TrLower(taxNumber), enableTracking: false);
         if (schoolId == null && school != null) throw new BusinessException(Strings.DynamicExists, taxNumber);
         if (schoolId != null && school != null && school.Id != schoolId) throw new BusinessException(Strings.DynamicExists, taxNumber);
+    }
+
+    internal static async Task AccessStudentEnabled(bool accessStundents, UserTypes userType)
+    {
+        if (!accessStundents && userType == UserTypes.Student) throw new BusinessException(Strings.AccessDeniedBySchool);
+        await Task.CompletedTask;
     }
 }

@@ -23,7 +23,7 @@ public class GetQuestionByIdHandler(IMapper mapper,
     public async Task<GetQuestionModel> Handle(GetQuestionByIdQuery request, CancellationToken cancellationToken)
     {
         var question = await questionDal.GetAsyncAutoMapper<GetQuestionModel>(
-            predicate: x => x.Id == request.Id && x.CreateUser == commonService.HttpUserId && x.IsActive,
+            predicate: x => x.Id == request.Id && x.CreateUser == commonService.HttpUserId && x.IsActive && !x.SendForQuiz,
             enableTracking: request.Tracking,
             include: x => x.Include(u => u.Lesson),
             configurationProvider: mapper.ConfigurationProvider,

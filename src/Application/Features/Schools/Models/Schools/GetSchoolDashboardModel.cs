@@ -8,6 +8,7 @@ public class GetSchoolDashboardModel : IResponseModel
     public DateTime LicenceEndDate { get; set; }
     public int RemainingDay { get; set; }
     public int MaxUserCount { get; set; }
+    public bool AccessStudents { get; set; }
 
     public int TotalUserCount { get; set; }
     public int TotalTeacherCount { get; set; }

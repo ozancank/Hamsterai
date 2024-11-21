@@ -18,6 +18,7 @@ public class GetPaymentByIdQuery : IRequest<GetPaymentModel?>, ISecuredRequest<U
 
 public class GetPaymentByIdQueryHandler(IMapper mapper,
                                         ICommonService commonService,
+                                        IOrderDal orderDal,
                                         IPaymentDal paymentDal) : IRequestHandler<GetPaymentByIdQuery, GetPaymentModel?>
 {
     public async Task<GetPaymentModel?> Handle(GetPaymentByIdQuery request, CancellationToken cancellationToken)
@@ -29,6 +30,13 @@ public class GetPaymentByIdQueryHandler(IMapper mapper,
             cancellationToken: cancellationToken);
 
         if (request.ThrowException) await PaymentRules.PaymentShouldExists(entity);
+
+        if (entity.PaymentReason == PaymentReason.FirstPayment)
+        {
+            var orderId = Convert.ToInt32(entity.ReasonId ?? "0");
+            entity.OrderNo = await orderDal.Query().AsNoTracking().Where(o => o.UserId == entity.UserId && o.Id == orderId).Select(x => entity.OrderNo).FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        }
+
         return entity;
     }
 }

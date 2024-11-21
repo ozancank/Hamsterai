@@ -1,4 +1,5 @@
 ﻿using DataAccess.EF;
+using DataAccess.EF.Concrete.Core;
 
 namespace Application.Features.Packages.Rules;
 
@@ -71,5 +72,11 @@ public class PackageRules(IPackageDal packageDal) : IBusinessRule
             if (!packages.Any(x => x.Id == id))
                 throw new BusinessException(Strings.DynamicNotFound, Strings.Package);
         return Task.CompletedTask;
+    }
+
+    internal async Task PackageShouldExistsAndActiveByIds(List<short> packageIds)
+    {
+        var userss = !packageIds.Except(await packageDal.Query().AsNoTracking().Where(x => x.IsActive).Select(x => x.Id).ToListAsync()).Any();
+        if (!userss) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.Package);
     }
 }

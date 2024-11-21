@@ -169,6 +169,7 @@ public struct Strings
     public const string UserTypeNotAllowed = "Kullanıcı tipine izin verilmiyor.";
     public const string UserDeniedPassiveForAdmin = "Admin kullanıcısı pasif yapılamaz.";
     public const string UserDeniedChangeOwnPassword = "Bu kullanıcının şifrenizi değiştirmek için şifre değiştir methodunu kullanınız.";
+    public const string AccessDeniedBySchool = "Bu işlem okul tarafından engellenmiştir.";
 
     public const string ModelBusy = "Model meşgul!";
     public const string QuestionLimitForStudentAndLesson = "Bu ders için günlük soru limitinize ulaştınız.";

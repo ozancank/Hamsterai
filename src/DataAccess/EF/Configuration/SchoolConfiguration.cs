@@ -23,6 +23,7 @@ public class SchoolConfiguration : IEntityTypeConfiguration<School>
         builder.Property(e => e.AuthorizedEmail).HasColumnName("AuthorizedEmail").HasMaxLength(100).HasColumnOrder(12).IsRequired();
         builder.Property(e => e.UserCount).HasColumnName("UserCount").HasColumnOrder(13).IsRequired();
         builder.Property(e => e.LicenseEndDate).HasColumnName("LicenseEndDate").HasColumnOrder(14).IsRequired();
+        builder.Property(e => e.AccessStundents).HasColumnName("AccessStundents").HasDefaultValue(true).HasColumnOrder(15).IsRequired();
 
         builder.HasData(
         [

@@ -78,11 +78,13 @@ public class UserManager(IUserDal userDal,
             {
                 var school = await schoolDal.GetAsync(
                     enableTracking: false,
-                    predicate: x => x.Id == schoolId,
-                    selector: x => new { x.LicenseEndDate, x.IsActive });
+                    predicate: x => x.Id == schoolId && x.IsActive,
+                    selector: x => new { x.LicenseEndDate, x.IsActive, x.AccessStundents });
 
+                await SchoolRules.SchoolShouldExists(school);
                 await UserRules.LicenceIsValid(school.LicenseEndDate);
-                await SchoolRules.SchoolShouldExists(school.IsActive);
+                await SchoolRules.AccessStudentEnabled(school.AccessStundents, userType);
+
                 result = await userDal.IsExistsAsync(predicate: x => x.Id == id && x.IsActive, enableTracking: false);
             }
             else if (userType is UserTypes.Person)

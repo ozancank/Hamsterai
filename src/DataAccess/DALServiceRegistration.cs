@@ -36,6 +36,7 @@ public static class DALServiceRegistration
         services.AddScoped<IGainDal, GainDal>();
         services.AddScoped<IHomeworkDal, HomeworkDal>();
         services.AddScoped<IHomeworkStudentDal, HomeworkStudentDal>();
+        services.AddScoped<IHomeworkUserDal, HomeworkUserDal>();
         services.AddScoped<ILessonDal, LessonDal>();
         services.AddScoped<INotificationDal, NotificationDal>();
         services.AddScoped<INotificationDeviceTokenDal, NotificationDeviceTokenDal>();

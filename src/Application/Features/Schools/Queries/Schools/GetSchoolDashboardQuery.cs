@@ -34,6 +34,7 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
                 x.Name,
                 x.UserCount,
                 x.LicenseEndDate,
+                x.AccessStundents
             },
             cancellationToken: cancellationToken);
 
@@ -62,6 +63,7 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
         result.SendQuestionCount = await questionDal.CountOfRecordAsync(enableTracking: false, predicate: x => x.User!.IsActive && x.User.SchoolId == school.Id, include: x => x.Include(u => u.User), cancellationToken: cancellationToken);
         result.SendSimilarCount = await similarQuestionDal.CountOfRecordAsync(enableTracking: false, predicate: x => x.User!.IsActive && x.User.SchoolId == school.Id, include: x => x.Include(u => u.User), cancellationToken: cancellationToken);
         result.TotalHomeworkCount = await homeworkDal.CountOfRecordAsync(enableTracking: false, predicate: x => x.User!.IsActive && x.User.SchoolId == school.Id, include: x => x.Include(u => u.User), cancellationToken: cancellationToken);
+        result.AccessStudents = school.AccessStundents;
 
         result.SendQuestionByLesson = await questionDal.Query().AsNoTracking()
                                                        .Include(x => x.Lesson)

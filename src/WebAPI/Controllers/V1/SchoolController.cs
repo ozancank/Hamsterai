@@ -98,6 +98,22 @@ public class SchoolController : BaseController
         return Ok(result);
     }
 
+    [HttpPost("PassiveAccessStudent")]
+    public async Task<IActionResult> PassiveAccessStudent()
+    {
+        var command = new PassiveAccessStudentCommand();
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    [HttpPost("ActiveAccessStudent")]
+    public async Task<IActionResult> ActiveAccessStudent()
+    {
+        var command = new ActiveAccessStudentCommand();
+        await Mediator.Send(command);
+        return Ok();
+    }
+
     #endregion School
 
     #region ClassRoom

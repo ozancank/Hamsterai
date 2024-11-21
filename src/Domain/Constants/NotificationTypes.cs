@@ -7,4 +7,5 @@ public enum NotificationTypes : byte
     SimilarCreated = 2,
     QuizCreated = 3,
     Everbody = 4,
+    HomeWork=5,
 }

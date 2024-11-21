@@ -16,6 +16,7 @@ public class Homework : BaseEntity<string>
     public virtual Lesson? Lesson { get; set; }
     public virtual ClassRoom? ClassRoom { get; set; }
     public virtual ICollection<HomeworkStudent> HomeworkStudents { get; set; } = [];
+    public virtual ICollection<HomeworkUser> HomeworkUsers { get; set; } = [];
 
     public Homework() : base()
     { }

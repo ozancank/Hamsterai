@@ -1,4 +1,5 @@
 ﻿using Domain.Constants;
+using Grpc.Net.Client.Configuration;
 using Infrastructure.AI.Seduss.Models;
 using Infrastructure.Constants;
 using OCK.Core.Exceptions.CustomExceptions;
@@ -116,6 +117,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             var status = GetErrorQuestionStatus(ex);
             await InfrastructureDelegates.UpdateQuestionOcrImage?.Invoke(answer, new(model.Id, status, model.UserId, model.LessonId, baseUrl, ex.Message))!;
             LogError(loggerServiceBase, ex, model.UserId);
+            Console.WriteLine($"AskQuestionWithImage - Error: {ex.Message}");
         }
 
         return answer;
@@ -181,6 +183,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             var status = GetErrorQuestionStatus(ex);
             await InfrastructureDelegates.AddSimilarAnswer?.Invoke(similar, new(model.Id, status, model.UserId, model.LessonId, baseUrl, ex.Message))!;
             LogError(loggerServiceBase, ex, model.UserId);
+            Console.WriteLine($"GetSimilar - Error: {ex.Message}");
         }
         return similar;
     }

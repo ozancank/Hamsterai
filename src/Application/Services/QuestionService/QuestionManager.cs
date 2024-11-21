@@ -1,5 +1,4 @@
 ﻿using Application.Features.Lessons.Models.Gains;
-using Application.Features.Lessons.Queries.Gains;
 using Application.Features.Questions.Models.Quizzes;
 using Application.Features.Questions.Rules;
 using Application.Features.Users.Rules;
@@ -85,6 +84,10 @@ public class QuestionManager(ICommonService commonService,
             Console.WriteLine($"{methodName} - End: {endDate}");
             Console.WriteLine($"{methodName} - Total Seconds: ********** {(endDate - startDate).TotalSeconds} s **********");
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{methodName} - Error: {ex.Message}");
+        }
         finally
         {
             Console.WriteLine($"{methodName} - Method Finished: {DateTime.Now}");
@@ -167,7 +170,7 @@ public class QuestionManager(ICommonService commonService,
             Console.WriteLine($"Update: {DateTime.Now}  -- {data.Id} -- Will not be solved anymore ");
 
         if (dto.Status == QuestionStatus.Answered)
-            _ = notificationService.PushNotificationByUserId(new(Strings.Answered, Strings.DynamicLessonQuestionAnswered.Format(data.Lesson?.Name), data.CreateUser, NotificationTypes.QuestionAnswered, dto.QuestionId.ToString()));
+            _ = notificationService.PushNotificationByUserId(new(Strings.Answered, Strings.DynamicLessonQuestionAnswered.Format(data.Lesson?.Name), NotificationTypes.QuestionAnswered, [data.CreateUser], dto.QuestionId.ToString()));
 
         return true;
     }
@@ -217,15 +220,10 @@ public class QuestionManager(ICommonService commonService,
 
                     Console.WriteLine($"{methodName} - Send: {DateTime.Now} -- {model.Id} --");
                     var response = await questionApi.GetSimilar(model);
-
-                    if (response.RightOption.IsNotEmpty())
-                    {
-                        question.UpdateDate = DateTime.Now;
-                        question.SendForQuiz = true;
-                        question.RightOption = response.RightOption![0];
-                        context.Questions.Update(question);
-                        await context.SaveChangesAsync(cancellationToken);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"{methodName} - {question.Id} - Error: {ex.Message}");
                 }
                 finally
                 {
@@ -249,7 +247,6 @@ public class QuestionManager(ICommonService commonService,
                                   && x.ResponseAnswerFileName != "")
                         .GroupBy(x => new { x.CreateUser, x.LessonId })
                         .ToListAsync(cancellationToken);
-
 
             await quizList.ForEachAsync(async group =>
             {
@@ -278,6 +275,10 @@ public class QuestionManager(ICommonService commonService,
                     }
                 }
             });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{methodName} - Error: {ex.Message}");
         }
         finally
         {
@@ -353,12 +354,16 @@ public class QuestionManager(ICommonService commonService,
 
         context.Similars.Add(data);
 
-        if (gain != null)
+        if (data.RightOption != null && data.ResponseQuestionFileName.IsNotEmpty())
         {
             var question = await context.Questions.FirstAsync(x => x.Id == dto.QuestionId);
+
             question.UpdateUser = dto.UserId;
             question.UpdateDate = date;
-            question.GainId = gain.Id;
+            question.GainId = gain?.Id;
+            question.SendForQuiz = true;
+            question.RightOption = data.RightOption;
+
             context.Questions.Update(question);
         }
 
@@ -459,7 +464,7 @@ public class QuestionManager(ICommonService commonService,
 
             await transaction.CommitAsync(cancellationToken);
 
-            _ = notificationService.PushNotificationByUserId(new(Strings.DynamicLessonTestPrepared.Format(model.LessonName), Strings.DynamicLessonTestPreparedForYou.Format(model.LessonName, quiz.Id), model.UserId, NotificationTypes.QuizCreated, quiz.Id));
+            _ = notificationService.PushNotificationByUserId(new(Strings.DynamicLessonTestPrepared.Format(model.LessonName), Strings.DynamicLessonTestPreparedForYou.Format(model.LessonName, quiz.Id), NotificationTypes.QuizCreated, [model.UserId], quiz.Id));
 
             return quiz.Id;
         }
