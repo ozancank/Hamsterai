@@ -33,6 +33,7 @@ public sealed class FirebaseApi : INotificationApi
                 Title = notificationModel.Title,
                 Body = notificationModel.Body,
             },
+            Data = notificationModel.Datas,
             Tokens = tokens as List<string>,
         };
 

@@ -8,6 +8,7 @@ using Application.Features.Users.Rules;
 using Application.Services.CommonService;
 using Application.Services.NotificationService;
 using MediatR;
+using OCK.Core.Interfaces;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 
@@ -164,7 +165,11 @@ public class AddHomeworkCommandHandler(IMapper mapper,
                 await homeworkUserDal.AddRangeAsync(homeworkUsers, cancellationToken: cancellationToken);
             }, cancellationToken: cancellationToken);
 
-            _ = notificationService.PushNotificationByUserId(new("Deneme Sınavı", "Seduss sizin için cdeneme sınavı oluşturdu.", NotificationTypes.HomeWork, userIds, homework.Id, commonService.HttpUserId));
+            var datas = new Dictionary<string, string> {
+                { "id", homework.Id },
+                { "type", NotificationTypes.HomeWork.ToString()},
+            };
+            _ = notificationService.PushNotificationByUserId(new("Deneme Sınavı", "Seduss sizin için deneme sınavı oluşturdu.", NotificationTypes.HomeWork, userIds, datas, homework.Id, commonService.HttpUserId));
         }
 
         var result = await homeworkDal.GetAsyncAutoMapper<GetHomeworkModel>(

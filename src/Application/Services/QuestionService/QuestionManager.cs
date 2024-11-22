@@ -1,4 +1,5 @@
-﻿using Application.Features.Lessons.Models.Gains;
+﻿using Amazon.Runtime.Internal.Transform;
+using Application.Features.Lessons.Models.Gains;
 using Application.Features.Questions.Models.Quizzes;
 using Application.Features.Questions.Rules;
 using Application.Features.Users.Rules;
@@ -9,6 +10,7 @@ using DataAccess.EF;
 using Infrastructure.AI;
 using Infrastructure.AI.Seduss.Dtos;
 using Infrastructure.AI.Seduss.Models;
+using OCK.Core.Interfaces;
 
 namespace Application.Services.QuestionService;
 
@@ -60,6 +62,8 @@ public class QuestionManager(ICommonService commonService,
                         await UpdateQuestion(new QuestionResponseModel(), new UpdateQuestionDto(question.Id, QuestionStatus.NotFoundImage, question.CreateUser, question.LessonId, Strings.DynamicNotFound.Format(Strings.Picture)));
                         return;
                     }
+                    var aiUrl = AppOptions.AIDefaultUrls.Length <= question.Lesson!.AIUrlIndex ? AppOptions.AIDefaultUrls[0]: AppOptions.AIDefaultUrls[question.Lesson!.AIUrlIndex] ;
+
                     var model = new QuestionApiModel
                     {
                         Id = question.Id,
@@ -67,9 +71,9 @@ public class QuestionManager(ICommonService commonService,
                         LessonName = question.Lesson!.Name,
                         UserId = question.CreateUser,
                         ExcludeQuiz = question.ExcludeQuiz,
-                        Base64 = base64
+                        Base64 = base64,
+                        AIUrl = aiUrl,
                     };
-
                     Console.WriteLine($"{methodName} - Send: {DateTime.Now} -- {model.Id} --");
                     await questionApi.AskQuestionWithImage(model);
                 }
@@ -170,7 +174,13 @@ public class QuestionManager(ICommonService commonService,
             Console.WriteLine($"Update: {DateTime.Now}  -- {data.Id} -- Will not be solved anymore ");
 
         if (dto.Status == QuestionStatus.Answered)
-            _ = notificationService.PushNotificationByUserId(new(Strings.Answered, Strings.DynamicLessonQuestionAnswered.Format(data.Lesson?.Name), NotificationTypes.QuestionAnswered, [data.CreateUser], dto.QuestionId.ToString()));
+        {
+            var datas = new Dictionary<string, string> {
+                { "id", dto.QuestionId.ToString() },
+                { "type", NotificationTypes.QuestionAnswered.ToString()},
+            };
+            _ = notificationService.PushNotificationByUserId(new(Strings.Answered, Strings.DynamicLessonQuestionAnswered.Format(data.Lesson?.Name), NotificationTypes.QuestionAnswered, [data.CreateUser], datas, dto.QuestionId.ToString()));
+        }
 
         return true;
     }
@@ -216,6 +226,7 @@ public class QuestionManager(ICommonService commonService,
                         UserId = question.CreateUser,
                         ExcludeQuiz = question.ExcludeQuiz,
                         QuestionText = question.QuestionPictureBase64,
+                        AIUrl = AppOptions.AIDefaultUrls[1]
                     };
 
                     Console.WriteLine($"{methodName} - Send: {DateTime.Now} -- {model.Id} --");
@@ -464,7 +475,11 @@ public class QuestionManager(ICommonService commonService,
 
             await transaction.CommitAsync(cancellationToken);
 
-            _ = notificationService.PushNotificationByUserId(new(Strings.DynamicLessonTestPrepared.Format(model.LessonName), Strings.DynamicLessonTestPreparedForYou.Format(model.LessonName, quiz.Id), NotificationTypes.QuizCreated, [model.UserId], quiz.Id));
+            var datas = new Dictionary<string, string> {
+                { "id", quiz.Id },
+                { "type", NotificationTypes.QuizCreated.ToString()},
+            };
+            _ = notificationService.PushNotificationByUserId(new(Strings.DynamicLessonTestPrepared.Format(model.LessonName), Strings.DynamicLessonTestPreparedForYou.Format(model.LessonName, quiz.Id), NotificationTypes.QuizCreated, [model.UserId], datas, quiz.Id));
 
             return quiz.Id;
         }

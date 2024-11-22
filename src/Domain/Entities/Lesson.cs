@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Core;
+﻿using Domain.Constants;
+using Domain.Entities.Core;
 
 namespace Domain.Entities;
 
@@ -6,6 +7,8 @@ public class Lesson : BaseEntity<short>
 {
     public string? Name { get; set; }
     public short SortNo { get; set; }
+    public byte AIUrlIndex { get; set; }
+    public LessonTypes Type { get; set; }
 
     public virtual ICollection<RTeacherLesson> TeacherLessons { get; set; } = [];
     public virtual ICollection<RPackageLesson> RPackageLessons { get; set; } = [];

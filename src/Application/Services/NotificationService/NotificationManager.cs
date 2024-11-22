@@ -9,9 +9,11 @@ public class NotificationManager(INotificationApi notificationApi,
                                  ICommonService commonService,
                                  IDbContextFactory<HamsteraiDbContext> contextFactory) : INotificationService
 {
-    public async Task<bool> PushNotificationAll(string title, string body)
+    public async Task<bool> PushNotificationAll(string title, string body, IReadOnlyDictionary<string, string> datas)
     {
         using var context = contextFactory.CreateDbContext();
+
+        datas ??= new Dictionary<string, string>();
 
         var tokens = await context.NotificationDeviceTokens.AsNoTracking().Include(x => x.User)
             .Where(x => x.IsActive && x.User!.IsActive)
@@ -23,6 +25,7 @@ public class NotificationManager(INotificationApi notificationApi,
         {
             Title = title,
             Body = body,
+            Datas = datas,
             List = tokens.Select(x => x.DeviceToken)
         };
 
@@ -55,7 +58,7 @@ public class NotificationManager(INotificationApi notificationApi,
 
     public async Task<bool> PushNotificationByUserId(NotificationUserDto dto)
     {
-        using var context = contextFactory.CreateDbContext();        
+        using var context = contextFactory.CreateDbContext();
 
         var tokens = await context.NotificationDeviceTokens.AsNoTracking()
             .Include(x => x.User)
@@ -69,7 +72,7 @@ public class NotificationManager(INotificationApi notificationApi,
         {
             Title = dto.Title,
             Body = dto.Body,
-            List = tokens.Select(x=>x.DeviceToken)
+            List = tokens.Select(x => x.DeviceToken)
         };
 
         await notificationApi.PushNotification(message);

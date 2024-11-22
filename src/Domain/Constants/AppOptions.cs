@@ -24,8 +24,7 @@ public class AppOptions
     public static int QuestionQueueCapacity { get; set; } = 30;
     public static int SimilarSenderCapacity { get; set; } = 10;
     public static int SimilarQueueCapacity { get; set; } = 30;
-    public static string AIQuestionDefaultUrl { get; set; } = string.Empty;
-    public static string AISimilarUrl { get; set; } = string.Empty;
+    public static string[] AIDefaultUrls { get; set; } = [];
 
     public static string ProfilePictureFolderPath { get; set; } = string.Empty;
     public static string QuestionPictureFolderPath { get; set; } = string.Empty;

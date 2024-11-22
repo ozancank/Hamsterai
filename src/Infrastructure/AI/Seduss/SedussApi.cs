@@ -31,15 +31,9 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
     //    "bana asıl soruyu vermen"
     //];
 
-    private static string QuestionBaseUrl(string? url)
+    private static string GetBaseUrl(string? url)
     {
-        if (url.IsEmpty()) return AppOptions.AIQuestionDefaultUrl!;
-        return url!;
-    }
-
-    private static string SimilarBaseUrl(string? url)
-    {
-        if (url.IsEmpty()) return AppOptions.AISimilarUrl!;
+        if (url.IsEmpty()) return AppOptions.AIDefaultUrls[0]!;
         return url!;
     }
 
@@ -62,7 +56,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
 
     public async Task<QuestionResponseModel> AskQuestionWithImage(QuestionApiModel model)
     {
-        var baseUrl = QuestionBaseUrl(model.AIUrl);
+        var baseUrl = GetBaseUrl(model.AIUrl);
         var answer = new QuestionResponseModel();
         try
         {
@@ -125,7 +119,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
 
     public async Task<SimilarResponseModel> GetSimilar(QuestionApiModel model)
     {
-        var baseUrl = SimilarBaseUrl(model.AIUrl);
+        var baseUrl = GetBaseUrl(model.AIUrl);
         var similar = new SimilarResponseModel();
         try
         {

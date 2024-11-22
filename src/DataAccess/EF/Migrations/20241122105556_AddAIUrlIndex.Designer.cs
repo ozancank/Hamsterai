@@ -3,6 +3,7 @@ using System;
 using DataAccess.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.EF.Migrations
 {
     [DbContext(typeof(HamsteraiDbContext))]
-    partial class HamsteraiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241122105556_AddAIUrlIndex")]
+    partial class AddAIUrlIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1081,13 +1084,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("SortNo")
                         .HasColumnOrder(7);
 
-                    b.Property<byte>("Type")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((byte)0)
-                        .HasColumnName("Type")
-                        .HasColumnOrder(9);
-
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("UpdateDate")
@@ -1116,7 +1112,6 @@ namespace DataAccess.EF.Migrations
                             IsActive = true,
                             Name = "Türkçe",
                             SortNo = (short)1,
-                            Type = (byte)0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1129,7 +1124,6 @@ namespace DataAccess.EF.Migrations
                             IsActive = true,
                             Name = "Matematik",
                             SortNo = (short)2,
-                            Type = (byte)0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1142,7 +1136,6 @@ namespace DataAccess.EF.Migrations
                             IsActive = true,
                             Name = "İngilizce",
                             SortNo = (short)3,
-                            Type = (byte)0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1155,7 +1148,6 @@ namespace DataAccess.EF.Migrations
                             IsActive = true,
                             Name = "Fen Bilimleri",
                             SortNo = (short)4,
-                            Type = (byte)0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1168,7 +1160,6 @@ namespace DataAccess.EF.Migrations
                             IsActive = true,
                             Name = "Fizik",
                             SortNo = (short)5,
-                            Type = (byte)0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1181,7 +1172,6 @@ namespace DataAccess.EF.Migrations
                             IsActive = true,
                             Name = "Kimya",
                             SortNo = (short)6,
-                            Type = (byte)0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1194,7 +1184,6 @@ namespace DataAccess.EF.Migrations
                             IsActive = true,
                             Name = "Biyoloji",
                             SortNo = (short)7,
-                            Type = (byte)0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1207,7 +1196,6 @@ namespace DataAccess.EF.Migrations
                             IsActive = true,
                             Name = "Edebiyat",
                             SortNo = (short)8,
-                            Type = (byte)0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1220,7 +1208,6 @@ namespace DataAccess.EF.Migrations
                             IsActive = true,
                             Name = "Tarih",
                             SortNo = (short)9,
-                            Type = (byte)0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1233,7 +1220,6 @@ namespace DataAccess.EF.Migrations
                             IsActive = true,
                             Name = "Coğrafya",
                             SortNo = (short)10,
-                            Type = (byte)0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1246,7 +1232,6 @@ namespace DataAccess.EF.Migrations
                             IsActive = true,
                             Name = "Felsefe",
                             SortNo = (short)11,
-                            Type = (byte)0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         },
@@ -1259,7 +1244,6 @@ namespace DataAccess.EF.Migrations
                             IsActive = true,
                             Name = "Din Kültürü",
                             SortNo = (short)12,
-                            Type = (byte)0,
                             UpdateDate = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UpdateUser = 2L
                         });

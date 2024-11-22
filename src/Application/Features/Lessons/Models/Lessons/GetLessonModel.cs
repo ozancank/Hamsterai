@@ -12,6 +12,8 @@ public sealed class GetLessonModel : IResponseModel
     public DateTime UpdateDate { get; set; }
     public string? Name { get; set; }
     public short SortNo { get; set; }
+    public byte AIUrlIndex { get; set; }
+    public LessonTypes Type { get; set; }
 
     public List<GetPackageLiteModel> Packages { get; set; } = [];
 }

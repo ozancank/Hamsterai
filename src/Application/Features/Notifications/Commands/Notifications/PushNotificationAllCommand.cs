@@ -19,7 +19,8 @@ public class PushNotificationAllCommandHandler(INotificationService notification
 {
     public async Task<bool> Handle(PushNotificationAllCommand request, CancellationToken cancellationToken)
     {
-        var result = await notificationService.PushNotificationAll(request.Model.Title!, request.Model.Body!);
+        request.Model.Datas ??= [];
+        var result = await notificationService.PushNotificationAll(request.Model.Title!, request.Model.Body!, request.Model.Datas);
         return result;
     }
 }
