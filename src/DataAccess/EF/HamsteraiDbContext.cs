@@ -38,7 +38,6 @@ public class HamsteraiDbContext : DbContext
     public required DbSet<Quiz> Quizzes { get; set; }
     public required DbSet<QuizQuestion> QuizQuestions { get; set; }
     public required DbSet<RPackageLesson> RPackageLesson { get; set; }
-    public required DbSet<RPackageSchool> RPackageSchools { get; set; }
     public required DbSet<RTeacherClassRoom> RTeacherClassRooms { get; set; }
     public required DbSet<RTeacherLesson> RTeacherLessons { get; set; }
     public required DbSet<School> Schools { get; set; }

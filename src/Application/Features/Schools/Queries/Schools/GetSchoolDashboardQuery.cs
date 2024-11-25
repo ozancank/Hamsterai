@@ -21,6 +21,7 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
                                             IQuestionDal questionDal,
                                             ISimilarDal similarQuestionDal,
                                             IHomeworkDal homeworkDal,
+                                            IPackageUserDal packageUserDal,
                                             IClassRoomDal classRoomDal) : IRequestHandler<GetSchoolDashboardQuery, GetSchoolDashboardModel>
 {
     public async Task<GetSchoolDashboardModel> Handle(GetSchoolDashboardQuery request, CancellationToken cancellationToken)
@@ -33,7 +34,6 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
                 x.Id,
                 x.Name,
                 x.UserCount,
-                x.LicenseEndDate,
                 x.AccessStundents
             },
             cancellationToken: cancellationToken);
@@ -47,15 +47,21 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
             predicate: x => x.SchoolId == commonService.HttpSchoolId && x.IsActive,
             selector: x => new
             {
+                x.Id,
                 x.Type,
             },
             cancellationToken: cancellationToken);
 
+        var schoolUser = users.First(x => x.Type == UserTypes.School);
+        var licenseEndDate = await packageUserDal.Query().AsNoTracking()
+            .Where(x => x.UserId == schoolUser.Id)
+            .MaxAsync(x => x.EndDate, cancellationToken: cancellationToken);
+
         result.SchoolId = school.Id;
         result.UserId = commonService.HttpUserId;
         result.SchoolName = school.Name;
-        result.LicenceEndDate = school.LicenseEndDate;
-        result.RemainingDay = (school.LicenseEndDate - DateTime.Now).Days;
+        result.LicenceEndDate = licenseEndDate;
+        result.RemainingDay = (licenseEndDate - DateTime.Now).Days;
         result.MaxUserCount = school.UserCount;
         result.TotalTeacherCount = users.Sum(x => x.Type == UserTypes.Teacher ? 1 : 0);
         result.TotalStudentCount = users.Sum(x => x.Type == UserTypes.Student ? 1 : 0);

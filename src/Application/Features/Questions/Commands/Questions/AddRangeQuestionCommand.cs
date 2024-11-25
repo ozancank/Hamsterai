@@ -27,6 +27,7 @@ public class AddRangeQuestionCommandHandler(IMapper mapper,
     public async Task<List<GetQuestionModel>> Handle(AddRangeQuestionCommand request, CancellationToken cancellationToken)
     {
         await questionRules.QuestionLimitControl();
+        await questionRules.UserShouldHaveCredit(commonService.HttpUserId);
 
         var questions = new List<Question>();
 
@@ -45,9 +46,8 @@ public class AddRangeQuestionCommandHandler(IMapper mapper,
             var extension = Path.GetExtension(item.QuestionPictureFileName);
             var fileName = $"Q_{userId}_{item.LessonId}_{id}{extension}";
             await commonService.PictureConvert(item.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath);
-
-            if (commonService.HttpUserType != UserTypes.Administator)
-                await questionRules.UserShouldHaveCredit(commonService.HttpUserId);
+            await commonService.PictureConvert(item.QuestionSmallPictureBase64.IfNullEmptyString(item.QuestionPictureBase64),
+                fileName, AppOptions.QuestionSmallPictureFolderPath);
 
             var question = new Question
             {
@@ -66,7 +66,9 @@ public class AddRangeQuestionCommandHandler(IMapper mapper,
                 AnswerPictureExtension = string.Empty,
                 Status = QuestionStatus.Waiting,
                 IsRead = false,
+                ReadDate = AppStatics.MilleniumDate,
                 SendForQuiz = false,
+                SendQuizDate = AppStatics.MilleniumDate,
                 TryCount = 0,
                 GainId = null,
                 RightOption = null,

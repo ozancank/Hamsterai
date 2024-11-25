@@ -22,12 +22,13 @@ public class AddSimilarCommandHandler(IMapper mapper,
                                       ISimilarDal similarDal,
                                       ICommonService commonService,
                                       ILessonDal lessonDal,
-                                      IUserDal userDal,
-                                      SimilarRules similarRules) : IRequestHandler<AddSimilarCommand, GetSimilarModel>
+                                      SimilarRules similarRules,
+                                      QuestionRules questionRules) : IRequestHandler<AddSimilarCommand, GetSimilarModel>
 {
     public async Task<GetSimilarModel> Handle(AddSimilarCommand request, CancellationToken cancellationToken)
     {
         await similarRules.SimilarLimitControl();
+        await questionRules.UserShouldHaveCredit(commonService.HttpUserId);
 
         var lessonName = await lessonDal.GetAsync(
             predicate: x => x.Id == request.Model.LessonId,
@@ -42,9 +43,10 @@ public class AddSimilarCommandHandler(IMapper mapper,
         var extension = Path.GetExtension(request.Model.QuestionPictureFileName);
         var fileName = $"Q_{userId}_{request.Model.LessonId}_{id}{extension}";
         await commonService.PictureConvert(request.Model.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath);
+        await commonService.PictureConvert(request.Model.QuestionSmallPictureBase64.IfNullEmptyString(request.Model.QuestionPictureBase64),
+            fileName, AppOptions.QuestionSmallPictureFolderPath);
 
-        if (commonService.HttpUserType != UserTypes.Administator)
-            await similarRules.UserShouldHaveCredit(commonService.HttpUserId);
+
 
         var question = new Similar
         {
@@ -66,7 +68,9 @@ public class AddSimilarCommandHandler(IMapper mapper,
             ResponseAnswerExtension = string.Empty,
             Status = QuestionStatus.Waiting,
             IsRead = false,
+            ReadDate = AppStatics.MilleniumDate,
             SendForQuiz = false,
+            SendQuizDate = AppStatics.MilleniumDate,
             TryCount = 0,
             GainId = null,
             RightOption = null,
@@ -74,21 +78,8 @@ public class AddSimilarCommandHandler(IMapper mapper,
             ExistsVisualContent = true,
         };
 
-        var result = await similarDal.ExecuteWithTransactionAsync(async () =>
-        {
-            var added = await similarDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
-            if (commonService.HttpUserType != UserTypes.Administator)
-            {
-                var user = await userDal.GetAsync(predicate: x => x.Id == userId, cancellationToken: cancellationToken);
-                if (user.PackageCredit > 0) user.PackageCredit--;
-                else if (user.AddtionalCredit > 0) user.AddtionalCredit--;
-                else throw new BusinessException(Strings.NoQuestionCredit);
-                await userDal.UpdateAsync(user);
-            }
-            var result = mapper.Map<GetSimilarModel>(added);
-            return result;
-        }, cancellationToken: cancellationToken);
-
+        var added = await similarDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
+        var result = mapper.Map<GetSimilarModel>(added);
         return result;
     }
 }

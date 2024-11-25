@@ -26,10 +26,10 @@ public class GetLessonsQueryHandler(IMapper mapper,
             predicate: commonService.HttpUserType == UserTypes.Administator
                        ? x => x.IsActive
                        : commonService.HttpUserType == UserTypes.Person
-                         ? x => x.IsActive && x.RPackageLessons.Any(a => a.IsActive && a.Package!.PackageUsers.Any(p => p.UserId == commonService.HttpUserId))
-                         : x => x.IsActive && x.RPackageLessons.Any(a => a.IsActive && a.Package!.RPackageSchools.Any(b => b.School!.Id == commonService.HttpSchoolId)),
+                         ? x => x.IsActive && x.RPackageLessons.Any(a => a.IsActive && a.Package != null && a.Package.PackageUsers.Any(p => p.IsActive && p.User != null && p.User.IsActive && p.UserId == commonService.HttpUserId))
+                         : x => x.IsActive && x.RPackageLessons.Any(a => a.IsActive && a.Package != null && a.Package.PackageUsers.Any(p => p.IsActive && p.User != null && p.User.IsActive && p.User.School!=null && p.User.School.IsActive && p.User.School.Id== commonService.HttpSchoolId)),
             include: x => x.Include(u => u.TeacherLessons).ThenInclude(u => u.Teacher)
-                           .Include(u => u.RPackageLessons).ThenInclude(u => u.Package).ThenInclude(u => u!.RPackageSchools).ThenInclude(u => u.School),
+                           .Include(u => u.RPackageLessons).ThenInclude(u => u.Package).ThenInclude(u => u!.PackageUsers).ThenInclude(u => u.User).ThenInclude(u => u != null ? u.School : default),
             orderBy: x => x.OrderBy(x => x.SortNo),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

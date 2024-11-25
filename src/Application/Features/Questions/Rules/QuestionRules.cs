@@ -6,8 +6,11 @@ namespace Application.Features.Questions.Rules;
 
 public class QuestionRules(IQuestionDal questionDal,
                            IUserDal userDal,
+                           IPackageUserDal packageUserDal,
                            ICommonService commonService) : IBusinessRule
 {
+    private readonly QuestionStatus[] questionStatuses = [QuestionStatus.Waiting, QuestionStatus.Answered, QuestionStatus.SendAgain];
+
     internal static Task QuestionShouldExists(object? model)
     {
         if (model == null) throw new BusinessException(Strings.DynamicNotFound, Strings.Question);
@@ -37,11 +40,33 @@ public class QuestionRules(IQuestionDal questionDal,
 
     internal async Task UserShouldHaveCredit(long userId)
     {
-        var totalCredit = await userDal.GetAsync(
-            predicate: x => x.Id == userId,
+        var user = await userDal.GetAsync(
             enableTracking: false,
-            selector: x => x.PackageCredit + x.AddtionalCredit);
+            predicate: x => x.Id == userId);
 
-        if (totalCredit <= 0) throw new BusinessException(Strings.NoQuestionCredit);
+        if (user.Type == UserTypes.Administator) return;
+
+        var packageUsers = await packageUserDal.GetListAsync(
+            enableTracking: false,
+            predicate: x => x.UserId == userId && x.EndDate < DateTime.Now,
+            selector: x => x.QuestionCredit);
+
+        var totalCredit = packageUsers?.Sum() ?? 0;
+
+        if (user.Type == UserTypes.School || user.Type == UserTypes.Teacher || user.Type == UserTypes.Student)
+        {
+            var schoolUser = await userDal.GetAsync(
+                enableTracking: false,
+                predicate: x => x.SchoolId == user.SchoolId && x.Type == UserTypes.School,
+                selector: x => x.Id);
+        }
+
+        var questionCount = await questionDal.CountOfRecordAsync(
+            enableTracking: false,
+            predicate: x => x.CreateUser == userId && questionStatuses.Contains(x.Status));
+
+        var remainingCredit = totalCredit - questionCount;
+
+        if (remainingCredit <= 0) throw new BusinessException(Strings.NoQuestionCredit);
     }
 }

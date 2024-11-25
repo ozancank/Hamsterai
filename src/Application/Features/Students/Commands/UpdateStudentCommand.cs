@@ -57,7 +57,7 @@ public class UpdateStudentCommandHandler(IMapper mapper,
         var school = await schoolDal.GetAsync(
             enableTracking: false,
             predicate: x => x.Id == schoolId,
-            selector: x => new { x.Id, x.LicenseEndDate },
+            selector: x => new { x.Id },
             cancellationToken: cancellationToken);
         await SchoolRules.SchoolShouldExists(school);
 
@@ -75,7 +75,6 @@ public class UpdateStudentCommandHandler(IMapper mapper,
         user.UserName = student.Email;
         user.Email = student.Email;
         user.Phone = student.Phone;
-        user.LicenceEndDate = school.LicenseEndDate;
         //user.GroupId = classRoom.PackageId;
 
         var result = await studentDal.ExecuteWithTransactionAsync(async () =>

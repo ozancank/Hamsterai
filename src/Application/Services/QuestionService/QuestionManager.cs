@@ -52,17 +52,22 @@ public class QuestionManager(ICommonService commonService,
                 await AppStatics.QuestionSemaphore.WaitAsync(cancellationToken);
                 try
                 {
-                    var base64 = await commonService.ImageToBase64(
-                        Path.Combine(AppOptions.QuestionPictureFolderPath, question.QuestionPictureFileName.EmptyOrTrim()));
+                    var base64 = string.Empty;
+                    var questionPicturePath = Path.Combine(AppOptions.QuestionSmallPictureFolderPath, question.QuestionPictureFileName.EmptyOrTrim());
+                    var questionSmallPicturePath = Path.Combine(AppOptions.QuestionSmallPictureFolderPath, question.QuestionPictureFileName.EmptyOrTrim());
+
+                    if(File.Exists(questionSmallPicturePath))
+                        base64 = await commonService.ImageToBase64(questionSmallPicturePath);
+                    else if (File.Exists(questionPicturePath))
+                        base64 = await commonService.ImageToBase64(questionPicturePath);
 
                     if (base64.IsEmpty())
                     {
                         Console.WriteLine($"{question.Id},{QuestionStatus.NotFoundImage}, {question.CreateUser}, {string.Empty}, {Strings.DynamicNotFound.Format(Strings.Picture)}");
-
                         await UpdateQuestion(new QuestionResponseModel(), new UpdateQuestionDto(question.Id, QuestionStatus.NotFoundImage, question.CreateUser, question.LessonId, Strings.DynamicNotFound.Format(Strings.Picture)));
                         return;
                     }
-                    var aiUrl = AppOptions.AIDefaultUrls.Length <= question.Lesson!.AIUrlIndex ? AppOptions.AIDefaultUrls[0]: AppOptions.AIDefaultUrls[question.Lesson!.AIUrlIndex] ;
+                    var aiUrl = AppOptions.AIDefaultUrls.Length <= question.Lesson!.AIUrlIndex ? AppOptions.AIDefaultUrls[0] : AppOptions.AIDefaultUrls[question.Lesson!.AIUrlIndex];
 
                     var model = new QuestionApiModel
                     {
@@ -72,9 +77,8 @@ public class QuestionManager(ICommonService commonService,
                         UserId = question.CreateUser,
                         ExcludeQuiz = question.ExcludeQuiz,
                         Base64 = base64,
-                        AIUrl = aiUrl,
                     };
-                    Console.WriteLine($"{methodName} - Send: {DateTime.Now} -- {model.Id} --");
+                    Console.WriteLine($"{methodName} - Send: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} --");
                     await questionApi.AskQuestionWithImage(model);
                 }
                 finally
@@ -97,25 +101,6 @@ public class QuestionManager(ICommonService commonService,
             Console.WriteLine($"{methodName} - Method Finished: {DateTime.Now}");
             AppStatics.SenderQuestionAllow = true;
         }
-    }
-
-    private async Task UpdateUserCredit(long userId, int credit, bool increase)
-    {
-        using var context = contextFactory.CreateDbContext();
-        var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
-        await UserRules.UserShouldExistsAndActive(user);
-        if (increase) user!.AddtionalCredit += credit;
-        else
-        {
-            if (user!.PackageCredit > 0)
-                user.AddtionalCredit -= credit;
-            else if (user.AddtionalCredit > 0)
-                user.PackageCredit -= credit;
-            else
-                throw new BusinessException(Strings.CreditNotEnough);
-        }
-        context.Users.Update(user);
-        await context.SaveChangesAsync();
     }
 
     public async Task<bool> UpdateQuestion(QuestionResponseModel model, UpdateQuestionDto dto)
@@ -161,9 +146,6 @@ public class QuestionManager(ICommonService commonService,
                 : dto.Status == QuestionStatus.SendAgain
                     ? QuestionStatus.Error
                     : dto.Status;
-
-            if (data.TryCount >= AppOptions.AITryCount)
-                await UpdateUserCredit(data.CreateUser, 1, true);
         }
 
         context.Questions.Update(data);
@@ -198,7 +180,7 @@ public class QuestionManager(ICommonService commonService,
             var allQuestions = await context.Questions
                 .AsNoTracking()
                 .Include(x => x.Lesson)
-                .Where(x => !x.SendForQuiz && !x.ExcludeQuiz
+                .Where(x => !x.SendForQuiz && !x.ExcludeQuiz && x.IsRead
                           && x.Status == QuestionStatus.Answered
                           && x.QuestionPictureBase64 != string.Empty
                           && x.TryCount < AppOptions.AITryCount
@@ -259,29 +241,35 @@ public class QuestionManager(ICommonService commonService,
                         .GroupBy(x => new { x.CreateUser, x.LessonId })
                         .ToListAsync(cancellationToken);
 
+            var date = DateTime.Now;
             await quizList.ForEachAsync(async group =>
             {
-                var quizList = group.OrderBy(x => x.CreateDate).Take(AppOptions.QuizMinimumQuestionLimit).ToList();
+                var similarList = group.OrderBy(x => x.CreateDate).Take(AppOptions.QuizMinimumQuestionLimit).ToList();
 
-                if (quizList.Count >= AppOptions.QuizMinimumQuestionLimit)
+                if (similarList.Count >= AppOptions.QuizMinimumQuestionLimit)
                 {
                     var quizModel = new AddQuizModel
                     {
                         LessonId = group.Key.LessonId,
                         UserId = group.Key.CreateUser,
-                        QuestionList = quizList,
-                        LessonName = quizList.First().Lesson!.Name
+                        QuestionList = similarList,
+                        LessonName = similarList.First().Lesson!.Name
                     };
                     var quizId = await AddQuiz(quizModel, context, cancellationToken);
 
                     if (quizId.IsNotEmpty())
                     {
-                        foreach (var quiz in quizList)
+                        foreach (var similar in similarList)
                         {
-                            quiz.SendForQuiz = true;
+                            similar.UpdateUser = 1;
+                            similar.UpdateDate = date;
+                            similar.IsRead = true;
+                            similar.ReadDate = date;
+                            similar.SendForQuiz = true;
+                            similar.SendQuizDate = date;
                         }
 
-                        context.Similars.UpdateRange(quizList);
+                        context.Similars.UpdateRange(similarList);
                         await context.SaveChangesAsync(cancellationToken);
                     }
                 }
@@ -345,7 +333,9 @@ public class QuestionManager(ICommonService commonService,
             ResponseAnswerExtension = extension,
             Status = dto.Status,
             IsRead = false,
+            ReadDate = AppStatics.MilleniumDate,
             SendForQuiz = false,
+            SendQuizDate = AppStatics.MilleniumDate,
             TryCount = 0,
             GainId = gain?.Id,
             RightOption = rightOption?.FirstOrDefault(),
@@ -373,6 +363,7 @@ public class QuestionManager(ICommonService commonService,
             question.UpdateDate = date;
             question.GainId = gain?.Id;
             question.SendForQuiz = true;
+            question.SendQuizDate = date;
             question.RightOption = data.RightOption;
 
             context.Questions.Update(question);

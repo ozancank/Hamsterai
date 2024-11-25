@@ -21,8 +21,8 @@ public class GetPackageSchoolsQueryHandler(IMapper mapper,
 
         var result = await packageDal.GetListAsyncAutoMapper<GetPackageModel>(
             enableTracking: false,
-            predicate: x => x.IsActive && x.RPackageSchools.Any(s => s.SchoolId == schoolId && s.IsActive),
-            include: x => x.Include(x => x.RPackageSchools),
+            predicate: x => x.IsActive && x.PackageUsers.Any(p => p.IsActive && p.User != null && p.User.SchoolId == schoolId && p.User.Type == UserTypes.School && p.IsActive),
+            include: x => x.Include(x => x.PackageUsers).ThenInclude(u => u.User),
             orderBy: x => x.OrderBy(x => x.Name),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

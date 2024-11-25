@@ -14,7 +14,9 @@ public class Question : BaseEntity<Guid>
     public string? AnswerPictureExtension { get; set; }
     public QuestionStatus Status { get; set; }
     public bool IsRead { get; set; }
+    public DateTime ReadDate { get; set; }
     public bool SendForQuiz { get; set; }
+    public DateTime SendQuizDate { get; set; }
     public byte TryCount { get; set; }
     public int? GainId { get; set; }
     public char? RightOption { get; set; }

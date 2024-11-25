@@ -17,6 +17,8 @@ public class PackageUserConfiguration : IEntityTypeConfiguration<PackageUser>
         builder.Property(e => e.PackageId).HasColumnName("PackageId").HasColumnOrder(6).IsRequired();
         builder.Property(e => e.UserId).HasColumnName("UserId").HasColumnOrder(7).IsRequired();
         builder.Property(e => e.RenewCount).HasColumnName("RenewCount").HasDefaultValue(0).HasColumnOrder(8).IsRequired();
+        builder.Property(e => e.EndDate).HasColumnName("EndDate").HasDefaultValue(new DateTime(2024, 12, 23)).HasColumnOrder(9).IsRequired();
+        builder.Property(e => e.QuestionCredit).HasColumnName("QuestionCredit").HasDefaultValue(0).HasColumnOrder(10).IsRequired();
 
         builder.HasIndex(e => new { e.PackageId, e.UserId }).HasDatabaseName("IX_RPackageUsers_1").IsUnique();
 
@@ -27,7 +29,7 @@ public class PackageUserConfiguration : IEntityTypeConfiguration<PackageUser>
         for (int i = 1; i <= 20; i++)
         {
             if (i is 16 or 17) continue;
-            seeds.Add(new(NumberGenerator.IntToGuid(i), true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), 5, i));
+            seeds.Add(new(NumberGenerator.IntToGuid(i), true, 1, new DateTime(2000, 01, 01), 1, new DateTime(2000, 01, 01), 5, i, new DateTime(9999, 1, 1)));
         }
 
         builder.HasData(seeds);

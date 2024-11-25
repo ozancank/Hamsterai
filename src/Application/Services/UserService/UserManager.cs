@@ -2,6 +2,7 @@
 using Application.Features.Users.Rules;
 using Application.Services.CommonService;
 using DataAccess.Abstract.Core;
+using DataAccess.EF.Migrations;
 using Domain.Entities.Core;
 using LinqKit;
 using OCK.Core.Caching;
@@ -11,7 +12,6 @@ namespace Application.Services.UserService;
 
 public class UserManager(IUserDal userDal,
                          IMapper mapper,
-                         ISchoolDal schoolDal,
                          ICacheManager cacheManager,
                          ICommonService commonService) : IUserService
 {
@@ -64,9 +64,9 @@ public class UserManager(IUserDal userDal,
         return result;
     }
 
-    public async Task<bool> UserStatusAndLicense(long id)
+    public async Task<bool> UserStatusAndLicense(long userId)
     {
-        return await cacheManager.GetOrAddAsync($"{Strings.CacheStatusAndLicence}-{id}", async () =>
+        return await cacheManager.GetOrAddAsync($"{Strings.CacheStatusAndLicence}-{userId}", async () =>
         {
             var userType = commonService.HttpUserType;
             var schoolId = commonService.HttpSchoolId;
@@ -76,24 +76,30 @@ public class UserManager(IUserDal userDal,
             if (userType is UserTypes.Administator) result = true;
             else if (schoolId != null && userType is UserTypes.School or UserTypes.Teacher or UserTypes.Student)
             {
-                var school = await schoolDal.GetAsync(
+                var schoolUser = await userDal.GetAsync(
                     enableTracking: false,
-                    predicate: x => x.Id == schoolId && x.IsActive,
-                    selector: x => new { x.LicenseEndDate, x.IsActive, x.AccessStundents });
+                    predicate: x => x.IsActive && x.SchoolId == schoolId && x.School != null && x.School.IsActive,
+                    include: x => x.Include(u => u.PackageUsers).Include(x => x.School),
+                    selector: x => new { x.PackageUsers, AccessStundents = x.School != null && x.School.AccessStundents });
 
-                await SchoolRules.SchoolShouldExists(school);
-                await UserRules.LicenceIsValid(school.LicenseEndDate);
-                await SchoolRules.AccessStudentEnabled(school.AccessStundents, userType);
+                var licenseEndDate =  schoolUser.PackageUsers.Max(x => x.EndDate);
 
-                result = await userDal.IsExistsAsync(predicate: x => x.Id == id && x.IsActive, enableTracking: false);
+                await SchoolRules.SchoolShouldExists(schoolUser);
+                await UserRules.LicenceIsValid(licenseEndDate);
+                await SchoolRules.AccessStudentEnabled(schoolUser.AccessStundents, userType);
+
+                result = await userDal.IsExistsAsync(predicate: x => x.Id == userId && x.IsActive, enableTracking: false);
             }
             else if (userType is UserTypes.Person)
             {
                 var user = await userDal.GetAsync(
                     enableTracking: false,
-                    predicate: x => x.Id == id && x.IsActive,
-                    selector: x => new { x.IsActive, x.LicenceEndDate });
-                await UserRules.LicenceIsValid(user.LicenceEndDate);
+                    predicate: x => x.Id == userId && x.IsActive,
+                    selector: x => new { x.IsActive, x.PackageUsers });
+
+                var licenseEndDate = user.PackageUsers.Max(x => x.EndDate);
+
+                await UserRules.LicenceIsValid(licenseEndDate);
                 result = true;
             }
 

@@ -11,10 +11,10 @@ public class PackageRules(IPackageDal packageDal) : IBusinessRule
         return Task.CompletedTask;
     }
 
-    internal static Task PackageShouldExistsAndActive(Package package)
+    internal static Task PackageShouldExistsAndActive(Package? package)
     {
         PackageShouldExists(package);
-        if (!package.IsActive) throw new BusinessException(Strings.DynamicNotFound, Strings.Package);
+        if (!package!.IsActive) throw new BusinessException(Strings.DynamicNotFound, Strings.Package);
         return Task.CompletedTask;
     }
 
@@ -78,5 +78,12 @@ public class PackageRules(IPackageDal packageDal) : IBusinessRule
     {
         var userss = !packageIds.Except(await packageDal.Query().AsNoTracking().Where(x => x.IsActive).Select(x => x.Id).ToListAsync()).Any();
         if (!userss) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.Package);
+    }
+
+    internal static void AdditionalPackageShouldBeWithBasePackage(DateTime date, List<(bool, PackageUser)> packageUsers, List<Package> packages, List<PackageUser> packageUserList)
+    {
+        if (!packageUserList.Any(x => x.EndDate > date && packages.Any(p => p.Id == x.PackageId && p.Type == PackageType.Base))
+         && !packageUsers.Any(x => packages.Any(p => p.Id == x.Item2.PackageId && p.Type == PackageType.Base)))
+            throw new BusinessException(Strings.AdditionalPackageShouldBeWithBasePackage);
     }
 }

@@ -58,9 +58,6 @@ public sealed class UpdateUserCommandHandler(IMapper mapper,
         var packageUsers = new List<PackageUser>();
         if (commonService.HttpUserType == UserTypes.Administator)
         {
-            user.PackageCredit = request.Model.PackageCredit;
-            user.AddtionalCredit = request.Model.AddtionalCredit;
-            user.LicenceEndDate = request.Model.LicenceEndDate;
             user.Type = Enum.Parse<UserTypes>($"{request.Model.Type}");
             user.SchoolId = request.Model.SchoolId;
             user.ConnectionId = request.Model.ConnectionId;
@@ -81,6 +78,8 @@ public sealed class UpdateUserCommandHandler(IMapper mapper,
                     UpdateDate = date,
                     UserId = user.Id,
                     PackageId = packageId,
+                    EndDate = request.Model.LicenceEndDate,
+                    QuestionCredit = request.Model.QuestionCredit,
                 };
                 packageUsers.Add(packageUser);
             }

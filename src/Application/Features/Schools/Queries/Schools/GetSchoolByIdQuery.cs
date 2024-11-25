@@ -25,8 +25,7 @@ public class GetSchoolByIdQueryHandler(IMapper mapper,
         var school = await schoolDal.GetAsyncAutoMapper<GetSchoolModel>(
             enableTracking: request.Tracking,
             predicate: x => x.Id == request.Id,
-            include: x => x.Include(u => u.Users)
-                           .Include(x => x.RPackageSchools).ThenInclude(u => u.Package),
+            include: x => x.Include(u => u.Users).ThenInclude(u=>u.PackageUsers).ThenInclude(u => u.Package),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
 

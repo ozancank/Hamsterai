@@ -11,6 +11,7 @@ public class UserProfiles : Profile
         CreateMap<User, GetUserModel>()
             .ForMember(dest => dest.OperationClaims, opt => opt.MapFrom(src => src.UserOperationClaims.Select(o => o.OperationClaim != null ? o.OperationClaim.Name : default).ToList()))
             .ForMember(dest => dest.ProfileFileName, opt => opt.MapFrom(src => src.ProfileUrl))
+            .ForMember(dest => dest.TotalCredit, opt => opt.MapFrom(src => src.PackageUsers.Where(x => x.EndDate.Date > DateTime.Now).Sum(o => o.Package != null ? o.Package.QuestionCredit : default)))
             .ForMember(dest => dest.Packages, opt => opt.MapFrom(src => src.PackageUsers.Select(o => o.Package)));
         CreateMap<IPaginate<GetUserModel>, PageableModel<GetUserModel>>();
 

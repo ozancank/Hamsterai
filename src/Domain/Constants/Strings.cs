@@ -183,4 +183,6 @@ public struct Strings
     public const string WrongLessonIds = "Ders id'leri yanlış girildi.";
     public const string LessonsNotNull = "Dersler belirtilmelidir.";
     public const string NoResponseFromOCR = "OCR'dan yanıt alınamadı.";
+
+    public const string AdditionalPackageShouldBeWithBasePackage = "Ek paketler sadece ana paket ile birlikte alınabilir.";
 }

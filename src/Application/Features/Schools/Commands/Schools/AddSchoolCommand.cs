@@ -26,7 +26,7 @@ public class AddSchoolCommandHandler(IMapper mapper,
                                      ISchoolDal schoolDal,
                                      ICommonService commonService,
                                      IUserDal userDal,
-                                     IRPackageSchoolDal packageSchoolDal,
+                                     IPackageUserDal packageUserDal,
                                      UserRules userRules,
                                      SchoolRules schoolRules,
                                      PackageRules packageRules) : IRequestHandler<AddSchoolCommand, GetSchoolModel>
@@ -72,10 +72,9 @@ public class AddSchoolCommandHandler(IMapper mapper,
             SchoolId = school.Id,
             ConnectionId = null,
             TaxNumber = school.TaxNumber!.Trim(),
-            LicenceEndDate = school.LicenseEndDate,
         };
 
-        var packageSchools = request.Model.PackageIds.Select(x => new RPackageSchool
+        var packageUsers = request.Model.PackageIds.Select(x => new PackageUser
         {
             Id = Guid.NewGuid(),
             IsActive = true,
@@ -83,15 +82,17 @@ public class AddSchoolCommandHandler(IMapper mapper,
             CreateDate = date,
             UpdateUser = userId,
             UpdateDate = date,
-            SchoolId = school.Id,
+            UserId = userId,
             PackageId = x,
+            EndDate = request.Model.LicenseEndDate,
+            QuestionCredit = request.Model.QuestionCredit,
         }).ToList();
 
         var result = await schoolDal.ExecuteWithTransactionAsync(async () =>
         {
             var added = await schoolDal.AddAsyncCallback(school, cancellationToken: cancellationToken);
             await userDal.AddAsync(user, cancellationToken: cancellationToken);
-            await packageSchoolDal.AddRangeAsync(packageSchools, cancellationToken: cancellationToken);
+            await packageUserDal.AddRangeAsync(packageUsers, cancellationToken: cancellationToken);
             var result = mapper.Map<GetSchoolModel>(added);
             return result;
         }, cancellationToken: cancellationToken);

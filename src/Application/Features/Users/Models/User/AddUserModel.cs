@@ -12,11 +12,10 @@ public sealed class AddUserModel : IRequestModel
     public int? ConnectionId { get; set; }
     public int? SchoolId { get; set; }
     public List<short> PackageIds { get; set; } = [];
-    public int PackageCredit { get; set; }
-    public int AddtionalCredit { get; set; }
     public bool AutomaticPayment { get; set; }
     public string? TaxNumber { get; set; }
     public DateTime LicenceEndDate { get; set; }
+    public int QuestionCredit { get; set; }
 
     public string? ProfilePictureBase64 { get; set; }
     public string? ProfilePictureFileName { get; set; }

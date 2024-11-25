@@ -8,6 +8,7 @@ public class AppOptions
     public static string SimilarQuestionPicturePath { get; set; } = string.Empty;
     public static string SimilarAnswerPicturePath { get; set; } = string.Empty;
     public static string QuizQuestionPicturePath { get; set; } = string.Empty;
+    public static string QuestionSmallPicturePath { get;set; } = string.Empty;
     public static string QuizAnswerPicturePath { get; set; } = string.Empty;
     public static string PackagePicturePath { get; set; } = string.Empty;
     public static string HomeworkPath { get; set; } = string.Empty;
@@ -28,6 +29,7 @@ public class AppOptions
 
     public static string ProfilePictureFolderPath { get; set; } = string.Empty;
     public static string QuestionPictureFolderPath { get; set; } = string.Empty;
+    public static string QuestionSmallPictureFolderPath { get; set; } = string.Empty;
     public static string AnswerPictureFolderPath { get; set; } = string.Empty;
     public static string SimilarQuestionPictureFolderPath { get; set; } = string.Empty;
     public static string SimilarAnswerPictureFolderPath { get; set; } = string.Empty;
@@ -47,6 +49,9 @@ public class AppOptions
 
         QuestionPictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, QuestionPicturePath);
         if (!Directory.Exists(QuestionPictureFolderPath)) Directory.CreateDirectory(QuestionPictureFolderPath);
+
+        QuestionSmallPictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, QuestionSmallPicturePath);
+        if (!Directory.Exists(QuestionSmallPictureFolderPath)) Directory.CreateDirectory(QuestionSmallPictureFolderPath);
 
         SimilarQuestionPictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SimilarQuestionPicturePath);
         if (!Directory.Exists(SimilarQuestionPictureFolderPath)) Directory.CreateDirectory(SimilarQuestionPictureFolderPath);

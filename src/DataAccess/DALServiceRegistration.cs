@@ -52,7 +52,6 @@ public static class DALServiceRegistration
         services.AddScoped<IQuizDal, QuizDal>();
         services.AddScoped<IQuizQuestionDal, QuizQuestionDal>();
         services.AddScoped<IRPackageLessonDal, RPackageLessonDal>();
-        services.AddScoped<IRPackageSchoolDal, RPackageSchoolDal>();
         services.AddScoped<IRTeacherClassRoomDal, RTeacherClassRoomDal>();
         services.AddScoped<IRTeacherLessonDal, RTeacherLessonDal>();
         services.AddScoped<ISchoolDal, SchoolDal>();

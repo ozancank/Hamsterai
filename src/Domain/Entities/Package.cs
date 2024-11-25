@@ -27,7 +27,6 @@ public class Package : BaseEntity<short>
     public PackageCategory? PackageCategory { get; set; }
     public virtual ICollection<PackageUser> PackageUsers { get; set; } = [];
     public virtual ICollection<RPackageLesson> RPackageLessons { get; set; } = [];
-    public virtual ICollection<RPackageSchool> RPackageSchools { get; set; } = [];
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = [];
     public virtual ICollection<ClassRoom> ClassRooms { get; set; } = [];
 

@@ -52,10 +52,7 @@ public class AddUserForWebCommandHandler(IMapper mapper,
             Type = UserTypes.Person,
             ConnectionId = null,
             SchoolId = null,
-            PackageCredit = 0,
-            AddtionalCredit = 0,
             TaxNumber = request.Model.TaxNumber,
-            LicenceEndDate = date.Date.AddDays(1),
         };
 
         var result = await userDal.ExecuteWithTransactionAsync(async () =>

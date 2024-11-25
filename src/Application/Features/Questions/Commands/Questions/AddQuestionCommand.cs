@@ -22,12 +22,12 @@ public class AddQuestionCommandHandler(IMapper mapper,
                                        IQuestionDal questionDal,
                                        ICommonService commonService,
                                        ILessonDal lessonDal,
-                                       IUserDal userDal,
                                        QuestionRules questionRules) : IRequestHandler<AddQuestionCommand, GetQuestionModel>
 {
     public async Task<GetQuestionModel> Handle(AddQuestionCommand request, CancellationToken cancellationToken)
     {
         await questionRules.QuestionLimitControl();
+        await questionRules.UserShouldHaveCredit(commonService.HttpUserId);
 
         var lessonName = await lessonDal.GetAsync(
             predicate: x => x.Id == request.Model.LessonId,
@@ -42,9 +42,8 @@ public class AddQuestionCommandHandler(IMapper mapper,
         var extension = Path.GetExtension(request.Model.QuestionPictureFileName);
         var fileName = $"Q_{userId}_{request.Model.LessonId}_{id}{extension}";
         await commonService.PictureConvert(request.Model.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath);
-
-        if (commonService.HttpUserType != UserTypes.Administator)
-            await questionRules.UserShouldHaveCredit(commonService.HttpUserId);
+        await commonService.PictureConvert(request.Model.QuestionSmallPictureBase64.IfNullEmptyString(request.Model.QuestionPictureBase64),
+            fileName, AppOptions.QuestionSmallPictureFolderPath);
 
         var question = new Question
         {
@@ -63,7 +62,9 @@ public class AddQuestionCommandHandler(IMapper mapper,
             AnswerPictureExtension = string.Empty,
             Status = QuestionStatus.Waiting,
             IsRead = false,
+            ReadDate = AppStatics.MilleniumDate,
             SendForQuiz = false,
+            SendQuizDate = AppStatics.MilleniumDate,
             TryCount = 0,
             GainId = null,
             RightOption = null,
@@ -71,21 +72,8 @@ public class AddQuestionCommandHandler(IMapper mapper,
             ExistsVisualContent = true,
         };
 
-        var result = await questionDal.ExecuteWithTransactionAsync(async () =>
-        {
-            var added = await questionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
-            if (commonService.HttpUserType != UserTypes.Administator)
-            {
-                var user = await userDal.GetAsync(predicate: x => x.Id == userId, cancellationToken: cancellationToken);
-                if (user.PackageCredit > 0) user.PackageCredit--;
-                else if (user.AddtionalCredit > 0) user.AddtionalCredit--;
-                else throw new BusinessException(Strings.NoQuestionCredit);
-                await userDal.UpdateAsync(user);
-            }
-            var result = mapper.Map<GetQuestionModel>(added);
-            return result;
-        }, cancellationToken: cancellationToken);
-
+        var added = await questionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
+        var result = mapper.Map<GetQuestionModel>(added);
         return result;
     }
 }

@@ -61,18 +61,25 @@ public class AddOrderCommandHandler(IMapper mapper,
         var orderDetail = new List<OrderDetail>();
         var packageUsers = new List<(bool, PackageUser)>();
         var subTotal = 0.0;
-        if (user.LicenceEndDate <= date) user.LicenceEndDate = date;
+
+        var packages = await packageDal.GetListAsync(
+            enableTracking: false,
+            predicate: x => request.Model.OrderDetails.Select(x => x.PackageId).Contains(x.Id),
+            orderBy: x => x.OrderBy(x => x.Type),
+            cancellationToken: cancellationToken);
+
+        var packageUserList = await packageUserDal.GetListAsync(
+            predicate: x => x.UserId == user.Id && x.Package != null,
+            orderBy: x => x.OrderBy(x => x.Package != null ? x.Package.Type : default),
+            cancellationToken: cancellationToken);
 
         foreach (var detail in request.Model.OrderDetails)
         {
-            var package = await packageDal.GetAsync(
-                enableTracking: false,
-                predicate: x => x.Id == detail.PackageId,
-                cancellationToken: cancellationToken);
+            var package = packages.FirstOrDefault(x => x.Id == detail.PackageId);
             await PackageRules.PackageShouldExistsAndActive(package);
 
             var quantity = detail.Quantity;
-            var price = quantity * package.UnitPrice;
+            var price = quantity * package!.UnitPrice;
             subTotal += price;
             var discountRatio = detail.DiscountRatio;
             var discountAmount = (price * discountRatio / 100.0).RoundDouble();
@@ -105,63 +112,19 @@ public class AddOrderCommandHandler(IMapper mapper,
             };
             orderDetail.Add(ordDtl);
 
-            switch (package.PaymentRenewalPeriod)
-            {
-                case PaymentRenewalPeriod.Daily:
-                    user.LicenceEndDate = user.LicenceEndDate.AddDays(1);
-                    break;
-
-                case PaymentRenewalPeriod.Weekly:
-                    user.LicenceEndDate = user.LicenceEndDate.AddDays(7);
-                    break;
-
-                case PaymentRenewalPeriod.Monthly:
-                    user.LicenceEndDate = user.LicenceEndDate.AddMonths(1);
-                    break;
-
-                case PaymentRenewalPeriod.Quarterly:
-                    user.LicenceEndDate = user.LicenceEndDate.AddMonths(3);
-                    break;
-
-                case PaymentRenewalPeriod.SemiAnnually:
-                    user.LicenceEndDate = user.LicenceEndDate.AddMonths(6);
-                    break;
-
-                case PaymentRenewalPeriod.Annually:
-                    user.LicenceEndDate = user.LicenceEndDate.AddYears(1);
-                    break;
-
-                case PaymentRenewalPeriod.None:
-                default:
-                    break;
-            }
-
-            switch (package.Type)
-            {
-                case PackageType.Base:
-                    user.PackageCredit += package.QuestionCredit;
-                    break;
-
-                case PackageType.Additional:
-                    user.AddtionalCredit += package.QuestionCredit;
-                    break;
-
-                case PackageType.None:
-                default:
-                    break;
-            }
-
-            var packageUser = await packageUserDal.GetAsync(
-                enableTracking: false,
-                predicate: x => x.PackageId == package.Id && x.UserId == user.Id,
-                cancellationToken: cancellationToken) ?? new PackageUser();
+            var packageUser = packageUserList.FirstOrDefault(x => x.PackageId == package.Id && x.UserId == user.Id) ?? new PackageUser();
             var packageUserIsExists = packageUser.Id != Guid.Empty;
+
+            if (package.Type == PackageType.Additional)
+                PackageRules.AdditionalPackageShouldBeWithBasePackage(date, packageUsers, packages, packageUserList);
 
             if (packageUserIsExists)
             {
                 packageUser.UpdateUser = 1;
                 packageUser.UpdateDate = date;
                 packageUser.RenewCount++;
+                packageUser.QuestionCredit = packageUser.EndDate.AddDays(1).AddSeconds(-1) <= date ? 0 : packageUser.QuestionCredit + package.QuestionCredit;
+                packageUser.EndDate = packageUser.EndDate <= date ? date : packageUser.EndDate;
             }
             else
             {
@@ -176,7 +139,40 @@ public class AddOrderCommandHandler(IMapper mapper,
                     PackageId = package.Id,
                     UserId = user.Id,
                     RenewCount = 0,
+                    EndDate = date,
+                    QuestionCredit = package.QuestionCredit,
                 };
+            }
+
+            switch (package.PaymentRenewalPeriod)
+            {
+                case PaymentRenewalPeriod.Daily:
+                    packageUser.EndDate = packageUser.EndDate.AddDays(1);
+                    break;
+
+                case PaymentRenewalPeriod.Weekly:
+                    packageUser.EndDate = packageUser.EndDate.AddDays(7);
+                    break;
+
+                case PaymentRenewalPeriod.Monthly:
+                    packageUser.EndDate = packageUser.EndDate.AddMonths(1);
+                    break;
+
+                case PaymentRenewalPeriod.Quarterly:
+                    packageUser.EndDate = packageUser.EndDate.AddMonths(3);
+                    break;
+
+                case PaymentRenewalPeriod.SemiAnnually:
+                    packageUser.EndDate = packageUser.EndDate.AddMonths(6);
+                    break;
+
+                case PaymentRenewalPeriod.Annually:
+                    packageUser.EndDate = packageUser.EndDate.AddYears(1);
+                    break;
+
+                case PaymentRenewalPeriod.None:
+                default:
+                    break;
             }
 
             packageUsers.Add((packageUserIsExists, packageUser));
@@ -258,6 +254,8 @@ public class AddOrderCommandHandler(IMapper mapper,
 
         return result;
     }
+
+
 }
 
 public class AddOrderCommandValidator : AbstractValidator<AddOrderCommand>

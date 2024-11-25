@@ -25,6 +25,7 @@ public class UpdateSimilarIsReadCommandHandler(ISimilarDal similarDal,
         if (similar.IsRead) return true;
 
         similar.IsRead = true;
+        similar.ReadDate = DateTime.Now;
         similar.UpdateUser = commonService.HttpUserId;
         similar.UpdateDate = DateTime.Now;
 

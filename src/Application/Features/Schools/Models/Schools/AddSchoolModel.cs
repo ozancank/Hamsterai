@@ -11,5 +11,6 @@ public class AddSchoolModel : IRequestModel
     public string? AuthorizedEmail { get; set; }
     public DateTime LicenseEndDate { get; set; }
     public int UserCount { get; set; }
+    public int QuestionCredit { get; set; }
     public List<short> PackageIds { get; set; } = [];
 }

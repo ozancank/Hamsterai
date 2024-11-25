@@ -53,7 +53,7 @@ public class AddStudentCommandHandler(IMapper mapper,
         var school = await schoolDal.GetAsync(
             enableTracking: false,
             predicate: x => x.Id == schoolId,
-            selector: x => new { x.Id, x.LicenseEndDate },
+            selector: x => new { x.Id },
             cancellationToken: cancellationToken);
         await SchoolRules.SchoolShouldExists(school);
 
@@ -84,7 +84,6 @@ public class AddStudentCommandHandler(IMapper mapper,
             Type = UserTypes.Student,
             SchoolId = school.Id,
             ConnectionId = student.Id,
-            LicenceEndDate = school.LicenseEndDate,
         };
 
         var result = await studentDal.ExecuteWithTransactionAsync(async () =>

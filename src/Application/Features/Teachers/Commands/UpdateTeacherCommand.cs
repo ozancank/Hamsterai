@@ -50,7 +50,7 @@ public class UpdateTeacherCommandHandler(IMapper mapper,
         var school = await schoolDal.GetAsync(
             enableTracking: false,
             predicate: x => x.Id == schoolId,
-            selector: x => new { x.Id, x.LicenseEndDate },
+            selector: x => new { x.Id },
             cancellationToken: cancellationToken);
         await SchoolRules.SchoolShouldExists(school);
 
@@ -64,7 +64,6 @@ public class UpdateTeacherCommandHandler(IMapper mapper,
         user.UserName = teacher.Email!.Trim().ToLower();
         user.Email = teacher.Email.Trim().ToLower();
         user.Phone = teacher.Phone.TrimForPhone();
-        user.LicenceEndDate = school.LicenseEndDate;
 
         var result = await teacherDal.ExecuteWithTransactionAsync(async () =>
         {

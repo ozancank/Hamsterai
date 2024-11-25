@@ -4,12 +4,11 @@ using Application.Features.Questions.Models.Quizzes;
 using Application.Features.Questions.Rules;
 using Application.Features.Users.Rules;
 using Application.Services.CommonService;
-using AutoMapper;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 
-namespace Application.Features.Questions.Commands.Questions;
+namespace Application.Features.Questions.Commands;
 
 public class AddManuelCommand : IRequest<object?>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
@@ -58,6 +57,7 @@ public class AddManuelCommandHandler(IQuestionDal questionDal,
                     var fileNameQuestion = $"Q_{userId}_{lessonId}_{id}{extension}";
                     var fileNameAnswer = $"A_{userId}_{lessonId}_{id}{extension}";
                     await commonService.TextToImage(requestQuestion.QuestionText, fileNameQuestion, AppOptions.QuestionPictureFolderPath);
+                    await commonService.TextToImage(requestQuestion.QuestionText, fileNameQuestion, AppOptions.QuestionSmallPictureFolderPath);
                     await commonService.TextToImage(requestQuestion.AnswerText, fileNameAnswer, AppOptions.AnswerPictureFolderPath);
 
                     var question = new Question
@@ -77,7 +77,9 @@ public class AddManuelCommandHandler(IQuestionDal questionDal,
                         AnswerPictureExtension = extension,
                         Status = QuestionStatus.Answered,
                         IsRead = true,
+                        ReadDate = date,
                         SendForQuiz = true,
+                        SendQuizDate = date,
                         TryCount = 0,
                         GainId = null,
                         RightOption = requestQuestion.RightOption,
@@ -98,6 +100,7 @@ public class AddManuelCommandHandler(IQuestionDal questionDal,
                     var fileNameSimilarQuestion = $"RQ_{userId}_{lessonId}_{id}{extension}";
                     var fileNameSimilarAnswer = $"RA_{userId}_{lessonId}_{id}{extension}";
                     await commonService.TextToImage(requestQuestion.QuestionText, fileNameQuestion, AppOptions.QuestionPictureFolderPath);
+                    await commonService.TextToImage(requestQuestion.QuestionText, fileNameQuestion, AppOptions.QuestionSmallPictureFolderPath);
                     await commonService.TextToImage(requestQuestion.QuestionText, fileNameSimilarQuestion, AppOptions.SimilarQuestionPictureFolderPath);
                     await commonService.TextToImage(requestQuestion.AnswerText, fileNameSimilarAnswer, AppOptions.SimilarAnswerPictureFolderPath);
                     var similar = new Similar
@@ -120,7 +123,9 @@ public class AddManuelCommandHandler(IQuestionDal questionDal,
                         ResponseAnswerExtension = extension,
                         Status = QuestionStatus.Answered,
                         IsRead = true,
+                        ReadDate = date,
                         SendForQuiz = true,
+                        SendQuizDate = date,
                         TryCount = 0,
                         GainId = null,
                         RightOption = requestQuestion.RightOption,

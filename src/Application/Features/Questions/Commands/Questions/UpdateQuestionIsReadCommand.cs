@@ -25,6 +25,7 @@ public class UpdateQuestionIsReadCommandHandler(IQuestionDal questionDal,
         if (question.IsRead) return true;
 
         question.IsRead = true;
+        question.ReadDate = DateTime.Now;
         question.UpdateUser = commonService.HttpUserId;
         question.UpdateDate = DateTime.Now;
 

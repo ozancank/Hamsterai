@@ -25,7 +25,7 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
                                         ISchoolDal schoolDal,
                                         ICommonService commonService,
                                         IUserDal userDal,
-                                        IRPackageSchoolDal packageSchoolDal,
+                                        IPackageUserDal packageUserDal,
                                         UserRules userRules,
                                         SchoolRules schoolRules,
                                         PackageRules packageRules) : IRequestHandler<UpdateSchoolCommand, GetSchoolModel>
@@ -56,7 +56,6 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
         school.AuthorizedName = request.Model.AuthorizedName;
         school.AuthorizedPhone = request.Model.AuthorizedPhone;
         school.AuthorizedEmail = request.Model.AuthorizedEmail;
-        school.LicenseEndDate = request.Model.LicenseEndDate;
         school.UserCount = request.Model.UserCount;
 
         user.Name = school.Name;
@@ -64,11 +63,10 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
         user.Email = school.AuthorizedEmail!.Trim().ToLower();
         user.Phone = school.AuthorizedPhone.TrimForPhone();
         user.TaxNumber = school.TaxNumber;
-        user.LicenceEndDate = school.LicenseEndDate;
 
-        var deleteList = await packageSchoolDal.GetListAsync(predicate: x => x.SchoolId == school.Id, cancellationToken: cancellationToken);
+        var deleteList = await packageUserDal.GetListAsync(predicate: x => x.UserId == user.Id, cancellationToken: cancellationToken);
 
-        var packageSchools = request.Model.PackageIds.Select(x => new RPackageSchool
+        var packageUsers = request.Model.PackageIds.Select(x => new PackageUser
         {
             Id = Guid.NewGuid(),
             IsActive = true,
@@ -76,8 +74,10 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
             CreateDate = date,
             UpdateUser = userId,
             UpdateDate = date,
-            SchoolId = school.Id,
+            UserId = user.Id,
             PackageId = x,
+            EndDate = request.Model.LicenseEndDate,
+            QuestionCredit = request.Model.QuestionCredit,
         }).ToList();
 
         var updateList = new List<User>();
@@ -99,8 +99,8 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
         {
             var added = await schoolDal.UpdateAsyncCallback(school, cancellationToken: cancellationToken);
             await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
-            await packageSchoolDal.DeleteRangeAsync(deleteList, cancellationToken: cancellationToken);
-            await packageSchoolDal.AddRangeAsync(packageSchools, cancellationToken: cancellationToken);
+            await packageUserDal.DeleteRangeAsync(deleteList, cancellationToken: cancellationToken);
+            await packageUserDal.AddRangeAsync(packageUsers, cancellationToken: cancellationToken);
             await userDal.UpdateRangeAsync(updateList, cancellationToken: cancellationToken);
             var result = mapper.Map<GetSchoolModel>(added);
             return result;

@@ -65,10 +65,7 @@ public class AddUserCommandHandler(IMapper mapper,
             Type = Enum.Parse<UserTypes>($"{request.Model.Type}"),
             ConnectionId = request.Model.ConnectionId,
             SchoolId = request.Model.SchoolId,
-            PackageCredit = request.Model.PackageCredit,
-            AddtionalCredit = request.Model.AddtionalCredit,
             TaxNumber = request.Model.TaxNumber,
-            LicenceEndDate = request.Model.LicenceEndDate
         };
 
         var packageUsers = new List<PackageUser>();
@@ -87,6 +84,8 @@ public class AddUserCommandHandler(IMapper mapper,
                 UpdateDate = date,
                 UserId = id,
                 PackageId = packageId,
+                EndDate = request.Model.LicenceEndDate,
+                QuestionCredit = request.Model.QuestionCredit,
             };
             packageUsers.Add(packageUser);
         }
