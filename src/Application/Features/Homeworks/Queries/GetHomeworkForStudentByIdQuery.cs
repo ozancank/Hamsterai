@@ -27,7 +27,7 @@ public class GetHomeworkForStudentByIdHandler(IMapper mapper,
         var connectionId = commonService.HttpConnectionId;
         var userType = commonService.HttpUserType;
 
-        if (userType == UserTypes.Teacher)
+        if (userType == UserTypes.Student)
         {
             var result = await homeworkStudentDal.GetAsyncAutoMapper<GetHomeworkStudentModel>(
             enableTracking: request.Tracking,

@@ -30,6 +30,8 @@ public class LoginCommandHandler(IUserDal userDal,
         var user = await userDal.GetAsync(
             predicate: predicate,
             include: x => x.Include(u => u.UserOperationClaims).ThenInclude(u => u.OperationClaim!)
+                           .Include(u => u.PackageUsers).ThenInclude(u => u.Package)
+                           .Include(u => u.Questions)
                            .Include(u => u.RefreshTokens),
             cancellationToken: cancellationToken);
 

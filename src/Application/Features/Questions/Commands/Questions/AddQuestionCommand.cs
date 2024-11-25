@@ -2,7 +2,6 @@
 using Application.Features.Questions.Models.Questions;
 using Application.Features.Questions.Rules;
 using Application.Services.CommonService;
-using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;

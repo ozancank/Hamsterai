@@ -7,7 +7,7 @@ namespace Application.Features.Students.Queries;
 
 public class GetStudentGainsForSelfQuery : IRequest<GetStudentGainsModel>, ISecuredRequest<UserTypes>
 {
-    public UserTypes[] Roles { get; } = [UserTypes.Student];
+    public UserTypes[] Roles { get; } = [UserTypes.Student, UserTypes.Person];
     public bool AllowByPass => false;
 }
 
@@ -32,7 +32,7 @@ public class GetGainsForStudentIdQueryHandler(ICommonService commonService,
                             && x.CreateDate.Date >= startDate.Date
                             && x.CreateDate.Date <= endDate.Date.AddDays(1).AddSeconds(-1),
             include: x => x.Include(u => u.Lesson).Include(u => u.Gain),
-            selector: x => new { Lesson = x.Lesson!.Name, Gain = x.Gain!.Name },
+            selector: x => new { Lesson = x.Lesson != null ? x.Lesson.Name : string.Empty, Gain = x.Gain != null ? x.Gain.Name : string.Empty },
             cancellationToken: cancellationToken);
 
         var similarQuestions = await similarQuestionDal.GetListAsync(
@@ -43,7 +43,7 @@ public class GetGainsForStudentIdQueryHandler(ICommonService commonService,
                             && x.CreateDate.Date >= startDate.Date
                             && x.CreateDate.Date <= endDate.Date.AddDays(1).AddSeconds(-1),
             include: x => x.Include(u => u.Lesson).Include(u => u.Gain),
-            selector: x => new { Lesson = x.Lesson!.Name, Gain = x.Gain!.Name },
+            selector: x => new { Lesson = x.Lesson != null ? x.Lesson.Name : string.Empty, Gain = x.Gain != null ? x.Gain.Name : string.Empty },
             cancellationToken: cancellationToken);
 
         var quizQuestions = await quizQuestionDal.GetListAsync(
@@ -54,7 +54,7 @@ public class GetGainsForStudentIdQueryHandler(ICommonService commonService,
                             && x.CreateDate.Date <= endDate.Date.AddDays(1).AddSeconds(-1),
             include: x => x.Include(x => x.Quiz).ThenInclude(u => u!.Lesson)
                            .Include(u => u.Gain),
-            selector: x => new { Lesson = x.Quiz!.Lesson!.Name, Gain = x.Gain!.Name },
+            selector: x => new { Lesson = x.Quiz != null && x.Quiz.Lesson != null ? x.Quiz.Lesson.Name : string.Empty, Gain = x.Gain != null ? x.Gain.Name : string.Empty },
             cancellationToken: cancellationToken);
 
         var allQuestions = questions.Concat(similarQuestions).Concat(quizQuestions).ToList();

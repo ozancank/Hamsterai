@@ -16,11 +16,12 @@ public class PackageUser : BaseEntity<Guid>
     public PackageUser() : base()
     { }
 
-    public PackageUser(Guid id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate, short packageId, long userId, DateTime endDate)
+    public PackageUser(Guid id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate, short packageId, long userId, DateTime endDate, int questionCredit)
         : base(id, isActive, createUser, createDate, updateUser, updateDate)
     {
         PackageId = packageId;
         UserId = userId;
         EndDate = endDate;
+        QuestionCredit = questionCredit;
     }
 }

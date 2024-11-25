@@ -18,10 +18,11 @@ public class GetUserModel : IResponseModel
     public int? SchoolId { get; set; }
     public byte Type { get; set; }
     public int TotalCredit { get; set; }
+    public int QuestionCredit { get; set; }
+    public int RemainingCredit => TotalCredit - QuestionCredit;
     public bool AutomaticPayment { get; set; }
     public string? TaxNumber { get; set; }
     public DateTime LicenceEndDate { get; set; }
-    public int QuestionCredit { get; set; }
 
     public List<GetPackageModel> Packages { get; set; } = [];
     public List<string> OperationClaims { get; set; } = [];

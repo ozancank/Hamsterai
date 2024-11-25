@@ -32,6 +32,7 @@ public class GetOrdersByDynamicQueryHandler(IMapper mapper,
             index: request.PageRequest.Page,
             predicate: x => commonService.HttpUserType == UserTypes.Administator || x.UserId == commonService.HttpUserId,
             include: x => x.Include(u => u.User).ThenInclude(u => u!.PackageUsers).ThenInclude(u => u.Package)
+                           .Include(u => u.User).ThenInclude(u => u!.Questions)
                            .Include(u => u.OrderDetails),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

@@ -24,6 +24,7 @@ public class GetOrdersByUserIdQueryHandler(IMapper mapper,
             enableTracking: false,
             predicate: x => x.UserId == request.UserId && (commonService.IsByPass || commonService.HttpUserType == UserTypes.Administator || x.UserId == commonService.HttpUserId),
             include: x => x.Include(u => u.User).ThenInclude(u => u!.PackageUsers).ThenInclude(u => u.Package)
+                           .Include(u => u.User).ThenInclude(u => u!.Questions)
                            .Include(u => u.OrderDetails),
             orderBy: x => x.OrderByDescending(x => x.CreateDate),
             index: request.PageRequest.Page,

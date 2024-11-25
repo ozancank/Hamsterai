@@ -22,11 +22,13 @@ public class GetLessonByIdQueryHandler(IMapper mapper,
 {
     public async Task<GetLessonModel> Handle(GetLessonByIdQuery request, CancellationToken cancellationToken)
     {
-        var packageId = commonService.HttpPackageId;
-
         var lesson = await lessonDal.GetAsyncAutoMapper<GetLessonModel>(
             enableTracking: request.Tracking,
-            predicate: x => x.Id == request.Id,
+            predicate: commonService.HttpUserType == UserTypes.Administator
+                       ? x => x.Id == request.Id
+                       : commonService.HttpUserType == UserTypes.Person
+                         ? x => x.IsActive && x.Id == request.Id && x.RPackageLessons.Any(a => a.IsActive && a.Package != null && a.Package.PackageUsers.Any(p => p.IsActive && p.User != null && p.User.IsActive && p.UserId == commonService.HttpUserId))
+                         : x => x.IsActive && x.Id == request.Id && x.RPackageLessons.Any(a => a.IsActive && a.Package != null && a.Package.PackageUsers.Any(p => p.IsActive && p.User != null && p.User.IsActive && p.User.School != null && p.User.School.IsActive && p.User.School.Id == commonService.HttpSchoolId)),
             include: x => x.Include(u => u.TeacherLessons).ThenInclude(u => u.Teacher)
                            .Include(u => u.RPackageLessons).ThenInclude(u => u.Package),
             configurationProvider: mapper.ConfigurationProvider,

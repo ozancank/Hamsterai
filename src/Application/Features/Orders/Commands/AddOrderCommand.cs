@@ -246,7 +246,8 @@ public class AddOrderCommandHandler(IMapper mapper,
                 return await orderDal.GetAsyncAutoMapper<GetOrderModel>(
                     predicate: x => x.Id == order.Id,
                     include: x => x.Include(u => u.User).ThenInclude(u => u!.PackageUsers).ThenInclude(u => u.Package)
-                                   .Include(u => u.OrderDetails),
+                                   .Include(u => u.User).ThenInclude(u => u!.Questions)
+                                   .Include(u => u.OrderDetails).ThenInclude(u => u.Package),
                     configurationProvider: mapper.ConfigurationProvider,
                     cancellationToken: cancellationToken);
             }, cancellationToken: cancellationToken);

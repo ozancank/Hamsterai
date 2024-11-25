@@ -23,12 +23,12 @@ public class AuthManager(IConfiguration configuration,
 
         user.Type = user.Type == 0 ? UserTypes.Student : user.Type;
 
-         List<Claim> claims = [
-                new(Domain.Constants.ClaimTypes.UserType, $"{(int)user.Type}", ClaimValueTypes.Integer),
+        List<Claim> claims = [
+               new(Domain.Constants.ClaimTypes.UserType, $"{(int)user.Type}", ClaimValueTypes.Integer),
                 new(Domain.Constants.ClaimTypes.SchoolId, $"{user.SchoolId}", ClaimValueTypes.String),
                 new(Domain.Constants.ClaimTypes.ConnectionId, $"{user.ConnectionId}", ClaimValueTypes.String),
                 new(Domain.Constants.ClaimTypes.PackageId, $"{user.PackageUsers}", ClaimValueTypes.String)
-            ];
+           ];
 
         var accessToken = tokenHelper.CreateToken(user, operationClaims, $"{user.Name} {user.Surname}", user.Email, claims);
         return Task.FromResult(accessToken);
@@ -52,7 +52,9 @@ public class AuthManager(IConfiguration configuration,
     {
         var refreshToken = await refreshTokenDal.GetAsync(
             predicate: x => x.Token == token,
-            include: x => x.Include(u => u.User));
+            include: x => x.Include(u => u.User).ThenInclude(u => u!.UserOperationClaims).ThenInclude(u => u.OperationClaim!)
+                           .Include(u => u.User).ThenInclude(u => u!.PackageUsers).ThenInclude(u => u.Package)
+                           .Include(u => u.User).ThenInclude(u => u!.Questions));
         return refreshToken;
     }
 

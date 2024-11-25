@@ -9,8 +9,6 @@ public class QuestionRules(IQuestionDal questionDal,
                            IPackageUserDal packageUserDal,
                            ICommonService commonService) : IBusinessRule
 {
-    private readonly QuestionStatus[] questionStatuses = [QuestionStatus.Waiting, QuestionStatus.Answered, QuestionStatus.SendAgain];
-
     internal static Task QuestionShouldExists(object? model)
     {
         if (model == null) throw new BusinessException(Strings.DynamicNotFound, Strings.Question);
@@ -63,7 +61,7 @@ public class QuestionRules(IQuestionDal questionDal,
 
         var questionCount = await questionDal.CountOfRecordAsync(
             enableTracking: false,
-            predicate: x => x.CreateUser == userId && questionStatuses.Contains(x.Status));
+            predicate: x => x.CreateUser == userId && AppStatics.QuestionStatusesForCredit.Contains(x.Status));
 
         var remainingCredit = totalCredit - questionCount;
 

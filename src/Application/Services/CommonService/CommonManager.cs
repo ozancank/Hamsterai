@@ -182,7 +182,8 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
 
         var lessonNames = await lessonDal.GetListAsync(
             enableTracking: false,
-            selector: x => x.Name!.ToLower().Replace(" ", "_"));
-        return string.Join(",", lessonNames);
+            selector: x => x.Name);
+        var result = lessonNames.Select(x => x.ToSlug('_'))!;
+        return string.Join(",", result);
     }
 }

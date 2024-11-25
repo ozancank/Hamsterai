@@ -78,7 +78,7 @@ public class UserManager(IUserDal userDal,
             {
                 var schoolUser = await userDal.GetAsync(
                     enableTracking: false,
-                    predicate: x => x.IsActive && x.SchoolId == schoolId && x.School != null && x.School.IsActive,
+                    predicate: x => x.IsActive && x.SchoolId == schoolId && x.Type==UserTypes.School && x.School != null && x.School.IsActive,
                     include: x => x.Include(u => u.PackageUsers).Include(x => x.School),
                     selector: x => new { x.PackageUsers, AccessStundents = x.School != null && x.School.AccessStundents });
 

@@ -31,7 +31,7 @@ public class GetHomeworksForStudentQueryHandler(IMapper mapper,
         if (request.Model.StartDate == null) request.Model.StartDate = DateTime.Today.AddDays(-7);
         if (request.Model.EndDate == null) request.Model.EndDate = DateTime.Today;
 
-        if (userType == UserTypes.Teacher)
+        if (userType == UserTypes.Student)
         {
             var homeworks = await homeworkStudentDal.GetPageListAsyncAutoMapper<GetHomeworkStudentModel>(
             enableTracking: false,

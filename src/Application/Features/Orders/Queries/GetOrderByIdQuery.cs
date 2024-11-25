@@ -26,6 +26,7 @@ public class GetOrderByIdQueryHandler(IMapper mapper,
             enableTracking: request.Tracking,
             predicate: x => x.Id == request.OrderId && (commonService.HttpUserType == UserTypes.Administator || x.UserId == commonService.HttpUserId),
             include: x => x.Include(u => u.User).ThenInclude(u => u!.PackageUsers).ThenInclude(u => u.Package)
+                           .Include(u => u.User).ThenInclude(u => u!.Questions)
                            .Include(u => u.OrderDetails),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
