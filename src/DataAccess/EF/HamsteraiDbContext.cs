@@ -10,6 +10,39 @@ public class HamsteraiDbContext : DbContext
     private static bool IsMigration = false;
     protected IConfiguration Configuration { get; set; }
 
+    public HamsteraiDbContext(DbContextOptions<HamsteraiDbContext> options)
+        : base(options)
+    {
+        Configuration = ServiceTools.GetService<IConfiguration>();
+        if (!IsMigration)
+        {
+            Database.Migrate();
+            IsMigration = true;
+        }
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.HasPostgresExtension("citext");
+        modelBuilder.RegisterDbFunctions<PostgresqlFunctions>();
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        foreach (var item in modelBuilder.Model.GetEntityTypes())
+        {
+            item.GetForeignKeys().Where(x => x.DeleteBehavior == DeleteBehavior.Cascade).ToList().ForEach(x => x.DeleteBehavior = DeleteBehavior.NoAction);
+        }
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(string))
+                {
+                    property.SetColumnType("citext");
+                }
+            }
+        }
+    }
+
     #region Core
 
     public required DbSet<User> Users { get; set; }
@@ -45,44 +78,11 @@ public class HamsteraiDbContext : DbContext
     public required DbSet<Student> Students { get; set; }
     public required DbSet<Teacher> Teachers { get; set; }
 
-    public HamsteraiDbContext(DbContextOptions<HamsteraiDbContext> options)
-        : base(options)
-    {
-        Configuration = ServiceTools.GetService<IConfiguration>();
-        if (!IsMigration)
-        {
-            Database.Migrate();
-            IsMigration = true;
-        }
-    }
+    //modelBuilder.HasDbFunction(() => Microsoft.EntityFrameworkCore.EF.Functions.TrLower(default))
+    //            .HasTranslation(args => new SqlFunctionExpression("tr_lower", true, typeof(string), null));
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.HasPostgresExtension("citext");
-        modelBuilder.RegisterDbFunctions<PostgresqlFunctions>();
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        foreach (var item in modelBuilder.Model.GetEntityTypes())
-        {
-            item.GetForeignKeys().Where(x => x.DeleteBehavior == DeleteBehavior.Cascade).ToList().ForEach(x => x.DeleteBehavior = DeleteBehavior.NoAction);
-        }
-
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-        {
-            foreach (var property in entityType.GetProperties())
-            {
-                if (property.ClrType == typeof(string))
-                {
-                    property.SetColumnType("citext");
-                }
-            }
-        }
-
-        //modelBuilder.HasDbFunction(() => Microsoft.EntityFrameworkCore.EF.Functions.TrLower(default))
-        //            .HasTranslation(args => new SqlFunctionExpression("tr_lower", true, typeof(string), null));
-
-        //modelBuilder.HasDbFunction(() => Microsoft.EntityFrameworkCore.EF.Functions.TrUpper(default))
-        //    .HasTranslation(args => new SqlFunctionExpression("tr_upper", true, typeof(string), null));
-    }
+    //modelBuilder.HasDbFunction(() => Microsoft.EntityFrameworkCore.EF.Functions.TrUpper(default))
+    //    .HasTranslation(args => new SqlFunctionExpression("tr_upper", true, typeof(string), null));
 }
 
 //protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

@@ -1,16 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="ExcelDataReader" Version="3.7.0" />
   </ItemGroup>
-
   <ItemGroup>
     <None Update="HamsterKayıt.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -19,5 +16,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>

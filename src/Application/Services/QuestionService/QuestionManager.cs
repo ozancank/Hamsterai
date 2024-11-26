@@ -1,8 +1,6 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Application.Features.Lessons.Models.Gains;
+﻿using Application.Features.Lessons.Models.Gains;
 using Application.Features.Questions.Models.Quizzes;
 using Application.Features.Questions.Rules;
-using Application.Features.Users.Rules;
 using Application.Services.CommonService;
 using Application.Services.GainService;
 using Application.Services.NotificationService;
@@ -10,7 +8,6 @@ using DataAccess.EF;
 using Infrastructure.AI;
 using Infrastructure.AI.Seduss.Dtos;
 using Infrastructure.AI.Seduss.Models;
-using OCK.Core.Interfaces;
 
 namespace Application.Services.QuestionService;
 
@@ -127,7 +124,7 @@ public class QuestionManager(ICommonService commonService,
 
         data!.UpdateUser = 1;
         data.UpdateDate = DateTime.Now;
-        data.QuestionPictureBase64 = model?.QuestionText.Trim("--- OCR Start ---", "--- OCR End ---") ?? string.Empty;
+        data.QuestionText = model?.QuestionText.Trim("--- OCR Start ---", "--- OCR End ---") ?? string.Empty;
         data.AnswerText = model?.AnswerText ?? string.Empty;
         data.AnswerPictureFileName = fileName ?? string.Empty;
         data.AnswerPictureExtension = extension ?? string.Empty;
@@ -182,7 +179,7 @@ public class QuestionManager(ICommonService commonService,
                 .Include(x => x.Lesson)
                 .Where(x => !x.SendForQuiz && !x.ExcludeQuiz && x.IsRead
                           && x.Status == QuestionStatus.Answered
-                          && x.QuestionPictureBase64 != string.Empty
+                          && x.QuestionText != string.Empty
                           && x.TryCount < AppOptions.AITryCount
                           && x.CreateDate > changeDate)
                 .ToListAsync(cancellationToken);
@@ -207,7 +204,7 @@ public class QuestionManager(ICommonService commonService,
                         LessonName = question.Lesson!.Name,
                         UserId = question.CreateUser,
                         ExcludeQuiz = question.ExcludeQuiz,
-                        QuestionText = question.QuestionPictureBase64,
+                        QuestionText = question.QuestionText,
                         AIUrl = AppOptions.AIDefaultUrls[1]
                     };
 
@@ -236,7 +233,7 @@ public class QuestionManager(ICommonService commonService,
                         .Where(x => x.Status == QuestionStatus.Answered
                                   && !x.SendForQuiz
                                   && x.CreateDate > changeDate
-                                  && x.ResponseAnswerFileName != ""
+                                  && x.ResponseQuestionFileName != ""
                                   && x.ResponseAnswerFileName != "")
                         .GroupBy(x => new { x.CreateUser, x.LessonId })
                         .ToListAsync(cancellationToken);
@@ -322,9 +319,6 @@ public class QuestionManager(ICommonService commonService,
             UpdateUser = dto.UserId,
             UpdateDate = date,
             LessonId = dto.LessonId,
-            QuestionPicture = string.Empty,
-            QuestionPictureFileName = string.Empty,
-            QuestionPictureExtension = string.Empty,
             ResponseQuestion = model?.QuestionText ?? string.Empty,
             ResponseQuestionFileName = questionFileName,
             ResponseQuestionExtension = extension,

@@ -6,9 +6,6 @@ namespace Domain.Entities;
 public class Similar : BaseEntity<Guid>
 {
     public short LessonId { get; set; }
-    public string? QuestionPicture { get; set; }
-    public string? QuestionPictureFileName { get; set; }
-    public string? QuestionPictureExtension { get; set; }
     public string? ResponseQuestion { get; set; }
     public string? ResponseQuestionFileName { get; set; }
     public string? ResponseQuestionExtension { get; set; }

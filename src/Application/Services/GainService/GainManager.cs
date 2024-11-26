@@ -23,7 +23,7 @@ public class GainManager(IMapper mapper) : IGainService
                 .FirstOrDefaultAsync();
             await LessonRules.LessonShouldExists(lessonName);
 
-            var gainNames = dto.GainName.Trim("\r").Split("\n");
+            var gainNames = dto.GainName?.Trim("\r").Split("\n") ?? [];
             var gainName = string.Empty;
 
             for (int i = 0; i < gainNames.Length; i++)

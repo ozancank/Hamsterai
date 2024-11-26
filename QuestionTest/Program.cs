@@ -9,7 +9,7 @@ internal class Program
     private static short lessonId = 1;
     private const string url = "https://api.hamsterai.com.tr/v1/Question/AddRangeQuestion";
 
-    private static async Task Main(string[] args)
+    private static async Task Main(string[] _)
     {
         try
         {

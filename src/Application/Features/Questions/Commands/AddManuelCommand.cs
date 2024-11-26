@@ -69,7 +69,7 @@ public class AddManuelCommandHandler(IQuestionDal questionDal,
                         UpdateDate = date,
                         UpdateUser = userId,
                         LessonId = lessonId,
-                        QuestionPictureBase64 = requestQuestion.QuestionText,
+                        QuestionText = requestQuestion.QuestionText,
                         QuestionPictureFileName = fileNameQuestion,
                         QuestionPictureExtension = extension,
                         AnswerText = requestQuestion.AnswerText,
@@ -96,11 +96,8 @@ public class AddManuelCommandHandler(IQuestionDal questionDal,
             case QuestionType.Similar:
                 {
                     var requestQuestion = request.Model.Questions.First();
-                    var fileNameQuestion = $"Q_{userId}_{lessonId}_{id}{extension}";
                     var fileNameSimilarQuestion = $"RQ_{userId}_{lessonId}_{id}{extension}";
                     var fileNameSimilarAnswer = $"RA_{userId}_{lessonId}_{id}{extension}";
-                    await commonService.TextToImage(requestQuestion.QuestionText, fileNameQuestion, AppOptions.QuestionPictureFolderPath);
-                    await commonService.TextToImage(requestQuestion.QuestionText, fileNameQuestion, AppOptions.QuestionSmallPictureFolderPath);
                     await commonService.TextToImage(requestQuestion.QuestionText, fileNameSimilarQuestion, AppOptions.SimilarQuestionPictureFolderPath);
                     await commonService.TextToImage(requestQuestion.AnswerText, fileNameSimilarAnswer, AppOptions.SimilarAnswerPictureFolderPath);
                     var similar = new Similar
@@ -112,9 +109,6 @@ public class AddManuelCommandHandler(IQuestionDal questionDal,
                         UpdateDate = date,
                         UpdateUser = userId,
                         LessonId = lessonId,
-                        QuestionPicture = requestQuestion.QuestionText,
-                        QuestionPictureFileName = fileNameQuestion,
-                        QuestionPictureExtension = extension,
                         ResponseQuestion = requestQuestion.QuestionText,
                         ResponseQuestionFileName = fileNameSimilarQuestion,
                         ResponseQuestionExtension = extension,

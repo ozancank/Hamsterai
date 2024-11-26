@@ -6,7 +6,7 @@ namespace Domain.Entities;
 public class Question : BaseEntity<Guid>
 {
     public short LessonId { get; set; }
-    public string? QuestionPictureBase64 { get; set; }
+    public string? QuestionText { get; set; }
     public string? QuestionPictureFileName { get; set; }
     public string? QuestionPictureExtension { get; set; }
     public string? AnswerText { get; set; }

@@ -17,7 +17,7 @@ namespace DataAccess.EF.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "citext");
@@ -2598,12 +2598,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("OcrMethod")
                         .HasColumnOrder(21);
 
-                    b.Property<string>("QuestionPictureBase64")
-                        .IsRequired()
-                        .HasColumnType("citext")
-                        .HasColumnName("QuestionPictureBase64")
-                        .HasColumnOrder(7);
-
                     b.Property<string>("QuestionPictureExtension")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -2616,6 +2610,12 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("citext")
                         .HasColumnName("QuestionPictureFileName")
                         .HasColumnOrder(8);
+
+                    b.Property<string>("QuestionText")
+                        .IsRequired()
+                        .HasColumnType("citext")
+                        .HasColumnName("QuestionText")
+                        .HasColumnOrder(7);
 
                     b.Property<DateTime>("ReadDate")
                         .ValueGeneratedOnAdd()
@@ -3373,7 +3373,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("citext")
                         .HasDefaultValue("")
                         .HasColumnName("AIIP")
-                        .HasColumnOrder(26);
+                        .HasColumnOrder(23);
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp without time zone")
@@ -3390,26 +3390,26 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("citext")
                         .HasDefaultValue("")
                         .HasColumnName("ErrorDescription")
-                        .HasColumnOrder(24);
+                        .HasColumnOrder(21);
 
                     b.Property<bool>("ExcludeQuiz")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("ExcludeQuiz")
-                        .HasColumnOrder(22);
+                        .HasColumnOrder(19);
 
                     b.Property<bool>("ExistsVisualContent")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("ExistsVisualContent")
-                        .HasColumnOrder(23);
+                        .HasColumnOrder(20);
 
                     b.Property<int?>("GainId")
                         .HasColumnType("integer")
                         .HasColumnName("GainId")
-                        .HasColumnOrder(20);
+                        .HasColumnOrder(17);
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
@@ -3421,7 +3421,7 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("IsRead")
-                        .HasColumnOrder(17);
+                        .HasColumnOrder(14);
 
                     b.Property<short>("LessonId")
                         .HasColumnType("smallint")
@@ -3433,105 +3433,84 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("citext")
                         .HasDefaultValue("")
                         .HasColumnName("OcrMethod")
-                        .HasColumnOrder(25);
+                        .HasColumnOrder(22);
 
-                    b.Property<string>("QuestionPicture")
-                        .IsRequired()
-                        .HasColumnType("citext")
-                        .HasColumnName("QuestionPicture")
-                        .HasColumnOrder(7);
-
-                    b.Property<string>("QuestionPictureExtension")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("citext")
-                        .HasColumnName("QuestionPictureExtension")
-                        .HasColumnOrder(9);
-
-                    b.Property<string>("QuestionPictureFileName")
-                        .IsRequired()
-                        .HasColumnType("citext")
-                        .HasColumnName("QuestionPictureFileName")
-                        .HasColumnOrder(8);
-
-                    b.Property<DateTime?>("ReadDate")
-                        .IsRequired()
+                    b.Property<DateTime>("ReadDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValue(new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified))
                         .HasColumnName("ReadDate")
-                        .HasColumnOrder(27);
+                        .HasColumnOrder(24);
 
                     b.Property<string>("ResponseAnswer")
                         .IsRequired()
                         .HasColumnType("citext")
                         .HasColumnName("ResponseAnswer")
-                        .HasColumnOrder(13);
+                        .HasColumnOrder(10);
 
                     b.Property<string>("ResponseAnswerExtension")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("citext")
                         .HasColumnName("ResponseAnswerExtension")
-                        .HasColumnOrder(15);
+                        .HasColumnOrder(12);
 
                     b.Property<string>("ResponseAnswerFileName")
                         .IsRequired()
                         .HasColumnType("citext")
                         .HasColumnName("ResponseAnswerFileName")
-                        .HasColumnOrder(14);
+                        .HasColumnOrder(11);
 
                     b.Property<string>("ResponseQuestion")
                         .IsRequired()
                         .HasColumnType("citext")
                         .HasColumnName("ResponseQuestion")
-                        .HasColumnOrder(10);
+                        .HasColumnOrder(7);
 
                     b.Property<string>("ResponseQuestionExtension")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("citext")
                         .HasColumnName("ResponseQuestionExtension")
-                        .HasColumnOrder(12);
+                        .HasColumnOrder(9);
 
                     b.Property<string>("ResponseQuestionFileName")
                         .IsRequired()
                         .HasColumnType("citext")
                         .HasColumnName("ResponseQuestionFileName")
-                        .HasColumnOrder(11);
+                        .HasColumnOrder(8);
 
                     b.Property<char?>("RightOption")
                         .HasMaxLength(1)
                         .HasColumnType("character(1)")
                         .HasColumnName("RightOption")
-                        .HasColumnOrder(21);
+                        .HasColumnOrder(18);
 
                     b.Property<bool>("SendForQuiz")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("SendForQuiz")
-                        .HasColumnOrder(18);
+                        .HasColumnOrder(15);
 
-                    b.Property<DateTime?>("SendQuizDate")
-                        .IsRequired()
+                    b.Property<DateTime>("SendQuizDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValue(new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified))
                         .HasColumnName("SendQuizDate")
-                        .HasColumnOrder(28);
+                        .HasColumnOrder(25);
 
                     b.Property<byte>("Status")
                         .HasColumnType("smallint")
                         .HasColumnName("Status")
-                        .HasColumnOrder(16);
+                        .HasColumnOrder(13);
 
                     b.Property<int>("TryCount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(0)
                         .HasColumnName("TryCount")
-                        .HasColumnOrder(19);
+                        .HasColumnOrder(16);
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp without time zone")
