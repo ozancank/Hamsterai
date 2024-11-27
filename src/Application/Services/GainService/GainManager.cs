@@ -29,7 +29,7 @@ public class GainManager(IMapper mapper) : IGainService
             for (int i = 0; i < gainNames.Length; i++)
             {
                 if (gainNames[i].IsEmpty()) continue;
-                gainName = gainNames[i].Trim().FixTextLenght(30);
+                gainName = gainNames[i].Trim().FixTextLenght(100);
                 break;
             }
 

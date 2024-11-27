@@ -2,9 +2,9 @@
 using Domain.Constants;
 using OCK.Core.Logging.Serilog;
 
-namespace WebAPI;
+namespace WebAPI.HostedServices;
 
-public class SenderHostedService(IServiceProvider serviceProvider, LoggerServiceBase loggerServiceBase) : BackgroundService
+public class GainHostedService(IServiceProvider serviceProvider, LoggerServiceBase loggerServiceBase) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -12,17 +12,17 @@ public class SenderHostedService(IServiceProvider serviceProvider, LoggerService
         {
             try
             {
-                await Task.Delay(AppOptions.AIQuestionSendSecond * 1000, stoppingToken);
+                await Task.Delay(AppOptions.AIGainSendSecond * 1000, stoppingToken);
 
-                if (!AppStatics.SenderQuestionAllow) continue;
+                if (!AppStatics.SenderGainAllow) continue;
 
                 using var scope = serviceProvider.CreateScope();
                 var questionService = scope.ServiceProvider.GetRequiredService<IQuestionService>();
-                await questionService.SendQuestions(stoppingToken);
+                await questionService.SendGain(stoppingToken);
             }
             catch (Exception ex)
             {
-                loggerServiceBase.Error($"{nameof(SimilarHostedService)} {DateTime.Now:yyyy-MM-dd HH:mm:ss}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
+                loggerServiceBase.Error($"{nameof(GainHostedService)} {DateTime.Now:yyyy-MM-dd HH:mm:ss}*{ex?.InnerException?.Message}*{ex?.Message}*{ex?.StackTrace}");
             }
         }
     }

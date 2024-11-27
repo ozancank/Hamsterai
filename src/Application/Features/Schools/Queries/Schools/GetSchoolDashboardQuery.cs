@@ -54,8 +54,8 @@ public class GetSchoolDashboardQueryHandler(ISchoolDal schoolDal,
 
         var schoolUser = users.First(x => x.Type == UserTypes.School);
         var licenseEndDate = await packageUserDal.Query().AsNoTracking()
-            .Where(x => x.UserId == schoolUser.Id)
-            .MaxAsync(x => x.EndDate, cancellationToken: cancellationToken);
+            .Where(x => x.UserId == schoolUser.Id).DefaultIfEmpty()
+            .MaxAsync(x => x != null ? x.EndDate : AppStatics.MilleniumDate, cancellationToken: cancellationToken);
 
         result.SchoolId = school.Id;
         result.UserId = commonService.HttpUserId;

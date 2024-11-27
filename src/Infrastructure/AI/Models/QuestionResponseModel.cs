@@ -1,7 +1,7 @@
 ﻿using OCK.Core.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace Infrastructure.AI.Seduss.Models;
+namespace Infrastructure.AI.Models;
 
 public class QuestionResponseModel : IResponseModel
 {
@@ -22,4 +22,7 @@ public class QuestionResponseModel : IResponseModel
 
     [JsonPropertyName("ocr_method")]
     public string OcrMethod { get; set; } = string.Empty;
+
+    [JsonPropertyName("isExistsVisualContent")]
+    public bool IsExistsVisualContent { get; set; }
 }

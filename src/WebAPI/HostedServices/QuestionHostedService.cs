@@ -2,9 +2,9 @@
 using Domain.Constants;
 using OCK.Core.Logging.Serilog;
 
-namespace WebAPI;
+namespace WebAPI.HostedServices;
 
-public class SimilarHostedService(IServiceProvider serviceProvider, LoggerServiceBase loggerServiceBase) : BackgroundService
+public class QuestionHostedService(IServiceProvider serviceProvider, LoggerServiceBase loggerServiceBase) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -12,13 +12,13 @@ public class SimilarHostedService(IServiceProvider serviceProvider, LoggerServic
         {
             try
             {
-                await Task.Delay(AppOptions.AISimilarSendSecond * 1000, stoppingToken);
+                await Task.Delay(AppOptions.AIQuestionSendSecond * 1000, stoppingToken);
 
-                if (!AppStatics.SenderSimilarAllow) continue;
+                if (!AppStatics.SenderQuestionAllow) continue;
 
                 using var scope = serviceProvider.CreateScope();
                 var questionService = scope.ServiceProvider.GetRequiredService<IQuestionService>();
-                await questionService.SendSimilar(stoppingToken);
+                await questionService.SendQuestions(stoppingToken);
             }
             catch (Exception ex)
             {

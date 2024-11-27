@@ -1,5 +1,5 @@
 ﻿using DataAccess.EF;
-using Infrastructure.AI.Seduss.Models;
+using Infrastructure.AI.Models;
 
 namespace Application.Features.Questions.Rules;
 
@@ -39,5 +39,11 @@ public class QuizRules(IQuizDal quizDal, IQuizQuestionDal quizQuestionDal) : IBu
     {
         var control = await quizQuestionDal.IsExistsAsync(predicate: x => PostgresqlFunctions.TrLower(x.Id) == PostgresqlFunctions.TrLower(id), enableTracking: false);
         if (control) throw new BusinessException(Strings.DynamicExists, $"{Strings.Quiz}-{Strings.Question} Id");
+    }
+
+    internal static Task RightOptionShouldExists(char rightOption)
+    {
+        if (!AppStatics.OptionChars.Contains(rightOption)) throw new BusinessException(Strings.DynamicBetween, [Strings.Options, "A", "E"]);
+        return Task.CompletedTask;
     }
 }

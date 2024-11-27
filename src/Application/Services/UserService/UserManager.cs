@@ -68,6 +68,8 @@ public class UserManager(IUserDal userDal,
     {
         return await cacheManager.GetOrAddAsync($"{Strings.CacheStatusAndLicence}-{userId}", async () =>
         {
+
+
             var userType = commonService.HttpUserType;
             var schoolId = commonService.HttpSchoolId;
 

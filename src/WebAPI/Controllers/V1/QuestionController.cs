@@ -13,7 +13,7 @@ namespace WebAPI.Controllers.V1;
 [ApiController]
 [Route(ApiVersioningConfig.ControllerRouteWithoutApi)]
 [ApiVersion("1")]
-public class QuestionController() : BaseController
+public class QuestionController : BaseController
 {
     #region Question
 
@@ -29,6 +29,14 @@ public class QuestionController() : BaseController
     public async Task<IActionResult> GetQuestions([FromQuery] PageRequest pageRequest, [FromBody] QuestionRequestModel model)
     {
         var query = new GetQuestionsQuery { PageRequest = pageRequest, Model = model };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("GetQuestionsForAdmin")]
+    public async Task<IActionResult> GetQuestionsForAdmin([FromQuery] PageRequest pageRequest, [FromBody] QuestionRequestModel model)
+    {
+        var query = new GetQuestionsForAdminQuery { PageRequest = pageRequest, Model = model };
         var result = await Mediator.Send(query);
         return Ok(result);
     }

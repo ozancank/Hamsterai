@@ -1,12 +1,12 @@
 ﻿using OCK.Core.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace Infrastructure.AI.Seduss.Models;
+namespace Infrastructure.AI.Models;
 
-public class QuestionRequestModel : IRequestModel
+public class GainRequestModel : IRequestModel
 {
     [JsonPropertyName("content")]
-    public string? QuestionImage { get; set; }
+    public string? QuestionText { get; set; }
 
     [JsonPropertyName("ders")]
     public string? LessonName { get; set; }

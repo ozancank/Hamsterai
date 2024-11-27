@@ -1,5 +1,5 @@
-﻿using Infrastructure.AI.Seduss.Dtos;
-using Infrastructure.AI.Seduss.Models;
+﻿using Infrastructure.AI.Models;
+using Infrastructure.AI.Seduss.Dtos;
 
 namespace Infrastructure.Constants;
 

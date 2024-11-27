@@ -1,7 +1,7 @@
 ﻿using OCK.Core.Interfaces;
 using System.Text.Json.Serialization;
 
-namespace Infrastructure.AI.Seduss.Models;
+namespace Infrastructure.AI.Models;
 
 public class SimilarRequestModel : IRequestModel
 {

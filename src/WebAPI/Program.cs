@@ -7,6 +7,7 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
@@ -21,7 +22,7 @@ using OCK.Core.Utilities;
 using OCK.Core.Versioning;
 using System.Diagnostics;
 using System.Globalization;
-using WebAPI;
+using WebAPI.HostedServices;
 using static Infrastructure.Constants.InfrastructureDelegates;
 using static OCK.Core.Constants.Delegates;
 
@@ -81,8 +82,9 @@ static void Services(WebApplicationBuilder builder)
         });
     });
     //if (!builder.Environment.IsDevelopment())
-    builder.Services.AddHostedService<SenderHostedService>();
+    builder.Services.AddHostedService<QuestionHostedService>();
     builder.Services.AddHostedService<SimilarHostedService>();
+    builder.Services.AddHostedService<GainHostedService>();
 
     builder.Services.Configure<FormOptions>(options =>
     {
@@ -113,7 +115,6 @@ static async Task Middlewares(WebApplicationBuilder builder, WebApplication app,
     //app.UseForwardedHeaders(new ForwardedHeadersOptions
     //{
     //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-    //});
     //});
 
     if (!app.Environment.IsDevelopment())
@@ -259,9 +260,7 @@ static void StaticFiles(WebApplication app)
             RequestPath = path.Key,
             OnPrepareResponse = context =>
             {
-                Console.WriteLine($"Dosya istek zamanı: {DateTime.Now}");
-                Console.WriteLine($"Dosya sunuluyor: {context.File.Name}");
-                Console.WriteLine($"Dosya yolu: {context.File.PhysicalPath}");
+                Console.WriteLine($"Dosya sunuluyor: {DateTime.Now} - {context.File.PhysicalPath}");
             }
         });
     }
@@ -271,7 +270,7 @@ static void Delegates()
 {
     ControlUserStatusAsync = ServiceTools.GetService<IUserService>().UserStatusAndLicense;
     UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateQuestion;
-    AddSimilarAnswer = ServiceTools.GetService<IQuestionService>().AddSimilarQuestion;
+    AddSimilarAnswer = ServiceTools.GetService<IQuestionService>().AddSimilar;
 }
 
 static void RunLinuxCommands()

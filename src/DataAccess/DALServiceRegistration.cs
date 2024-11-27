@@ -24,7 +24,7 @@ public static class DALServiceRegistration
                     o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
             );
             }
-            if (Debugger.IsAttached) options.EnableSensitiveDataLogging();
+            //if (Debugger.IsAttached) options.EnableSensitiveDataLogging();
         });
 
         services.AddScoped<IOperationClaimDal, OperationClaimDal>();

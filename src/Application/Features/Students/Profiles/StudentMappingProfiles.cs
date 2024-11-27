@@ -12,6 +12,10 @@ public class StudentMappingProfiles : Profile
             .ForMember(dest => dest.TeacherNames, opt => opt.MapFrom(src => src.ClassRoom != null ? src.ClassRoom.TeacherClassRooms.Select(x => src.Teachers != null ? $"{x.Teacher!.Name} {x.Teacher.Surname}" : default) : default));
         CreateMap<IPaginate<GetStudentModel>, PageableModel<GetStudentModel>>();
 
+        CreateMap<Student, GetStudentLiteModel>()
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.Name} {src.Surname}"));
+        CreateMap<IPaginate<GetStudentLiteModel>, PageableModel<GetStudentLiteModel>>();
+
         CreateMap<AddStudentModel, Student>();
         CreateMap<UpdateStudentModel, Student>();
     }

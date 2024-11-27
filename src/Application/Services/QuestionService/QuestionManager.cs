@@ -6,8 +6,9 @@ using Application.Services.GainService;
 using Application.Services.NotificationService;
 using DataAccess.EF;
 using Infrastructure.AI;
+using Infrastructure.AI.Models;
 using Infrastructure.AI.Seduss.Dtos;
-using Infrastructure.AI.Seduss.Models;
+using OneOf;
 
 namespace Application.Services.QuestionService;
 
@@ -23,22 +24,22 @@ public class QuestionManager(ICommonService commonService,
     {
         var methodName = nameof(SendQuestions);
         AppStatics.SenderQuestionAllow = false;
-        var changeDate = new DateTime(2024, 11, 17, 0, 0, 0);
         try
         {
             Console.WriteLine($"{methodName} - Method Started: {DateTime.Now}");
-            QuestionStatus[] status = [QuestionStatus.Waiting, QuestionStatus.Error, QuestionStatus.SendAgain, QuestionStatus.ConnectionError, QuestionStatus.Timeout];
             using var context = contextFactory.CreateDbContext();
 
             var allQuestions = await context.Questions
                 .AsNoTracking()
                 .Include(x => x.Lesson)
-                .Where(x => status.Contains(x.Status) && x.TryCount < AppOptions.AITryCount && x.CreateDate > changeDate)
+                .Where(x => AppStatics.QuestionStatusesForSender.Contains(x.Status)
+                            && x.TryCount < AppOptions.AITryCount
+                            && x.CreateDate > AppOptions.ChangeDate)
                 .ToListAsync(cancellationToken);
 
             if (allQuestions.Count == 0) return;
             Console.WriteLine($"{methodName} - All Count: {allQuestions.Count}");
-            var queueList = allQuestions.Take(AppOptions.QuestionQueueCapacity).ToList();
+            var queueList = allQuestions.Take(AppOptions.AIQuestionQueueCapacity).ToList();
             Console.WriteLine($"{methodName} - Take Count: {queueList.Count}");
 
             var startDate = DateTime.Now;
@@ -53,7 +54,7 @@ public class QuestionManager(ICommonService commonService,
                     var questionPicturePath = Path.Combine(AppOptions.QuestionSmallPictureFolderPath, question.QuestionPictureFileName.EmptyOrTrim());
                     var questionSmallPicturePath = Path.Combine(AppOptions.QuestionSmallPictureFolderPath, question.QuestionPictureFileName.EmptyOrTrim());
 
-                    if(File.Exists(questionSmallPicturePath))
+                    if (File.Exists(questionSmallPicturePath))
                         base64 = await commonService.ImageToBase64(questionSmallPicturePath);
                     else if (File.Exists(questionPicturePath))
                         base64 = await commonService.ImageToBase64(questionPicturePath);
@@ -77,6 +78,12 @@ public class QuestionManager(ICommonService commonService,
                     };
                     Console.WriteLine($"{methodName} - Send: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} --");
                     await questionApi.AskQuestionWithImage(model);
+
+                    model.AIUrl = AppOptions.AIDefaultUrls[2];
+                    var visual = await questionApi.IsExistsVisualContent(model, cancellationToken);
+                    _ = await context.Questions
+                        .Where(x => x.Id == question.Id)
+                        .ExecuteUpdateAsync(x => x.SetProperty(p => p.ExistsVisualContent, visual), cancellationToken);
                 }
                 finally
                 {
@@ -168,7 +175,6 @@ public class QuestionManager(ICommonService commonService,
     {
         var methodName = nameof(SendSimilar);
         AppStatics.SenderSimilarAllow = false;
-        var changeDate = new DateTime(2024, 11, 19, 17, 0, 0);
         try
         {
             Console.WriteLine($"{methodName} - Method Started: {DateTime.Now}");
@@ -178,15 +184,16 @@ public class QuestionManager(ICommonService commonService,
                 .AsNoTracking()
                 .Include(x => x.Lesson)
                 .Where(x => !x.SendForQuiz && !x.ExcludeQuiz && x.IsRead
+                          && x.SimilarId == null && !x.ExistsVisualContent
                           && x.Status == QuestionStatus.Answered
                           && x.QuestionText != string.Empty
                           && x.TryCount < AppOptions.AITryCount
-                          && x.CreateDate > changeDate)
+                          && x.CreateDate > AppOptions.ChangeDate)
                 .ToListAsync(cancellationToken);
 
             if (allQuestions.Count == 0) goto Quiz;
             Console.WriteLine($"{methodName} - All Count: {allQuestions.Count}");
-            var queueList = allQuestions.Take(AppOptions.SimilarQueueCapacity);
+            var queueList = allQuestions.Take(AppOptions.AISimilarQueueCapacity);
             Console.WriteLine($"{methodName} - Take Count: {queueList.Count()}");
 
             var startDate = DateTime.Now;
@@ -232,7 +239,7 @@ public class QuestionManager(ICommonService commonService,
                         .Include(x => x.Lesson)
                         .Where(x => x.Status == QuestionStatus.Answered
                                   && !x.SendForQuiz
-                                  && x.CreateDate > changeDate
+                                  && x.CreateDate > AppOptions.ChangeDate
                                   && x.ResponseQuestionFileName != ""
                                   && x.ResponseAnswerFileName != "")
                         .GroupBy(x => new { x.CreateUser, x.LessonId })
@@ -241,7 +248,10 @@ public class QuestionManager(ICommonService commonService,
             var date = DateTime.Now;
             await quizList.ForEachAsync(async group =>
             {
-                var similarList = group.OrderBy(x => x.CreateDate).Take(AppOptions.QuizMinimumQuestionLimit).ToList();
+                var similarList = group
+                    .Where(x=> x.ResponseQuestionFileName.IsNotEmpty()
+                               && File.Exists(Path.Combine(AppOptions.SimilarQuestionPictureFolderPath, x.ResponseQuestionFileName!)))
+                    .OrderBy(x => x.CreateDate).Take(AppOptions.QuizMinimumQuestionLimit).ToList();
 
                 if (similarList.Count >= AppOptions.QuizMinimumQuestionLimit)
                 {
@@ -260,10 +270,14 @@ public class QuestionManager(ICommonService commonService,
                         {
                             similar.UpdateUser = 1;
                             similar.UpdateDate = date;
-                            similar.IsRead = true;
+                            similar.IsRead = false;
                             similar.ReadDate = date;
                             similar.SendForQuiz = true;
                             similar.SendQuizDate = date;
+
+                            await context.Questions.Where(x => x.Id == similar.Id)
+                                .ExecuteUpdateAsync(x => x.SetProperty(p => p.SendForQuiz, true)
+                                                          .SetProperty(p => p.SendQuizDate, date), cancellationToken);
                         }
 
                         context.Similars.UpdateRange(similarList);
@@ -283,7 +297,7 @@ public class QuestionManager(ICommonService commonService,
         }
     }
 
-    public async Task<bool> AddSimilarQuestion(SimilarResponseModel model, UpdateQuestionDto dto)
+    public async Task<bool> AddSimilar(SimilarResponseModel model, UpdateQuestionDto dto)
     {
         using var context = contextFactory.CreateDbContext();
 
@@ -356,21 +370,14 @@ public class QuestionManager(ICommonService commonService,
             question.UpdateUser = dto.UserId;
             question.UpdateDate = date;
             question.GainId = gain?.Id;
-            question.SendForQuiz = true;
-            question.SendQuizDate = date;
             question.RightOption = data.RightOption;
+            question.SimilarId = data.Id;
 
             context.Questions.Update(question);
         }
 
         await context.SaveChangesAsync();
         return true;
-    }
-
-    private static byte GetOptionCount(string questionText)
-    {
-        string[] options = ["A) ", "B) ", "C) ", "D) ", "E) "];
-        return (byte)options.Count(questionText.Contains);
     }
 
     public async Task<string> AddQuiz(AddQuizModel model, HamsteraiDbContext? context, CancellationToken cancellationToken)
@@ -449,7 +456,7 @@ public class QuestionManager(ICommonService commonService,
                     AnswerPictureExtension = extension ?? string.Empty,
                     RightOption = similar.RightOption ?? 'A',
                     AnswerOption = null,
-                    OptionCount = GetOptionCount(similar.ResponseQuestion ?? string.Empty),
+                    OptionCount = (byte)AppStatics.OptionsWithParentheses.Count((similar.ResponseQuestion ?? string.Empty).Contains),
                     GainId = similar.GainId,
                 });
             }
@@ -481,172 +488,114 @@ public class QuestionManager(ICommonService commonService,
         }
     }
 
-    /*
-    //public async Task<bool> UpdateSimilarAnswer(SimilarResponseModel model, UpdateQuestionDto dto)
-    //{
-    //    using var context = contextFactory.CreateDbContext();
+    public async Task SendGain(CancellationToken cancellationToken)
+    {
+        var methodName = nameof(SendGain);
+        AppStatics.SenderGainAllow = false;
+        try
+        {
+            Console.WriteLine($"{methodName} - Method Started: {DateTime.Now}");
 
-    //    var data = await context.Similars
-    //        .Include(x => x.Lesson)
-    //        .FirstOrDefaultAsync(x => x.Id == dto.QuestionId && x.IsActive);
-    //    await SimilarRules.SimilarQuestionShouldExists(data);
+            using var context = contextFactory.CreateDbContext();
 
-    //    GetGainModel? gain = null;
-    //    if (dto.Status == QuestionStatus.Answered && model.GainName.IsNotEmpty())
-    //        gain = await gainService.GetOrAddGain(new(model?.GainName, data!.LessonId, data.CreateUser, context));
+            var questions = await context.Questions
+                .AsNoTracking()
+                .Include(x => x.Lesson)
+                .Where(x => x.Status == QuestionStatus.Answered && x.GainId == null && x.TryCount < AppOptions.AITryCount && x.CreateDate > AppOptions.ChangeDate)
+                .ToListAsync(cancellationToken);
 
-    //    string extension = string.Empty, questionFileName = string.Empty, answerFileName = string.Empty;
-    //    if (dto.Status == QuestionStatus.Answered)
-    //    {
-    //        extension = ".png";
-    //        var fileName = $"{dto.UserId}_{data!.LessonId}_{dto.QuestionId}{extension}";
-    //        questionFileName = $"SQ_{fileName}";
-    //        answerFileName = $"SA_{fileName}";
-    //        await commonService.PictureConvert(model?.SimilarImage, questionFileName, AppOptions.SimilarQuestionPictureFolderPath);
-    //        await commonService.PictureConvert(model?.AnswerImage, answerFileName, AppOptions.SimilarAnswerPictureFolderPath);
-    //    }
+            var similarQuestions = await context.Similars
+                .AsNoTracking()
+                .Include(x => x.Lesson)
+                .Where(x => x.Status == QuestionStatus.Answered && x.GainId == null && x.TryCount < AppOptions.AITryCount && x.CreateDate > AppOptions.ChangeDate)
+                .ToListAsync(cancellationToken);
 
-    //    data!.UpdateUser = 1;
-    //    data.UpdateDate = DateTime.Now;
-    //    data.QuestionPicture = model?.QuestionText.Trim("--- OCR Start ---", "--- OCR End ---") ?? string.Empty;
-    //    data.ResponseQuestion = model?.SimilarQuestionText ?? string.Empty;
-    //    data.ResponseQuestionFileName = questionFileName ?? string.Empty;
-    //    data.ResponseQuestionExtension = extension ?? string.Empty;
-    //    data.ResponseAnswer = model?.AnswerText ?? string.Empty;
-    //    data.ResponseAnswerFileName = answerFileName ?? string.Empty;
-    //    data.ResponseAnswerExtension = extension ?? string.Empty;
-    //    data.Status = dto.Status;
-    //    data.GainId = gain?.Id;
-    //    data.RightOption = model?.RightOption?.FirstOrDefault();
-    //    data.OcrMethod = model?.OcrMethod.IfNullEmptyString(string.Empty) ?? string.Empty;
-    //    data.ErrorDescription = dto.ErrorMessage.IfNullEmptyString(string.Empty);
-    //    data.AIIP = dto.AIIP;
-    //    if (dto.Status is not QuestionStatus.Answered)
-    //    {
-    //        data.TryCount++;
-    //        data.Status = data.TryCount < AppOptions.AITryCount
-    //            ? QuestionStatus.SendAgain
-    //            : dto.Status == QuestionStatus.SendAgain
-    //                ? QuestionStatus.Error
-    //                : dto.Status;
+            var allQuestions = questions.Select(OneOf<Question, Similar>.FromT0)
+                                        .Concat(similarQuestions.Select(OneOf<Question, Similar>.FromT1))
+                                        .ToList();
 
-    //        if (data.TryCount >= AppOptions.AITryCount)
-    //            await UpdateUserCredit(data.CreateUser, 1, true);
-    //    }
+            if (allQuestions.Count == 0) return;
+            Console.WriteLine($"{methodName} - All Count: {allQuestions.Count}");
+            var queueList = allQuestions.Take(AppOptions.AIGainQueueCapacity).ToList();
+            Console.WriteLine($"{methodName} - Take Count: {queueList.Count}");
 
-    //    context.Similars.Update(data);
-    //    await context.SaveChangesAsync();
+            var startDate = DateTime.Now;
+            Console.WriteLine($"{methodName} - Start: {startDate}");
 
-    //    if (dto.Status == QuestionStatus.Answered)
-    //        _ = notificationService.PushNotificationByUserId(new(Strings.Prepared, Strings.DynamicLessonQuestionPrepared.Format(data.Lesson!.Name), data.CreateUser, NotificationTypes.SimilarCreated, data.Id.ToString()));
+            var tasks = queueList.Select(async question =>
+            {
+                await AppStatics.GainSemaphore.WaitAsync(cancellationToken);
+                try
+                {
+                    if (question.IsT0)
+                    {
+                        var model = new QuestionApiModel
+                        {
+                            Id = question.AsT0.Id,
+                            LessonName = question.AsT0.Lesson!.Name,
+                            QuestionText = question.AsT0.QuestionText,
+                            UserId = question.AsT0.CreateUser,
+                            ExcludeQuiz = question.AsT0.ExcludeQuiz,
+                            AIUrl = AppOptions.AIDefaultUrls[3],
+                            LessonId = question.AsT0.LessonId
+                        };
 
-    //    return true;
-    //}
-    */
+                        Console.WriteLine($"{methodName} - SendForQuestion: {DateTime.Now} -- {model.Id} -- Lenght:{question.AsT0.QuestionText?.Length} --");
+                        var response = await questionApi.GetGain(model);
 
-    //public async Task<bool> AddQuiz(bool timePass = false, CancellationToken cancellationToken = default)
-    //{
-    //    try
-    //    {
-    //        AppStatics.SenderQuestionAllow = false;
-    //        using var context = contextFactory.CreateDbContext();
+                        var gain = await gainService.GetOrAddGain(new(response.GainName, question.AsT0.LessonId, question.AsT0.CreateUser, context));
 
-    //        var questions = await context.Questions
-    //            .AsNoTracking()
-    //            .Include(u => u.User).ThenInclude(u => u!.School)
-    //            .Include(u => u.Lesson)
-    //            .Include(u => u.Gain)
-    //            .Where(x => x.IsActive
-    //                        && x.Status == QuestionStatus.Answered
-    //                        && !x.SendForQuiz
-    //                        && !x.ExcludeQuiz
-    //                        && x.User!.IsActive
-    //                        && x.Lesson!.IsActive
-    //                        && x.Gain!.IsActive
-    //                        && (x.User.SchoolId == null || x.User.School!.IsActive)
-    //                        && (x.User.SchoolId == null || x.User.School!.LicenseEndDate.Date >= DateTime.Now.Date))
-    //            .Select(x => new { x.Id, x.QuestionPictureBase64, x.QuestionPictureFileName, x.CreateUser, x.User!.SchoolId, x.LessonId, x.ExistsVisualContent })
-    //            .ToListAsync(cancellationToken);
+                        var data = context.Questions.Where(x => x.Id == question.AsT0.Id);
+                        if (gain == null || gain.Id <= 0 || gain.Name.IsEmpty())
+                            await data.ExecuteUpdateAsync(x => x.SetProperty(p => p.TryCount, question.AsT0.TryCount + 1));
+                        else
+                            await data.ExecuteUpdateAsync(x => x.SetProperty(p => p.GainId, gain.Id));
+                    }
 
-    //        if (questions.Count == 0) return false;
+                    if (question.IsT1)
+                    {
+                        var model = new QuestionApiModel
+                        {
+                            Id = question.AsT1.Id,
+                            LessonName = question.AsT1.Lesson!.Name,
+                            QuestionText = question.AsT1.ResponseQuestion,
+                            UserId = question.AsT1.CreateUser,
+                            ExcludeQuiz = question.AsT1.ExcludeQuiz,
+                            AIUrl = AppOptions.AIDefaultUrls[3],
+                            LessonId = question.AsT1.LessonId,
+                        };
 
-    //        var groupedQuestions = questions
-    //            .GroupBy(x => new { x.SchoolId, x.LessonId, x.CreateUser })
-    //            .Where(x => x.Count() > AppOptions.QuizMinimumQuestionLimit)
-    //            .SelectMany(x => x.Take(AppOptions.QuizMinimumQuestionLimit).Select(q => new
-    //            {
-    //                q.Id,
-    //                q.QuestionPictureFileName,
-    //                q.CreateUser,
-    //                q.SchoolId,
-    //                q.LessonId,
-    //                q.ExistsVisualContent
-    //            }))
-    //            .OrderBy(o => o.CreateUser).ThenBy(o => o.SchoolId).ThenBy(o => o.LessonId).ThenBy(o => o.CreateUser)
-    //            .ToList();
+                        Console.WriteLine($"{methodName} - SendForSimilar: {DateTime.Now} -- {model.Id} -- Lenght:{question.AsT1.ResponseQuestion?.Length} --");
+                        var response = await questionApi.GetGain(model);
 
-    //        if (groupedQuestions.Count == 0) return false;
+                        var gain = await gainService.GetOrAddGain(new(response.GainName, question.AsT1.LessonId, question.AsT1.CreateUser, context));
 
-    //        var userGroups = groupedQuestions.GroupBy(q => q.CreateUser);
+                        var data = context.Similars.Where(x => x.Id == question.AsT1.Id);
+                        if (gain == null || gain.Id <= 0 || gain.Name.IsEmpty())
+                            await data.ExecuteUpdateAsync(x => x.SetProperty(p => p.TryCount, question.AsT1.TryCount + 1));
+                        else
+                            await data.ExecuteUpdateAsync(x => x.SetProperty(p => p.GainId, gain.Id));
+                    }
+                }
+                finally
+                {
+                    AppStatics.GainSemaphore.Release();
+                }
+            });
 
-    //        foreach (var userGroup in userGroups)
-    //        {
-    //            var lessonGroups = userGroup.GroupBy(q => q.LessonId);
-
-    //            foreach (var lessonGroup in lessonGroups)
-    //            {
-    //                if (cancellationToken.IsCancellationRequested)
-    //                    return false;
-
-    //                if (DateTime.Now.Hour >= 7 && !timePass) return false;
-
-    //                var base64List = new List<string>();
-    //                var visualList = new List<bool>();
-
-    //                var questionsIds = lessonGroup.Select(x => x.Id).ToList();
-
-    //                foreach (var question in lessonGroup)
-    //                {
-    //                    var filePath = Path.Combine(AppOptions.QuestionPictureFolderPath, question.QuestionPictureFileName!);
-    //                    var base64String = await commonService.ImageToBase64(filePath);
-    //                    base64List.Add(base64String);
-    //                    visualList.Add(question.ExistsVisualContent);
-    //                }
-
-    //                var addQuizModel = new AddQuizModel
-    //                {
-    //                    QuestionList = base64List,
-    //                    LessonId = lessonGroup.Key,
-    //                    UserId = userGroup.Key,
-    //                    VisualList = visualList
-    //                };
-
-    //                try
-    //                {
-    //                    await AddQuiz(addQuizModel, cancellationToken);
-
-    //                    foreach (var questionId in questionsIds)
-    //                    {
-    //                        var questionUpdate = await context.Questions.FirstOrDefaultAsync(x => x.Id == questionId, cancellationToken);
-    //                        await QuestionRules.QuestionShouldExists(questionUpdate);
-    //                        questionUpdate!.SendForQuiz = true;
-    //                        context.Questions.Update(questionUpdate);
-    //                        await context.SaveChangesAsync(cancellationToken);
-    //                    }
-    //                }
-    //                catch (Exception ex)
-    //                {
-    //                    logger.Error($"{addQuizModel.UserId} - {addQuizModel.LessonId} - {ex.Message}");
-    //                    continue;
-    //                }
-    //            }
-    //        }
-
-    //        return true;
-    //    }
-    //    finally
-    //    {
-    //        AppStatics.SenderQuestionAllow = true;
-    //    }
-    //}
+            await Task.WhenAll(tasks);
+            var endDate = DateTime.Now;
+            Console.WriteLine($"{methodName} - End: {endDate}");
+            Console.WriteLine($"{methodName} - Total Seconds: ********** {(endDate - startDate).TotalSeconds} s **********");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{methodName} - Error: {ex.Message}");
+        }
+        finally
+        {
+            Console.WriteLine($"{methodName} - Method Finished: {DateTime.Now}");
+            AppStatics.SenderGainAllow = true;
+        }
+    }
 }

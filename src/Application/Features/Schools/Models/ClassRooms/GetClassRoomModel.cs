@@ -18,7 +18,7 @@ public sealed class GetClassRoomModel : IResponseModel
     public short PackageId { get; set; }
     public string? PackageName { get; set; }
 
-    public GetSchoolModel? School { get; set; }
-    public List<GetTeacherModel> Teachers { get; set; } = [];
+    public GetSchoolLiteModel? School { get; set; }
+    public List<GetTeacherLiteModel> Teachers { get; set; } = [];
     public List<GetStudentModel> Students { get; set; } = [];
 }

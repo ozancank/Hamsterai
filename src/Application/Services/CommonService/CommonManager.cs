@@ -47,24 +47,24 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
 
     public bool IsByPass => httpContextAccessor.HttpContext?.Request.Headers.TryGetValue(ByPassOptions.Name, out var byPassKey) ?? false && byPassKey == ByPassOptions.Key;
 
-    public async Task<string> PictureConvert(string? base64, string? fileName, string? folder)
+    public async Task<string> PictureConvert(string? base64, string? fileName, string? folder, CancellationToken cancellationToken = default)
     {
         if (base64.IsEmpty() || fileName.IsEmpty() || folder.IsEmpty()) return string.Empty;
 
         await UserRules.PictureShouldAllowedType(fileName!);
         var filePath = System.IO.Path.Combine(folder!, fileName!);
         var imageBytes = Convert.FromBase64String(base64!);
-        await File.WriteAllBytesAsync(filePath, imageBytes);
+        await File.WriteAllBytesAsync(filePath, imageBytes, cancellationToken);
         return filePath;
     }
 
-    public async Task<string> ImageToBase64(string? path)
+    public async Task<string> ImageToBase64(string? path, CancellationToken cancellationToken = default)
     {
         try
         {
             if (path.IsEmpty()) return string.Empty;
             if (!File.Exists(path)) return string.Empty;
-            var imageBytes = await File.ReadAllBytesAsync(path);
+            var imageBytes = await File.ReadAllBytesAsync(path, cancellationToken);
             return Convert.ToBase64String(imageBytes);
         }
         catch
@@ -73,7 +73,7 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         }
     }
 
-    public async Task<string> TextToImage(string? text, string? fileName, string? folder, IImageEncoder? imageEncoder = null)
+    public async Task<string> TextToImage(string? text, string? fileName, string? folder, IImageEncoder? imageEncoder = null, CancellationToken cancellationToken = default)
     {
         if (text.IsEmpty() || fileName.IsEmpty() || folder.IsEmpty()) return string.Empty;
 
@@ -104,7 +104,7 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         });
 
         var filePath = System.IO.Path.Combine(folder!, fileName!);
-        await image.SaveAsync(filePath, imageEncoder);
+        await image.SaveAsync(filePath, imageEncoder, cancellationToken);
 
         return filePath;
     }
@@ -166,23 +166,25 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         return entityProperties;
     }
 
-    public async Task<string?> GetUserAIUrl(long userId)
+    public async Task<string?> GetUserAIUrl(long userId, CancellationToken cancellationToken = default)
     {
         var url = await userDal.GetAsync(
             enableTracking: false,
             predicate: x => x.Id == userId,
-            selector: x => x.AIUrl);
+            selector: x => x.AIUrl,
+            cancellationToken: cancellationToken);
 
         return url;
     }
 
-    public async Task<string?> GetLessonNamesForAI()
+    public async Task<string?> GetLessonNamesForAI(CancellationToken cancellationToken = default)
     {
         if (HttpUserType != UserTypes.Administator) throw new AuthenticationException(Strings.AuthorizationDenied);
 
         var lessonNames = await lessonDal.GetListAsync(
             enableTracking: false,
-            selector: x => x.Name);
+            selector: x => x.Name,
+            cancellationToken: cancellationToken);
         var result = lessonNames.Select(x => x.ToSlug('_'))!;
         return string.Join(",", result);
     }

@@ -140,6 +140,7 @@ public struct Strings
     public const string Type = "Tip";
     public const string OfType = "Tipi";
     public const string Option = "Seçenek";
+    public const string Options = "Seçenekler";
 
     //public const string LessonGroup = "Ders Grubu";
     public const string NoQuestionCredit = "Soru krediniz bulunmamaktadır.";

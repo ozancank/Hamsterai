@@ -8,7 +8,7 @@ public class AppOptions
     public static string SimilarQuestionPicturePath { get; set; } = string.Empty;
     public static string SimilarAnswerPicturePath { get; set; } = string.Empty;
     public static string QuizQuestionPicturePath { get; set; } = string.Empty;
-    public static string QuestionSmallPicturePath { get;set; } = string.Empty;
+    public static string QuestionSmallPicturePath { get; set; } = string.Empty;
     public static string QuizAnswerPicturePath { get; set; } = string.Empty;
     public static string PackagePicturePath { get; set; } = string.Empty;
     public static string HomeworkPath { get; set; } = string.Empty;
@@ -18,13 +18,19 @@ public class AppOptions
     public static int SimilarMonthLimitForStudent { get; set; } = 300;
     public static int QuizMinimumQuestionLimit { get; set; } = 10;
     public static string DefaultPassword { get; set; } = string.Empty;
+    public static DateTime ChangeDate { get; set; }
     public static int AITryCount { get; set; } = 10;
+    public static int AITimeoutSecond { get; set; } = 60;
     public static int AIQuestionSendSecond { get; set; } = 40;
-    public static int AISimilarSendSecond { get; set; } = 10;
-    public static int QuestionSenderCapacity { get; set; } = 10;
-    public static int QuestionQueueCapacity { get; set; } = 30;
-    public static int SimilarSenderCapacity { get; set; } = 10;
-    public static int SimilarQueueCapacity { get; set; } = 30;
+    public static int AIQuestionSenderCapacity { get; set; } = 10;
+    public static int AIQuestionQueueCapacity { get; set; } = 30;
+    public static int AISimilarSendSecond { get; set; } = 15;
+    public static int AISimilarSenderCapacity { get; set; } = 10;
+    public static int AISimilarQueueCapacity { get; set; } = 30;
+    public static int AIGainSendSecond { get; set; } = 20;
+    public static int AIGainSenderCapacity { get; set; } = 1;
+    public static int AIGainQueueCapacity { get; set; } = 1;
+
     public static string[] AIDefaultUrls { get; set; } = [];
 
     public static string ProfilePictureFolderPath { get; set; } = string.Empty;

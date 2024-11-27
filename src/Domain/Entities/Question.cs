@@ -25,6 +25,7 @@ public class Question : BaseEntity<Guid>
     public string? OcrMethod { get; set; }
     public string? ErrorDescription { get; set; }
     public string? AIIP { get; set; }
+    public Guid? SimilarId { get; set; }
 
     public virtual User? User { get; set; }
     public virtual Lesson? Lesson { get; set; }

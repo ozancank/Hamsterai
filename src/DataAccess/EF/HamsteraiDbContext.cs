@@ -1,6 +1,7 @@
 ﻿using Domain.Entities.Core;
 using Microsoft.Extensions.Configuration;
 using OCK.Core.Utilities;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace DataAccess.EF;
@@ -16,7 +17,8 @@ public class HamsteraiDbContext : DbContext
         Configuration = ServiceTools.GetService<IConfiguration>();
         if (!IsMigration)
         {
-            Database.Migrate();
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+                Database.Migrate();
             IsMigration = true;
         }
     }

@@ -1,7 +1,7 @@
 ﻿using Application.Features.Questions.Models.Quizzes;
 using DataAccess.EF;
+using Infrastructure.AI.Models;
 using Infrastructure.AI.Seduss.Dtos;
-using Infrastructure.AI.Seduss.Models;
 
 namespace Application.Services.QuestionService;
 
@@ -13,9 +13,11 @@ public interface IQuestionService : IBusinessService
 
     Task SendSimilar(CancellationToken cancellationToken);
 
-    Task<bool> AddSimilarQuestion(SimilarResponseModel model, UpdateQuestionDto dto);
+    Task<bool> AddSimilar(SimilarResponseModel model, UpdateQuestionDto dto);
 
-    Task<string> AddQuiz(AddQuizModel model, HamsteraiDbContext? context , CancellationToken cancellationToken);
+    Task<string> AddQuiz(AddQuizModel model, HamsteraiDbContext? context, CancellationToken cancellationToken);
+
+    Task SendGain(CancellationToken cancellationToken);
 
     //Task<bool> UpdateSimilarAnswer(SimilarResponseModel model, UpdateQuestionDto dto);
 
