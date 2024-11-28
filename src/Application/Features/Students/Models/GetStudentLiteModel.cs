@@ -9,4 +9,5 @@ public class GetStudentLiteModel : IResponseModel
     public string? StudentNo { get; set; }
     public int ClassRoomId { get; set; }
     public string? FullName { get; set; }
+    public int SchoolId { get; set; }    
 }

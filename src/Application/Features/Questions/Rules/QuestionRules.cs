@@ -22,9 +22,9 @@ public class QuestionRules(IQuestionDal questionDal,
         if (commonService.HttpUserType == UserTypes.Administator) return;
         var count = await questionDal.Query().AsNoTracking()
             .Where(x => x.CreateUser == commonService.HttpUserId
-                                    && x.Status != QuestionStatus.Error
-                                    && x.CreateDate >= date
-                                    && x.CreateDate <= date.AddMonths(1).AddMilliseconds(-1)).CountAsync();
+                     && x.Status != QuestionStatus.Error
+                     && x.CreateDate >= date
+                     && x.CreateDate <= date.AddMonths(1).AddMilliseconds(-1)).CountAsync();
 
         if (count >= AppOptions.QuestionMonthLimitForStudent) throw new BusinessException(Strings.QuestionLimitForStudent);
     }
@@ -42,26 +42,27 @@ public class QuestionRules(IQuestionDal questionDal,
             enableTracking: false,
             predicate: x => x.Id == userId);
 
+        var newUserId = user.Id;
+
         if (user.Type == UserTypes.Administator) return;
-
-        var packageUsers = await packageUserDal.GetListAsync(
-            enableTracking: false,
-            predicate: x => x.UserId == userId && x.EndDate < DateTime.Now,
-            selector: x => x.QuestionCredit);
-
-        var totalCredit = packageUsers?.Sum() ?? 0;
-
         if (user.Type == UserTypes.School || user.Type == UserTypes.Teacher || user.Type == UserTypes.Student)
         {
-            var schoolUser = await userDal.GetAsync(
+            newUserId = await userDal.GetAsync(
                 enableTracking: false,
                 predicate: x => x.SchoolId == user.SchoolId && x.Type == UserTypes.School,
                 selector: x => x.Id);
         }
 
+        var packageUsers = await packageUserDal.GetListAsync(
+            enableTracking: false,
+            predicate: x => x.UserId == newUserId && x.EndDate > DateTime.Now,
+            selector: x => x.QuestionCredit);
+
+        var totalCredit = packageUsers?.Sum() ?? 0;
+
         var questionCount = await questionDal.CountOfRecordAsync(
             enableTracking: false,
-            predicate: x => x.CreateUser == userId && AppStatics.QuestionStatusesForCredit.Contains(x.Status));
+            predicate: x => x.CreateUser == user.Id && AppStatics.QuestionStatusesForCredit.Contains(x.Status));
 
         var remainingCredit = totalCredit - questionCount;
 

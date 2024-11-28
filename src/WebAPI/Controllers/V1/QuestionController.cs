@@ -81,6 +81,14 @@ public class QuestionController : BaseController
         return Ok(result);
     }
 
+    [HttpGet("GetRemainigQuestionCreditByUserId/{userId}")]
+    public async Task<IActionResult> GetRemainigQuestionCreditByUserId([FromRoute] long userId)
+    {
+        var query = new GetRemainigQuestionCreditByUserIdQuery { UserId = userId };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
     #endregion Question
 
     #region SimilarQuestion

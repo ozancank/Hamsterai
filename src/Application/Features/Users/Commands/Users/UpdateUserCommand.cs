@@ -42,7 +42,7 @@ public sealed class UpdateUserCommandHandler(IMapper mapper,
         {
             var extension = Path.GetExtension(request.Model.ProfilePictureFileName);
             var fileName = $"P_{request.Model.Id}_{Guid.NewGuid()}{extension}";
-            await commonService.PictureConvert(request.Model.ProfilePictureBase64, request.Model.ProfilePictureFileName, AppOptions.ProfilePictureFolderPath);
+            await commonService.PictureConvert(request.Model.ProfilePictureBase64, request.Model.ProfilePictureFileName, AppOptions.ProfilePictureFolderPath, cancellationToken);
             request.Model.ProfileUrl = fileName;
         }
 
@@ -79,9 +79,13 @@ public sealed class UpdateUserCommandHandler(IMapper mapper,
                     UserId = user.Id,
                     PackageId = packageId,
                     EndDate = request.Model.LicenceEndDate,
-                    QuestionCredit = request.Model.QuestionCredit,
                 };
                 packageUsers.Add(packageUser);
+            }
+
+            if (packageUsers.Count != 0)
+            {
+                packageUsers[0].QuestionCredit = request.Model.QuestionCredit;
             }
         }
 

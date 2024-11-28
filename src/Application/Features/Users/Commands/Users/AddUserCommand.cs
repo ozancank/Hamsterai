@@ -125,7 +125,7 @@ public class AddUserCommandValidator : AbstractValidator<AddUserCommand>
 
         //RuleFor(x => x.Phone).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Phone]);
         //RuleFor(x => x.Phone.EmptyOrTrim(" ")).MinimumLength(10).WithMessage(Strings.DynamicMinLength, [Strings.Phone, "10"]);
-        RuleFor(x => x.Model.Phone.EmptyOrTrim(" ")).MaximumLength(10).WithMessage(Strings.DynamicMaxLength, [Strings.Phone, "15"]);
+        RuleFor(x => x.Model.Phone.EmptyOrTrim(" ")).MaximumLength(15).WithMessage(Strings.DynamicMaxLength, [Strings.Phone, "15"]);
         //RuleFor(x => x.Phone).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [Strings.PhoneNumber]);
 
         RuleFor(x => x.Model.Email).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Email]);

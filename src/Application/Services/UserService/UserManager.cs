@@ -2,7 +2,6 @@
 using Application.Features.Users.Rules;
 using Application.Services.CommonService;
 using DataAccess.Abstract.Core;
-using DataAccess.EF.Migrations;
 using Domain.Entities.Core;
 using LinqKit;
 using OCK.Core.Caching;
@@ -13,6 +12,7 @@ namespace Application.Services.UserService;
 public class UserManager(IUserDal userDal,
                          IMapper mapper,
                          ICacheManager cacheManager,
+                         IQuestionDal questionDal,
                          ICommonService commonService) : IUserService
 {
     public async Task<User> GetUserById(long id, bool tracking = false)
@@ -68,8 +68,6 @@ public class UserManager(IUserDal userDal,
     {
         return await cacheManager.GetOrAddAsync($"{Strings.CacheStatusAndLicence}-{userId}", async () =>
         {
-
-
             var userType = commonService.HttpUserType;
             var schoolId = commonService.HttpSchoolId;
 
@@ -80,15 +78,15 @@ public class UserManager(IUserDal userDal,
             {
                 var schoolUser = await userDal.GetAsync(
                     enableTracking: false,
-                    predicate: x => x.IsActive && x.SchoolId == schoolId && x.Type==UserTypes.School && x.School != null && x.School.IsActive,
+                    predicate: x => x.IsActive && x.SchoolId == schoolId && x.Type == UserTypes.School && x.School != null && x.School.IsActive,
                     include: x => x.Include(u => u.PackageUsers).Include(x => x.School),
-                    selector: x => new { x.PackageUsers, AccessStundents = x.School != null && x.School.AccessStundents });
+                    selector: x => new { x.IsActive, x.PackageUsers, AccessStundents = x.School != null && x.School.AccessStundents });
 
-                var licenseEndDate =  schoolUser.PackageUsers.Max(x => x.EndDate);
+                var licenseEndDate = schoolUser.PackageUsers.DefaultIfEmpty().Max(x => x != null ? x.EndDate : AppStatics.MilleniumDate);
 
-                await SchoolRules.SchoolShouldExists(schoolUser);
-                await UserRules.LicenceIsValid(licenseEndDate);
+                await SchoolRules.SchoolShouldExistsAndIsActive(schoolUser.IsActive);
                 await SchoolRules.AccessStudentEnabled(schoolUser.AccessStundents, userType);
+                await UserRules.LicenceIsValid(licenseEndDate);
 
                 result = await userDal.IsExistsAsync(predicate: x => x.Id == userId && x.IsActive, enableTracking: false);
             }
@@ -98,8 +96,9 @@ public class UserManager(IUserDal userDal,
                     enableTracking: false,
                     predicate: x => x.Id == userId && x.IsActive,
                     selector: x => new { x.IsActive, x.PackageUsers });
+                await UserRules.UserShouldExistsAndActive(user.IsActive);
 
-                var licenseEndDate = user.PackageUsers.Max(x => x.EndDate);
+                var licenseEndDate = user.PackageUsers.DefaultIfEmpty().Max(x => x != null ? x.EndDate : AppStatics.MilleniumDate);
 
                 await UserRules.LicenceIsValid(licenseEndDate);
                 result = true;
@@ -107,5 +106,54 @@ public class UserManager(IUserDal userDal,
 
             return result;
         }, 60);
+    }
+
+    public async Task<int> RemainigQuestionCredit(long userId)
+    {
+        var user = await userDal.GetAsync(
+            enableTracking: false,
+            predicate: x => x.Id == userId && x.IsActive,
+            include: x => x.Include(u => u.PackageUsers),
+            selector: x => new { x.Type, x.PackageUsers, x.SchoolId });
+        await UserRules.UserShouldExists(user);
+
+        var totalCredit = 0;
+
+        switch (user.Type)
+        {
+            case UserTypes.Administator:
+                totalCredit = int.MaxValue;
+                break;
+
+            case UserTypes.School:
+            case UserTypes.Teacher:
+            case UserTypes.Student:
+                var newUserId = await userDal.GetAsync(
+                    enableTracking: false,
+                    predicate: x => x.SchoolId == user.SchoolId && x.Type == UserTypes.School && x.IsActive,
+                    selector: x => x.Id);
+
+                var schoolUser = await userDal.GetAsync(
+                    enableTracking: false,
+                    predicate: x => x.Id == newUserId && x.IsActive,
+                    include: x => x.Include(u => u.PackageUsers),
+                    selector: x => new { x.PackageUsers });
+
+                totalCredit = schoolUser.PackageUsers.Where(x => x.EndDate > DateTime.Now).DefaultIfEmpty().Sum(x => x != null ? x.QuestionCredit : 0);
+                break;
+
+            case UserTypes.Person:
+                totalCredit = user.PackageUsers.Where(x => x.EndDate > DateTime.Now).DefaultIfEmpty().Sum(x => x != null ? x.QuestionCredit : 0);
+                break;
+
+            default:
+                totalCredit = 0;
+                break;
+        }
+
+        var questionCount = await questionDal.CountOfRecordAsync(
+            enableTracking: false,
+            predicate: x => x.CreateUser == userId && AppStatics.QuestionStatusesForCredit.Contains(x.Status));
+        return totalCredit - questionCount;
     }
 }

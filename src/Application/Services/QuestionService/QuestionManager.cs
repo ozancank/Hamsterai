@@ -249,7 +249,7 @@ public class QuestionManager(ICommonService commonService,
             await quizList.ForEachAsync(async group =>
             {
                 var similarList = group
-                    .Where(x=> x.ResponseQuestionFileName.IsNotEmpty()
+                    .Where(x => x.ResponseQuestionFileName.IsNotEmpty()
                                && File.Exists(Path.Combine(AppOptions.SimilarQuestionPictureFolderPath, x.ResponseQuestionFileName!)))
                     .OrderBy(x => x.CreateDate).Take(AppOptions.QuizMinimumQuestionLimit).ToList();
 
@@ -501,13 +501,13 @@ public class QuestionManager(ICommonService commonService,
             var questions = await context.Questions
                 .AsNoTracking()
                 .Include(x => x.Lesson)
-                .Where(x => x.Status == QuestionStatus.Answered && x.GainId == null && x.TryCount < AppOptions.AITryCount && x.CreateDate > AppOptions.ChangeDate)
+                .Where(x => x.Status == QuestionStatus.Answered && x.GainId == null && x.TryCount < AppOptions.AITryCount && x.CreateDate > AppOptions.ChangeDate && x.QuestionText != string.Empty)
                 .ToListAsync(cancellationToken);
 
             var similarQuestions = await context.Similars
                 .AsNoTracking()
                 .Include(x => x.Lesson)
-                .Where(x => x.Status == QuestionStatus.Answered && x.GainId == null && x.TryCount < AppOptions.AITryCount && x.CreateDate > AppOptions.ChangeDate)
+                .Where(x => x.Status == QuestionStatus.Answered && x.GainId == null && x.TryCount < AppOptions.AITryCount && x.CreateDate > AppOptions.ChangeDate && x.ResponseQuestion != string.Empty)
                 .ToListAsync(cancellationToken);
 
             var allQuestions = questions.Select(OneOf<Question, Similar>.FromT0)

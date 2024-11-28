@@ -64,7 +64,13 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
         user.Phone = school.AuthorizedPhone.TrimForPhone();
         user.TaxNumber = school.TaxNumber;
 
-        var deleteList = await packageUserDal.GetListAsync(predicate: x => x.UserId == user.Id, cancellationToken: cancellationToken);
+        var usersInSchool = await userDal.GetListAsync(
+            predicate: x => x.SchoolId == school.Id,
+            include: x => x.Include(u => u.PackageUsers).ThenInclude(u => u.Package),
+            selector: x => x.Id,
+            cancellationToken: cancellationToken);
+
+        var deleteList = await packageUserDal.GetListAsync(predicate: x => x.UserId == user.Id || usersInSchool.Contains(x.UserId), cancellationToken: cancellationToken);
 
         var packageUsers = request.Model.PackageIds.Select(x => new PackageUser
         {
@@ -81,19 +87,16 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
         }).ToList();
 
         var updateList = new List<User>();
-        var usersInSchool = await userDal.GetListAsync(
-            predicate: x => x.SchoolId == school.Id && x.Type == UserTypes.Student,
-            include: x => x.Include(u => u.PackageUsers).ThenInclude(u => u.Package),
-            cancellationToken: cancellationToken);
 
-        foreach (var studentUser in usersInSchool)
-        {
-            if (studentUser.PackageUsers.Count > 0 && !studentUser.PackageUsers.Any(x => request.Model.PackageIds.Contains(x.PackageId)))
-            {
-                //studentUser.PackageId = null;
-                updateList.Add(studentUser);
-            }
-        }
+
+        //foreach (var studentUser in usersInSchool)
+        //{
+        //    if (studentUser.PackageUsers.Count > 0 && !studentUser.PackageUsers.Any(x => request.Model.PackageIds.Contains(x.PackageId)))
+        //    {
+        //        //studentUser.PackageId = null;
+        //        updateList.Add(studentUser);
+        //    }
+        //}
 
         var result = await schoolDal.ExecuteWithTransactionAsync(async () =>
         {
@@ -102,7 +105,12 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
             await packageUserDal.DeleteRangeAsync(deleteList, cancellationToken: cancellationToken);
             await packageUserDal.AddRangeAsync(packageUsers, cancellationToken: cancellationToken);
             await userDal.UpdateRangeAsync(updateList, cancellationToken: cancellationToken);
-            var result = mapper.Map<GetSchoolModel>(added);
+            var result = await schoolDal.GetAsyncAutoMapper<GetSchoolModel>(
+                enableTracking: false,
+                predicate: x => x.Id == school.Id,
+                include: x => x.Include(u => u.Users).ThenInclude(u => u.PackageUsers).ThenInclude(u => u.Package),
+                configurationProvider: mapper.ConfigurationProvider,
+            cancellationToken: cancellationToken);
             return result;
         }, cancellationToken: cancellationToken);
 

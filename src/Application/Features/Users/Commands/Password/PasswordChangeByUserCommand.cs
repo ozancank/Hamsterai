@@ -30,7 +30,7 @@ public class PasswordChangeByUserCommandHandler(IUserDal userDal,
 
         await UserRules.UserShouldExistsAndActive(user);
         await UserRules.PasswordShouldVerifiedWhenPasswordChange(user, request.OldPassword);
-        await userRules.UserTypeAllowed(user.Type, user.Id);
+        await userRules.UserTypeAllowed(user.Type, user.Id, true);
 
         HashingHelper.CreatePasswordHash(request.Password!, out byte[] passwordHash, out byte[] passwordSalt);
         user.PasswordHash = passwordHash;

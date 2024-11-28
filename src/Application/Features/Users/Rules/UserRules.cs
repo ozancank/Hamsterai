@@ -12,7 +12,7 @@ public class UserRules(IUserDal userDal,
                        IUserOperationClaimDal userOperationClaimDal,
                        ICommonService commonService) : IBusinessRule
 {
-    internal static Task UserShouldExists(User? user)
+    internal static Task UserShouldExists(object? user)
     {
         if (user == null) throw new BusinessException(Strings.DynamicNotFound, Strings.User);
         return Task.CompletedTask;
@@ -25,9 +25,9 @@ public class UserRules(IUserDal userDal,
         return Task.CompletedTask;
     }
 
-    internal static Task UserShouldExists(GetUserModel? user)
+    internal static Task UserShouldExistsAndActive(bool isActive)
     {
-        if (user == null) throw new BusinessException(Strings.DynamicNotFound, Strings.User);
+        if (!isActive) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.User);
         return Task.CompletedTask;
     }
 
@@ -125,12 +125,12 @@ public class UserRules(IUserDal userDal,
         return Task.CompletedTask;
     }
 
-    internal Task UserTypeAllowed(UserTypes type, long? userId = null)
+    internal Task UserTypeAllowed(UserTypes type, long? userId = null, bool schoolChange=false)
     {
         var control = commonService.HttpUserType switch
         {
             UserTypes.Administator => true,
-            UserTypes.School => type == UserTypes.Teacher || type == UserTypes.Student,
+            UserTypes.School => type == UserTypes.Teacher || type == UserTypes.Student || (schoolChange && userId.HasValue && commonService.HttpUserId == userId && type == UserTypes.School),
             UserTypes.Teacher => type == UserTypes.Student || (userId.HasValue && commonService.HttpUserId == userId && type == UserTypes.Teacher),
             UserTypes.Student => userId.HasValue && commonService.HttpUserId == userId && type == UserTypes.Student,
             UserTypes.Person => userId.HasValue && commonService.HttpUserId == userId && type == UserTypes.Person,

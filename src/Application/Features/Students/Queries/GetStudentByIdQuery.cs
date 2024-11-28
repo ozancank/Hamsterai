@@ -34,7 +34,11 @@ public class GetStudentByIdQueryHandler(IMapper mapper,
         if (request.ThrowException) await StudentRules.StudentShouldExists(student);
 
         if (student != null)
-            student.UserId = (await userDal.GetAsync(x => x.Type == UserTypes.Student && x.ConnectionId == student.Id, enableTracking: false, cancellationToken: cancellationToken))?.Id ?? 0;
+        {
+            var user = await userDal.GetAsync(x => x.Type == UserTypes.Student && x.ConnectionId == student.Id, enableTracking: false, cancellationToken: cancellationToken);
+            student.UserId = user?.Id ?? 0;
+            student.SchoolId = user?.SchoolId ?? 0;
+        }
 
         return student;
     }

@@ -14,4 +14,6 @@ public interface IUserService : IBusinessService
     Task<User> PassiveUser(User user);
 
     Task<bool> UserStatusAndLicense(long id);
+
+    Task<int> RemainigQuestionCredit(long userId);
 }

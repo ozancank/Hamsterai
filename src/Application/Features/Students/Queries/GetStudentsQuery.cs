@@ -1,6 +1,7 @@
 ﻿using Application.Features.Students.Models;
 using Application.Services.CommonService;
 using DataAccess.Abstract.Core;
+using Domain.Entities;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
@@ -33,10 +34,18 @@ public class GetStudentsQueryHandler(IMapper mapper,
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
 
-        await students.Items.ForEachAsync(async x =>
+        var users = await userDal.GetListAsync(
+            predicate: x => x.Type == UserTypes.Student && students.Items.Any(s => s.Id == x.ConnectionId),
+            selector: x => new { x.Id, x.SchoolId, x.ConnectionId },
+            enableTracking: false,
+            cancellationToken: cancellationToken);
+
+        students.Items.ForEach(x =>
         {
-            x.UserId = (await userDal.GetAsync(u => u.Type == UserTypes.Student && u.ConnectionId == x.Id, enableTracking: false, cancellationToken: cancellationToken))?.Id ?? 0;
-        });
+            var user = users.FirstOrDefault(u => u.ConnectionId == x.Id);
+            x.UserId = user?.Id ?? 0;
+            x.SchoolId = user?.SchoolId ?? 0;
+        }); ;
 
         var result = mapper.Map<PageableModel<GetStudentModel>>(students);
         return result;

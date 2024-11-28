@@ -18,6 +18,7 @@ public sealed class GetSchoolLiteModel : IResponseModel
     public int TeacherCount { get; set; }
     public int StudentCount { get; set; }
     public long UserId { get; set; }
+    public DateTime LicenseEndDate { get; set; }
 
     public List<short> PackageIds { get; set; } = [];
     public List<GetPackageLiteModel> Packages { get; set; } = [];
