@@ -63,6 +63,8 @@ static void Services(WebApplicationBuilder builder)
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddHealthChecks();
     builder.Services.AddDistributedMemoryCache();
+    builder.Services.AddHttpClient();
+    builder.Services.AddHttpContextAccessor();
     builder.Services.AddSingleton<Stopwatch>();
     builder.Services.AddSingleton<ITokenHelper, JwtHelper>();
     builder.Services.AddSingleton<ICacheManager, DistributedCacheManager>();

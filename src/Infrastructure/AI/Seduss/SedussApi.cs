@@ -121,7 +121,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
 
-            var url = $"{baseUrl}/kazanim/sor";
+            var url = $"{baseUrl}/benzer/sor";
             if (baseUrl.Contains("185.195.255.124")) url = $"{baseUrl}/Benzer";
 
             var data = new SimilarRequestModel

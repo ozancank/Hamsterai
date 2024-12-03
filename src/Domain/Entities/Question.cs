@@ -26,6 +26,7 @@ public class Question : BaseEntity<Guid>
     public string? ErrorDescription { get; set; }
     public string? AIIP { get; set; }
     public Guid? SimilarId { get; set; }
+    public bool ManuelSendAgain { get; set; }
 
     public virtual User? User { get; set; }
     public virtual Lesson? Lesson { get; set; }

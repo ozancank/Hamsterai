@@ -153,7 +153,7 @@ public class UserManager(IUserDal userDal,
 
         var questionCount = await questionDal.CountOfRecordAsync(
             enableTracking: false,
-            predicate: x => x.CreateUser == userId && AppStatics.QuestionStatusesForCredit.Contains(x.Status));
+            predicate: x => x.CreateUser == userId && AppStatics.QuestionStatusesForCredit.Contains(x.Status) || x.ManuelSendAgain);
         return totalCredit - questionCount;
     }
 }

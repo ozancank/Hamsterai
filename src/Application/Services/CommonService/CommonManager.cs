@@ -109,6 +109,49 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         return filePath;
     }
 
+    public async Task<string> ImageToBase64WithResize(string? path, int maxDimension = 512, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (path.IsEmpty()) return string.Empty;
+            await using var inputStream = File.OpenRead(path!);
+            var image = await Image.LoadAsync(inputStream, cancellationToken);
+
+            if (image.Width > maxDimension || image.Height>maxDimension)
+            {
+                int newWidth, newHeight;
+                if (image.Width > image.Height)
+                {
+                    newWidth = maxDimension;
+                    newHeight = (int)(image.Height * (maxDimension / (float)image.Width));
+                }
+                else
+                {
+                    newHeight = maxDimension;
+                    newWidth = (int)(image.Width * (maxDimension / (float)image.Height));
+                }
+
+                image.Mutate(x => x.Resize(newWidth, newHeight));
+            }
+            if (image.Width > maxDimension || image.Height > maxDimension)
+            {
+                var (newWidth, newHeight) = image.Width > image.Height
+                    ? (maxDimension, (int)(image.Height * (maxDimension / (float)image.Width)))
+                    : ((int)(image.Width * (maxDimension / (float)image.Height)), maxDimension);
+
+                image.Mutate(x => x.Resize(newWidth, newHeight));
+            }
+
+            await using var memoryStream = new MemoryStream();
+            await image.SaveAsJpegAsync(memoryStream, cancellationToken: cancellationToken);
+            return Convert.ToBase64String(memoryStream.ToArray());
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
+
     public void ThrowErrorTry(Exception exception)
     {
         if (HttpUserType != UserTypes.Administator) throw new AuthenticationException(Strings.AuthorizationDenied);

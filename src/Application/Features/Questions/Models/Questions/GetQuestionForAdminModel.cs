@@ -16,6 +16,7 @@ public class GetQuestionForAdminModel : IResponseModel
     public bool ExistsVisualContent { get; set; }
     public bool SendForQuiz { get; set; }
     public bool IsRead { get; set; }
+    public bool ManuelSendAgain { get; set; }
     public string? QuestionPicture { get; set; }
     public string? QuestionText { get; set; }
     public string? AnswerText { get; set; }

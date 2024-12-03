@@ -18,6 +18,8 @@ public interface ICommonService : IBusinessService
 
     Task<string> ImageToBase64(string? path, CancellationToken cancellationToken = default);
 
+    Task<string> ImageToBase64WithResize(string? path, int maxDimension = 512, CancellationToken cancellationToken = default);
+
     void ThrowErrorTry(Exception exception);
 
     List<string> GetLogs(PageRequest pageRequest, bool onlyError);

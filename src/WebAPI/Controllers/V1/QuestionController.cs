@@ -7,6 +7,7 @@ using Application.Features.Questions.Models.Similars;
 using Application.Features.Questions.Queries.Questions;
 using Application.Features.Questions.Queries.Similars;
 using Asp.Versioning;
+using Domain.Constants;
 
 namespace WebAPI.Controllers.V1;
 
@@ -77,6 +78,14 @@ public class QuestionController : BaseController
     public async Task<IActionResult> IsReadQuestion([FromQuery] Guid questionId)
     {
         var command = new UpdateQuestionIsReadCommand { Id = questionId };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("ManuelSendAgain")]
+    public async Task<IActionResult> UpdateQuestionStatus([FromQuery] Guid questionId)
+    {
+        var command = new UpdateQuestionStatusCommand { Id = questionId, Status = QuestionStatus.Waiting };
         var result = await Mediator.Send(command);
         return Ok(result);
     }

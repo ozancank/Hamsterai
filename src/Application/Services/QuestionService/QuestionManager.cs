@@ -33,6 +33,7 @@ public class QuestionManager(ICommonService commonService,
                 .AsNoTracking()
                 .Include(x => x.Lesson)
                 .Where(x => AppStatics.QuestionStatusesForSender.Contains(x.Status)
+                            && (!x.ManuelSendAgain || x.Status == QuestionStatus.Waiting)
                             && x.TryCount < AppOptions.AITryCount
                             && x.CreateDate > AppOptions.ChangeDate)
                 .ToListAsync(cancellationToken);
@@ -57,7 +58,7 @@ public class QuestionManager(ICommonService commonService,
                     if (File.Exists(questionSmallPicturePath))
                         base64 = await commonService.ImageToBase64(questionSmallPicturePath);
                     else if (File.Exists(questionPicturePath))
-                        base64 = await commonService.ImageToBase64(questionPicturePath);
+                        base64 = await commonService.ImageToBase64WithResize(questionPicturePath, 512, cancellationToken);
 
                     if (base64.IsEmpty())
                     {
@@ -117,10 +118,6 @@ public class QuestionManager(ICommonService commonService,
             .FirstOrDefaultAsync(x => x.Id == dto.QuestionId && x.IsActive);
         await QuestionRules.QuestionShouldExists(data);
 
-        GetGainModel? gain = null;
-        //if (dto.Status == QuestionStatus.Answered && model.GainName.IsNotEmpty())
-        //    gain = await gainService.GetOrAddGain(new(model?.GainName, data!.LessonId, data.CreateUser, context));
-
         string extension = string.Empty;
         string fileName = string.Empty;
         if (dto.Status == QuestionStatus.Answered)
@@ -137,7 +134,7 @@ public class QuestionManager(ICommonService commonService,
         data.AnswerPictureFileName = fileName ?? string.Empty;
         data.AnswerPictureExtension = extension ?? string.Empty;
         data.Status = dto.Status;
-        data.GainId = gain?.Id;
+        data.GainId = null;
         data.RightOption = model?.RightOption?.FirstOrDefault();
         data.OcrMethod = model?.OcrMethod.IfNullEmptyString(string.Empty) ?? string.Empty;
         data.ErrorDescription = dto.ErrorMessage.IfNullEmptyString(string.Empty);
@@ -318,10 +315,6 @@ public class QuestionManager(ICommonService commonService,
             return false;
         }
 
-        GetGainModel? gain = null;
-        if (dto.Status == QuestionStatus.Answered && model.GainName.IsNotEmpty())
-            gain = await gainService.GetOrAddGain(new(model?.GainName, dto.LessonId, dto.UserId, context));
-
         var rightOption = model?.RightOption.IsNotEmpty() ?? false
                        ? model?.RightOption.Trim("Cevap", ".", ":", "(", ")", "-")!.ToUpper()[..1]
                        : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
@@ -359,7 +352,7 @@ public class QuestionManager(ICommonService commonService,
             SendForQuiz = false,
             SendQuizDate = AppStatics.MilleniumDate,
             TryCount = 0,
-            GainId = gain?.Id,
+            GainId = null,
             RightOption = rightOption?.FirstOrDefault(),
             ExcludeQuiz = false,
             ExistsVisualContent = false,
@@ -383,8 +376,6 @@ public class QuestionManager(ICommonService commonService,
 
             question.UpdateUser = dto.UserId;
             question.UpdateDate = date;
-            question.GainId = gain?.Id;
-            question.RightOption = data.RightOption;
             question.SimilarId = data.Id;
 
             context.Questions.Update(question);
