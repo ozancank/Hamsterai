@@ -9,7 +9,7 @@ public class StudentMappingProfiles : Profile
         CreateMap<Student, GetStudentModel>()
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.Name} {src.Surname}"))
             .ForMember(dest => dest.ClassName, opt => opt.MapFrom(src => src.ClassRoom != null ? $"{src.ClassRoom.No}-{src.ClassRoom.Branch}" : default))
-            .ForMember(dest => dest.TeacherNames, opt => opt.MapFrom(src => src.ClassRoom != null ? src.ClassRoom.TeacherClassRooms.Select(x => src.Teachers != null ? $"{x.Teacher!.Name} {x.Teacher.Surname}" : default) : default));
+            .ForMember(dest => dest.TeacherNames, opt => opt.MapFrom(src => src.ClassRoom != null ? src.ClassRoom.TeacherClassRooms.Select(x => x.Teacher != null ? $"{x.Teacher!.Name} {x.Teacher.Surname}" : default) : default));
         CreateMap<IPaginate<GetStudentModel>, PageableModel<GetStudentModel>>();
 
         CreateMap<Student, GetStudentLiteModel>()

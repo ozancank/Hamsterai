@@ -20,7 +20,6 @@ public class GetStudentsQuery : IRequest<PageableModel<GetStudentModel>>, ISecur
 public class GetStudentsQueryHandler(IMapper mapper,
                                      ICommonService commonService,
                                      IUserDal userDal,
-                                     ITeacherDal teacherDal,
                                      IStudentDal studentDal) : IRequestHandler<GetStudentsQuery, PageableModel<GetStudentModel>>
 {
     public async Task<PageableModel<GetStudentModel>> Handle(GetStudentsQuery request, CancellationToken cancellationToken)
@@ -33,8 +32,10 @@ public class GetStudentsQueryHandler(IMapper mapper,
             enableTracking: false,
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
-            predicate: x => commonService.HttpUserType == UserTypes.Administator || x.ClassRoom!.SchoolId == schoolId,
-            include: x => x.Include(u => u.ClassRoom).Include(u => u.Teachers),
+            predicate: x => commonService.HttpUserType == UserTypes.Administator
+                        || (commonService.HttpUserType == UserTypes.School ? x.ClassRoom != null && x.ClassRoom.SchoolId == schoolId
+                          : commonService.HttpUserType == UserTypes.Teacher && x.IsActive && x.ClassRoom != null && x.ClassRoom.SchoolId == schoolId && x.ClassRoom.TeacherClassRooms.Any(x => x.TeacherId == commonService.HttpConnectionId)),
+            include: x => x.Include(u => u.ClassRoom).ThenInclude(u => u != null ? u.TeacherClassRooms : new HashSet<RTeacherClassRoom>()).ThenInclude(u => u.Teacher),
             orderBy: x => x.OrderBy(x => x.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
@@ -56,20 +57,20 @@ public class GetStudentsQueryHandler(IMapper mapper,
 
         var result = mapper.Map<PageableModel<GetStudentModel>>(students);
 
-        if (commonService.HttpUserType == UserTypes.Teacher)
-        {
-            var teacher = await teacherDal.GetAsync(
-                predicate: x => x.Id == commonService.HttpConnectionId
-                                && x.IsActive
-                                && x.RTeacherClassRooms != null
-                                && x.RTeacherClassRooms.Count > 0
-                                && x.SchoolId == schoolId,
-                selector: x => new { StudentIds = x.RTeacherClassRooms.Where(x => x.ClassRoom != null && x.ClassRoom.Students != null).SelectMany(c => c.ClassRoom!.Students.Select(s => s.Id)).Distinct() },
-                cancellationToken: cancellationToken);
-            await TeacherRules.TeacherShouldExists(teacher);
+        //if (commonService.HttpUserType == UserTypes.Teacher)
+        //{
+        //    var teacher = await teacherDal.GetAsync(
+        //        predicate: x => x.Id == commonService.HttpConnectionId
+        //                        && x.IsActive
+        //                        && x.RTeacherClassRooms != null
+        //                        && x.RTeacherClassRooms.Count > 0
+        //                        && x.SchoolId == schoolId,
+        //        selector: x => new { StudentIds = x.RTeacherClassRooms.Where(x => x.ClassRoom != null && x.ClassRoom.Students != null).SelectMany(c => c.ClassRoom!.Students.Select(s => s.Id)).Distinct() },
+        //        cancellationToken: cancellationToken);
+        //    await TeacherRules.TeacherShouldExists(teacher);
 
-            result.Items = result.Items.Where(x => teacher.StudentIds.Any(s => s == x.Id));
-        }
+        //    result.Items = result.Items.Where(x => teacher.StudentIds.Any(s => s == x.Id));
+        //}
 
         return result;
     }

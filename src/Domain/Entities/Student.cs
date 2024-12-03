@@ -12,7 +12,6 @@ public class Student : BaseEntity<int>
     public int ClassRoomId { get; set; }
 
     public virtual ClassRoom? ClassRoom { get; set; }
-    public virtual ICollection<Teacher> Teachers { get; set; } = [];
     public virtual ICollection<HomeworkStudent> HomeworkStudents { get; set; } = [];
 
     public Student() : base()

@@ -45,9 +45,8 @@ public class AddRangeQuestionCommandHandler(IMapper mapper,
             var userId = commonService.HttpUserId;
             var extension = Path.GetExtension(item.QuestionPictureFileName);
             var fileName = $"Q_{userId}_{item.LessonId}_{id}{extension}";
-            await commonService.PictureConvert(item.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath);
-            await commonService.PictureConvert(item.QuestionSmallPictureBase64.IfNullEmptyString(item.QuestionPictureBase64),
-                fileName, AppOptions.QuestionSmallPictureFolderPath);
+            await commonService.PictureConvert(item.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath, cancellationToken);
+            await commonService.PictureConvert(item.QuestionSmallPictureBase64.IfNullEmptyString(item.QuestionPictureBase64), fileName, AppOptions.QuestionSmallPictureFolderPath, cancellationToken);
 
             var question = new Question
             {

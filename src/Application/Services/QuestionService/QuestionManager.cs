@@ -56,7 +56,7 @@ public class QuestionManager(ICommonService commonService,
                     var questionSmallPicturePath = Path.Combine(AppOptions.QuestionSmallPictureFolderPath, question.QuestionPictureFileName.EmptyOrTrim());
 
                     if (File.Exists(questionSmallPicturePath))
-                        base64 = await commonService.ImageToBase64(questionSmallPicturePath);
+                        base64 = await commonService.ImageToBase64WithResize(questionPicturePath, 512, cancellationToken);
                     else if (File.Exists(questionPicturePath))
                         base64 = await commonService.ImageToBase64WithResize(questionPicturePath, 512, cancellationToken);
 
