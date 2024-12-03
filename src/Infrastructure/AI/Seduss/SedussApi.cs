@@ -83,7 +83,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
                 if (!model.ExcludeQuiz)
                 {
                     answer.RightOption = answer.RightOption.IsNotEmpty()
-                        ? answer.RightOption.Trim("Cevap", ".", ":", "(", ")", "-").ToUpper()[..1]
+                        ? answer.RightOption.Trim("Cevap", ".", ":", "(", ")", "-")!.ToUpper()[..1]
                         : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
 
                     if (!_answersOptions.Contains(answer.RightOption, StringComparer.OrdinalIgnoreCase))
@@ -98,15 +98,15 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             else
             {
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                throw new ExternalApiException(content.Trim("{", "}"));
+                throw new ExternalApiException(content.Trim("{", "}") ?? string.Empty);
             }
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"AskQuestionWithImage - Error: {ex.Message}");
             var status = GetErrorQuestionStatus(ex);
             await InfrastructureDelegates.UpdateQuestionOcrImage?.Invoke(answer, new(model.Id, status, model.UserId, model.LessonId, baseUrl, ex.Message))!;
             LogError(loggerServiceBase, ex, model.UserId);
-            Console.WriteLine($"AskQuestionWithImage - Error: {ex.Message}");
         }
 
         return answer;
@@ -149,7 +149,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
                         throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
 
                     similar.RightOption = similar.RightOption.IsNotEmpty()
-                            ? similar.RightOption.Trim("Cevap", ".", ":", "(", ")", "-").ToUpper()[..1]
+                            ? similar.RightOption.Trim("Cevap", ".", ":", "(", ")", "-")!.ToUpper()[..1]
                             : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
 
                     if (!_answersOptions.Contains(similar.RightOption, StringComparer.OrdinalIgnoreCase))
@@ -164,15 +164,15 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             else
             {
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                throw new ExternalApiException(content.Trim("{", "}"));
+                throw new ExternalApiException(content.Trim("{", "}") ?? string.Empty);
             }
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"GetSimilar - Error: {ex.Message}");
             var status = GetErrorQuestionStatus(ex);
             await InfrastructureDelegates.AddSimilarAnswer?.Invoke(similar, new(model.Id, status, model.UserId, model.LessonId, baseUrl, ex.Message))!;
             LogError(loggerServiceBase, ex, model.UserId);
-            Console.WriteLine($"GetSimilar - Error: {ex.Message}");
         }
         return similar;
     }
@@ -203,7 +203,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                content = content.Trim("{", "}", "\"");
+                content = content.Trim("{", "}", "\"") ?? string.Empty;
                 content.IfEmptyThrow(new ExternalApiException(Strings.DynamicNotEmpty, Strings.Gain));
 
                 if (_emptyQuestion.Any(x => content.Contains(x, StringComparison.OrdinalIgnoreCase)))
@@ -214,13 +214,13 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             else
             {
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                throw new ExternalApiException(content.Trim("{", "}"));
+                throw new ExternalApiException(content.Trim("{", "}") ?? string.Empty);
             }
         }
         catch (Exception ex)
         {
-            LogError(loggerServiceBase, ex, model.UserId);
             Console.WriteLine($"GetGain - Error: {ex.Message}");
+            LogError(loggerServiceBase, ex, model.UserId);
         }
 
         return gain;
@@ -258,13 +258,13 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             else
             {
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                throw new ExternalApiException(content.Trim("{", "}"));
+                throw new ExternalApiException(content.Trim("{", "}") ?? string.Empty);
             }
         }
         catch (Exception ex)
         {
-            LogError(loggerServiceBase, ex, model.UserId);
             Console.WriteLine($"IsExistsVisualContent - Error: {ex.Message}");
+            LogError(loggerServiceBase, ex, model.UserId);
         }
 
         return visual;

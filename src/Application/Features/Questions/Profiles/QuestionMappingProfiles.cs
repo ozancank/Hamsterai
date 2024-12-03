@@ -12,7 +12,8 @@ public class QuestionMappingProfiles : Profile
 
         CreateMap<Question, GetQuestionModel>()
             .ForMember(dest => dest.LessonName, opt => opt.MapFrom(src => src.Lesson != null ? src.Lesson.Name : default))
-            .ForMember(dest => dest.GainName, opt => opt.MapFrom(src => src.Gain != null ? src.Gain.Name : default));
+            .ForMember(dest => dest.GainName, opt => opt.MapFrom(src => src.Gain != null ? src.Gain.Name : default))
+            .ForMember(dest => dest.LessonType, opt => opt.MapFrom(src => src.Lesson != null ? src.Lesson.Type : default));
         CreateMap<IPaginate<GetQuestionModel>, PageableModel<GetQuestionModel>>();
 
         CreateMap<Question, GetQuestionForAdminModel>()

@@ -1,47 +1,54 @@
-﻿using Application.Features.Students.Models;
-using Application.Features.Users.Rules;
+﻿using Application.Features.Schools.Models.ClassRooms;
 using Application.Services.CommonService;
 using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
-namespace Application.Features.Students.Queries;
+namespace Application.Features.Schools.Queries.ClassRooms;
 
-public class GetStudentGainsByIdQuery : IRequest<GetStudentGainsModel>, ISecuredRequest<UserTypes>
+public class GetClassRoomsGainsByIdQuery : IRequest<GetClassRoomGainsModel>, ISecuredRequest<UserTypes>
 {
-    public required StudentGainsRequestModel Model { get; set; }
+    public required ClassRoomGainsRequestModel Model { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher, UserTypes.Person];
+    public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School];
     public bool AllowByPass => false;
 }
 
-public class GetStudentGainsByIdQueryHandler(ICommonService commonService,
-                                             IQuestionDal questionDal,
-                                             IUserDal userDal) : IRequestHandler<GetStudentGainsByIdQuery, GetStudentGainsModel>
+public class GetClassRoomsGainsByIdQueryHandler(ICommonService commonService,
+                                                IQuestionDal questionDal,
+                                                IClassRoomDal classRoomDal,
+                                                IUserDal userDal) : IRequestHandler<GetClassRoomsGainsByIdQuery, GetClassRoomGainsModel>
 {
-    public async Task<GetStudentGainsModel> Handle(GetStudentGainsByIdQuery request, CancellationToken cancellationToken)
+    public async Task<GetClassRoomGainsModel> Handle(GetClassRoomsGainsByIdQuery request, CancellationToken cancellationToken)
     {
-        var result = new GetStudentGainsModel();
+        var result = new GetClassRoomGainsModel();
         var userType = commonService.HttpUserType;
+        var schoolId = commonService.HttpSchoolId;
 
-        var user = await userDal.GetAsync(
+        var studentIds = (await classRoomDal.GetAsync(
             enableTracking: false,
             predicate: userType == UserTypes.Administator
-                ? x => x.Id == request.Model.UserId
-                : userType == UserTypes.Person
-                    ? x => x.Type == UserTypes.Person && x.Id == commonService.HttpUserId
-                    : x => x.Type == UserTypes.Student && (x.ConnectionId == request.Model.StudentId || x.Id == request.Model.UserId) && x.SchoolId == commonService.HttpSchoolId,
-            cancellationToken: cancellationToken);
-        await UserRules.UserShouldExistsAndActive(user);
+                ? x => x.Id == request.Model.ClassRoomId
+                : x => x.Id == request.Model.ClassRoomId && x.SchoolId == schoolId,
+            selector: x => x.Students.Select(x => x.Id),
+            cancellationToken: cancellationToken)).ToList();
 
-        var userId = user.Id;
+        var userIds = (await userDal.GetListAsync(
+            enableTracking: false,
+            predicate: x => x.Type == UserTypes.Student
+                            && x.ConnectionId != null
+                            && x.ConnectionId > 0
+                            && studentIds.Contains(x.ConnectionId.Value)
+                            && (userType == UserTypes.Administator || x.SchoolId == schoolId),
+            selector: x => x.Id,
+            cancellationToken: cancellationToken)).ToList();
 
         if (request.Model.StartDate == null) request.Model.StartDate = DateTime.Today.AddMonths(-1);
         if (request.Model.EndDate == null) request.Model.EndDate = DateTime.Today.AddDays(1).AddMilliseconds(-1);
 
-        var allQuestions = await questionDal.GetListAsync(
+        var questions = await questionDal.GetListAsync(
             enableTracking: false,
-            predicate: x => x.CreateUser == userId
+            predicate: x => userIds.Contains(x.CreateUser)
                             && x.Status == QuestionStatus.Answered
                             && x.GainId.HasValue
                             && x.CreateDate.Date >= request.Model.StartDate.Value.Date
@@ -49,6 +56,8 @@ public class GetStudentGainsByIdQueryHandler(ICommonService commonService,
             include: x => x.Include(u => u.Lesson).Include(u => u.Gain),
             selector: x => new { Lesson = x.Lesson!.Name, Gain = x.Gain!.Name },
             cancellationToken: cancellationToken);
+
+        var allQuestions = questions.ToList();
 
         result.ForLessons = allQuestions.Distinct()
             .GroupBy(x => x.Lesson)

@@ -13,7 +13,6 @@ public class GetStudentGainsForSelfQuery : IRequest<GetStudentGainsModel>, ISecu
 
 public class GetGainsForStudentIdQueryHandler(ICommonService commonService,
                                               IQuestionDal questionDal,
-                                              IQuizQuestionDal quizQuestionDal,
                                               ISimilarDal similarQuestionDal) : IRequestHandler<GetStudentGainsForSelfQuery, GetStudentGainsModel>
 {
     public async Task<GetStudentGainsModel> Handle(GetStudentGainsForSelfQuery request, CancellationToken cancellationToken)
@@ -46,18 +45,7 @@ public class GetGainsForStudentIdQueryHandler(ICommonService commonService,
             selector: x => new { Lesson = x.Lesson != null ? x.Lesson.Name : string.Empty, Gain = x.Gain != null ? x.Gain.Name : string.Empty },
             cancellationToken: cancellationToken);
 
-        var quizQuestions = await quizQuestionDal.GetListAsync(
-            enableTracking: false,
-            predicate: x => x.CreateUser == userId
-                            && x.Quiz!.Status == QuizStatus.Completed
-                            && x.CreateDate.Date >= startDate.Date
-                            && x.CreateDate.Date <= endDate.Date.AddDays(1).AddSeconds(-1),
-            include: x => x.Include(x => x.Quiz).ThenInclude(u => u!.Lesson)
-                           .Include(u => u.Gain),
-            selector: x => new { Lesson = x.Quiz != null && x.Quiz.Lesson != null ? x.Quiz.Lesson.Name : string.Empty, Gain = x.Gain != null ? x.Gain.Name : string.Empty },
-            cancellationToken: cancellationToken);
-
-        var allQuestions = questions.Concat(similarQuestions).Concat(quizQuestions).ToList();
+        var allQuestions = questions.Concat(similarQuestions).ToList();
 
         result.ForLessons = allQuestions.Distinct()
             .GroupBy(x => x.Lesson)

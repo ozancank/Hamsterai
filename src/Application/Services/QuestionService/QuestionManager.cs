@@ -75,6 +75,7 @@ public class QuestionManager(ICommonService commonService,
                         UserId = question.CreateUser,
                         ExcludeQuiz = question.ExcludeQuiz,
                         Base64 = base64,
+                        AIUrl = aiUrl,
                     };
                     Console.WriteLine($"{methodName} - Send: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} --");
                     await questionApi.AskQuestionWithImage(model);
@@ -165,7 +166,7 @@ public class QuestionManager(ICommonService commonService,
                 { "id", dto.QuestionId.ToString() },
                 { "type", NotificationTypes.QuestionAnswered.ToString()},
             };
-            _ = notificationService.PushNotificationByUserId(new(Strings.Answered, Strings.DynamicLessonQuestionAnswered.Format(data.Lesson?.Name), NotificationTypes.QuestionAnswered, [data.CreateUser], datas, dto.QuestionId.ToString()));
+            _ = notificationService.PushNotificationByUserId(new(Strings.Answered, Strings.DynamicLessonQuestionAnswered.Format(data.Lesson?.Name!), NotificationTypes.QuestionAnswered, [data.CreateUser], datas, dto.QuestionId.ToString()));
         }
 
         return true;
@@ -304,12 +305,25 @@ public class QuestionManager(ICommonService commonService,
         await similarDal.DeleteAsync(dto.QuestionId);
 
         var date = DateTime.Now;
+
+        if (dto.ErrorMessage.IsNotEmpty())
+        {
+            var question = await context.Questions.FirstAsync(x => x.Id == dto.QuestionId);
+            question.UpdateUser = dto.UserId;
+            question.UpdateDate = date;
+            question.TryCount = (byte)(question.TryCount + 1);
+            question.ErrorDescription = dto.ErrorMessage;
+            context.Questions.Update(question);
+            await context.SaveChangesAsync();
+            return false;
+        }
+
         GetGainModel? gain = null;
         if (dto.Status == QuestionStatus.Answered && model.GainName.IsNotEmpty())
             gain = await gainService.GetOrAddGain(new(model?.GainName, dto.LessonId, dto.UserId, context));
 
         var rightOption = model?.RightOption.IsNotEmpty() ?? false
-                       ? model?.RightOption.Trim("Cevap", ".", ":", "(", ")", "-").ToUpper()[..1]
+                       ? model?.RightOption.Trim("Cevap", ".", ":", "(", ")", "-")!.ToUpper()[..1]
                        : throw new ExternalApiException(Strings.DynamicNotEmpty.Format(Strings.RightOption));
         var answerText = $"Cevap: {rightOption}";
 
@@ -471,7 +485,7 @@ public class QuestionManager(ICommonService commonService,
                 { "id", quiz.Id },
                 { "type", NotificationTypes.QuizCreated.ToString()},
             };
-            _ = notificationService.PushNotificationByUserId(new(Strings.DynamicLessonTestPrepared.Format(model.LessonName), Strings.DynamicLessonTestPreparedForYou.Format(model.LessonName, quiz.Id), NotificationTypes.QuizCreated, [model.UserId], datas, quiz.Id));
+            _ = notificationService.PushNotificationByUserId(new(Strings.DynamicLessonTestPrepared.Format(model.LessonName!), Strings.DynamicLessonTestPreparedForYou.Format(model.LessonName!, quiz.Id), NotificationTypes.QuizCreated, [model.UserId], datas, quiz.Id));
 
             return quiz.Id;
         }

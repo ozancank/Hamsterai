@@ -5,7 +5,7 @@ namespace Application.Features.Schools.Rules;
 
 public class ClassRoomRules(IClassRoomDal classRoomDal) : IBusinessRule
 {
-    internal static Task ClassRoomShouldExists(GetClassRoomModel model)
+    internal static Task ClassRoomShouldExists(object model)
     {
         if (model == null) throw new BusinessException(Strings.DynamicNotFound, Strings.ClassRoom);
         return Task.CompletedTask;

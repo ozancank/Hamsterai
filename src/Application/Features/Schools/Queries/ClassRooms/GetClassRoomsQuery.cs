@@ -1,4 +1,5 @@
 ﻿using Application.Features.Schools.Models.ClassRooms;
+using Application.Features.Teachers.Rules;
 using Application.Services.CommonService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
@@ -15,6 +16,7 @@ public class GetClassRoomsQuery : IRequest<PageableModel<GetClassRoomModel>>, IS
 
 public class GetClassRoomsQueryHandler(IMapper mapper,
                                        ICommonService commonService,
+                                       ITeacherDal teacherDal,
                                        IClassRoomDal classRoomDal) : IRequestHandler<GetClassRoomsQuery, PageableModel<GetClassRoomModel>>
 {
     public async Task<PageableModel<GetClassRoomModel>> Handle(GetClassRoomsQuery request, CancellationToken cancellationToken)
@@ -23,11 +25,8 @@ public class GetClassRoomsQueryHandler(IMapper mapper,
 
         var classRooms = await classRoomDal.GetPageListAsyncAutoMapper<GetClassRoomModel>(
             enableTracking: false,
-            predicate: x => commonService.HttpUserType == UserTypes.Administator || x.School!.Id == commonService.HttpSchoolId,
-            include: x => x/*.Include(u => u.School).ThenInclude(u=>u.PackageSchools).ThenInclude(u => u.Package)*/
-                           .Include(u => u.Package),
-            //.Include(u => u.TeacherClassRooms).ThenInclude(u => u.Teacher)
-            //.Include(u => u.Students),
+            predicate: x => commonService.HttpUserType == UserTypes.Administator || (x.School!.Id == commonService.HttpSchoolId && x.IsActive),
+            include: x => x.Include(u => u.Package),
             size: request.PageRequest.PageSize,
             index: request.PageRequest.Page,
             orderBy: x => x.OrderBy(x => x.CreateDate),
@@ -35,6 +34,20 @@ public class GetClassRoomsQueryHandler(IMapper mapper,
             cancellationToken: cancellationToken);
 
         var result = mapper.Map<PageableModel<GetClassRoomModel>>(classRooms);
+
+        if (commonService.HttpUserType == UserTypes.Teacher)
+        {
+            var teacher = await teacherDal.GetAsync(
+                predicate: x => x.Id == commonService.HttpConnectionId && x.IsActive && x.RTeacherClassRooms != null && x.RTeacherClassRooms.Count > 0,
+                selector: x => new { ClassRoomId = x.RTeacherClassRooms.Select(x => x.ClassRoomId) },
+                include: x => x.Include(u => u.RTeacherClassRooms),
+                enableTracking: false,
+                cancellationToken: cancellationToken);
+            await TeacherRules.TeacherShouldExists(teacher);
+
+            result.Items = result.Items.Where(x => teacher.ClassRoomId.Any(a => a == x.Id)).ToList();
+        }
+
         return result;
     }
 }

@@ -142,6 +142,14 @@ public class SchoolController : BaseController
         return Ok(result);
     }
 
+    [HttpPost("GetClassRoomsGains")]
+    public async Task<IActionResult> GetClassRoomsGains([FromBody] ClassRoomGainsRequestModel model)
+    {
+        var command = new GetClassRoomsGainsByIdQuery { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
     [HttpPost("AddClassRoom")]
     public async Task<IActionResult> AddClassRoom([FromBody] AddClassRoomModel model)
     {

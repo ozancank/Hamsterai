@@ -7,7 +7,6 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
@@ -64,8 +63,6 @@ static void Services(WebApplicationBuilder builder)
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddHealthChecks();
     builder.Services.AddDistributedMemoryCache();
-    builder.Services.AddHttpClient();
-    builder.Services.AddHttpContextAccessor();
     builder.Services.AddSingleton<Stopwatch>();
     builder.Services.AddSingleton<ITokenHelper, JwtHelper>();
     builder.Services.AddSingleton<ICacheManager, DistributedCacheManager>();
@@ -258,10 +255,10 @@ static void StaticFiles(WebApplication app)
         {
             FileProvider = new PhysicalFileProvider(path.Value),
             RequestPath = path.Key,
-            OnPrepareResponse = context =>
-            {
-                Console.WriteLine($"Dosya sunuluyor: {DateTime.Now} - {context.File.PhysicalPath}");
-            }
+            //OnPrepareResponse = context =>
+            //{
+            //    Console.WriteLine($"Dosya sunuluyor: {DateTime.Now} - {context.File.PhysicalPath}");
+            //}
         });
     }
 }

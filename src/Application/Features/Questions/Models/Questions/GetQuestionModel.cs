@@ -6,6 +6,7 @@ public class GetQuestionModel : IResponseModel
     public long CreateUser { get; set; }
     public DateTime CreateDate { get; set; }
     public short LessonId { get; set; }
+    public LessonTypes LessonType { get; set; }
     public string? QuestionPictureFileName { get; set; }
     public string? QuestionPictureExtension { get; set; }
     public string? AnswerText { get; set; }

@@ -1,7 +1,7 @@
 ﻿using Application.Features.Students.Models;
+using Application.Features.Teachers.Rules;
 using Application.Services.CommonService;
 using DataAccess.Abstract.Core;
-using Domain.Entities;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
@@ -19,6 +19,7 @@ public class GetStudentsByDynamicQuery : IRequest<PageableModel<GetStudentModel>
 public class GetStudentsByDynamicQueryHandler(IMapper mapper,
                                               ICommonService commonService,
                                               IUserDal userDal,
+                                              ITeacherDal teacherDal,
                                               IStudentDal studentDal) : IRequestHandler<GetStudentsByDynamicQuery, PageableModel<GetStudentModel>>
 {
     public async Task<PageableModel<GetStudentModel>> Handle(GetStudentsByDynamicQuery request, CancellationToken cancellationToken)
@@ -54,6 +55,21 @@ public class GetStudentsByDynamicQueryHandler(IMapper mapper,
         });
 
         var result = mapper.Map<PageableModel<GetStudentModel>>(students);
+
+        if (commonService.HttpUserType == UserTypes.Teacher)
+        {
+            var teacher = await teacherDal.GetAsync(
+                predicate: x => x.Id == commonService.HttpConnectionId
+                                && x.IsActive
+                                && x.RTeacherClassRooms != null
+                                && x.RTeacherClassRooms.Count > 0
+                                && x.SchoolId == schoolId,
+                selector: x => new { StudentIds = x.RTeacherClassRooms.Where(x => x.ClassRoom != null && x.ClassRoom.Students != null).SelectMany(c => c.ClassRoom!.Students.Select(s => s.Id)).Distinct() },
+                cancellationToken: cancellationToken);
+            await TeacherRules.TeacherShouldExists(teacher);
+
+            result.Items = result.Items.Where(x => teacher.StudentIds.Any(s => s == x.Id));
+        }
 
         return result;
     }
