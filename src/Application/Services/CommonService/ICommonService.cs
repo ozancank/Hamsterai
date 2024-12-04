@@ -14,7 +14,9 @@ public interface ICommonService : IBusinessService
 
     Task<string> PictureConvert(string? base64, string? fileName, string? folder, CancellationToken cancellationToken = default);
 
-    Task<string> TextToImage(string? text, string? fileName, string? folder, IImageEncoder? imageEncoder = null, CancellationToken cancellationToken = default);
+    Task<string> PictureConvertWithResize(string? base64, string? fileName, string? folder, int maxDimension = 512, CancellationToken cancellationToken = default);
+
+    Task<string> TextToImage(string? text, string? fileName, string? folder, CancellationToken cancellationToken = default);
 
     Task<string> ImageToBase64(string? path, CancellationToken cancellationToken = default);
 

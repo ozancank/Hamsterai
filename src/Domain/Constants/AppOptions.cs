@@ -4,11 +4,12 @@ public class AppOptions
 {
     public static string ProfilePicturePath { get; set; } = string.Empty;
     public static string QuestionPicturePath { get; set; } = string.Empty;
+    public static string QuestionSmallPicturePath { get; set; } = string.Empty;
+    public static string QuestionThumbnailPath { get; set; } = string.Empty;
     public static string AnswerPicturePath { get; set; } = string.Empty;
     public static string SimilarQuestionPicturePath { get; set; } = string.Empty;
     public static string SimilarAnswerPicturePath { get; set; } = string.Empty;
     public static string QuizQuestionPicturePath { get; set; } = string.Empty;
-    public static string QuestionSmallPicturePath { get; set; } = string.Empty;
     public static string QuizAnswerPicturePath { get; set; } = string.Empty;
     public static string PackagePicturePath { get; set; } = string.Empty;
     public static string HomeworkPath { get; set; } = string.Empty;
@@ -36,6 +37,7 @@ public class AppOptions
     public static string ProfilePictureFolderPath { get; set; } = string.Empty;
     public static string QuestionPictureFolderPath { get; set; } = string.Empty;
     public static string QuestionSmallPictureFolderPath { get; set; } = string.Empty;
+    public static string QuestionThumbnailFolderPath { get; set; } = string.Empty;
     public static string AnswerPictureFolderPath { get; set; } = string.Empty;
     public static string SimilarQuestionPictureFolderPath { get; set; } = string.Empty;
     public static string SimilarAnswerPictureFolderPath { get; set; } = string.Empty;
@@ -58,6 +60,9 @@ public class AppOptions
 
         QuestionSmallPictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, QuestionSmallPicturePath);
         if (!Directory.Exists(QuestionSmallPictureFolderPath)) Directory.CreateDirectory(QuestionSmallPictureFolderPath);
+
+        QuestionThumbnailFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, QuestionThumbnailPath);
+        if (!Directory.Exists(QuestionThumbnailFolderPath)) Directory.CreateDirectory(QuestionThumbnailFolderPath);
 
         SimilarQuestionPictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SimilarQuestionPicturePath);
         if (!Directory.Exists(SimilarQuestionPictureFolderPath)) Directory.CreateDirectory(SimilarQuestionPictureFolderPath);

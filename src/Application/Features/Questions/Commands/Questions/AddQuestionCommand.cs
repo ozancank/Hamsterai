@@ -40,9 +40,9 @@ public class AddQuestionCommandHandler(IMapper mapper,
         var userId = commonService.HttpUserId;
         var extension = Path.GetExtension(request.Model.QuestionPictureFileName);
         var fileName = $"Q_{userId}_{request.Model.LessonId}_{id}{extension}";
-        await commonService.PictureConvert(request.Model.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath);
-        await commonService.PictureConvert(request.Model.QuestionSmallPictureBase64.IfNullEmptyString(request.Model.QuestionPictureBase64),
-            fileName, AppOptions.QuestionSmallPictureFolderPath);
+        await commonService.PictureConvert(request.Model.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath, cancellationToken);
+        await commonService.PictureConvert(request.Model.QuestionSmallPictureBase64.IfNullEmptyString(request.Model.QuestionPictureBase64), fileName, AppOptions.QuestionSmallPictureFolderPath, cancellationToken);
+        await commonService.PictureConvertWithResize(request.Model.QuestionPictureBase64, fileName, AppOptions.QuestionThumbnailFolderPath, 128, cancellationToken);
 
         var question = new Question
         {

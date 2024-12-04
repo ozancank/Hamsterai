@@ -241,6 +241,8 @@ static void StaticFiles(WebApplication app)
     {
         { "/ProfilePicture", Domain.Constants.AppOptions.ProfilePictureFolderPath },
         { "/QuestionPicture", Domain.Constants.AppOptions.QuestionPictureFolderPath },
+        { "/QuestionSmallPicture", Domain.Constants.AppOptions.QuestionSmallPictureFolderPath },
+        { "/QuestionThumbnail", Domain.Constants.AppOptions.QuestionThumbnailFolderPath },
         { "/AnswerPicture", Domain.Constants.AppOptions.AnswerPictureFolderPath },
         { "/SimilarQuestionPicture", Domain.Constants.AppOptions.SimilarQuestionPictureFolderPath },
         { "/SimilarAnswerPicture", Domain.Constants.AppOptions.SimilarAnswerPictureFolderPath },
