@@ -1,6 +1,6 @@
 ﻿namespace Application.Features.Questions.Models.Similars;
 
-public class QuestionRequestModel : IRequestModel
+public class SimilarRequestModel : IRequestModel
 {
     public short LessonId { get; set; } = 0;
     public DateTime? StartDate { get; set; } = null;

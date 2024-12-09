@@ -8,6 +8,7 @@ public class AppStatics
     public static readonly DateTime MilleniumDate = new(2000, 1, 1, 0, 0, 0);
     public static readonly QuestionStatus[] QuestionStatusesForGain = [QuestionStatus.Waiting, QuestionStatus.Answered, QuestionStatus.SendAgain];
     public static readonly QuestionStatus[] QuestionStatusesForCredit = [QuestionStatus.Waiting, QuestionStatus.Answered, QuestionStatus.SendAgain];
+    public static readonly QuestionStatus[] QuestionStatusesForAdmin = [QuestionStatus.Waiting, QuestionStatus.Answered, QuestionStatus.SendAgain];
     public static readonly QuestionStatus[] QuestionStatusesForSender = [QuestionStatus.Waiting, QuestionStatus.Error, QuestionStatus.SendAgain, QuestionStatus.ConnectionError, QuestionStatus.Timeout];
 
     public static readonly char[] OptionChars = ['A', 'B', 'C', 'D', 'E'];

@@ -35,7 +35,7 @@ public class GetStudentsQueryHandler(IMapper mapper,
             predicate: x => commonService.HttpUserType == UserTypes.Administator
                         || (commonService.HttpUserType == UserTypes.School ? x.ClassRoom != null && x.ClassRoom.SchoolId == schoolId
                           : commonService.HttpUserType == UserTypes.Teacher && x.IsActive && x.ClassRoom != null && x.ClassRoom.SchoolId == schoolId && x.ClassRoom.TeacherClassRooms.Any(x => x.TeacherId == commonService.HttpConnectionId)),
-            include: x => x.Include(u => u.ClassRoom).ThenInclude(u => u != null ? u.TeacherClassRooms : new HashSet<RTeacherClassRoom>()).ThenInclude(u => u.Teacher),
+            include: x => x.Include(u => u.ClassRoom).ThenInclude(u => u!.TeacherClassRooms).ThenInclude(u => u.Teacher),
             orderBy: x => x.OrderBy(x => x.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);

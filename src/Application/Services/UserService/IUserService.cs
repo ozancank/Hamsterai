@@ -16,4 +16,6 @@ public interface IUserService : IBusinessService
     Task<bool> UserStatusAndLicense(long id);
 
     Task<int> RemainigQuestionCredit(long userId);
+
+    Task<int> ValidTotalQuestion(long userId);
 }

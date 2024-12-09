@@ -35,7 +35,7 @@ public class QuestionController : BaseController
     }
 
     [HttpPost("GetQuestionsForAdmin")]
-    public async Task<IActionResult> GetQuestionsForAdmin([FromQuery] PageRequest pageRequest, [FromBody] QuestionRequestModel model)
+    public async Task<IActionResult> GetQuestionsForAdmin([FromQuery] PageRequest pageRequest, [FromBody] QuestionForAdminRequestModel model)
     {
         var query = new GetQuestionsForAdminQuery { PageRequest = pageRequest, Model = model };
         var result = await Mediator.Send(query);
@@ -94,6 +94,14 @@ public class QuestionController : BaseController
     public async Task<IActionResult> GetRemainigQuestionCreditByUserId([FromRoute] long userId)
     {
         var query = new GetRemainigQuestionCreditByUserIdQuery { UserId = userId };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpGet("GetValidTotalQuestionByUserId/{userId}")]
+    public async Task<IActionResult> GetValidTotalQuestionByUserId([FromRoute] long userId)
+    {
+        var query = new GetValidTotalQuestionByUserIdQuery { UserId = userId };
         var result = await Mediator.Send(query);
         return Ok(result);
     }

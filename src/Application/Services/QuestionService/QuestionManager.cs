@@ -309,7 +309,7 @@ public class QuestionManager(ICommonService commonService,
             question.UpdateUser = dto.UserId;
             question.UpdateDate = date;
             question.TryCount = (byte)(question.TryCount + 1);
-            question.ErrorDescription = dto.ErrorMessage;
+            question.ErrorDescription = dto.ErrorMessage.IfNullEmptyString(string.Empty);
             context.Questions.Update(question);
             await context.SaveChangesAsync();
             return false;
@@ -377,6 +377,7 @@ public class QuestionManager(ICommonService commonService,
             question.UpdateUser = dto.UserId;
             question.UpdateDate = date;
             question.SimilarId = data.Id;
+            question.ErrorDescription = dto.ErrorMessage.IfNullEmptyString(string.Empty);
 
             context.Questions.Update(question);
         }

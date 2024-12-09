@@ -17,14 +17,11 @@ public static class DALServiceRegistration
         {
             if (!options.IsConfigured)
             {
-                //options.UseSqlServer(ServiceTools.Configuration.GetConnectionString("HamsteraiConnectionString"),
-                //    o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
-                //);
                 options.UseNpgsql(ServiceTools.Configuration.GetConnectionString("HamsteraiConnectionString"),
                     o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
             );
             }
-            //if (Debugger.IsAttached) options.EnableSensitiveDataLogging();
+            if (Debugger.IsAttached) options.EnableSensitiveDataLogging();
         });
 
         services.AddScoped<IOperationClaimDal, OperationClaimDal>();

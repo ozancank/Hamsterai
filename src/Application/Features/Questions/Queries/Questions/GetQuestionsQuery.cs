@@ -1,5 +1,4 @@
 ﻿using Application.Features.Questions.Models.Questions;
-using Application.Features.Questions.Models.Similars;
 using Application.Services.CommonService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
@@ -34,6 +33,7 @@ public class GetQuestionsQueryHandler(IMapper mapper,
                             && x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddSeconds(-1),
             enableTracking: false,
             include: x => x.Include(u => u.Lesson),
+
             orderBy: x => x.OrderByDescending(u => u.CreateDate),
             configurationProvider: mapper.ConfigurationProvider,
             index: request.PageRequest.Page, size: request.PageRequest.PageSize,

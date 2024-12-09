@@ -156,4 +156,19 @@ public class UserManager(IUserDal userDal,
             predicate: x => x.CreateUser == userId && AppStatics.QuestionStatusesForCredit.Contains(x.Status) || x.ManuelSendAgain);
         return totalCredit - questionCount;
     }
+
+    public async Task<int> ValidTotalQuestion(long userId)
+    {
+        var userType = commonService.HttpUserType;
+        var questionCount = 0;
+        if (userType == UserTypes.Administator)
+            questionCount = await questionDal.CountOfRecordAsync(
+                enableTracking: false,
+                predicate: x => x.CreateUser == userId && AppStatics.QuestionStatusesForCredit.Contains(x.Status));
+        else
+            questionCount = await questionDal.CountOfRecordAsync(
+                enableTracking: false,
+                predicate: x => x.CreateUser == commonService.HttpUserId && AppStatics.QuestionStatusesForCredit.Contains(x.Status));
+        return questionCount;
+    }
 }
