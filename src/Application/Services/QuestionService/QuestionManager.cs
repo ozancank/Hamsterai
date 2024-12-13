@@ -33,7 +33,7 @@ public class QuestionManager(ICommonService commonService,
                 .AsNoTracking()
                 .Include(x => x.Lesson)
                 .Where(x => AppStatics.QuestionStatusesForSender.Contains(x.Status)
-                            && (!x.ManuelSendAgain || x.Status == QuestionStatus.Waiting)
+                            && (!x.ManuelSendAgain || x.Status == QuestionStatus.Waiting || x.Status == QuestionStatus.WaitingForOcr || x.Status == QuestionStatus.ControlledForOcr)
                             && x.TryCount < AppOptions.AITryCount
                             && x.CreateDate > AppOptions.ChangeDate)
                 .ToListAsync(cancellationToken);
@@ -51,6 +51,27 @@ public class QuestionManager(ICommonService commonService,
                 await AppStatics.QuestionSemaphore.WaitAsync(cancellationToken);
                 try
                 {
+                    var aiUrl = AppOptions.AIDefaultUrls.Length <= question.Lesson!.AIUrlIndex ? AppOptions.AIDefaultUrls[0] : AppOptions.AIDefaultUrls[question.Lesson!.AIUrlIndex];
+                    var model = new QuestionApiModel
+                    {
+                        Id = question.Id,
+                        LessonId = question.LessonId,
+                        LessonName = question.Lesson!.Name,
+                        UserId = question.CreateUser,
+                        ExcludeQuiz = question.ExcludeQuiz,
+                        AIUrl = aiUrl
+                    };
+
+                    if (question.Status == QuestionStatus.ControlledForOcr)
+                    {
+
+                        model.QuestionText = question.QuestionText;
+                        Console.WriteLine($"{methodName} - SendText: {DateTime.Now} -- {model.Id} -- QuestionText:{question.QuestionText.EmptyOrTrim().Length} --");
+                        await questionApi.AskQuestionWithText(model);
+
+                        return;
+                    }
+
                     var base64 = string.Empty;
                     var questionPicturePath = Path.Combine(AppOptions.QuestionSmallPictureFolderPath, question.QuestionPictureFileName.EmptyOrTrim());
                     var questionSmallPicturePath = Path.Combine(AppOptions.QuestionSmallPictureFolderPath, question.QuestionPictureFileName.EmptyOrTrim());
@@ -66,19 +87,17 @@ public class QuestionManager(ICommonService commonService,
                         await UpdateQuestion(new QuestionResponseModel(), new UpdateQuestionDto(question.Id, QuestionStatus.NotFoundImage, question.CreateUser, question.LessonId, Strings.DynamicNotFound.Format(Strings.Picture)));
                         return;
                     }
-                    var aiUrl = AppOptions.AIDefaultUrls.Length <= question.Lesson!.AIUrlIndex ? AppOptions.AIDefaultUrls[0] : AppOptions.AIDefaultUrls[question.Lesson!.AIUrlIndex];
 
-                    var model = new QuestionApiModel
+                    model.Base64 = base64;
+
+                    if (question.Status == QuestionStatus.WaitingForOcr && question.ExistsVisualContent)
                     {
-                        Id = question.Id,
-                        LessonId = question.LessonId,
-                        LessonName = question.Lesson!.Name,
-                        UserId = question.CreateUser,
-                        ExcludeQuiz = question.ExcludeQuiz,
-                        Base64 = base64,
-                        AIUrl = aiUrl,
-                    };
-                    Console.WriteLine($"{methodName} - Send: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} --");
+                        Console.WriteLine($"{methodName} - SendOcr: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} --");
+                        await questionApi.AskOcr(model);
+                        return;
+                    }
+
+                    Console.WriteLine($"{methodName} - SendImage: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} --");
                     await questionApi.AskQuestionWithImage(model);
 
                     model.AIUrl = AppOptions.AIDefaultUrls[2];
@@ -140,21 +159,35 @@ public class QuestionManager(ICommonService commonService,
         data.ErrorDescription = dto.ErrorMessage.IfNullEmptyString(string.Empty);
         data.AIIP = dto.AIIP;
 
-        if (dto.Status is not QuestionStatus.Answered)
+        if (dto.Status != QuestionStatus.Answered && dto.Status != QuestionStatus.MustBeControlForOcr)
         {
             ++data.TryCount;
-            data.Status = data.TryCount < AppOptions.AITryCount
-                ? QuestionStatus.SendAgain
-                : dto.Status == QuestionStatus.SendAgain
-                    ? QuestionStatus.Error
-                    : dto.Status;
+
+            if (data.TryCount < AppOptions.AITryCount)
+
+                data.Status = data.Status switch
+                {
+                    QuestionStatus.ControlledForOcr => QuestionStatus.ControlledForOcr,
+                    QuestionStatus.WaitingForOcr => QuestionStatus.WaitingForOcr,
+                    _ => QuestionStatus.SendAgain
+                };
+            else
+                data.Status = dto.Status switch
+                {
+                    QuestionStatus.SendAgain or
+                    QuestionStatus.ControlledForOcr or
+                    QuestionStatus.MustBeControlForOcr or
+                    QuestionStatus.WaitingForOcr
+                        => QuestionStatus.Error,
+                    _ => dto.Status
+                };
         }
 
         context.Questions.Update(data);
         await context.SaveChangesAsync();
 
         Console.WriteLine($"Update: {DateTime.Now}  -- {data.Id} -- Status: {data.TryCount} ---- {data.Status} ---- {data.OcrMethod} ---- {data.ErrorDescription}");
-        if (data.TryCount >= 3 && data.Status != QuestionStatus.Answered)
+        if (data.TryCount >= AppOptions.AITryCount && data.Status != QuestionStatus.Answered)
             Console.WriteLine($"Update: {DateTime.Now}  -- {data.Id} -- Will not be solved anymore ");
 
         if (dto.Status == QuestionStatus.Answered)
@@ -164,6 +197,14 @@ public class QuestionManager(ICommonService commonService,
                 { "type", NotificationTypes.QuestionAnswered.ToString()},
             };
             _ = notificationService.PushNotificationByUserId(new(Strings.Answered, Strings.DynamicLessonQuestionAnswered.Format(data.Lesson?.Name!), NotificationTypes.QuestionAnswered, [data.CreateUser], datas, dto.QuestionId.ToString()));
+        }
+        else if (dto.Status == QuestionStatus.MustBeControlForOcr)
+        {
+            var datas = new Dictionary<string, string> {
+                { "id", dto.QuestionId.ToString() },
+                { "type", NotificationTypes.QuestionOcr.ToString()},
+            };
+            _ = notificationService.PushNotificationByUserId(new(Strings.WaitingControl, Strings.MustBeControlForOcr, NotificationTypes.QuestionOcr, [data.CreateUser], datas, dto.QuestionId.ToString()));
         }
 
         return true;

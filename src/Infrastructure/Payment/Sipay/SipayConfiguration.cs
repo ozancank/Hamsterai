@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using OCK.Core.Utilities;
 
-namespace Infrastructure.Payment.Configuration;
+namespace Infrastructure.Payment.Sipay;
 
-public class SipayConfiguration
+public sealed class SipayConfiguration
 {
     public static string ApiUrl { get; private set; } = string.Empty;
     public static int MerchantID { get; private set; }
@@ -17,7 +17,7 @@ public class SipayConfiguration
         var configuration = ServiceTools.GetService<IConfiguration>();
         var sipayConfig = configuration.GetSection("SipayConfigurations");
         if (sipayConfig == null) return;
-     
+
         ApiUrl = sipayConfig.GetValue<string>("ApiUrl") ?? string.Empty;
         MerchantID = sipayConfig.GetValue<int>("MerchantID");
         MerchantKey = sipayConfig.GetValue<string>("MerchantKey") ?? string.Empty;

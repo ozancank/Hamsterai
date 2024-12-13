@@ -1,4 +1,4 @@
-using Application.Services.CommonService;
+ï»¿using Application.Services.CommonService;
 using Asp.Versioning;
 using Infrastructure.Payment;
 using OCK.Core.Utilities;
@@ -13,7 +13,7 @@ public class CommonController(ICommonService commonService, IPaymentApi paymentA
     [HttpPost("ThrowErrorTry")]
     public IActionResult ThrowErrorTry()
     {
-        commonService.ThrowErrorTry(new Exception("Bu bir deneme hatasýdýr."));
+        commonService.ThrowErrorTry(new Exception("Bu bir deneme hatasÄ±dÄ±r."));
         return Ok();
     }
 
@@ -55,7 +55,7 @@ public class CommonController(ICommonService commonService, IPaymentApi paymentA
     [HttpGet("Payment")]
     public async Task<IActionResult> Payment()
     {
-        await paymentApi.PaymentControl("422c196f-391f-4406-8cab-5641f50abfb4", 2);
-        return Ok();
+        var result = await paymentApi.GetPayment("0d2a2735-55c7-49cc-b7d7-88264f8d37f1", 1);
+        return Ok(result);
     }
 }

@@ -1,4 +1,4 @@
-using Application.Features.Questions.Commands;
+﻿using Application.Features.Questions.Commands;
 using Application.Features.Questions.Commands.Questions;
 using Application.Features.Questions.Commands.Similars;
 using Application.Features.Questions.Models;
@@ -83,9 +83,17 @@ public class QuestionController : BaseController
     }
 
     [HttpPost("ManuelSendAgain")]
-    public async Task<IActionResult> UpdateQuestionStatus([FromQuery] Guid questionId)
+    public async Task<IActionResult> UpdateQuestionManuelSend([FromQuery] Guid questionId)
     {
-        var command = new UpdateQuestionStatusCommand { Id = questionId, Status = QuestionStatus.Waiting };
+        var command = new UpdateQuestionManuelSendCommand { Id = questionId};
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("UpdateQuestionText")]
+    public async Task<IActionResult> UpdateQuestionText([FromBody] UpdateQuestionTextRequestModel model)
+    {
+        var command = new UpdateQuestionTextCommand { Model = model };
         var result = await Mediator.Send(command);
         return Ok(result);
     }

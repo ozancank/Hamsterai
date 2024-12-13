@@ -5,7 +5,7 @@ using OCK.Core.Pipelines.Authorization;
 
 namespace Application.Features.Questions.Commands.Questions;
 
-public class UpdateQuestionIsReadCommand : IRequest<bool>, ISecuredRequest<UserTypes>
+public class UpdateQuestionManuelSendCommand : IRequest<bool>, ISecuredRequest<UserTypes>
 {
     public Guid Id { get; set; }
 
@@ -13,20 +13,21 @@ public class UpdateQuestionIsReadCommand : IRequest<bool>, ISecuredRequest<UserT
     public bool AllowByPass => false;
 }
 
-public class UpdateQuestionIsReadCommandHandler(IQuestionDal questionDal,
-                                                ICommonService commonService) : IRequestHandler<UpdateQuestionIsReadCommand, bool>
+public class UpdateQuestionManuelSendCommandHandler(IQuestionDal questionDal,
+                                                    ICommonService commonService) : IRequestHandler<UpdateQuestionManuelSendCommand, bool>
 {
-    public async Task<bool> Handle(UpdateQuestionIsReadCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(UpdateQuestionManuelSendCommand request, CancellationToken cancellationToken)
     {
         var userId = commonService.HttpUserId;
         var question = await questionDal.GetAsync(x => x.Id == request.Id && x.CreateUser == userId, cancellationToken: cancellationToken);
 
         await QuestionRules.QuestionShouldExists(question);
 
-        if (question.IsRead) return true;
+        if (question.ManuelSendAgain) throw new BusinessException("Soru tekrar gönderilmiş, durumu değiştirilemez.");
 
-        question.IsRead = true;
-        question.ReadDate = DateTime.Now;
+        question.ManuelSendAgain = true;
+        question.Status = QuestionStatus.Waiting;
+        question.TryCount = 0;
         question.UpdateUser = userId;
         question.UpdateDate = DateTime.Now;
 

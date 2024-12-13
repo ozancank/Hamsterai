@@ -2,6 +2,9 @@
 
 public class AppStatics
 {
+    public static readonly string[] Domains = [Strings.Domain, Strings.Domain2, "213.254.134.109"];
+    public static readonly string[] EndPoints = ["/Payment/AddPaymentSipay", "/Common/GetCulture"];
+
     public static readonly SemaphoreSlim QuestionSemaphore = new(AppOptions.AIQuestionSenderCapacity);
     public static readonly SemaphoreSlim SimilarSemaphore = new(AppOptions.AISimilarSenderCapacity);
     public static readonly SemaphoreSlim GainSemaphore = new(AppOptions.AIGainSenderCapacity);
@@ -9,7 +12,7 @@ public class AppStatics
     public static readonly QuestionStatus[] QuestionStatusesForGain = [QuestionStatus.Waiting, QuestionStatus.Answered, QuestionStatus.SendAgain];
     public static readonly QuestionStatus[] QuestionStatusesForCredit = [QuestionStatus.Waiting, QuestionStatus.Answered, QuestionStatus.SendAgain];
     public static readonly QuestionStatus[] QuestionStatusesForAdmin = [QuestionStatus.Waiting, QuestionStatus.Answered, QuestionStatus.SendAgain];
-    public static readonly QuestionStatus[] QuestionStatusesForSender = [QuestionStatus.Waiting, QuestionStatus.Error, QuestionStatus.SendAgain, QuestionStatus.ConnectionError, QuestionStatus.Timeout];
+    public static readonly QuestionStatus[] QuestionStatusesForSender = [QuestionStatus.Waiting, QuestionStatus.Error, QuestionStatus.SendAgain, QuestionStatus.ConnectionError, QuestionStatus.Timeout, QuestionStatus.WaitingForOcr, QuestionStatus.ControlledForOcr];
 
     public static readonly char[] OptionChars = ['A', 'B', 'C', 'D', 'E'];
     public static readonly string[] OptionStrings = ["A", "B", "C", "D", "E"];

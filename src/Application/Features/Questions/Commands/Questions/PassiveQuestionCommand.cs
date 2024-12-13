@@ -10,7 +10,7 @@ public class PassiveQuestionCommand : IRequest<bool>, ISecuredRequest<UserTypes>
 {
     public Guid QuestionId { get; set; }
 
-    public UserTypes[] Roles { get; } = [];
+    public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }

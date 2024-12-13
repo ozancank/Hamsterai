@@ -43,7 +43,7 @@ public class AddUserCommandHandler(IMapper mapper,
         {
             var extension = Path.GetExtension(request.Model.ProfilePictureFileName);
             var fileName = $"P_{id}_{Guid.NewGuid()}{extension}";
-            await commonService.PictureConvert(request.Model.ProfilePictureBase64, request.Model.ProfilePictureFileName, AppOptions.ProfilePictureFolderPath);
+            await commonService.PictureConvert(request.Model.ProfilePictureBase64, fileName, AppOptions.ProfilePictureFolderPath, cancellationToken);
             request.Model.ProfileUrl = fileName;
         }
 

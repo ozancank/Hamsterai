@@ -9,6 +9,7 @@ public class GetQuestionModel : IResponseModel
     public LessonTypes LessonType { get; set; }
     public string? QuestionPictureFileName { get; set; }
     public string? QuestionPictureExtension { get; set; }
+    public string? QuestionText { get; set; }
     public string? AnswerText { get; set; }
     public QuestionStatus Status { get; set; }
     public bool IsRead { get; set; }

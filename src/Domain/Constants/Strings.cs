@@ -43,6 +43,7 @@ public struct Strings
     public const string DynamicLessonTestPrepared = "{0} testiniz hazırlandı";
     public const string DynamicLessonTestPreparedForYou = "Hamster AI sizin için {0} testi hazırlandı. İyi çalışmalar :)\nTest No: {1}";
     public const string DynamicUserTypeShouldBe = "Kullanıcı tipi {0} olmalıdır.";
+    public const string DynamicNotVerified = "{0} doğrulanamadı.";
 
     public const string Second = "Saniye";
     public const string Minute = "Dakika";
@@ -141,6 +142,7 @@ public struct Strings
     public const string OfType = "Tipi";
     public const string Option = "Seçenek";
     public const string Options = "Seçenekler";
+    public const string Control = "Kontrol";
 
     //public const string LessonGroup = "Ders Grubu";
     public const string NoQuestionCredit = "Soru krediniz bulunmamaktadır.";
@@ -171,6 +173,8 @@ public struct Strings
     public const string UserDeniedPassiveForAdmin = "Admin kullanıcısı pasif yapılamaz.";
     public const string UserDeniedChangeOwnPassword = "Bu kullanıcının şifrenizi değiştirmek için şifre değiştir methodunu kullanınız.";
     public const string AccessDeniedBySchool = "Bu işlem okul tarafından engellenmiştir.";
+    public const string WaitingControl = "Kontrol Bekliyor";
+    public const string MustBeControlForOcr = "Soru kontrolü yapılmalıdır.";
 
     public const string ModelBusy = "Model meşgul!";
     public const string QuestionLimitForStudentAndLesson = "Bu ders için günlük soru limitinize ulaştınız.";

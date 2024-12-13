@@ -31,7 +31,23 @@ public class PaymentSipay : BaseEntity<Guid>
     public string? MdStatus { get; set; }
     public string? OriginalBankErrorCode { get; set; }
     public string? OriginalBankErrorDescription { get; set; }
-    public string? WebHookString { get; set; }
+    public string? BankStatusCode { get; set; }
+    public string? BankStatusDescription { get; set; }
+    public string? TransactionStatus { get; set; }
+    public string? TransactionId { get; set; }
+    public string? Message { get; set; }
+    public string? Reason { get; set; }
+    public int TotalRefundedAmount { get; set; }
+    public string? ProductPrice { get; set; }
+    public int TransactionAmount { get; set; }
+    public int RecurringId { get; set; }
+    public string? RefNumber { get; set; }
+    public string? RecurringPlanCode { get; set; }
+    public int RecurringNumber { get; set; }
+    public string? ActionDate { get; set; }
+    public string? NextActionDate { get; set; }
+    public string? RecurringStatus { get; set; }
+    public string? SettlementDate { get; set; }
 
     public virtual ICollection<Payment> Payments { get; set; } = [];
 

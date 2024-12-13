@@ -6,7 +6,7 @@ namespace Infrastructure.AI.Models;
 public class QuestionRequestModel : IRequestModel
 {
     [JsonPropertyName("content")]
-    public string? QuestionImage { get; set; }
+    public string? Question { get; set; }
 
     [JsonPropertyName("ders")]
     public string? LessonName { get; set; }

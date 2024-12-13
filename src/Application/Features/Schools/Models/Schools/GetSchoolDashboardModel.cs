@@ -26,12 +26,12 @@ public class GetSchoolDashboardModel : IResponseModel
     public Dictionary<string, int> SendQuestionByName { get; set; } = [];
     public Dictionary<string, int> SendQuestionByDay { get; set; } = [];
 
-    public Dictionary<string, int> SendSimilarByLesson { get; set; } = [];
-    public Dictionary<string, int> SendSimilarByPackage { get; set; } = [];
-    public Dictionary<string, int> SendSimilarByClassRoom { get; set; } = [];
-    public Dictionary<string, int> SendSimilarByGain { get; set; } = [];
-    public Dictionary<string, int> SendSimilarByName { get; set; } = [];
-    public Dictionary<string, int> SendSimilarByDay { get; set; } = [];
+    //public Dictionary<string, int> SendSimilarByLesson { get; set; } = [];
+    //public Dictionary<string, int> SendSimilarByPackage { get; set; } = [];
+    //public Dictionary<string, int> SendSimilarByClassRoom { get; set; } = [];
+    //public Dictionary<string, int> SendSimilarByGain { get; set; } = [];
+    //public Dictionary<string, int> SendSimilarByName { get; set; } = [];
+    //public Dictionary<string, int> SendSimilarByDay { get; set; } = [];
 
     public Dictionary<string, int> TotalQuestionByLesson { get; set; } = [];
     public Dictionary<string, int> TotalQuestionByPackage { get; set; } = [];

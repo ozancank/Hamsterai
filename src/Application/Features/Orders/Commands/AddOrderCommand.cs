@@ -2,12 +2,15 @@
 using Application.Features.Orders.Models;
 using Application.Features.Orders.Rules;
 using Application.Features.Packages.Rules;
+using Application.Features.Payments.Rules;
 using Application.Features.Users.Rules;
 using DataAccess.Abstract.Core;
+using Infrastructure.Payment;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Caching;
 using OCK.Core.Pipelines.Logging;
+using System.Text.Json;
 
 namespace Application.Features.Orders.Commands;
 
@@ -29,7 +32,8 @@ public class AddOrderCommandHandler(IMapper mapper,
                                     IOrderDetailDal orderDetailDal,
                                     IPaymentDal paymentDal,
                                     IPackageUserDal packageUserDal,
-                                    IPaymentSipayDal paymentSipayDal) : IRequestHandler<AddOrderCommand, GetOrderModel>
+                                    IPaymentSipayDal paymentSipayDal,
+                                    IPaymentApi paymentApi) : IRequestHandler<AddOrderCommand, GetOrderModel>
 {
     public async Task<GetOrderModel> Handle(AddOrderCommand request, CancellationToken cancellationToken)
     {
@@ -138,7 +142,7 @@ public class AddOrderCommandHandler(IMapper mapper,
                     UpdateDate = date,
                     PackageId = package.Id,
                     UserId = user.Id,
-                    RenewCount = 0,
+                    RenewCount = 1,
                     EndDate = date,
                     QuestionCredit = package.QuestionCredit,
                 };
@@ -227,6 +231,39 @@ public class AddOrderCommandHandler(IMapper mapper,
         var result = mapper.Map<GetOrderModel>(order);
         if (request.WillSave)
         {
+            var paymentControl = await paymentApi.GetPayment(paymentSipay.InvoiceId!, payment.Amount);
+            Console.WriteLine(JsonSerializer.Serialize(paymentControl));
+            await PaymentRules.PaymentControl(paymentControl);
+
+            paymentSipay.BankStatusCode = paymentControl.BankStatusCode;
+            paymentSipay.BankStatusDescription = paymentControl.BankStatusDescription;
+            paymentSipay.TransactionStatus = paymentControl.TransactionStatus;
+            paymentSipay.TransactionId = paymentControl.TransactionId;
+            paymentSipay.Message = paymentControl.Message;
+            paymentSipay.Reason = paymentControl.Reason;
+            paymentSipay.TotalRefundedAmount = paymentControl.TotalRefundedAmount;
+            paymentSipay.ProductPrice = paymentControl.ProductPrice;
+            paymentSipay.TransactionAmount = paymentControl.TransactionAmount;
+            paymentSipay.RecurringId = paymentControl.RecurringId;
+            paymentSipay.RefNumber = paymentControl.RefNumber;
+            paymentSipay.RecurringPlanCode = paymentControl.RecurringPlanCode;
+            paymentSipay.RecurringNumber = 1;
+            paymentSipay.ActionDate = paymentControl.SettlementDate;
+            paymentSipay.NextActionDate = paymentControl.NextActionDate;
+            paymentSipay.RecurringStatus = paymentControl.RecurringStatus;
+            paymentSipay.SettlementDate = paymentControl.SettlementDate;
+
+            if (!user.AutomaticPayment)
+            {
+                var plan = await paymentApi.GetRequrring(paymentSipay.RecurringPlanCode!, paymentSipay.RecurringNumber);
+                if (plan.RecurringStatus?.Equals("Active", StringComparison.OrdinalIgnoreCase) ?? false)
+                    await paymentApi.UpdateRecurringRequest(new()
+                    {
+                        PlanCode = paymentSipay.RecurringPlanCode!,
+                        RecurringActive = false,
+                    });
+            }
+
             result = await orderDal.ExecuteWithTransactionAsync(async () =>
             {
                 await userDal.UpdateAsync(user, cancellationToken: cancellationToken);
@@ -255,8 +292,6 @@ public class AddOrderCommandHandler(IMapper mapper,
 
         return result;
     }
-
-
 }
 
 public class AddOrderCommandValidator : AbstractValidator<AddOrderCommand>

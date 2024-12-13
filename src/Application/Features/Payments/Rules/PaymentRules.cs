@@ -1,4 +1,6 @@
 ﻿using Application.Features.Payments.Models;
+using Infrastructure.Payment.Models;
+using Infrastructure.Payment.Sipay;
 
 namespace Application.Features.Payments.Rules;
 
@@ -57,6 +59,19 @@ public class PaymentRules(IPaymentDal paymentDal) : IBusinessRule
                     Hesaplanan Fiyat: {totalPrice}
                     """);
         }
+        return Task.CompletedTask;
+    }
+
+    internal static Task PaymentControl(GetPaymentResponseModel paymentControl)
+    {
+        if (paymentControl == null) throw new BusinessException(Strings.DynamicNotVerified, Strings.Payment);
+        return Task.CompletedTask;
+    }
+
+    internal static Task SipayMerchantKeyControl(string? merchantKey)
+    {
+        if (merchantKey.IsEmpty() || merchantKey != SipayConfiguration.MerchantKey)
+            throw new Exception(Strings.InvalidValue);
         return Task.CompletedTask;
     }
 

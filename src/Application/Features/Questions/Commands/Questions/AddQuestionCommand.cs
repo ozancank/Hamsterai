@@ -59,7 +59,7 @@ public class AddQuestionCommandHandler(IMapper mapper,
             AnswerText = string.Empty,
             AnswerPictureFileName = string.Empty,
             AnswerPictureExtension = string.Empty,
-            Status = QuestionStatus.Waiting,
+            Status = request.Model.IsVisual ? QuestionStatus.WaitingForOcr : QuestionStatus.Waiting,
             IsRead = false,
             ReadDate = AppStatics.MilleniumDate,
             SendForQuiz = false,
@@ -68,7 +68,7 @@ public class AddQuestionCommandHandler(IMapper mapper,
             GainId = null,
             RightOption = null,
             ExcludeQuiz = false,
-            ExistsVisualContent = true,
+            ExistsVisualContent = request.Model.IsVisual,
         };
 
         var added = await questionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);

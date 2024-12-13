@@ -39,6 +39,22 @@ public class PaymentSipayConfiguration : IEntityTypeConfiguration<PaymentSipay>
         builder.Property(e => e.MdStatus).HasColumnName("MdStatus").HasColumnOrder(30);
         builder.Property(e => e.OriginalBankErrorCode).HasColumnName("OriginalBankErrorCode").HasColumnOrder(31);
         builder.Property(e => e.OriginalBankErrorDescription).HasColumnName("OriginalBankErrorDescription").HasColumnOrder(32);
-        builder.Property(e => e.WebHookString).HasColumnName("WebHookString").HasColumnOrder(33);
+        builder.Property(e => e.BankStatusCode).HasColumnName("BankStatusCode").HasColumnOrder(33);
+        builder.Property(e => e.BankStatusDescription).HasColumnName("BankStatusDescription").HasColumnOrder(34);
+        builder.Property(e => e.TransactionStatus).HasColumnName("TransactionStatus").HasColumnOrder(35);
+        builder.Property(e => e.TransactionId).HasColumnName("TransactionId").HasColumnOrder(36);
+        builder.Property(e => e.Message).HasColumnName("Message").HasColumnOrder(37);
+        builder.Property(e => e.Reason).HasColumnName("Reason").HasColumnOrder(38);
+        builder.Property(e => e.TotalRefundedAmount).HasColumnName("TotalRefundedAmount").HasColumnOrder(39);
+        builder.Property(e => e.ProductPrice).HasColumnName("ProductPrice").HasColumnOrder(40);
+        builder.Property(e => e.TransactionAmount).HasColumnName("TransactionAmount").HasColumnOrder(41);
+        builder.Property(e => e.RecurringId).HasColumnName("RecurringId").HasColumnOrder(42);
+        builder.Property(e => e.RefNumber).HasColumnName("RefNumber").HasColumnOrder(43);
+        builder.Property(e => e.RecurringPlanCode).HasColumnName("RecurringPlanCode").HasColumnOrder(44);
+        builder.Property(e => e.RecurringNumber).HasColumnName("RecurringNumber").HasColumnOrder(45);
+        builder.Property(e => e.ActionDate).HasColumnName("ActionDate").HasColumnOrder(46);
+        builder.Property(e => e.NextActionDate).HasColumnName("NextActionDate").HasColumnOrder(47);
+        builder.Property(e => e.RecurringStatus).HasColumnName("RecurringStatus").HasColumnOrder(48);
+        builder.Property(e => e.SettlementDate).HasColumnName("SettlementDate").HasColumnOrder(49);
     }
 }

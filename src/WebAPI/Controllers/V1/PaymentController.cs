@@ -1,5 +1,7 @@
+﻿using Application.Features.Payments.Commands;
 using Application.Features.Payments.Queries;
 using Asp.Versioning;
+using Infrastructure.Payment.Sipay.Models;
 
 namespace WebAPI.Controllers.V1;
 
@@ -38,5 +40,13 @@ public class PaymentController : BaseController
         var command = new GetPaymentsByDynamicQuery { PageRequest = model, Dynamic = dynamicModel };
         var result = await Mediator.Send(command);
         return Ok(result);
+    }
+
+    [HttpPost("AddPaymentSipay")]
+    public async Task<IActionResult> AddPaymentSipay([FromBody] SipayRecurringWebHookRequestModel model)
+    {
+        var command = new AddPaymentSipayCommand { Model = model };
+        await Mediator.Send(command);
+        return Ok();
     }
 }

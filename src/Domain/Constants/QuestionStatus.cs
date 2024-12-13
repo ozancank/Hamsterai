@@ -11,4 +11,7 @@ public enum QuestionStatus : byte
     ConnectionError = 6,
     Timeout = 7,
     NotFoundImage = 8,
+    WaitingForOcr = 9,
+    MustBeControlForOcr = 10,
+    ControlledForOcr = 11,
 }

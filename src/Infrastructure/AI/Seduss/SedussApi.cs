@@ -52,6 +52,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
 
     public async Task<QuestionResponseModel> AskQuestionWithImage(QuestionApiModel model, CancellationToken cancellationToken = default)
     {
+        var methodName = nameof(AskQuestionWithImage);
         var baseUrl = GetBaseUrl(model.AIUrl);
         var answer = new QuestionResponseModel();
         try
@@ -64,7 +65,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
 
             var data = new QuestionRequestModel
             {
-                QuestionImage = model.Base64,
+                Question = model.Base64,
                 LessonName = model.LessonName?.ToSlug('_').Replace("__", "_") ?? string.Empty
             };
 
@@ -103,8 +104,122 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"AskQuestionWithImage - Error: {ex.Message}");
+            Console.WriteLine($"{methodName} - Error: {ex.Message}");
             var status = GetErrorQuestionStatus(ex);
+            await InfrastructureDelegates.UpdateQuestionOcrImage?.Invoke(answer, new(model.Id, status, model.UserId, model.LessonId, baseUrl, ex.Message))!;
+            LogError(loggerServiceBase, ex, model.UserId);
+        }
+
+        return answer;
+    }
+
+    public async Task<QuestionResponseModel> AskQuestionWithText(QuestionApiModel model, CancellationToken cancellationToken = default)
+    {
+        var methodName = nameof(AskQuestionWithText);
+        var baseUrl = GetBaseUrl(model.AIUrl);
+        var answer = new QuestionResponseModel();
+        try
+        {
+            using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
+
+            var url = $"{baseUrl}/question/modelSor";
+
+            var data = new QuestionRequestModel
+            {
+                Question = model.QuestionText,
+                LessonName = model.LessonName?.ToSlug('_').Replace("__", "_") ?? string.Empty
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"),
+            };
+
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                answer.QuestionText = model.QuestionText;
+                answer.AnswerText = content.EmptyOrTrim().Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
+                answer.AnswerImage = string.Empty;
+                answer.GainName = string.Empty;
+                answer.RightOption = "A";
+                answer.IsExistsVisualContent = true;
+                answer.OcrMethod = string.Empty;
+
+                if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
+                    await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId, model.LessonId, baseUrl));
+            }
+            else
+            {
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                throw new ExternalApiException(content.Trim("{", "}") ?? string.Empty);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{methodName} - Error: {ex.Message}");
+            var status = QuestionStatus.ControlledForOcr;
+            await InfrastructureDelegates.UpdateQuestionOcrImage?.Invoke(answer, new(model.Id, status, model.UserId, model.LessonId, baseUrl, ex.Message))!;
+            LogError(loggerServiceBase, ex, model.UserId);
+        }
+
+        return answer;
+    }
+
+    public async Task<QuestionResponseModel> AskOcr(QuestionApiModel model, CancellationToken cancellationToken = default)
+    {
+        var methodName = nameof(AskOcr);
+        var baseUrl = GetBaseUrl(model.AIUrl);
+        var answer = new QuestionResponseModel();
+        try
+        {
+            using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
+
+            var url = $"{baseUrl}/question/ocr";
+
+            var data = new QuestionRequestModel
+            {
+                Question = model.Base64,
+                LessonName = model.LessonName?.ToSlug('_').Replace("__", "_") ?? string.Empty
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"),
+            };
+
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                answer.QuestionText = content.EmptyOrTrim().Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
+                answer.AnswerText = string.Empty;
+                answer.AnswerImage = string.Empty;
+                answer.GainName = string.Empty;
+                answer.RightOption = "A";
+                answer.IsExistsVisualContent = true;
+                answer.OcrMethod = string.Empty;
+
+                if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
+                    await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.MustBeControlForOcr, model.UserId, model.LessonId, baseUrl));
+            }
+            else
+            {
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                throw new ExternalApiException(content.Trim("{", "}") ?? string.Empty);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{methodName} - Error: {ex.Message}");
+            var status = QuestionStatus.WaitingForOcr;
             await InfrastructureDelegates.UpdateQuestionOcrImage?.Invoke(answer, new(model.Id, status, model.UserId, model.LessonId, baseUrl, ex.Message))!;
             LogError(loggerServiceBase, ex, model.UserId);
         }
@@ -239,7 +354,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
 
             var data = new QuestionRequestModel
             {
-                QuestionImage = model.Base64,
+                Question = model.Base64,
                 LessonName = model.LessonName?.ToSlug('_').Replace("__", "_") ?? string.Empty
             };
 

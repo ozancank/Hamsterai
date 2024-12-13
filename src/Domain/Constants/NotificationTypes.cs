@@ -8,4 +8,5 @@ public enum NotificationTypes : byte
     QuizCreated = 3,
     Everbody = 4,
     HomeWork=5,
+    QuestionOcr = 6,
 }

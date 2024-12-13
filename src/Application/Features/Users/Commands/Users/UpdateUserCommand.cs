@@ -3,6 +3,7 @@ using Application.Features.Users.Models.User;
 using Application.Features.Users.Rules;
 using Application.Services.CommonService;
 using DataAccess.Abstract.Core;
+using Infrastructure.Payment;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Caching;
@@ -22,14 +23,17 @@ public sealed class UpdateUserCommand : IRequest<GetUserModel>, ISecuredRequest<
 public sealed class UpdateUserCommandHandler(IMapper mapper,
                                              ICommonService commonService,
                                              IUserDal userDal,
+                                             IPackageDal packageDal,
                                              IPackageUserDal packageUserDal,
+                                             IPaymentApi paymentApi,
+                                             IPaymentDal paymentDal,
+                                             IOrderDetailDal orderDetailDal,
                                              UserRules userRules,
                                              PackageRules packageRules) : IRequestHandler<UpdateUserCommand, GetUserModel>
 {
     public async Task<GetUserModel> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
         request.Model.Email = request.Model.Email!.Trim().ToLower();
-
         var user = await userDal.GetAsync(predicate: x => x.Id == request.Model.Id, cancellationToken: cancellationToken);
 
         await UserRules.UserShouldExistsAndActive(user);
@@ -37,12 +41,14 @@ public sealed class UpdateUserCommandHandler(IMapper mapper,
         await userRules.UserEmailCanNotBeDuplicated(request.Model.Email, request.Model.Id);
         await userRules.UserTypeAllowed(user.Type, user.Id);
 
+        var automaticPayment = user.AutomaticPayment;
+
         var date = DateTime.Now;
         if (request.Model.ProfilePictureFileName.IsNotEmpty() && request.Model.ProfilePictureBase64.IsNotEmpty())
         {
             var extension = Path.GetExtension(request.Model.ProfilePictureFileName);
             var fileName = $"P_{request.Model.Id}_{Guid.NewGuid()}{extension}";
-            await commonService.PictureConvert(request.Model.ProfilePictureBase64, request.Model.ProfilePictureFileName, AppOptions.ProfilePictureFolderPath, cancellationToken);
+            await commonService.PictureConvert(request.Model.ProfilePictureBase64, fileName, AppOptions.ProfilePictureFolderPath, cancellationToken);
             request.Model.ProfileUrl = fileName;
         }
 
@@ -53,6 +59,7 @@ public sealed class UpdateUserCommandHandler(IMapper mapper,
         user.ProfileUrl = request.Model.ProfileUrl;
         user.Email = request.Model.Email;
         user.TaxNumber = request.Model.TaxNumber;
+        user.AutomaticPayment = request.Model.AutomaticPayment;
 
         var existingPackageUsers = new List<Guid>();
         var packageUsers = new List<PackageUser>();
@@ -86,6 +93,46 @@ public sealed class UpdateUserCommandHandler(IMapper mapper,
             if (packageUsers.Count != 0)
             {
                 packageUsers[0].QuestionCredit = request.Model.QuestionCredit;
+            }
+        }
+
+        if (automaticPayment != user.AutomaticPayment)
+        {
+            var payments = await paymentDal.GetListAsync(
+                predicate: x => x.UserId == user.Id,
+                include: x => x.Include(u => u.PaymentSipay),
+                cancellationToken: cancellationToken);
+
+            var firstPayments = payments.Where(x => x.PaymentReason == PaymentReason.FirstPayment && x.PaymentSipayId != null).ToList();
+            var groupPlans = firstPayments.Select(x => x.PaymentSipay).GroupBy(x => x!.RecurringPlanCode).Select(x => x.MaxBy(m => m?.RecurringNumber ?? 0)).ToList();
+
+            foreach (var plan in groupPlans)
+            {
+                if (plan == null || plan.RecurringPlanCode.IsEmpty()) continue;
+                var res = await paymentApi.GetRequrring(plan.RecurringPlanCode!, 1);
+                var lastRecurringNumber = res.TransactionHistories.DefaultIfEmpty().Max(m => m?.RecurringNumber);
+                if (lastRecurringNumber >= res.PaymentNumber) continue;
+                var firstPayment = firstPayments.First(x => x.PaymentSipay!.OrderId == res.FirstOrderId);
+                var details = await orderDetailDal.GetListAsync(
+                    predicate: x => x.OrderId == Convert.ToInt32(firstPayment.ReasonId ?? "0"),
+                    selector: x => new { x.PackageId, x.Quantity },
+                    cancellationToken: cancellationToken);
+                details = [.. details.Distinct()];
+
+                var newAmount = 0.0;
+                foreach (var detail in details)
+                {
+                    var package = await packageDal.GetAsync(x => x.Id == detail.PackageId, cancellationToken: cancellationToken);
+                    newAmount += package.Amount * detail.Quantity;
+                }
+
+                await paymentApi.UpdateRecurringRequest(new()
+                {
+                    PlanCode = plan.RecurringPlanCode!,
+                    RecurringActive = user.AutomaticPayment,
+                    RecurringAmount = $"{newAmount:0.00}".Replace(",", "."),
+                    RecurringPaymentNumber = res.PaymentNumber.ToString(),
+                });
             }
         }
 

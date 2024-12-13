@@ -117,7 +117,7 @@ static async Task Middlewares(WebApplicationBuilder builder, WebApplication app,
     //});
 
     if (!app.Environment.IsDevelopment())
-        app.UseMiddleware<HeaderAuthMiddleware>([Strings.XApiKey, Strings.SwaggerPath, new string[] { Strings.Domain, Strings.Domain2 }]);
+        app.UseMiddleware<HeaderAuthMiddleware>([Strings.XApiKey, Strings.SwaggerPath, AppStatics.Domains, AppStatics.EndPoints]);
 
     app.UseSwagger();
 
@@ -278,9 +278,9 @@ static void RunLinuxCommands()
 {
     string[] commands =
     [
-            $"sudo chown -R www-data:www-data {Directory.GetParent(Domain.Constants.AppOptions.ProfilePictureFolderPath).FullName}",
-            $"sudo chown -R www-data:www-data {Domain.Constants.AppOptions.HomeworkFolderPath}",
-            $"sudo chown -R www-data:www-data {Domain.Constants.AppOptions.HomeworkAnswerFolderPath}",
+            $"sudo chown -R root:root {Directory.GetParent(Domain.Constants.AppOptions.ProfilePictureFolderPath).FullName}",
+            $"sudo chown -R root:root {Domain.Constants.AppOptions.HomeworkFolderPath}",
+            $"sudo chown -R root:root {Domain.Constants.AppOptions.HomeworkAnswerFolderPath}",
             $"sudo chmod -R 755 {Directory.GetParent(Domain.Constants.AppOptions.ProfilePictureFolderPath).FullName}",
             $"sudo chmod -R 755 {Domain.Constants.AppOptions.HomeworkFolderPath}",
             $"sudo chmod -R 755 {Domain.Constants.AppOptions.HomeworkAnswerFolderPath}",

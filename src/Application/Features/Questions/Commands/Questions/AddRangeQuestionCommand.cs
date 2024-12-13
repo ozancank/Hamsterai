@@ -73,7 +73,7 @@ public class AddRangeQuestionCommandHandler(IMapper mapper,
                 GainId = null,
                 RightOption = null,
                 ExcludeQuiz = false,
-                ExistsVisualContent = true,
+                ExistsVisualContent = item.IsVisual,
             };
 
             questions.Add(question);
