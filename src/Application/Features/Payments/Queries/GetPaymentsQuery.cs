@@ -38,6 +38,11 @@ public class GetPaymentsQueryHandler(IMapper mapper,
                 var orderId = Convert.ToInt32(x.ReasonId ?? "0");
                 x.OrderNo = await orderDal.Query().AsNoTracking().Where(o => o.UserId == x.UserId && o.Id == orderId).Select(x => x.OrderNo).FirstOrDefaultAsync(cancellationToken);
             }
+            else if (x.PaymentReason == PaymentReason.RenewalPayment)
+            {
+                var orderId = Convert.ToInt32(x.ReasonId ?? "0");
+                x.OrderNo = await orderDal.Query().AsNoTracking().Where(o => o.UserId == x.UserId && o.Id == orderId).Select(x => $"{x.OrderNo} siparişin yinelenen ödemesi").FirstOrDefaultAsync(cancellationToken: cancellationToken);
+            }
         });
 
         var result = mapper.Map<PageableModel<GetPaymentModel>>(payments);

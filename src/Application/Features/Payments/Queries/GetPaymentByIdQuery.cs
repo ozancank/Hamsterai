@@ -36,7 +36,12 @@ public class GetPaymentByIdQueryHandler(IMapper mapper,
             var orderId = Convert.ToInt32(entity.ReasonId ?? "0");
             entity.OrderNo = await orderDal.Query().AsNoTracking().Where(o => o.UserId == entity.UserId && o.Id == orderId).Select(x => entity.OrderNo).FirstOrDefaultAsync(cancellationToken: cancellationToken);
         }
+        else if(entity.PaymentReason==PaymentReason.RenewalPayment)
+        {
+            var orderId = Convert.ToInt32(entity.ReasonId ?? "0");
+            entity.OrderNo = await orderDal.Query().AsNoTracking().Where(o => o.UserId == entity.UserId && o.Id == orderId).Select(x => $"{entity.OrderNo} siparişin yinelenen ödemesi").FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        }
 
-        return entity;
+            return entity;
     }
 }
