@@ -157,7 +157,7 @@ public class UserRules(IUserDal userDal,
 
     internal static async Task LicenceIsValid(DateTime licenceDate)
     {
-        //if (licenceDate.Date <= DateTime.Now.Date) throw new BusinessException(Strings.LicenceExpired);
+        if (licenceDate.Date.AddDays(1) <= DateTime.Now.Date) throw new BusinessException(Strings.LicenceExpired);
         await Task.CompletedTask;
     }
 

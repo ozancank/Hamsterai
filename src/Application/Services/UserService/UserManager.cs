@@ -2,6 +2,7 @@
 using Application.Features.Users.Rules;
 using Application.Services.CommonService;
 using DataAccess.Abstract.Core;
+using DataAccess.EF;
 using Domain.Entities.Core;
 using LinqKit;
 using OCK.Core.Caching;
@@ -13,6 +14,7 @@ public class UserManager(IUserDal userDal,
                          IMapper mapper,
                          ICacheManager cacheManager,
                          IQuestionDal questionDal,
+                         IDbContextFactory<HamsteraiDbContext> contextFactory,
                          ICommonService commonService) : IUserService
 {
     public async Task<User> GetUserById(long id, bool tracking = false)
@@ -68,6 +70,7 @@ public class UserManager(IUserDal userDal,
     {
         return await cacheManager.GetOrAddAsync($"{Strings.CacheStatusAndLicence}-{userId}", async () =>
         {
+            using var context = contextFactory.CreateDbContext();
             var userType = commonService.HttpUserType;
             var schoolId = commonService.HttpSchoolId;
 
@@ -76,32 +79,35 @@ public class UserManager(IUserDal userDal,
             if (userType is UserTypes.Administator) result = true;
             else if (schoolId != null && userType is UserTypes.School or UserTypes.Teacher or UserTypes.Student)
             {
-                var schoolUser = await userDal.GetAsync(
-                    enableTracking: false,
-                    predicate: x => x.IsActive && x.SchoolId == schoolId && x.Type == UserTypes.School && x.School != null && x.School.IsActive,
-                    include: x => x.Include(u => u.PackageUsers).Include(x => x.School),
-                    selector: x => new { x.IsActive, x.PackageUsers, AccessStundents = x.School != null && x.School.AccessStundents });
+                var schoolUser = await context.Users.AsNoTracking()
+                    .Include(u => u.PackageUsers).Include(x => x.School)
+                    .Where(x => x.IsActive && x.SchoolId == schoolId && x.Type == UserTypes.School && x.School != null && x.School.IsActive)
+                    .Select(x => new { x.IsActive, x.PackageUsers, AccessStundents = x.School != null && x.School.AccessStundents })
+                    .FirstOrDefaultAsync();
 
-                var licenseEndDate = schoolUser.PackageUsers.DefaultIfEmpty().Max(x => x != null ? x.EndDate : AppStatics.MilleniumDate);
+                var licenseEndDate = schoolUser!.PackageUsers.DefaultIfEmpty().Max(x => x != null ? x.EndDate : AppStatics.MilleniumDate);
 
                 await SchoolRules.SchoolShouldExistsAndIsActive(schoolUser.IsActive);
                 await SchoolRules.AccessStudentEnabled(schoolUser.AccessStundents, userType);
                 await UserRules.LicenceIsValid(licenseEndDate);
 
-                result = await userDal.IsExistsAsync(predicate: x => x.Id == userId && x.IsActive, enableTracking: false);
+                result = await context.Users.AsNoTracking().AnyAsync(x => x.Id == userId && x.IsActive);
             }
             else if (userType is UserTypes.Person)
             {
-                var user = await userDal.GetAsync(
-                    enableTracking: false,
-                    predicate: x => x.Id == userId && x.IsActive,
-                    selector: x => new { x.IsActive, x.PackageUsers });
-                await UserRules.UserShouldExistsAndActive(user.IsActive);
+                var user = await context.Users.AsNoTracking()
+                    .Include(u => u.PackageUsers)
+                    .Where(x => x.Id == userId)
+                    .Select(x => new { x.IsActive, x.PackageUsers })
+                    .FirstOrDefaultAsync();
+
+                await UserRules.UserShouldExistsAndActive(user!.IsActive);
 
                 var licenseEndDate = user.PackageUsers.DefaultIfEmpty().Max(x => x != null ? x.EndDate : AppStatics.MilleniumDate);
 
                 await UserRules.LicenceIsValid(licenseEndDate);
-                result = true;
+
+                result = user.IsActive;
             }
 
             return result;

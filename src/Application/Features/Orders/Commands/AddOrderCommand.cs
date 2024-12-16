@@ -232,7 +232,6 @@ public class AddOrderCommandHandler(IMapper mapper,
         if (request.WillSave)
         {
             var paymentControl = await paymentApi.GetPayment(paymentSipay.InvoiceId!, payment.Amount);
-            Console.WriteLine(JsonSerializer.Serialize(paymentControl));
             await PaymentRules.PaymentControl(paymentControl);
 
             paymentSipay.BankStatusCode = paymentControl.BankStatusCode;

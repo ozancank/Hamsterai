@@ -65,7 +65,7 @@ public class HamsteraiDbContext : DbContext
     public required DbSet<OrderDetail> OrderDetails { get; set; }
     public required DbSet<PackageCategory> PackageCategories { get; set; }
     public required DbSet<Package> Package { get; set; }
-    public required DbSet<PackageUser> PackageUser { get; set; }
+    public required DbSet<PackageUser> PackageUsers { get; set; }
     public required DbSet<PasswordToken> PasswordTokens { get; set; }
     public required DbSet<Payment> Payments { get; set; }
     public required DbSet<PaymentSipay> PaymentSipays { get; set; }
