@@ -1,5 +1,6 @@
 ﻿using Application.Features.Students.Models;
 using Application.Services.CommonService;
+using Domain.Entities;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 
@@ -12,8 +13,7 @@ public class GetStudentGainsForSelfQuery : IRequest<GetStudentGainsModel>, ISecu
 }
 
 public class GetGainsForStudentIdQueryHandler(ICommonService commonService,
-                                              IQuestionDal questionDal,
-                                              ISimilarDal similarQuestionDal) : IRequestHandler<GetStudentGainsForSelfQuery, GetStudentGainsModel>
+                                              IQuestionDal questionDal) : IRequestHandler<GetStudentGainsForSelfQuery, GetStudentGainsModel>
 {
     public async Task<GetStudentGainsModel> Handle(GetStudentGainsForSelfQuery request, CancellationToken cancellationToken)
     {
@@ -27,25 +27,13 @@ public class GetGainsForStudentIdQueryHandler(ICommonService commonService,
             enableTracking: false,
             predicate: x => x.CreateUser == userId
                             && x.Status == QuestionStatus.Answered
-                            && x.GainId.HasValue
                             && x.CreateDate.Date >= startDate.Date
                             && x.CreateDate.Date <= endDate.Date.AddDays(1).AddSeconds(-1),
             include: x => x.Include(u => u.Lesson).Include(u => u.Gain),
-            selector: x => new { Lesson = x.Lesson != null ? x.Lesson.Name : string.Empty, Gain = x.Gain != null ? x.Gain.Name : string.Empty },
+            selector: x => new { Lesson = x.Lesson != null ? x.Lesson.Name : string.Empty, Gain = x.Gain != null ? x.Gain.Name : string.Empty, x.CreateDate },
             cancellationToken: cancellationToken);
 
-        var similarQuestions = await similarQuestionDal.GetListAsync(
-            enableTracking: false,
-            predicate: x => x.CreateUser == userId
-                            && x.Status == QuestionStatus.Answered
-                            && x.GainId.HasValue
-                            && x.CreateDate.Date >= startDate.Date
-                            && x.CreateDate.Date <= endDate.Date.AddDays(1).AddSeconds(-1),
-            include: x => x.Include(u => u.Lesson).Include(u => u.Gain),
-            selector: x => new { Lesson = x.Lesson != null ? x.Lesson.Name : string.Empty, Gain = x.Gain != null ? x.Gain.Name : string.Empty },
-            cancellationToken: cancellationToken);
-
-        var allQuestions = questions.Concat(similarQuestions).ToList();
+        var allQuestions = questions.ToList();
 
         result.ForLessons = allQuestions.Distinct()
             .GroupBy(x => x.Lesson)
@@ -53,11 +41,13 @@ public class GetGainsForStudentIdQueryHandler(ICommonService commonService,
             .ToDictionary(x => x.Lesson!, x => x.Count);
 
         result.ForGains = allQuestions
+            .Where(x => x.Gain.IsNotEmpty())
             .GroupBy(x => x.Gain)
             .Select(g => new { Gain = g.Key, Count = g.Count() })
             .ToDictionary(x => x.Gain!, x => x.Count);
 
         result.ForLessonGains = allQuestions
+            .Where(x => x.Gain.IsNotEmpty())
             .GroupBy(x => x.Lesson)
             .Select(g => new
             {
@@ -68,10 +58,15 @@ public class GetGainsForStudentIdQueryHandler(ICommonService commonService,
             })
             .ToDictionary(x => x.Lesson!, x => x.Gains);
 
+        result.SendQuestionByDay = allQuestions
+            .GroupBy(x => x.CreateDate.ToStringDayOfWeek())
+            .Select(x => new { Day = x.Key, Count = x.Count() })
+            .ToDictionary(x => x.Day, x => x.Count);
+
         result.Info = new Dictionary<string, int>
         {
             { "TotalQuestion", allQuestions.Count },
-            { "TotalGain", result.ForLessons.Sum(x=>x.Value) }
+            { "TotalGain", result.ForGains.Distinct().Sum(x=>x.Value) }
         };
 
         return result;

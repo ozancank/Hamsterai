@@ -2,7 +2,7 @@
 using Domain.Entities.Core;
 using OCK.Core.Security.JWT;
 using System.Security.Claims;
-using Security = OCK.Core.Security.Entities;
+using Security = OCK.Core.Security;
 
 namespace Application.Services.AuthService;
 
@@ -14,7 +14,7 @@ public class AuthManager(IConfiguration configuration,
 
     public Task<AccessToken> CreateAccessToken(User user)
     {
-        var operationClaims = user.UserOperationClaims.Select(x => new Security.OperationClaim
+        var operationClaims = user.UserOperationClaims.Select(x => new Security.Entities.OperationClaim
         {
             Id = x.OperationClaim!.Id,
             Name = x.OperationClaim.Name,
@@ -30,7 +30,14 @@ public class AuthManager(IConfiguration configuration,
                 new(Domain.Constants.ClaimTypes.PackageId, $"{user.PackageUsers}", ClaimValueTypes.String)
            ];
 
-        var accessToken = tokenHelper.CreateToken(user, operationClaims, $"{user.Name} {user.Surname}", user.Email, claims);
+        var accessToken = tokenHelper.CreateToken(new Security.Dtos.TokenParameterDto
+        {
+            User = user,
+            OperationClaims = operationClaims,
+            Name = $"{user.Name} {user.Surname}",
+            Email = user.Email,
+            Claims = claims
+        });
         return Task.FromResult(accessToken);
     }
 

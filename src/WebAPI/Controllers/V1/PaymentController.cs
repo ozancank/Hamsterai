@@ -2,7 +2,6 @@
 using Application.Features.Payments.Queries;
 using Asp.Versioning;
 using Infrastructure.Payment.Sipay.Models;
-using MongoDB.Bson;
 using OCK.Core.Extensions;
 using OCK.Core.Logging.Serilog;
 using OCK.Core.Utilities;
@@ -51,7 +50,7 @@ public class PaymentController(LoggerServiceBase loggerServiceBase) : BaseContro
     [Consumes("application/json", "application/x-www-form-urlencoded", "multipart/form-data", "text/plain")]
     public async Task<IActionResult> AddPaymentSipay()
     {
-        var methodName=nameof(AddPaymentSipay);
+        var methodName = nameof(AddPaymentSipay);
         var contentType = HttpContext.Request.ContentType;
         Console.WriteLine($"{methodName} ----- {contentType}");
 

@@ -43,11 +43,10 @@ public class GetStudentGainsByIdQueryHandler(ICommonService commonService,
             enableTracking: false,
             predicate: x => x.CreateUser == userId
                             && x.Status == QuestionStatus.Answered
-                            && x.GainId.HasValue
                             && x.CreateDate.Date >= request.Model.StartDate.Value.Date
                             && x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddMilliseconds(-1),
             include: x => x.Include(u => u.Lesson).Include(u => u.Gain),
-            selector: x => new { Lesson = x.Lesson!.Name, Gain = x.Gain!.Name },
+            selector: x => new { Lesson = x.Lesson!.Name, Gain = x.Gain!.Name, x.CreateDate },
             cancellationToken: cancellationToken);
 
         result.ForLessons = allQuestions.Distinct()
@@ -56,11 +55,13 @@ public class GetStudentGainsByIdQueryHandler(ICommonService commonService,
             .ToDictionary(x => x.Lesson!, x => x.Count);
 
         result.ForGains = allQuestions
+            .Where(x => x.Gain.IsNotEmpty())
             .GroupBy(x => x.Gain)
             .Select(g => new { Gain = g.Key, Count = g.Count() })
             .ToDictionary(x => x.Gain!, x => x.Count);
 
         result.ForLessonGains = allQuestions
+            .Where(x => x.Gain.IsNotEmpty())
             .GroupBy(x => x.Lesson)
             .Select(g => new
             {
@@ -71,10 +72,15 @@ public class GetStudentGainsByIdQueryHandler(ICommonService commonService,
             })
             .ToDictionary(x => x.Lesson!, x => x.Gains);
 
+        result.SendQuestionByDay = allQuestions
+            .GroupBy(x => x.CreateDate.ToStringDayOfWeek())
+            .Select(x => new { Day = x.Key, Count = x.Count() })
+            .ToDictionary(x => x.Day, x => x.Count);
+
         result.Info = new Dictionary<string, int>
             {
                 { "TotalQuestion", allQuestions.Count },
-                { "TotalGain", result.ForLessons.Sum(x=>x.Value) }
+                { "TotalGain", result.ForGains.Distinct().Sum(x=>x.Value) }
             };
 
         return result;
