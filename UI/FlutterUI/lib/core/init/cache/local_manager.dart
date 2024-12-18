@@ -58,6 +58,12 @@ class LocaleManager {
     await prefs.setString(key.toString(), jsonString);
   }
 
+  Future<void> removeUser() async {
+    if (_preferences != null) {
+      await _preferences!.remove(PreferencesKeys.USER.toString());
+    }
+  }
+
   Future<void> setStringValue2(String key, String value) async {
     await _preferences!.setString(key, value);
   }

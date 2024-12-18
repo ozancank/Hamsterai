@@ -12,6 +12,9 @@ class ProfileTextField extends StatefulWidget {
   final bool isGrey;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
+  final VoidCallback? onTap;
+  final bool isPassword;
+  final bool enabled;
   const ProfileTextField({
     super.key,
     required this.controller,
@@ -20,6 +23,9 @@ class ProfileTextField extends StatefulWidget {
     this.isGrey = false,
     this.keyboardType = TextInputType.name,
     required this.validator,
+    this.onTap,
+    this.isPassword = false,
+    this.enabled = true,
   });
 
   @override
@@ -66,10 +72,10 @@ class _ProfileTextFieldState extends State<ProfileTextField> {
           children: [
             Flexible(
               child: TextFormField(
-                enabled: false,
                 controller: widget.controller,
                 keyboardType: _keyboardType,
                 obscureText: widget.isObsecure,
+                enabled: widget.enabled,
                 obscuringCharacter: '●',
                 validator: widget.validator,
                 style: Theme.of(context).textTheme.bodyLarge,
@@ -83,14 +89,9 @@ class _ProfileTextFieldState extends State<ProfileTextField> {
                 ),
               ),
             ),
-            widget.isObsecure
+            widget.isPassword
                 ? GestureDetector(
-                    onTap: () {
-                      HapticFeedback.mediumImpact();
-                      setState(() {
-                        _isObsecure = !_isObsecure;
-                      });
-                    },
+                    onTap: widget.onTap,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: SvgPicture.asset(AssetsConstant.eyeOn),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_media_downloader/flutter_media_downloader.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +7,7 @@ import 'package:mobile/core/constants/app_constant.dart';
 import 'package:mobile/core/constants/assets_constant.dart';
 import 'package:mobile/core/extensions/size_extension.dart';
 import 'package:mobile/pages/common/common_appbar.dart';
+import 'package:mobile/pages/common/common_appbar2.dart';
 import 'package:mobile/pages/homeworks/model/homework_model.dart';
 import 'package:mobile/styles/colors.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -22,6 +24,8 @@ class HomeworkDetailView extends StatefulWidget {
 class HomeworkDetailViewState extends State<HomeworkDetailView> {
   bool isDownloading = false;
   double progress = 0.0;
+  final _flutterMediaDownloaderPlugin = MediaDownload();
+
   void showFullScreenPDF(BuildContext context, String filePath) {
     Navigator.push(
       context,
@@ -61,7 +65,7 @@ class HomeworkDetailViewState extends State<HomeworkDetailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CommonAppbar(title: 'Ödev Detay'),
+      appBar: CommonAppbar2(title: 'Ödev Detay'),
       backgroundColor: Colors.white,
       body: Container(
         color: Colors.white,
@@ -83,20 +87,20 @@ class HomeworkDetailViewState extends State<HomeworkDetailView> {
                 child: Center(
                   child: Column(
                     children: [
-                      buildHeader(context, widget.homeWorkItem.homework.id,
+                      buildHeader(context, widget.homeWorkItem.homework!.id,
                           AssetsConstant.homeworkId),
                       buildHeader(
                           context,
-                          widget.homeWorkItem.homework.lessonName,
+                          widget.homeWorkItem.homework?.lessonName ?? '',
                           AssetsConstant.homeworkLesson),
                       buildHeader(
                           context,
-                          widget.homeWorkItem.homework.teacherName,
+                          widget.homeWorkItem.homework?.teacherName ?? '',
                           AssetsConstant.homeworkTeacher),
                       buildHeader(
                           context,
                           DateFormat('dd.MM.yyyy - HH:mm')
-                              .format(widget.homeWorkItem.homework.createDate),
+                              .format(widget.homeWorkItem.homework!.createDate),
                           AssetsConstant.homeworkDate),
                       const SizedBox(height: 10),
                       Container(
@@ -109,7 +113,7 @@ class HomeworkDetailViewState extends State<HomeworkDetailView> {
                         child: Stack(
                           children: [
                             SfPdfViewer.network(
-                              '${ApplicationConstants.APIBASEURL}/homework/${widget.homeWorkItem.homework.filePath}',
+                              '${ApplicationConstants.APIBASEURL}/homework/${widget.homeWorkItem.homework?.filePath}',
                               headers: ApplicationConstants.XAPIKEY,
                             ),
                             Positioned(
@@ -121,8 +125,9 @@ class HomeworkDetailViewState extends State<HomeworkDetailView> {
                                     onTap: () {
                                       showFullScreenPDF(
                                           context,
-                                          widget
-                                              .homeWorkItem.homework.filePath);
+                                          widget.homeWorkItem.homework
+                                                  ?.filePath ??
+                                              '');
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.all(10),
@@ -140,8 +145,9 @@ class HomeworkDetailViewState extends State<HomeworkDetailView> {
                                       setState(() {
                                         isDownloading = true;
                                       });
-                                      await downloadPDF(widget
-                                          .homeWorkItem.homework.filePath);
+                                      _flutterMediaDownloaderPlugin.downloadMedia(
+                                          context,
+                                          '${ApplicationConstants.APIBASEURL}/homework/${widget.homeWorkItem.homework?.filePath ?? ''}');
                                       setState(() {
                                         isDownloading = false;
                                       });
@@ -194,6 +200,4 @@ class HomeworkDetailViewState extends State<HomeworkDetailView> {
       ],
     );
   }
-
-  Future<void> downloadPDF(String filePath) async {}
 }

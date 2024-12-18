@@ -1,10 +1,13 @@
 import 'package:get/get.dart';
 import 'package:mobile/pages/auth/view/login_view.dart';
 import 'package:mobile/pages/auth/controller/bindings.dart';
+import 'package:mobile/pages/auth/view/update_password_force_view.dart';
 import 'package:mobile/pages/home/controller/home_page_binding.dart';
 import 'package:mobile/pages/home/view/home_page.dart';
 import 'package:mobile/pages/homeworks/controller/homework_binding.dart';
 import 'package:mobile/pages/homeworks/view/homework_view.dart';
+import 'package:mobile/pages/myQuestions/controller/my_questions_binding.dart';
+import 'package:mobile/pages/myQuestions/view/my_questions_page.dart';
 import 'package:mobile/pages/myTest/controller/quiz_binding.dart';
 import 'package:mobile/pages/myTest/view/my_test_view.dart';
 import 'package:mobile/pages/profileDetail/controller/profile_detail_binding.dart';
@@ -49,6 +52,7 @@ abstract class AppPages {
     GetPage(
       name: Routes.QUESTION_DETAIL,
       page: () => QuestionDetailPage(
+        baseUrl: '',
         question: Question.fromJson({}),
       ),
       binding: QuestionDetailBinding(),
@@ -80,8 +84,20 @@ abstract class AppPages {
     ),
     GetPage(
       name: Routes.HOMEWORK,
-      page: () => const HomeworkView(),
+      page: () => const HomeworkView(
+        appBarText: '',
+      ),
       binding: HomeworkBinding(),
+    ),
+    GetPage(
+      name: Routes.FORCEUPDATEPASSWORD,
+      page: () => const UpdatePasswordForceView(),
+      binding: LoginBinding(),
+    ),
+    GetPage(
+      name: Routes.MYQUESTIONPAGE,
+      page: () => const MyQuestionsPage(),
+      binding: MyQuestionsBinding(),
     ),
   ];
 }

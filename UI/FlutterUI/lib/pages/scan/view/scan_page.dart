@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:mobile/core/constants/assets_constant.dart';
@@ -18,21 +19,39 @@ class ScanPage extends StatefulWidget {
 class _ScanPageState extends State<ScanPage> {
   late ScanController scanController;
 
+  bool isLessonsLoaded = false;
+
+  Future<void> loadLessons() async {
+    EasyLoading.show(
+        status: 'Dersler yükleniyor', maskType: EasyLoadingMaskType.black);
+    await scanController.getLessons(() {
+      setState(() {
+        isLessonsLoaded = true;
+      });
+    }, context);
+
+    if (isLessonsLoaded) {
+      EasyLoading.dismiss();
+      await _showOverlayPage();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     scanController = Get.find<ScanController>();
     scanController.initializeCamera();
-    scanController.getLessons(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await _showOverlayPage();
-      });
-    }, context);
+    // scanController.getLessons(() {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //     await _showOverlayPage();
+    //   });
+    // }, context);
+    WidgetsBinding.instance.addPostFrameCallback((_) => loadLessons());
   }
 
   @override
   void dispose() {
-    scanController.cameraController.dispose();
+    scanController.cameraController?.setFlashMode(FlashMode.off);
     super.dispose();
   }
 
@@ -111,6 +130,9 @@ class _ScanPageState extends State<ScanPage> {
                                       Get.back();
                                       scanController.lessonId.value =
                                           scanController.lessons[index].id;
+                                      scanController.lessonType.value =
+                                          scanController.lessons[index].type;
+                                      print(scanController.lessons[index].type);
                                     },
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
@@ -132,17 +154,19 @@ class _ScanPageState extends State<ScanPage> {
                                           ),
                                         ),
                                         const SizedBox(width: 10),
-                                        Text(
-                                          toTurkishUpperCase(scanController
-                                              .lessons[index].name),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleLarge!
-                                              .copyWith(
-                                                color: Colors.white,
-                                                overflow: TextOverflow.ellipsis,
-                                                fontWeight: FontWeight.w500,
-                                              ),
+                                        Flexible(
+                                          child: Text(
+                                            scanController.lessons[index].name,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleLarge!
+                                                .copyWith(
+                                                  color: Colors.white,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -192,9 +216,21 @@ class _ScanPageState extends State<ScanPage> {
             if (scanController.isLoading.value) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (scanController.isCameraInitialized.value) {
-              return Positioned.fill(
-                child: CameraPreview(scanController.cameraController),
+            if (scanController.isCameraInitialized.value &&
+                scanController.cameraController != null &&
+                scanController.cameraController!.value.isInitialized) {
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  final scale = 1 /
+                      (scanController.cameraController!.value.aspectRatio *
+                          (constraints.maxWidth / constraints.maxHeight));
+                  return Transform.scale(
+                    scale: scale,
+                    child: Center(
+                      child: CameraPreview(scanController.cameraController!),
+                    ),
+                  );
+                },
               );
             } else if (scanController.hasCameraError.value) {
               return const Center(
@@ -203,6 +239,96 @@ class _ScanPageState extends State<ScanPage> {
               return const Center(child: CircularProgressIndicator());
             }
           }),
+          Positioned.fill(
+              child: Center(
+            child: SizedBox(
+                width: context.width * 0.9,
+                height: context.height * 0.3,
+                child: Stack(
+                  children: [
+                    const Align(
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.add,
+                        color: MyColors.primaryColor,
+                        size: 24,
+                      ),
+                    ),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      child: Container(
+                        width: 40,
+                        height: 2,
+                        color: MyColors.primaryColor,
+                      ),
+                    ),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      child: Container(
+                        width: 2,
+                        height: 40,
+                        color: MyColors.primaryColor,
+                      ),
+                    ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        width: 40,
+                        height: 2,
+                        color: MyColors.primaryColor,
+                      ),
+                    ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        width: 2,
+                        height: 40,
+                        color: MyColors.primaryColor,
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      child: Container(
+                        width: 40,
+                        height: 2,
+                        color: MyColors.primaryColor,
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      child: Container(
+                        width: 2,
+                        height: 40,
+                        color: MyColors.primaryColor,
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 40,
+                        height: 2,
+                        color: MyColors.primaryColor,
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 2,
+                        height: 40,
+                        color: MyColors.primaryColor,
+                      ),
+                    ),
+                  ],
+                )),
+          )),
           Align(
             alignment: Alignment.topRight,
             child: Padding(
@@ -240,39 +366,84 @@ class _ScanPageState extends State<ScanPage> {
             ),
           ),
           Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: context.dynamicHeight * 0.05,
+                left: context.width * 0.05,
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: MyColors.primaryColor,
+                ),
+                child: GestureDetector(
+                  onTap: () async {
+                    Get.back();
+                  },
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: MyColors.primaryColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.close_rounded,
+                      color: Colors.white,
+                      size: context.height * 0.04,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  vertical: context.height * 0.01,
+                  horizontal: context.width * 0.1),
+              margin: EdgeInsets.symmetric(vertical: context.height * 0.15),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Obx(() {
+                return Text(
+                  scanController.layoutMode.value
+                      ? 'Önce paragrafı çekin, ardından soruyu çekin.'
+                      : 'Kamerayı yatay tutmayınız',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 22,
+                      ),
+                );
+              }),
+            ),
+          ),
+          Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
               padding: EdgeInsets.only(bottom: context.dynamicHeight * 0.01),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                        vertical: context.height * 0.01,
-                        horizontal: context.width * 0.1),
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Text(
-                      scanController.layoutMode.value
-                          ? 'Önce paragrafı çekin, ardından soruyu çekin.'
-                          : 'Kamerayı sorunun olduğu alana tutun ve sadece tek soru çekin.',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                          color: Colors.black, fontWeight: FontWeight.w300),
-                    ),
-                  ),
-                  SizedBox(
-                    height: context.height * 0.03,
-                  ),
                   Row(
                     children: [
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            scanController.pickImageFromGallery(context);
+                            if (scanController.layoutMode.value) {
+                              scanController.pickDoubleImageFromGallery(
+                                context,
+                              );
+                            } else {
+                              scanController.pickImageFromGallery(
+                                context,
+                              );
+                            }
                           },
                           child: Container(
                             alignment: Alignment.center,
@@ -294,10 +465,10 @@ class _ScanPageState extends State<ScanPage> {
                           onTap: () async {
                             if (scanController.layoutMode.value) {
                               if (scanController.firstImageFile != null) {
-                                scanController.captureSecondImage(
-                                    context, scanController.firstImageFile!);
+                                scanController.onLayerIconTapped(
+                                    context, false);
                               } else {
-                                scanController.onLayerIconTapped(context);
+                                scanController.onLayerIconTapped(context, true);
                               }
                             } else {
                               await scanController.takePicture(context);
@@ -334,6 +505,9 @@ class _ScanPageState extends State<ScanPage> {
                       ),
                     ],
                   ),
+                  SizedBox(
+                    height: context.height * 0.03,
+                  ),
                 ],
               ),
             ),
@@ -342,4 +516,81 @@ class _ScanPageState extends State<ScanPage> {
       ),
     );
   }
+}
+
+class OverlayPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white // Çizgi rengi
+      ..strokeWidth = 4.0 // Çizgi kalınlığı
+      ..style = PaintingStyle.stroke;
+
+    const cornerLength = 40.0; // Köşe çizgilerinin uzunluğu
+    const cornerWidth = 4.0; // Çizgi genişliği (Paint ayarıyla aynı)
+
+    // Sol üst köşe
+    canvas.drawLine(
+      const Offset(0, 0),
+      const Offset(cornerLength, 0),
+      paint,
+    );
+    canvas.drawLine(
+      const Offset(0, 0),
+      const Offset(0, cornerLength),
+      paint,
+    );
+
+    // Sağ üst köşe
+    canvas.drawLine(
+      Offset(size.width, 0),
+      Offset(size.width - cornerLength, 0),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(size.width, 0),
+      Offset(size.width, cornerLength),
+      paint,
+    );
+
+    // Sol alt köşe
+    canvas.drawLine(
+      Offset(0, size.height),
+      Offset(cornerLength, size.height),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(0, size.height),
+      Offset(0, size.height - cornerLength),
+      paint,
+    );
+
+    // Sağ alt köşe
+    canvas.drawLine(
+      Offset(size.width, size.height),
+      Offset(size.width - cornerLength, size.height),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(size.width, size.height),
+      Offset(size.width, size.height - cornerLength),
+      paint,
+    );
+
+    // Ortada artı (+) işareti
+    final center = Offset(size.width / 2, size.height / 2);
+    canvas.drawLine(
+      Offset(center.dx - 20, center.dy),
+      Offset(center.dx + 20, center.dy),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(center.dx, center.dy - 20),
+      Offset(center.dx, center.dy + 20),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

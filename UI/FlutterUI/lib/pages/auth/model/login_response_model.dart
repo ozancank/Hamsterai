@@ -64,6 +64,9 @@ class UserInfo {
   int? connectionId;
   int? schoolId;
   int? type;
+  bool? mustPasswordChange;
+  int? totalCredit;
+  int? remainingCredit;
 
   UserInfo({
     required this.id,
@@ -78,6 +81,9 @@ class UserInfo {
     this.connectionId,
     this.schoolId,
     this.type,
+    this.mustPasswordChange,
+    this.totalCredit,
+    this.remainingCredit,
   });
 
   factory UserInfo.fromJson(Map<String, dynamic> json) => UserInfo(
@@ -93,6 +99,9 @@ class UserInfo {
         connectionId: json["connectionId"],
         schoolId: json["schoolId"],
         type: json["type"],
+        mustPasswordChange: json["mustPasswordChange"],
+        totalCredit: json["totalCredit"],
+        remainingCredit: json["remainingCredit"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -108,5 +117,8 @@ class UserInfo {
         "connectionId": connectionId,
         "schoolId": schoolId,
         "type": type,
+        "mustPasswordChange": mustPasswordChange,
+        "totalCredit": totalCredit,
+        "remainingCredit": remainingCredit,
       };
 }

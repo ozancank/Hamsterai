@@ -10,8 +10,8 @@ class StatisticsService extends BaseService {
   Future getStudentGain() async {
     getAuth();
     try {
-      final response = await dio
-          .get(ServiceEndpoints.getStudentGains.getEndpoint);
+      final response =
+          await dio.get(ServiceEndpoints.getStudentGains.getEndpoint);
       if (response.statusCode == 200) {
         final data = LessonDataModel.fromJson(response.data);
         return data;

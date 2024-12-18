@@ -6,6 +6,7 @@ import 'package:mobile/core/constants/assets_constant.dart';
 import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/core/extensions/size_extension.dart';
 import 'package:mobile/pages/common/common_appbar.dart';
+import 'package:mobile/pages/common/common_appbar2.dart';
 import 'package:mobile/pages/common/dash_divider.dart';
 import 'package:mobile/pages/similarQuestions/controller/similar_question_controller.dart';
 import 'package:mobile/pages/similarQuestions/view/similar_question_detail_page.dart';
@@ -29,7 +30,7 @@ class _SimilarQuestionPageState extends State<SimilarQuestionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CommonAppbar(title: 'Benzer Sorularım'),
+      appBar:  CommonAppbar2(title: 'Benzer Sorularım'),
       backgroundColor: Colors.white,
       body: Container(
         color: Colors.white,

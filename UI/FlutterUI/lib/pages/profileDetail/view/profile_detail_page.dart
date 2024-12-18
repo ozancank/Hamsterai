@@ -6,10 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile/core/constants/app_constant.dart';
 import 'package:mobile/core/constants/assets_constant.dart';
 import 'package:mobile/core/extensions/size_extension.dart';
-import 'package:mobile/core/init/cache/local_manager.dart';
-import 'package:mobile/pages/common/common_appbar.dart';
+import 'package:mobile/core/init/cache/url_storage.dart';
+import 'package:mobile/module/custom_image.dart';
+import 'package:mobile/pages/common/common_appbar2.dart';
 import 'package:mobile/pages/common/common_button.dart';
 import 'package:mobile/pages/profile/controller/profile_controller.dart';
 import 'package:mobile/pages/profileDetail/controller/profile_detail_controller.dart';
@@ -17,6 +19,7 @@ import 'package:mobile/pages/profileDetail/model/update_user_post_model.dart';
 import 'package:mobile/pages/profileDetail/view/common/profile_text_field.dart';
 import 'package:mobile/styles/colors.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:image/image.dart' as img; // image paketi
 
 class ProfileDetailPage extends StatefulWidget {
   const ProfileDetailPage({super.key});
@@ -39,15 +42,6 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
   String? base64Image;
   String? imagePath;
 
-  void loadImage() async {
-    File? imageFile = await LocaleManager.instance.getImageFromLocal();
-    if (imageFile != null) {
-      setState(() {
-        _image = imageFile;
-      });
-    }
-  }
-
   Future<void> pickImage() async {
     final ImageSource? source = await showDialog<ImageSource>(
       context: context,
@@ -69,13 +63,49 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
     if (source != null) {
       final XFile? image = await _picker.pickImage(source: source);
       if (image != null) {
-        imagePath = image.path;
-        _image = File(image.path);
-        List<int> imageBytes = await _image!.readAsBytes();
-        String base64String = base64Encode(imageBytes);
-        setState(() {
-          base64Image = base64String;
-        });
+        String imagePath = image.path.split('/').last;
+        File originalImage = File(image.path);
+
+        // Fotoğrafı sıkıştır
+        List<int> originalBytes = await originalImage.readAsBytes();
+        Uint8List uint8ListBytes = Uint8List.fromList(originalBytes);
+        img.Image? decodedImage = img.decodeImage(uint8ListBytes);
+
+        if (decodedImage != null) {
+          // Yeni boyut belirleme ve sıkıştırma (örneğin, %50 küçültme ve kalite %85)
+          img.Image compressedImage = img.copyResize(decodedImage,
+              width: (decodedImage.width / 2).round());
+          List<int> compressedBytes =
+              img.encodeJpg(compressedImage, quality: 85);
+
+          // Sıkıştırılmış fotoğrafı base64 formatına çevir
+          String base64String = base64Encode(compressedBytes);
+
+          // Durumu güncelle
+          setState(() {
+            _image = originalImage; // Orijinal görüntüyü UI'de göstermek için
+            base64Image = base64String;
+          });
+
+          // Kullanıcı bilgilerini güncelle
+          updateUserController.updateUser(
+            UpdateUserPostModel(
+              id: profileController.userModel!.id,
+              userName: profileController.userModel!.userName!,
+              name: profileController.userModel!.name!,
+              surname: profileController.userModel!.surname!,
+              phone: profileController.userModel!.phone!,
+              profileUrl: '',
+              email: profileController.userModel!.email!,
+              type: profileController.userModel!.type!,
+              connectionId: 0,
+              schoolId: 1,
+              profilePictureBase64: base64Image ?? '',
+              profilePictureFileName: imagePath,
+            ),
+            context,
+          );
+        }
       }
     }
   }
@@ -86,14 +116,21 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
     surnameController.text = profileController.userModel!.surname!;
     emailController.text = profileController.userModel!.email!;
     phoneController.text = profileController.userModel!.phone!;
-    loadImage();
+    getImageUrl();
     super.initState();
+  }
+
+  var baseUrl;
+
+  Future<String> getImageUrl() async {
+    baseUrl = await UrlStorage.getBaseUrl();
+    return baseUrl ?? "https://api.hamsterai.com.tr";
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CommonAppbar(title: 'Profil Detay'),
+      appBar: const CommonAppbar2(title: 'Profil Detay'),
       body: Container(
         color: Colors.white,
         height: context.dynamicHeight,
@@ -106,7 +143,7 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    _image == null
+                    profileController.userModel?.profileFileName == null
                         ? Container(
                             alignment: Alignment.center,
                             padding:
@@ -117,9 +154,24 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
                               color: MyColors.grayColor,
                             ),
                             child: SvgPicture.asset(AssetsConstant.person))
-                        : CircleAvatar(
-                            radius: 60,
-                            backgroundImage: FileImage(_image!),
+                        : Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white),
+                              color: Colors.black,
+                              shape: BoxShape.circle,
+                            ),
+                            child: ClipOval(
+                              child: SizedBox(
+                                width: context.width * 0.34,
+                                height: context.height * 0.16,
+                                child: CustomImage(
+                                  isTestResult: true,
+                                  imageUrl:
+                                      '$baseUrl/ProfilePicture/${profileController.userModel?.profileFileName}',
+                                  headers: ApplicationConstants.XAPIKEY,
+                                ),
+                              ),
+                            ),
                           ),
                     Positioned(
                       top: context.dynamicHeight * 0.09,
@@ -145,6 +197,7 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
                 ProfileTextField(
                   controller: nameController,
                   hintText: 'Ad',
+                  enabled: false,
                   isGrey: true,
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -156,6 +209,7 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
                 ProfileTextField(
                   controller: surnameController,
                   hintText: 'Soyad',
+                  enabled: false,
                   isGrey: true,
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -167,6 +221,7 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
                 ProfileTextField(
                   controller: emailController,
                   hintText: 'E-mail',
+                  enabled: false,
                   keyboardType: TextInputType.emailAddress,
                   isGrey: true,
                   validator: (value) {
@@ -179,6 +234,7 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
                 ProfileTextField(
                   controller: phoneController,
                   hintText: 'Telefon',
+                  enabled: false,
                   keyboardType: TextInputType.number,
                   isGrey: true,
                   validator: (value) {
@@ -188,18 +244,24 @@ class _ProfileDetailPageState extends State<ProfileDetailPage> {
                     return null;
                   },
                 ),
-                ProfileTextField(
-                  controller: genderController,
-                  hintText: 'Okul',
-                  isGrey: true,
-                  validator: (value) {},
-                ),
-                ProfileTextField(
-                  controller: genderController,
-                  hintText: 'Sınıf',
-                  isGrey: true,
-                  validator: (value) {},
-                ),
+                profileController.userModel!.type == 5
+                    ? const SizedBox()
+                    : ProfileTextField(
+                        controller: genderController,
+                        hintText: 'Okul',
+                        enabled: false,
+                        isGrey: true,
+                        validator: (value) {},
+                      ),
+                profileController.userModel!.type == 5
+                    ? const SizedBox()
+                    : ProfileTextField(
+                        controller: genderController,
+                        hintText: 'Sınıf',
+                        enabled: false,
+                        isGrey: true,
+                        validator: (value) {},
+                      ),
                 Visibility(
                   visible: false,
                   child: Padding(

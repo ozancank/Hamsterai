@@ -6,6 +6,7 @@ import 'package:mobile/core/constants/assets_constant.dart';
 import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/core/extensions/size_extension.dart';
 import 'package:mobile/pages/common/common_appbar.dart';
+import 'package:mobile/pages/common/common_appbar2.dart';
 import 'package:mobile/pages/myTest/controller/quiz_controller.dart';
 import 'package:mobile/pages/myTest/model/quiz_list_model.dart';
 import 'package:mobile/pages/myTest/view/common/kazanim_container.dart';
@@ -47,7 +48,7 @@ class _TestLoginViewState extends State<TestLoginView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CommonAppbar(title: 'Test Giriş'),
+      appBar:  CommonAppbar2(title: 'Test Giriş'),
       backgroundColor: const Color(0xFFF6F7F8),
       // floatingActionButton: Obx(() {
       //   if (quizListController.loading.value) {

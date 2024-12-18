@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile/pages/common/common_appbar.dart';
+import 'package:mobile/pages/common/common_appbar2.dart';
 import 'package:mobile/pages/statistics/model/gain_model.dart';
 import 'package:mobile/styles/colors.dart';
 
@@ -23,7 +24,7 @@ class _LessonGainViewState extends State<LessonGainView> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CommonAppbar(title: 'Kazanımlar'),
+      appBar:  CommonAppbar2(title: 'Kazanımlar'),
       body: SingleChildScrollView(
         child: Column(
           children: [

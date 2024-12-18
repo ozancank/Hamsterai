@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "653684690138",
-    "project_id": "hamster-f0900",
-    "storage_bucket": "hamster-f0900.appspot.com"
+    "project_number": "835642984180",
+    "project_id": "hamsterios-c46de",
+    "storage_bucket": "hamsterios-c46de.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:653684690138:android:159b4234198a1cf57f29e3",
+        "mobilesdk_app_id": "1:835642984180:android:2bb2c5e9f62b77675940a1",
         "android_client_info": {
-          "package_name": "com.hamster.ai"
+          "package_name": "com.seduss.hamster"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAalZX0CqNrwx7fq6RB2VnLa8SWt5APR4U"
+          "current_key": "AIzaSyACTCl_sboddZcEAMzv4Ey6kflRjHDI9_Y"
         }
       ],
       "services": {

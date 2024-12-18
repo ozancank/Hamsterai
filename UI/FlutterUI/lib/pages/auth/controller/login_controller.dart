@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:mobile/core/base/base_controller.dart';
+import 'package:mobile/core/constants/app_constant.dart';
+import 'package:mobile/core/enums/locale_keys_enum.dart';
 import 'package:mobile/core/init/cache/local_manager.dart';
 import 'package:mobile/core/init/network/network_manager.dart';
+import 'package:mobile/core/routers/pages.dart';
 import 'package:mobile/pages/auth/model/error_model.dart';
 import 'package:mobile/pages/auth/model/login_post_model.dart';
 import 'package:mobile/pages/auth/model/login_response_model.dart';
@@ -36,15 +39,15 @@ class LoginController extends BaseController {
     super.onInit();
   }
 
-  Future<bool> login(LoginPostModel model, context) async {
+  Future<bool> login(LoginPostModel model, BuildContext context) async {
     EasyLoading.show(
         status: 'Giriş Yapılıyor', maskType: EasyLoadingMaskType.black);
-    final Map<String, dynamic> tempJson = LoginPostModel(
-            userName: model.userName,
-            password: model.password,
-            authenticatorCode: model.authenticatorCode)
-        .toJson();
-    var loginModel = await _authService.login(tempJson);
+
+    String baseUrl = ApplicationConstants.getBaseUrl(model.userName);
+    NetworkManager.instance.setBaseUrl(baseUrl);
+    final Map<String, dynamic> tempJson = model.toJson();
+    var loginModel = await _authService
+        .login(tempJson);
     if (loginModel == null) {
       EasyLoading.showError('Giriş yapılamadı.');
       return false;
@@ -52,12 +55,23 @@ class LoginController extends BaseController {
 
     if (loginModel is LoginResponseModel) {
       EasyLoading.dismiss();
-      await setCacheData(loginModel.accessToken.token,
-          loginModel.accessToken.expiration.toIso8601String(), loginModel);
+      await setCacheData(
+          loginModel.accessToken.token,
+          loginModel.accessToken.expiration.toIso8601String(),
+          loginModel,
+          loginModel.userInfo.mustPasswordChange!);
       _authService.addDeviceToken();
       userResponseModel = loginModel;
-      Get.offAllNamed('/home');
-      return true;
+
+      if (userResponseModel!.userInfo.mustPasswordChange == true) {
+        Get.offAllNamed(Routes.FORCEUPDATEPASSWORD);
+        return true;
+      } else {
+        await LocaleManager.instance
+            .setBoolValue(PreferencesKeys.ISMUSTPASSWORDCHANGE, false);
+        Get.offAllNamed('/home');
+        return true;
+      }
     } else if (loginModel is ErrorModel) {
       EasyLoading.dismiss();
       QuickAlert.show(
@@ -148,7 +162,6 @@ class LoginController extends BaseController {
       );
     }
   }
- 
 
   // Future<void> addDeviceToken() async {
   //   getId().then((value) {

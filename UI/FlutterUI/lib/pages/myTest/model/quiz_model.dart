@@ -14,13 +14,13 @@ class QuizModel {
   int wrongCount;
   int emptyCount;
   int successRate;
-  List<String> gainNames;
+  List<String?>? gainNames;
   List<QuizQuestion> questions;
   Map<String, String?> rightOptions;
   Map<String, String?> answers;
-  String userFullName;
-  dynamic schoolName;
-  String lessonName;
+  String? userFullName;
+  String? schoolName;
+  String? lessonName;
 
   QuizModel({
     required this.id,
@@ -73,7 +73,7 @@ class QuizModel {
         "wrongCount": wrongCount,
         "emptyCount": emptyCount,
         "successRate": successRate,
-        "gainNames": List<dynamic>.from(gainNames.map((x) => x)),
+        "gainNames": List<dynamic>.from(gainNames!.map((x) => x)),
         "questions": List<dynamic>.from(questions.map((x) => x.toJson())),
         "rightOptions": Map.from(rightOptions)
             .map((k, v) => MapEntry<String, dynamic>(k, v)),
@@ -88,18 +88,18 @@ class QuizModel {
 class QuizQuestion {
   String id;
   int sortNo;
-  String quizId;
-  String question;
-  String questionPictureFileName;
-  String questionPictureExtension;
-  String answer;
-  String answerPictureFileName;
-  String answerPictureExtension;
-  String rightOption;
-  dynamic answerOption;
+  String? quizId;
+  String? question;
+  String? questionPictureFileName;
+  String? questionPictureExtension;
+  String? answer;
+  String? answerPictureFileName;
+  String? answerPictureExtension;
+  String? rightOption;
+  String? answerOption;
   int optionCount;
   int gainId;
-  String gainName;
+  String? gainName;
 
   QuizQuestion({
     required this.id,

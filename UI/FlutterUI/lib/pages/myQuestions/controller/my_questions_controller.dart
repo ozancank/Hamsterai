@@ -10,31 +10,41 @@ import 'package:mobile/pages/scan/service/scan_service.dart';
 class MyQuestionsController extends GetxController {
   late ScanService _scanService;
   Timer? timer;
-  RxList<dynamic> questionList = [].obs;
+  var questionList = <Question>[].obs;
+  Rx<GetQuestionsResponseModel> questionResponseModel =
+      GetQuestionsResponseModel().obs;
   var loading = false.obs;
+  var hasNext = false.obs;
+  var lessonId = 0.obs;
 
   @override
   void onInit() async {
     _scanService = ScanService(NetworkManager.instance.dio);
-    await getQuestions();
+    await getQuestions(10, 0);
     super.onInit();
   }
 
-  Future<void> getQuestions() async {
+  Future<void> getQuestions(int pageCount, int page,
+      {bool hasMore = false}) async {
     loading.value = true;
     var today = DateTime.now();
     var startDate = today.subtract(const Duration(days: 2));
     var getQuestionModel = await _scanService.getQuestions({
-      "lessonId": 0,
+      "lessonId": lessonId.value,
       // "startDate": startDate.toIso8601String(),
       // "endDate": today.toIso8601String(),
       "startDate": null,
       "endDate": null,
-    });
+    }, pageCount, page);
     if (getQuestionModel is GetQuestionsResponseModel) {
       EasyLoading.dismiss();
+      hasNext.value = getQuestionModel.hasNext!;
       loading.value = false;
-      questionList.value = getQuestionModel.items;
+      if (hasMore) {
+        questionList.value = [];
+      }
+      questionResponseModel.value = getQuestionModel;
+      questionList.value = getQuestionModel.items!;
     } else if (getQuestionModel is ErrorModel) {
       loading.value = false;
       EasyLoading.dismiss();

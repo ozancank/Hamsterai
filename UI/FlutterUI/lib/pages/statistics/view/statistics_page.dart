@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mobile/core/constants/assets_constant.dart';
 import 'package:mobile/pages/common/common_appbar.dart';
+import 'package:mobile/pages/common/common_appbar2.dart';
 import 'package:mobile/pages/statistics/controller/statistics_controller.dart';
 import 'package:mobile/pages/statistics/view/pie_chart.dart';
 import 'package:mobile/styles/colors.dart';
@@ -21,7 +20,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CommonAppbar(title: 'Aylık Aktivite'),
+      appBar:  CommonAppbar2(title: 'Aylık Aktivite'),
       body: SingleChildScrollView(
         child: Column(
           children: [

@@ -1,9 +1,10 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:mobile/core/constants/app_constant.dart';
 import 'package:mobile/core/constants/assets_constant.dart';
-import 'package:mobile/module/custom_image.dart';
+import 'package:mobile/core/extensions/size_extension.dart';
 import 'package:mobile/pages/common/common_bottom_sheet.dart';
 import 'package:mobile/pages/myTest/controller/quiz_controller.dart';
 import 'package:mobile/pages/myTest/model/quiz_list_model.dart';
@@ -11,6 +12,7 @@ import 'package:mobile/pages/myTest/view/common/drawing_painter.dart';
 import 'package:mobile/pages/myTest/view/common/test_appbar.dart';
 import 'package:mobile/pages/myTest/view/test_result_view.dart';
 import 'package:mobile/styles/colors.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class TestQuestionView extends StatefulWidget {
   final QuizItem quizItem;
@@ -23,6 +25,8 @@ class TestQuestionView extends StatefulWidget {
 }
 
 class _TestQuestionViewState extends State<TestQuestionView> {
+  late final WebViewController _controller;
+  double _webViewHeight = 200;
   final quizController = Get.put(QuizController());
   List<Offset?> points = [];
   Color selectedColor = Colors.black;
@@ -35,14 +39,176 @@ class _TestQuestionViewState extends State<TestQuestionView> {
   void initState() {
     quizController.loadAnswers(widget.quizItem.id);
     loadQuizData();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..enableZoom(true)
+      ..addJavaScriptChannel(
+        'contentHeight',
+        onMessageReceived: (message) {
+          setState(() {
+            _webViewHeight = double.tryParse(message.message) ?? 100;
+          });
+        },
+      )
+      ..loadHtmlString(generateHtmlContent());
     super.initState();
-    print(quizController.selectedAnswers);
+  }
+
+  String generateHtmlContent() {
+    return '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Matematik Sonuç</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+     overflow-y: scroll;
+     -webkit-overflow-scrolling: touch;
+      white-space: nowrap;
+     font-family: 'Quicksand', sans-serif;
+      font-size: 3rem !important;
+      color: #000000;
+      background-color: transparent;
+    }
+    #mathContent {
+      white-space: pre-wrap;
+      overflow-y: scroll;
+    }
+    #mathContent > span{
+       margin-top:30px;
+      }
+    .mjx-chtml{
+      line-height:1.7rem;
+    }
+    #mathContent .alert{
+        margin-bottom:0;
+        width:100%;
+        display:block;
+      }
+  </style>
+   <script>
+         function sendHeightToFlutter() {
+  if (window.contentHeight) {
+    const height = document.body.scrollHeight+300;
+    window.contentHeight.postMessage(height.toString());
+
+  } else {
+    console.error('JavaScriptChannel "contentHeight" bulunamadı.');
+  }
+}
+
+// Sayfa yüklenince tetikleme
+window.addEventListener('load', function() {
+  sendHeightToFlutter();
+});
+          
+        </script>
+  <script type="text/javascript">
+    window.addEventListener('load', function() {
+      if (typeof MathJax !== 'undefined') {
+        MathJax.Hub.Register.StartupHook('End', function() {
+          console.log('MathJax Yüklendi');
+        });
+      }
+    });
+
+    function addText(text) {
+      var mathContent = document.getElementById("mathContent");
+      mathContent.innerHTML = text;
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub, mathContent]);
+    }
+  </script>
+  <script type="text/x-mathjax-config">
+  const size = screen.width;
+  if(size > 768){
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      extensions: ["tex2jax.js", "asciimath2jax.js", "MathMenu.js", "MathZoom.js", "AssistiveMML.js", "a11y/accessibility-menu.js"],
+      TeX: {
+        extensions: ["AMSmath.js", "AMSsymbols.js", "noErrors.js", "noUndefined.js"]
+      },
+      tex2jax: {
+    inlineMath: [['\$','\$']],
+    processEscapes: true
+  },
+ CommonHTML: {
+            scale: 90
+        },
+        "HTML-CSS": {
+            scale: 90
+        },
+        NativeMML: {
+            scale: 90
+        },
+        SVG: {
+            scale: 90
+        },
+        PreviewHTML: {
+            scale: 90
+        },
+    });
+     showProcessingMessages: false,  // "Loading MathJax" mesajını devre dışı bırak
+    messageStyle: "none"    
+  }else{
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      extensions: ["tex2jax.js", "asciimath2jax.js", "MathMenu.js", "MathZoom.js", "AssistiveMML.js", "a11y/accessibility-menu.js"],
+      TeX: {
+        extensions: ["AMSmath.js", "AMSsymbols.js", "noErrors.js", "noUndefined.js"]
+      },
+      tex2jax: {
+    inlineMath: [['\$','\$']],
+    processEscapes: true
+  },
+ CommonHTML: {
+            scale: 120
+        },
+        "HTML-CSS": {
+            scale: 120
+        },
+        NativeMML: {
+            scale: 120
+        },
+        SVG: {
+            scale: 120
+        },
+        PreviewHTML: {
+            scale: 120
+        },
+    });
+     showProcessingMessages: false,  // "Loading MathJax" mesajını devre dışı bırak
+    messageStyle: "none"    
+  }
+    
+  </script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <script> 
+    window.onload= function(){
+      const brs = document.querySelectorAll(".alert>br");
+      for(const br of brs){
+        br.remove();
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="mathContent">${quizController.quizQuestionList[currentQuestionIndex].question.replaceAll('\\n', '<br>')}</div> 
+  
+</body>
+</html>
+    '''
+        .trim();
   }
 
   void loadQuizData() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _selectedItem = quizController.getSelectedAnswer(currentQuestionIndex);
       setState(() {});
+      print(quizController.quizQuestionList[currentQuestionIndex].question);
     });
   }
 
@@ -78,6 +244,8 @@ class _TestQuestionViewState extends State<TestQuestionView> {
         }
         currentQuestionIndex = currentQuestionIndex + 1;
         _selectedItem = quizController.getSelectedAnswer(currentQuestionIndex);
+        _controller.loadHtmlString(generateHtmlContent());
+        print(quizController.quizQuestionList[currentQuestionIndex].question);
         print('Kaydedilen Cevap: $currentQuestionIndex -> $_selectedItem');
         clearCanvas();
       } else {
@@ -122,6 +290,7 @@ class _TestQuestionViewState extends State<TestQuestionView> {
         }
         currentQuestionIndex = currentQuestionIndex - 1;
         _selectedItem = quizController.getSelectedAnswer(currentQuestionIndex);
+        _controller.loadHtmlString(generateHtmlContent());
       }
     });
   }
@@ -164,29 +333,74 @@ class _TestQuestionViewState extends State<TestQuestionView> {
               : null,
           child: Stack(
             children: [
-              Obx(() {
-                if (quizController.loading.value) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return Align(
-                  alignment: Alignment.topCenter,
-                  child: CustomImage(
-                    isTestResult: true,
-                    key: ValueKey(currentQuestionIndex),
-                    imageUrl:
-                        '${ApplicationConstants.APIBASEURL}/QuizQuestionPicture/${quizController.quizQuestionList[currentQuestionIndex].questionPictureFileName}',
-                    headers: ApplicationConstants.XAPIKEY,
-                  ),
-                );
-              }),
-              RepaintBoundary(
-                child: CustomPaint(
-                  painter: DrawingPainter(points, selectedColor, strokeWidth,
-                      quizController.isEraserMode.value),
-                  child: Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    color: Colors.transparent,
+              IgnorePointer(
+                ignoring: isDrawingMode,
+                child: Obx(() {
+                  if (quizController.loading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.all(20),
+                          width: context.dynamicWidth,
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Colors.black.withOpacity(0.1),
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          child: SizedBox(
+                            height: context.height - (context.height / 3),
+                            width: double.infinity,
+                            child: WebViewWidget(
+                              controller: _controller,
+                              gestureRecognizers: {
+                                Factory<VerticalDragGestureRecognizer>(
+                                  () => VerticalDragGestureRecognizer(),
+                                ),
+                                Factory<HorizontalDragGestureRecognizer>(
+                                  () => HorizontalDragGestureRecognizer(),
+                                ),
+                                Factory<TapGestureRecognizer>(
+                                  () => TapGestureRecognizer(),
+                                ),
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                  // return Align(
+                  //   alignment: Alignment.topCenter,
+                  //   child: CustomImage(
+                  //     isTestResult: true,
+                  //     key: ValueKey(currentQuestionIndex),
+                  //     imageUrl:
+                  //         '${ApplicationConstants.APIBASEURL}/QuizQuestionPicture/${quizController.quizQuestionList[currentQuestionIndex].questionPictureFileName}',
+                  //     headers: ApplicationConstants.XAPIKEY,
+                  //   ),
+                  // );
+                }),
+              ),
+              IgnorePointer(
+                ignoring: !isDrawingMode,
+                child: RepaintBoundary(
+                  child: CustomPaint(
+                    painter: DrawingPainter(points, selectedColor, strokeWidth,
+                        quizController.isEraserMode.value),
+                    child: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      color: Colors.transparent,
+                    ),
                   ),
                 ),
               ),
@@ -215,7 +429,7 @@ class _TestQuestionViewState extends State<TestQuestionView> {
                     (optionIndex) {
                       String label = String.fromCharCode(65 + optionIndex);
                       return _buildSelectableContainer(
-                      label,
+                        label,
                         currentQuestionIndex,
                         quizController.quizModel.value!.id,
                       );
@@ -320,8 +534,6 @@ class _TestQuestionViewState extends State<TestQuestionView> {
       ),
     );
   }
-
- 
 
   RoundedRectangleBorder showModalSheetShape() {
     return const RoundedRectangleBorder(

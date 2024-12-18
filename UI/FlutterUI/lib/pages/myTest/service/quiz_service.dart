@@ -19,8 +19,7 @@ class QuizService extends BaseService {
         return data;
       }
     } on DioException catch (e) {
-      final errorJson = e.response?.data;
-      return ErrorModel.fromJson(errorJson);
+      return false;
     } catch (e) {
       return ErrorModel(statusCode: 500, message: 'Bilinmeyen bir hata oluştu');
     }

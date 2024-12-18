@@ -16,8 +16,16 @@ class ScanService extends BaseService {
   Future scanQuestion(Map<String, dynamic> json) async {
     getAuth();
     try {
-      final response =
-          await dio.post(ServiceEndpoints.addQuestion.getEndpoint, data: json);
+    
+      final response = await dio.post(
+        ServiceEndpoints.addQuestion.getEndpoint,
+        data: json,
+        options: Options(
+          validateStatus: (status) {
+            return status == HttpStatus.ok || status == 400;
+          },
+        ),
+      );
       if (response.statusCode == HttpStatus.ok) {
         final data = AddQuestionResponseModel.fromJson(response.data);
         return data;
@@ -55,11 +63,12 @@ class ScanService extends BaseService {
     return ErrorModel(statusCode: 400, message: 'Hata');
   }
 
-  Future getQuestions(Map<String, dynamic> json) async {
+  Future getQuestions(
+      Map<String, dynamic> json, int pageCount, int page) async {
     getAuth();
     try {
       final response = await dio.post(
-          '${ServiceEndpoints.getQuestions.getEndpoint}/?Page=0&PageSize=0',
+          '${ServiceEndpoints.getQuestions.getEndpoint}/?Page=$page&PageSize=$pageCount',
           data: json);
       if (response.statusCode == HttpStatus.ok) {
         final data = GetQuestionsResponseModel.fromJson(response.data);

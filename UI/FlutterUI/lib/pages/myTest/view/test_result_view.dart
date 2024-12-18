@@ -32,7 +32,10 @@ class _TestResultViewState extends State<TestResultView> {
   void calculateGainResults() {
     gainResults.clear();
     for (int i = 0; i < quizController.quizModel.value!.questions.length; i++) {
-      String gainName = quizController.quizModel.value!.questions[i].gainName;
+      String gainName =
+          quizController.quizModel.value!.questions[i].gainName != null
+              ? quizController.quizModel.value!.questions[i].gainName!
+              : '';
       bool rightAnswer =
           quizController.quizModel.value!.answers.values.elementAt(i) ==
               quizController.quizModel.value!.rightOptions.values.elementAt(i);
@@ -128,15 +131,12 @@ class _TestResultViewState extends State<TestResultView> {
                           .elementAt(i) ==
                       null) {
                     String gainName =
-                        quizController.quizQuestionList[i].gainName;
+                        quizController.quizQuestionList[i].gainName ?? '';
 
-                    // Initialize if it doesn't exist
                     if (!emptyGainResults.containsKey(gainName)) {
-                      emptyGainResults[gainName] =
-                          {}; // Create a new map for this gain name
+                      emptyGainResults[gainName] = {};
                     }
 
-                    // Increment the count for empty answers
                     emptyGainResults[gainName]!['count'] =
                         (emptyGainResults[gainName]!['count'] ?? 0) + 1;
                   }
@@ -227,83 +227,95 @@ class _TestResultViewState extends State<TestResultView> {
                                     ),
                                   ),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      width: context.width * 0.1,
-                                    ),
-                                    SvgPicture.asset(
-                                      AssetsConstant.gainOk,
-                                      color: rightAnswer
-                                          ? const Color(0xFF94D073)
-                                          : quizController
-                                                      .quizQuestionList[index]
-                                                      .answerOption ==
-                                                  null
-                                              ? const Color(0xFFD9D9D9)
-                                              : const Color(0xFFDD5050),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Container(
-                                      margin: const EdgeInsets.only(top: 10),
-                                      padding: EdgeInsets.only(
-                                        right: context.width * 0.005,
-                                        left: context.width * 0.06,
-                                        top: 2,
-                                        bottom: 2,
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width: context.width * 0.1,
                                       ),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(30),
+                                      SvgPicture.asset(
+                                        AssetsConstant.gainOk,
                                         color: rightAnswer
-                                            ? const Color(0xFFA0D94A)
-                                                .withOpacity(0.6)
-                                            : emptyAnswer
+                                            ? const Color(0xFF94D073)
+                                            : quizController
+                                                        .quizQuestionList[index]
+                                                        .answerOption ==
+                                                    null
                                                 ? const Color(0xFFD9D9D9)
-                                                : const Color(0xFFF76A6A),
+                                                : const Color(0xFFDD5050),
                                       ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Text(
-                                            quizController
-                                                .quizQuestionList[index]
-                                                .gainName,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .copyWith(
+                                      const SizedBox(width: 10),
+                                      Container(
+                                        width: context.width * 0.65,
+                                        margin: const EdgeInsets.only(top: 10),
+                                        padding: EdgeInsets.only(
+                                          left: context.width * 0.03,
+                                          right: context.width * 0.03,
+                                          top: 2,
+                                          bottom: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          color: rightAnswer
+                                              ? const Color(0xFFA0D94A)
+                                                  .withOpacity(0.6)
+                                              : emptyAnswer
+                                                  ? const Color(0xFFD9D9D9)
+                                                  : const Color(0xFFF76A6A),
+                                        ),
+                                        child: SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Text(
+                                                quizController
+                                                        .quizQuestionList[index]
+                                                        .gainName ??
+                                                    '',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall!
+                                                    .copyWith(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      fontSize: 13,
+                                                    ),
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Container(
+                                                decoration: const BoxDecoration(
                                                   color: Colors.white,
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: 13,
+                                                  shape: BoxShape.circle,
                                                 ),
+                                                alignment: Alignment.center,
+                                                child: Icon(
+                                                  rightAnswer
+                                                      ? Icons.done_rounded
+                                                      : Icons.close,
+                                                  color: rightAnswer
+                                                      ? const Color(0xFF79A637)
+                                                      : emptyAnswer
+                                                          ? const Color(
+                                                              0xFF808080)
+                                                          : const Color(
+                                                              0xFFF76A6A),
+                                                  size: 20,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          const SizedBox(
-                                            width: 10,
-                                          ),
-                                          Container(
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            alignment: Alignment.center,
-                                            child: Icon(
-                                              rightAnswer
-                                                  ? Icons.done_rounded
-                                                  : Icons.close,
-                                              color: rightAnswer
-                                                  ? const Color(0xFF79A637)
-                                                  : emptyAnswer
-                                                      ? const Color(0xFF808080)
-                                                      : const Color(0xFFF76A6A),
-                                              size: 20,
-                                            ),
-                                          ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                                 const SizedBox(
                                   height: 5,

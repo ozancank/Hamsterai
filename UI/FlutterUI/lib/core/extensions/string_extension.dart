@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:mobile/core/constants/string_constant.dart';
 
 class StringExtension {
@@ -14,6 +12,4 @@ class StringExtension {
         phoneNumber.replaceAll(RegExp(StringConstants.onlyNumberRegex), '');
     return cleanedNumber;
   }
-
-
 }

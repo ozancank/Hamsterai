@@ -36,28 +36,32 @@ class KazanimContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(40),
         border: border ?? Border.all(color: const Color(0xFFADB4C0)),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 1),
-            alignment: Alignment.center,
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              color: iconBgColor ?? MyColors.primaryColor,
-              shape: BoxShape.circle,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 1),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: iconBgColor ?? MyColors.primaryColor,
+                shape: BoxShape.circle,
+              ),
+              child: SvgPicture.asset(assetName),
             ),
-            child: SvgPicture.asset(assetName),
-          ),
-          SizedBox(width: context.width * 0.02),
-          Text(
-            text,
-            style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                color: textColor,
-                fontWeight: isStartButton ? FontWeight.bold : FontWeight.w400),
-          ),
-          SizedBox(width: context.width * 0.02),
-        ],
+            SizedBox(width: context.width * 0.02),
+            Text(
+              text,
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                  color: textColor,
+                  fontWeight:
+                      isStartButton ? FontWeight.bold : FontWeight.w400),
+            ),
+            SizedBox(width: context.width * 0.02),
+          ],
+        ),
       ),
     );
   }

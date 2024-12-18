@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mobile/core/extensions/size_extension.dart';
-import 'package:mobile/pages/common/common_appbar.dart';
+import 'package:mobile/pages/common/common_appbar2.dart';
 import 'package:mobile/pages/common/dash_divider.dart';
 import 'package:mobile/pages/homeworks/controller/homework_controller.dart';
 import 'package:mobile/pages/homeworks/view/homework_detail_view.dart';
 import 'package:mobile/styles/colors.dart';
 
 class HomeworkView extends StatefulWidget {
-  const HomeworkView({super.key});
+  final String appBarText;
+  const HomeworkView({super.key, required this.appBarText});
 
   @override
   State<HomeworkView> createState() => _MyTestViewState();
@@ -25,7 +26,7 @@ class _MyTestViewState extends State<HomeworkView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CommonAppbar(title: 'Ödevlerim'),
+      appBar: CommonAppbar2(title: widget.appBarText),
       backgroundColor: Colors.white,
       body: Container(
         color: Colors.white,

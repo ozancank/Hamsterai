@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile/core/constants/app_constant.dart';
 import 'package:mobile/core/extensions/size_extension.dart';
+import 'package:mobile/core/init/cache/url_storage.dart';
 import 'package:mobile/module/custom_image.dart';
 import 'package:mobile/pages/common/common_button.dart';
 import 'package:mobile/pages/myTest/controller/quiz_controller.dart';
@@ -21,6 +22,17 @@ class _TestResultDetailViewState extends State<TestResultDetailView> {
   final quizController = Get.put(QuizController());
   final scanController = Get.put(ScanController());
   bool isVisible = false;
+  var baseUrl;
+  @override
+  void initState() {
+    super.initState();
+    getImageUrl();
+  }
+
+  Future<String> getImageUrl() async {
+    baseUrl = await UrlStorage.getBaseUrl();
+    return baseUrl ?? "https://api.hamsterai.com.tr";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +55,7 @@ class _TestResultDetailViewState extends State<TestResultDetailView> {
                     isTestResult: true,
                     key: ValueKey(widget.index),
                     imageUrl:
-                        '${ApplicationConstants.APIBASEURL}/QuizQuestionPicture/${quizController.quizQuestionList[widget.index].questionPictureFileName}',
+                        '$baseUrl/QuizQuestionPicture/${quizController.quizQuestionList[widget.index].questionPictureFileName}',
                     headers: ApplicationConstants.XAPIKEY,
                   ),
                 ),
@@ -77,7 +89,7 @@ class _TestResultDetailViewState extends State<TestResultDetailView> {
                       isTestResult: true,
                       key: ValueKey(widget.index),
                       imageUrl:
-                          '${ApplicationConstants.APIBASEURL}/QuizAnswerPicture/${quizController.quizQuestionList[widget.index].answerPictureFileName}',
+                          '$baseUrl/QuizAnswerPicture/${quizController.quizQuestionList[widget.index].answerPictureFileName}',
                       headers: ApplicationConstants.XAPIKEY,
                     ),
                   ),

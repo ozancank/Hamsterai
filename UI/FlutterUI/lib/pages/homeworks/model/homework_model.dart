@@ -53,13 +53,13 @@ class HomeWorkItem {
   DateTime createDate;
   int updateUser;
   DateTime updateDate;
-  String teacherName;
-  int studentId;
-  String studentName;
-  String homeworkId;
+  String? teacherName;
+  int? studentId;
+  String? studentName;
+  String? homeworkId;
   String? answerPath;
-  int status;
-  Homework homework;
+  int? status;
+  Homework? homework;
 
   HomeWorkItem({
     required this.id,
@@ -68,13 +68,13 @@ class HomeWorkItem {
     required this.createDate,
     required this.updateUser,
     required this.updateDate,
-    required this.teacherName,
-    required this.studentId,
-    required this.studentName,
-    required this.homeworkId,
-    required this.answerPath,
-    required this.status,
-    required this.homework,
+    this.teacherName,
+    this.studentId,
+    this.studentName,
+    this.homeworkId,
+    this.answerPath,
+    this.status,
+    this.homework,
   });
 
   factory HomeWorkItem.fromJson(Map<String, dynamic> json) => HomeWorkItem(
@@ -106,7 +106,7 @@ class HomeWorkItem {
         "homeworkId": homeworkId,
         "answerPath": answerPath,
         "status": status,
-        "homework": homework.toJson(),
+        "homework": homework?.toJson(),
       };
 }
 
@@ -117,15 +117,15 @@ class Homework {
   DateTime createDate;
   int updateUser;
   DateTime updateDate;
-  int schoolId;
-  String schoolName;
-  int teacherId;
-  String teacherName;
-  int lessonId;
-  String lessonName;
-  String filePath;
+  int? schoolId;
+  String? schoolName;
+  int? teacherId;
+  String? teacherName;
+  int? lessonId;
+  String? lessonName;
+  String? filePath;
   int? classRoomId;
-  String className;
+  String? className;
 
   Homework({
     required this.id,
@@ -134,15 +134,15 @@ class Homework {
     required this.createDate,
     required this.updateUser,
     required this.updateDate,
-    required this.schoolId,
-    required this.schoolName,
-    required this.teacherId,
-    required this.teacherName,
-    required this.lessonId,
-    required this.lessonName,
-    required this.filePath,
-    required this.classRoomId,
-    required this.className,
+    this.schoolId,
+    this.schoolName,
+    this.teacherId,
+    this.teacherName,
+    this.lessonId,
+    this.lessonName,
+    this.filePath,
+    this.classRoomId,
+    this.className,
   });
 
   factory Homework.fromJson(Map<String, dynamic> json) => Homework(

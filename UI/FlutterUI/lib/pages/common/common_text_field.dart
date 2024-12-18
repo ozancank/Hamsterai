@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:mobile/core/constants/assets_constant.dart';
 import 'package:mobile/core/extensions/size_extension.dart';
 import 'package:mobile/styles/colors.dart';
+import 'package:mobile/utils/device_helper.dart';
 
 // ignore: must_be_immutable
 class CommonTextField extends StatefulWidget {
-  CommonTextField(
-      {super.key,
-      required this.controller,
-      required this.hintText,
-      required this.iconPath,
-      this.isObsecure = false,
-      required this.svgColor,
-      this.isPassword = false,
-      this.keyboardType,
-      this.labelTextColor});
+  CommonTextField({
+    super.key,
+    required this.controller,
+    required this.hintText,
+    required this.iconPath,
+    this.isObsecure = false,
+    required this.svgColor,
+    this.isPassword = false,
+    this.keyboardType,
+    this.labelTextColor,
+  });
 
   final TextEditingController controller;
   final String hintText;
@@ -35,8 +38,10 @@ class _CommonTextFieldState extends State<CommonTextField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      padding: const EdgeInsets.all(10),
+      margin: EdgeInsets.symmetric(
+          vertical: 10,
+          horizontal: isTablet(context) ? context.width * 0.2 : 0),
+      padding: const EdgeInsets.only(left: 10, bottom: 5, top: 5, right: 10),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(40),
@@ -52,7 +57,7 @@ class _CommonTextFieldState extends State<CommonTextField> {
         children: [
           SvgPicture.asset(
             widget.iconPath,
-            height: context.dynamicHeight * 0.045,
+            height: context.dynamicHeight * 0.040,
             // ignore: deprecated_member_use
             color: widget.svgColor,
           ),

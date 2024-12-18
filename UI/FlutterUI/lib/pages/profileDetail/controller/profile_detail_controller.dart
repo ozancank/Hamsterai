@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:mobile/core/base/base_controller.dart';
+import 'package:mobile/core/enums/locale_keys_enum.dart';
+import 'package:mobile/core/init/cache/local_manager.dart';
 import 'package:mobile/core/init/network/network_manager.dart';
 import 'package:mobile/pages/auth/model/error_model.dart';
 import 'package:mobile/pages/auth/model/login_response_model.dart';
@@ -27,7 +29,8 @@ class ProfileDetailController extends BaseController {
     var updateUser = await _updateUserService.updateUser(model);
     if (updateUser is UserInfo) {
       EasyLoading.dismiss();
-      updateUserData(updateUser);
+      await updateUserData(updateUser);
+      await setUserProfile(updateUser.profileFileName ?? '');
     } else if (updateUser is ErrorModel) {
       EasyLoading.dismiss();
       return QuickAlert.show(

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:mobile/core/constants/assets_constant.dart';
 import 'package:mobile/core/extensions/size_extension.dart';
 import 'package:mobile/pages/common/common_appbar.dart';
+import 'package:mobile/pages/common/common_appbar2.dart';
 import 'package:mobile/pages/home/controller/home_page_controller.dart';
 import 'package:mobile/styles/colors.dart';
 
@@ -22,7 +23,7 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CommonAppbar(title: 'Bildirimler'),
+      appBar:  CommonAppbar2(title: 'Bildirimler'),
       backgroundColor: const Color(0xFFF6F7F8),
       body: Obx(() {
         if (homePageController.notifications.isEmpty) {

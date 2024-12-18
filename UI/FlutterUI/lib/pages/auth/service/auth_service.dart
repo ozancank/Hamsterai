@@ -6,7 +6,6 @@ import 'package:mobile/core/enums/service_endpoints.dart';
 import 'package:mobile/core/init/cache/local_manager.dart';
 import 'package:mobile/pages/auth/model/error_model.dart';
 import 'package:mobile/pages/auth/model/login_response_model.dart';
-import 'package:mobile/pages/auth/model/student_response_model.dart';
 
 class AuthService extends BaseService {
   AuthService(super.dio);

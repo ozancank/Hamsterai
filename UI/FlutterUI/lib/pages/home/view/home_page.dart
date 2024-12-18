@@ -3,11 +3,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:mobile/controllers/bottom_nav_controller.dart';
 import 'package:mobile/core/constants/assets_constant.dart';
-import 'package:mobile/module/custom_button_navigation_bar.dart';
 import 'package:mobile/pages/category/view/category_page.dart';
 import 'package:mobile/pages/profile/controller/profile_controller.dart';
 import 'package:mobile/pages/profile/view/profile_page.dart';
 import 'package:mobile/styles/colors.dart';
+import 'package:mobile/utils/device_helper.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
@@ -24,12 +24,15 @@ class HomePage extends StatelessWidget {
             right: context.width * 0.1,
             child: GestureDetector(
               onTap: () {
-                print(profilController.userModel);
                 Get.to(() => const ProfilePage());
               },
               child: Container(
-                height: context.height * 0.15,
-                width: context.width * 0.15,
+                height: isTablet(context)
+                    ? context.height * 0.10
+                    : context.height * 0.15,
+                width: isTablet(context)
+                    ? context.width * 0.10
+                    : context.width * 0.15,
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
                   color: MyColors.primaryColor,
@@ -37,8 +40,8 @@ class HomePage extends StatelessWidget {
                 ),
                 child: SvgPicture.asset(
                   AssetsConstant.manageAccounts,
-                  height: 24,
-                  width: 24,
+                  height: isTablet(context) ? 40 : 24,
+                  width: isTablet(context) ? 40 : 24,
                   color: Colors.white,
                 ),
               ),

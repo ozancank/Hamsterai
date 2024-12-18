@@ -8,11 +8,13 @@ class CommonListTile extends StatelessWidget {
   final String iconPath;
   final String text;
   void Function()? onTap;
+  final Widget? icon;
   CommonListTile({
     super.key,
     required this.iconPath,
     required this.text,
     required this.onTap,
+    this.icon,
   });
 
   @override
@@ -21,7 +23,7 @@ class CommonListTile extends StatelessWidget {
       padding: EdgeInsets.only(bottom: context.dynamicHeight * 0.02),
       child: ListTile(
           onTap: onTap,
-          leading: SvgPicture.asset(iconPath),
+          leading: icon ?? SvgPicture.asset(iconPath),
           title: Text(
             text,
             style: Theme.of(context).textTheme.titleMedium!.copyWith(

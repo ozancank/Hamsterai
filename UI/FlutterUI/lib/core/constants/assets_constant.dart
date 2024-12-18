@@ -1,6 +1,7 @@
 class AssetsConstant {
   static const String logo = 'assets/images/Hamster.png';
   static const String logo2 = 'assets/images/hamster_only_logo.png';
+  static const String logo3 = 'assets/images/seduss-soru-coz-logo.png';
   static const String questionReady = 'assets/images/question_ready.jpeg';
   static const String emailIcon = 'assets/icons/email.svg';
   static const String lockIcon = 'assets/icons/lock.svg';
@@ -75,4 +76,5 @@ class AssetsConstant {
   static const String homeworkTeacher = 'assets/icons/homework_teacher.svg';
   static const String homeworkDate = 'assets/icons/homework_date.svg';
   static const String closeFullScreen = 'assets/icons/close_fullscreen.svg';
+  static const String appbarBack = 'assets/icons/appbar_back.svg';
 }

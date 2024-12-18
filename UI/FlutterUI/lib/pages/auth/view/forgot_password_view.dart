@@ -60,7 +60,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Container(
-        color: Colors.white,
+        color: MyColors.primaryColor,
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -70,24 +70,25 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: IconButton(
-                    onPressed: () {
-                      Get.back();
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: MyColors.primaryColor,
-                      size: 40,
-                    )),
+                  onPressed: () {
+                    Get.back();
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 40,
+                  ),
+                ),
               ),
               Container(
-                padding: EdgeInsets.all(context.dynamicHeight * 0.01),
-                height: context.dynamicHeight * 0.3,
+                padding: EdgeInsets.all(context.dynamicHeight * 0.00),
+                height: context.dynamicHeight * 0.35,
                 width: double.infinity,
                 alignment: Alignment.center,
-                child: Image.asset(AssetsConstant.logo),
+                child: Image.asset(AssetsConstant.logo3),
               ),
               SizedBox(
-                height: context.height * 0.03,
+                height: context.dynamicHeight * 0.01,
               ),
               Container(
                 height: context.dynamicHeight,

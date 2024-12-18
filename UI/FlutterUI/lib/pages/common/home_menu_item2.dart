@@ -6,15 +6,16 @@ class HomeMenuItem2 extends StatelessWidget {
   final String text;
   final Widget trailing;
   final String iconPath;
-  final double? iconWidth;
   final void Function()? onTap;
-  const HomeMenuItem2(
-      {super.key,
-      required this.text,
-      required this.trailing,
-      required this.iconPath,
-      required this.onTap,
-      this.iconWidth});
+  final bool remaining;
+  const HomeMenuItem2({
+    super.key,
+    required this.text,
+    required this.trailing,
+    required this.iconPath,
+    required this.onTap,
+    this.remaining = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,20 +31,20 @@ class HomeMenuItem2 extends StatelessWidget {
           ),
         ),
         child: ListTile(
-          leading: SvgPicture.asset(
-            iconPath,
-            color: MyColors.primaryColor,
-            // width: iconWidth ?? 30,
-            // fit: BoxFit.contain,
-          ),
+          leading: remaining
+              ? null
+              : SvgPicture.asset(
+                  iconPath,
+                  color: MyColors.primaryColor,
+                ),
           title: Text(
             text,
             style: Theme.of(context)
                 .textTheme
                 .bodyLarge!
-                .copyWith(color: Colors.grey, fontSize: 20),
+                .copyWith(color: Colors.grey, fontWeight: FontWeight.w700),
           ),
-          trailing: trailing,
+          trailing: remaining ? null : trailing,
         ),
       ),
     );

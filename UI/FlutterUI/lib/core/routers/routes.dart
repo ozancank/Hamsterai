@@ -18,4 +18,6 @@ abstract class Routes {
   static const MY_TEST = '/my_test';
   static const TEST_RESULT = '/test_result';
   static const HOMEWORK = '/homework';
+  static const FORCEUPDATEPASSWORD = '/force_update_password';
+  static const MYQUESTIONPAGE = '/my_question_page';
 }

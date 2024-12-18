@@ -12,6 +12,7 @@ class CustomImage extends StatefulWidget {
   final Map<String, String> headers;
   final bool isTouchable;
   final bool isTestResult;
+  final bool isQuestionPage;
 
   const CustomImage({
     required this.imageUrl,
@@ -19,6 +20,7 @@ class CustomImage extends StatefulWidget {
     this.isTouchable = true,
     this.isTestResult = false,
     super.key,
+    this.isQuestionPage = false,
   });
 
   @override
@@ -63,6 +65,7 @@ class CustomImageState extends State<CustomImage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.imageUrl);
     return FutureBuilder<Image>(
       future: _imageFuture,
       builder: (BuildContext context, AsyncSnapshot<Image> snapshot) {
@@ -77,8 +80,8 @@ class CustomImageState extends State<CustomImage> {
         } else {
           return ClipRRect(
             borderRadius: widget.isTestResult
-                ? BorderRadius.circular(1)
-                : BorderRadius.circular(20),
+                ? BorderRadius.circular(0)
+                : BorderRadius.circular(0),
             child: GestureDetector(
               onTap: widget.isTouchable
                   ? () {
@@ -95,7 +98,11 @@ class CustomImageState extends State<CustomImage> {
                               child: InteractiveViewer(
                                 child: CustomImage(
                                   isTouchable: false,
-                                  imageUrl: widget.imageUrl,
+                                  imageUrl: widget.isQuestionPage
+                                      ? widget.imageUrl.replaceAll(
+                                          'QuestionThumbnail',
+                                          'QuestionPicture')
+                                      : widget.imageUrl,
                                   headers: ApplicationConstants.XAPIKEY,
                                 ),
                               ),

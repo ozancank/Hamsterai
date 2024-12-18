@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAalZX0CqNrwx7fq6RB2VnLa8SWt5APR4U',
-    appId: '1:653684690138:android:159b4234198a1cf57f29e3',
-    messagingSenderId: '653684690138',
-    projectId: 'hamster-f0900',
-    storageBucket: 'hamster-f0900.appspot.com',
+    apiKey: 'AIzaSyACTCl_sboddZcEAMzv4Ey6kflRjHDI9_Y',
+    appId: '1:835642984180:android:2bb2c5e9f62b77675940a1',
+    messagingSenderId: '835642984180',
+    projectId: 'hamsterios-c46de',
+    storageBucket: 'hamsterios-c46de.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAW5yRCznUUa8hALTFc8mzSKey-An2Up90',
-    appId: '1:653684690138:ios:3905387287a11bc27f29e3',
-    messagingSenderId: '653684690138',
-    projectId: 'hamster-f0900',
-    storageBucket: 'hamster-f0900.appspot.com',
-    iosBundleId: 'com.seduss.mobile',
+    apiKey: 'AIzaSyBLhZU2yRRkDLveJX3ElTh6ZdLKN-z1Tss',
+    appId: '1:835642984180:ios:1e27a2ce0fff19905940a1',
+    messagingSenderId: '835642984180',
+    projectId: 'hamsterios-c46de',
+    storageBucket: 'hamsterios-c46de.firebasestorage.app',
+    iosBundleId: 'com.seduss.hamster',
   );
+
 }

@@ -11,6 +11,6 @@ class SplashController extends BaseController {
 
   Future navigateToHome() async {
     await Future.delayed(const Duration(seconds: 3));
-    Get.to(() => HomePage());
+    Get.off(() => HomePage());
   }
 }

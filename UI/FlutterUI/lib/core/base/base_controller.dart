@@ -6,11 +6,13 @@ import 'package:mobile/pages/auth/model/login_response_model.dart';
 class BaseController extends GetxController {
   LoginResponseModel? loginModel;
   UserInfo? userModel;
-  Future<void> setCacheData(
-      String token, String expiration, LoginResponseModel userModel) async {
+  Future<void> setCacheData(String token, String expiration,
+      LoginResponseModel userModel, bool isMustPasswordChange) async {
     await LocaleManager.instance.setStringValue(PreferencesKeys.TOKEN, token);
     await LocaleManager.instance
         .setStringValue(PreferencesKeys.TOKENEXPIRATION, expiration);
+    await LocaleManager.instance.setBoolValue(
+        PreferencesKeys.ISMUSTPASSWORDCHANGE, isMustPasswordChange);
     await LocaleManager.instance
         .setUserModelValue(PreferencesKeys.LOGINMODEL, userModel);
     await LocaleManager.instance
@@ -19,6 +21,11 @@ class BaseController extends GetxController {
 
   Future<void> updateUserData(UserInfo userModel) async {
     await LocaleManager.instance.setUser(PreferencesKeys.USER, userModel);
+  }
+
+  Future<void> setUserProfile(String photoPath) async {
+    await LocaleManager.instance
+        .setStringValue(PreferencesKeys.USERPHOTO, photoPath);
   }
 
   getUserModelFromCache() async {

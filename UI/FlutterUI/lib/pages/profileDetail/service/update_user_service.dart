@@ -17,6 +17,7 @@ class UpdateUserService extends BaseService {
     try {
       final response = await dio.post(ServiceEndpoints.updateUser.getEndpoint,
           data: updateModel.toJson());
+
       if (response.statusCode == HttpStatus.ok) {
         final data = UserInfo.fromJson(response.data);
         return data;

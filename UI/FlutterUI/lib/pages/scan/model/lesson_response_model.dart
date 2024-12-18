@@ -56,6 +56,7 @@ class Lessons {
   int updateUser;
   DateTime updateDate;
   String name;
+  int type;
 
   Lessons({
     required this.id,
@@ -65,17 +66,18 @@ class Lessons {
     required this.updateUser,
     required this.updateDate,
     required this.name,
+    required this.type,
   });
 
   factory Lessons.fromJson(Map<String, dynamic> json) => Lessons(
-        id: json["id"],
-        isActive: json["isActive"],
-        createUser: json["createUser"],
-        createDate: DateTime.parse(json["createDate"]),
-        updateUser: json["updateUser"],
-        updateDate: DateTime.parse(json["updateDate"]),
-        name: json["name"],
-      );
+      id: json["id"],
+      isActive: json["isActive"],
+      createUser: json["createUser"],
+      createDate: DateTime.parse(json["createDate"]),
+      updateUser: json["updateUser"],
+      updateDate: DateTime.parse(json["updateDate"]),
+      name: json["name"],
+      type: json["type"]);
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -85,5 +87,6 @@ class Lessons {
         "updateUser": updateUser,
         "updateDate": updateDate.toIso8601String(),
         "name": name,
+        "type": type,
       };
 }

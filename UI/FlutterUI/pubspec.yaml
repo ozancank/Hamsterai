@@ -1,35 +1,44 @@
 name: mobile
 description: "A new Flutter project."
 publish_to: "none"
-version: 1.0.0+2
+version: 1.0.10
 
 environment:
   sdk: ">=3.4.3 <4.0.0"
 dependencies:
   android_id: ^0.4.0
+  animated_splash_screen: ^1.3.0
+  app_settings: ^5.1.1
+  auto_size_text: ^3.0.0
   camera: ^0.10.0
   connectivity_plus: ^6.0.5
+  crop_your_image: ^1.1.0
   cupertino_icons: ^1.0.6
   device_info_plus: ^10.1.2
   dio: ^5.6.0
   email_validator: ^3.0.0
   firebase_analytics: ^11.3.1
-  firebase_core: ^3.4.1
-  firebase_messaging: ^15.1.1
+  firebase_core: ^3.8.0
+  firebase_messaging: ^15.1.5
   fl_chart: ^0.69.0
   flutter:
     sdk: flutter
   flutter_easyloading: ^3.0.5
   flutter_image_compress: ^2.3.0
   flutter_local_notifications: ^17.2.2
+  flutter_media_downloader: ^1.0.6
   flutter_svg: ^2.0.10+1
+  flutter_tex: ^4.0.9
   flutter_tts: ^4.0.2
   fluttertoast: ^8.2.8
   get: ^4.6.6
+  image: ^4.3.0
   image_cropper: ^1.0.0
   image_picker: ^1.1.2
+  infinite_scroll_pagination: ^4.1.0
   intl: ^0.19.0
   lottie: ^3.1.2
+  mailer: ^6.3.0
   open_file: ^3.5.8
   path: ^1.9.0
   path_provider: ^2.0.0
@@ -38,9 +47,20 @@ dependencies:
   quickalert: ^1.1.0
   shared_preferences: ^2.3.2
   syncfusion_flutter_pdfviewer: ^27.1.52
-
+  url_launcher: ^6.3.1
+  webview_flutter: ^4.10.0
 dev_dependencies:
+  flutter_launcher_icons: ^0.14.2
   flutter_lints: ^3.0.0
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/seduss_logo.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_background: "#FC8D19" # Arka plan rengi
+  adaptive_icon_foreground: "assets/images/seduss_logo.png" # Ön plan
+  remove_alpha_ios: true
   flutter_test:
     sdk: flutter
 
@@ -50,6 +70,7 @@ flutter:
     - assets/icons/email.svg
     - assets/images/Hamster.png
     - assets/images/hamster_only_logo.png
+    - assets/images/seduss-soru-coz-logo.png
     - assets/icons/lock.svg
     - assets/icons/eye-on.svg
     - assets/icons/person_raised_hand.svg
@@ -95,6 +116,8 @@ flutter:
     - assets/json/sound-ani.json
     - assets/json/loading_line.json
     - assets/json/no_connection.json
+    - assets/json/robot.json
+    - assets/json/robot2.json
     - assets/icons/kazanimlar.svg
     - assets/icons/green_check.svg
     - assets/icons/teste_basla.svg
@@ -133,6 +156,9 @@ flutter:
     - assets/icons/homework_teacher.svg
     - assets/icons/homework_date.svg
     - assets/icons/close_fullscreen.svg
+    - assets/icons/appbar_back.svg
+    - assets/images/seduss_logo.png
+    - assets/images/alt-yazi.png
 
   fonts:
     - family: Manrope
@@ -162,3 +188,14 @@ flutter:
           weight: 900
         - asset: assets/fonts/Nunito-Italic.ttf
           style: italic
+    - family: Quicksand
+      fonts:
+        - asset: assets/fonts/Quicksand-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Quicksand-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Quicksand-Light.ttf
+          weight: 500
+        - asset: assets/fonts/Quicksand-Medium.ttf
+          weight: 900
+        - asset: assets/fonts/Quicksand-Semibold.ttf

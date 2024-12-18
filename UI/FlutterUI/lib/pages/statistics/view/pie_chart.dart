@@ -125,20 +125,6 @@ class _PieChartSample2State extends State<PieChartSample2> {
               height: context.height * 0.25,
               child: PieChart(
                 PieChartData(
-                  pieTouchData: PieTouchData(
-                    touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                      setState(() {
-                        if (!event.isInterestedForInteractions ||
-                            pieTouchResponse == null ||
-                            pieTouchResponse.touchedSection == null) {
-                          touchedIndex = -1;
-                          return;
-                        }
-                        touchedIndex = pieTouchResponse
-                            .touchedSection!.touchedSectionIndex;
-                      });
-                    },
-                  ),
                   borderData: FlBorderData(show: false),
                   sectionsSpace: 1,
                   centerSpaceRadius: 70,

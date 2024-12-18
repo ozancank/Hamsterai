@@ -4,13 +4,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:mobile/core/constants/assets_constant.dart';
 import 'package:mobile/core/extensions/size_extension.dart';
-import 'package:mobile/pages/settings/view/settings_page.dart';
 import 'package:mobile/styles/colors.dart';
 
 class CommonAppbar extends StatelessWidget implements PreferredSizeWidget {
-  const CommonAppbar({super.key, required this.title});
+  const CommonAppbar(
+      {super.key, required this.title, this.isMyQuestion = false, this.onTap});
   final String title;
-
+  final bool isMyQuestion;
+  final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -34,6 +35,13 @@ class CommonAppbar extends StatelessWidget implements PreferredSizeWidget {
             .copyWith(color: Colors.white),
       ),
       actions: [
+        if (isMyQuestion)
+          IconButton(
+              onPressed: onTap,
+              icon: const Icon(
+                Icons.filter_alt,
+                color: Colors.white,
+              ))
         // InkWell(
         //   onTap: () {
         //     HapticFeedback.mediumImpact();

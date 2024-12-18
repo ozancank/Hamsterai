@@ -20,6 +20,8 @@ enum ServiceEndpoints {
   isReadQuestion,
   getHomeworks,
   getStudentById,
+  manuelSendAgain,
+  updateQuestionText,
 }
 
 extension ServiceEndpointsExtension on ServiceEndpoints {
@@ -67,6 +69,10 @@ extension ServiceEndpointsExtension on ServiceEndpoints {
         return '/Homework/GetHomeworksForStudent';
       case ServiceEndpoints.getStudentById:
         return '/Student/GetStudentById';
+      case ServiceEndpoints.manuelSendAgain:
+        return '/Question/ManuelSendAgain';
+      case ServiceEndpoints.updateQuestionText:
+        return '/Question/UpdateQuestionText';
     }
   }
 
