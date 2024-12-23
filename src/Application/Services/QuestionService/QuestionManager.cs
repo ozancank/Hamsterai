@@ -1,5 +1,4 @@
-﻿using Application.Features.Lessons.Models.Gains;
-using Application.Features.Questions.Models.Quizzes;
+﻿using Application.Features.Questions.Models.Quizzes;
 using Application.Features.Questions.Rules;
 using Application.Services.CommonService;
 using Application.Services.GainService;
@@ -52,6 +51,8 @@ public class QuestionManager(ICommonService commonService,
                 try
                 {
                     var aiUrl = AppOptions.AIDefaultUrls.Length <= question.Lesson!.AIUrlIndex ? AppOptions.AIDefaultUrls[0] : AppOptions.AIDefaultUrls[question.Lesson!.AIUrlIndex];
+                    int[] tryLessonIds = [32,33,36,37,49,58];
+                    
                     var model = new QuestionApiModel
                     {
                         Id = question.Id,
@@ -59,16 +60,14 @@ public class QuestionManager(ICommonService commonService,
                         LessonName = question.Lesson!.Name,
                         UserId = question.CreateUser,
                         ExcludeQuiz = question.ExcludeQuiz,
-                        AIUrl = aiUrl
+                        AIUrl = tryLessonIds.Contains(question.LessonId) ? "http://54.161.40.68:8000" : aiUrl
                     };
 
                     if (question.Status == QuestionStatus.ControlledForOcr)
                     {
-
                         model.QuestionText = question.QuestionText;
-                        Console.WriteLine($"{methodName} - SendText: {DateTime.Now} -- {model.Id} -- QuestionText:{question.QuestionText.EmptyOrTrim().Length} --");
+                        Console.WriteLine($"{methodName} - SendText: {DateTime.Now} -- {model.Id} -- QuestionText:{question.QuestionText.EmptyOrTrim().Length} -- AI:{model.AIUrl}");
                         await questionApi.AskQuestionWithText(model);
-
                         return;
                     }
 
@@ -92,12 +91,12 @@ public class QuestionManager(ICommonService commonService,
 
                     if (question.Status == QuestionStatus.WaitingForOcr && question.ExistsVisualContent)
                     {
-                        Console.WriteLine($"{methodName} - SendOcr: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} --");
+                        Console.WriteLine($"{methodName} - SendOcr: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl}");
                         await questionApi.AskOcr(model);
                         return;
                     }
 
-                    Console.WriteLine($"{methodName} - SendImage: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} --");
+                    Console.WriteLine($"{methodName} - SendImage: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl}");
                     await questionApi.AskQuestionWithImage(model);
 
                     model.AIUrl = AppOptions.AIDefaultUrls[2];

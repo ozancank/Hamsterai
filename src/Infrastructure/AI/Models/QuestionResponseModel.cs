@@ -11,6 +11,9 @@ public class QuestionResponseModel : IResponseModel
     [JsonPropertyName("Cevap_Text")]
     public string? AnswerText { get; set; }
 
+    [JsonPropertyName("answer")]
+    public string? AnswerText2 { get; set; }
+
     [JsonPropertyName("Cevap_Image")]
     public string? AnswerImage { get; set; }
 

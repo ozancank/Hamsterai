@@ -62,6 +62,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
 
             var url = $"{baseUrl}/question/sor";
             if (baseUrl.Contains("185.195.255.124")) url = $"{baseUrl}/Soru_ITO";
+            if (baseUrl.Contains("54.161.40.68")) url = $"{baseUrl}/matcher";
 
             var data = new QuestionRequestModel
             {
@@ -80,7 +81,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             {
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
                 answer = JsonSerializer.Deserialize<QuestionResponseModel>(content, _options) ?? throw new ExternalApiException(Strings.DynamicNotNull, nameof(answer));
-
+                if (baseUrl.Contains("54.161.40.68")) answer.RightOption = "A";
                 if (!model.ExcludeQuiz)
                 {
                     answer.RightOption = answer.RightOption.IsNotEmpty()
@@ -91,6 +92,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
                         throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
                 }
 
+                if (answer.AnswerText.IsEmpty()) answer.AnswerText = answer.AnswerText2;
                 answer.AnswerText = answer.AnswerText.EmptyOrTrim().Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
 
                 if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
