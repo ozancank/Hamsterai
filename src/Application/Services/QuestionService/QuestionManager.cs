@@ -51,7 +51,7 @@ public class QuestionManager(ICommonService commonService,
                 try
                 {
                     var aiUrl = AppOptions.AIDefaultUrls.Length <= question.Lesson!.AIUrlIndex ? AppOptions.AIDefaultUrls[0] : AppOptions.AIDefaultUrls[question.Lesson!.AIUrlIndex];
-                    int[] tryLessonIds = [32,33,36,37,49,58];
+                    int[] tryLessonIds = [49,58];
                     
                     var model = new QuestionApiModel
                     {
@@ -60,7 +60,8 @@ public class QuestionManager(ICommonService commonService,
                         LessonName = question.Lesson!.Name,
                         UserId = question.CreateUser,
                         ExcludeQuiz = question.ExcludeQuiz,
-                        AIUrl = tryLessonIds.Contains(question.LessonId) ? "http://54.161.40.68:8000" : aiUrl
+                        AIUrl = tryLessonIds.Contains(question.LessonId) ? "http://16.170.214.30:8000" : aiUrl
+                        //AIUrl = aiUrl
                     };
 
                     if (question.Status == QuestionStatus.ControlledForOcr)
@@ -582,7 +583,7 @@ public class QuestionManager(ICommonService commonService,
                             QuestionText = question.AsT0.QuestionText,
                             UserId = question.AsT0.CreateUser,
                             ExcludeQuiz = question.AsT0.ExcludeQuiz,
-                            AIUrl = AppOptions.AIDefaultUrls[3],
+                            AIUrl = AppOptions.AIDefaultUrls[1],
                             LessonId = question.AsT0.LessonId
                         };
 
@@ -607,7 +608,7 @@ public class QuestionManager(ICommonService commonService,
                             QuestionText = question.AsT1.ResponseQuestion,
                             UserId = question.AsT1.CreateUser,
                             ExcludeQuiz = question.AsT1.ExcludeQuiz,
-                            AIUrl = AppOptions.AIDefaultUrls[3],
+                            AIUrl = AppOptions.AIDefaultUrls[1],
                             LessonId = question.AsT1.LessonId,
                         };
 

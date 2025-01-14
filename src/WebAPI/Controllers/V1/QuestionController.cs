@@ -118,6 +118,7 @@ public class QuestionController : BaseController
 
     #region SimilarQuestion
 
+    [Obsolete(Strings.NotUse)]
     [HttpGet("GetSimilarQuestionById/{id}")]
     public async Task<IActionResult> GetSimilarQuestionById([FromRoute] Guid id)
     {
@@ -126,6 +127,7 @@ public class QuestionController : BaseController
         return Ok(result);
     }
 
+    [Obsolete(Strings.NotUse)]
     [HttpPost("GetSimilarQuestions")]
     public async Task<IActionResult> GetSimilarQuestions([FromQuery] PageRequest pageRequest, [FromBody] SimilarRequestModel model)
     {
@@ -134,6 +136,7 @@ public class QuestionController : BaseController
         return Ok(result);
     }
 
+    [Obsolete(Strings.NotUse)]
     [HttpPost("AddSimilarQuestion")]
     public async Task<IActionResult> AddSimilarQuestion([FromBody] AddSimilarModel model)
     {
@@ -142,6 +145,7 @@ public class QuestionController : BaseController
         return Ok(result);
     }
 
+    [Obsolete(Strings.NotUse)]
     [HttpPost("PassiveSimilarQuestion")]
     public async Task<IActionResult> PassiveSimilarQuestion([FromBody] Guid similarQuestionId)
     {
@@ -150,6 +154,7 @@ public class QuestionController : BaseController
         return Ok(result);
     }
 
+    [Obsolete(Strings.NotUse)]
     [HttpPost("ActiveSimilarQuestion")]
     public async Task<IActionResult> ActiveSimilarQuestion([FromBody] Guid similarQuestionId)
     {
@@ -158,6 +163,7 @@ public class QuestionController : BaseController
         return Ok(result);
     }
 
+    [Obsolete(Strings.NotUse)]
     [HttpPost("IsReadSimilarQuestion")]
     public async Task<IActionResult> IsReadSimilarQuestion([FromBody] Guid similarQuestionId)
     {

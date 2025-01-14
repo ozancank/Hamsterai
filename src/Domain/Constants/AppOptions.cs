@@ -31,6 +31,8 @@ public class AppOptions
     public static int AIGainSendSecond { get; set; } = 20;
     public static int AIGainSenderCapacity { get; set; } = 1;
     public static int AIGainQueueCapacity { get; set; } = 1;
+    public static int QuestionMaxLimit { get; set; } = 30;
+    public static int QuizMaxLimit { get; set; } = 30;
 
     public static string[] AIDefaultUrls { get; set; } = [];
 

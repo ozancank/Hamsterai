@@ -5,9 +5,9 @@ namespace Infrastructure.AI.Models;
 
 public class GainRequestModel : IRequestModel
 {
-    [JsonPropertyName("content")]
+    [JsonPropertyName("soru")]
     public string? QuestionText { get; set; }
 
-    [JsonPropertyName("ders")]
+    [JsonPropertyName("paket")]
     public string? LessonName { get; set; }
 }

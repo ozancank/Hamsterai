@@ -21,16 +21,17 @@ public class GetQuizzesQueryHandler(IMapper mapper,
     public async Task<PageableModel<GetQuizListModel>> Handle(GetQuizzesQuery request, CancellationToken cancellationToken)
     {
         request.PageRequest ??= new PageRequest();
+        request.PageRequest = new PageRequest(0, AppOptions.QuizMaxLimit);
         request.Model ??= new QuizRequestModel();
 
-        if (request.Model.StartDate == null) request.Model.StartDate = DateTime.Today.AddMonths(-1);
-        if (request.Model.EndDate == null) request.Model.EndDate = DateTime.Today;
+        //if (request.Model.StartDate == null) request.Model.StartDate = DateTime.Today.AddMonths(-1);
+        //if (request.Model.EndDate == null) request.Model.EndDate = DateTime.Today;
 
         var quizzes = await quizDal.GetPageListAsyncAutoMapper<GetQuizListModel>(
             predicate: x => x.UserId == commonService.HttpUserId && x.IsActive
-                            && (request.Model.LessonId <= 0 || x.LessonId == request.Model.LessonId)
-                            && x.CreateDate.Date >= request.Model.StartDate.Value.Date
-                            && x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddSeconds(-1),
+                            && (request.Model.LessonId <= 0 || x.LessonId == request.Model.LessonId),
+            //&& x.CreateDate.Date >= request.Model.StartDate.Value.Date
+            //&& x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddSeconds(-1),
             enableTracking: false,
             include: x => x.Include(u => u.Lesson)
                            .Include(u => u.User).ThenInclude(u => u!.School)
@@ -41,8 +42,11 @@ public class GetQuizzesQueryHandler(IMapper mapper,
             cancellationToken: cancellationToken);
 
         var result = mapper.Map<PageableModel<GetQuizListModel>>(quizzes);
+        result.Count = result.Count > AppOptions.QuizMaxLimit ? AppOptions.QuizMaxLimit : result.Count;
+        result.HasNext = false;
+        result.HasPrevious = false;
         result.Items = result.Items.Where(x => x.QuestionCount > 0);
-        result.Items.ForEach(x => { x.GainNames = x.GainNames.Distinct().ToList(); });
+        result.Items.ForEach(x => { x.GainNames = [.. x.GainNames.Where(x => x.IsNotEmpty()).Distinct()]; });
         return result;
     }
 }

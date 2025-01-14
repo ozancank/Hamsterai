@@ -143,6 +143,7 @@ public struct Strings
     public const string Option = "Seçenek";
     public const string Options = "Seçenekler";
     public const string Control = "Kontrol";
+    public const string NotUse = "Kullanılmıyor";
 
     //public const string LessonGroup = "Ders Grubu";
     public const string NoQuestionCredit = "Soru krediniz bulunmamaktadır.";

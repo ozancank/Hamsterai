@@ -32,7 +32,7 @@ public class GetQuizByIdQueryHandler(IMapper mapper,
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
 
-        quiz.GainNames = quiz.GainNames.Distinct().ToList();
+        quiz.GainNames = [.. quiz.GainNames.Where(x => x.IsNotEmpty()).Distinct()];
 
         if (request.ThrowException)
         {

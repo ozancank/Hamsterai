@@ -62,7 +62,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
 
             var url = $"{baseUrl}/question/sor";
             if (baseUrl.Contains("185.195.255.124")) url = $"{baseUrl}/Soru_ITO";
-            if (baseUrl.Contains("54.161.40.68")) url = $"{baseUrl}/matcher";
+            if (baseUrl.Contains("16.170.214.30")) url = $"{baseUrl}/matcher";
 
             var data = new QuestionRequestModel
             {
@@ -81,7 +81,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             {
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
                 answer = JsonSerializer.Deserialize<QuestionResponseModel>(content, _options) ?? throw new ExternalApiException(Strings.DynamicNotNull, nameof(answer));
-                if (baseUrl.Contains("54.161.40.68")) answer.RightOption = "A";
+                if (baseUrl.Contains("16.170.214.30")) answer.RightOption = "A";
                 if (!model.ExcludeQuiz)
                 {
                     answer.RightOption = answer.RightOption.IsNotEmpty()
@@ -93,6 +93,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
                 }
 
                 if (answer.AnswerText.IsEmpty()) answer.AnswerText = answer.AnswerText2;
+                if (answer.AnswerText.IsEmpty()) answer.AnswerText = answer.AnswerText3;
                 answer.AnswerText = answer.AnswerText.EmptyOrTrim().Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
 
                 if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
@@ -302,12 +303,12 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
         {
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
-            var url = $"{baseUrl}/Kazanim";
+            var url = $"{baseUrl}/kazanimResponse/sorKazanim";
 
             var data = new GainRequestModel
             {
                 QuestionText = model.QuestionText,
-                LessonName = model.LessonName?.ToSlug('_') ?? string.Empty
+                LessonName = model.LessonName?.ToSlug('_').Replace("__", "_") ?? string.Empty
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, url)
