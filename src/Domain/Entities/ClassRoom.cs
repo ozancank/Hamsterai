@@ -14,6 +14,7 @@ public class ClassRoom : BaseEntity<int>
     public virtual ICollection<RTeacherClassRoom> TeacherClassRooms { get; set; } = [];
     public virtual ICollection<Student> Students { get; set; } = [];
     public virtual ICollection<Homework> Homeworks { get; set; } = [];
+    public virtual ICollection<RBookClassRoom> BookClassRooms { get; set; } = [];
 
     public ClassRoom() : base()
     { }

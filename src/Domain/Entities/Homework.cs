@@ -9,6 +9,8 @@ public class Homework : BaseEntity<string>
     public short LessonId { get; set; }
     public string? FilePath { get; set; }
     public int? ClassRoomId { get; set; }
+    public string? Title { get; set; }
+    public string? Description { get; set; }
 
     public virtual User? User { get; set; }
     public virtual School? School { get; set; }

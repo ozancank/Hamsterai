@@ -138,8 +138,8 @@ public class AddSchoolCommandValidator : AbstractValidator<AddSchoolCommand>
         RuleFor(x => x.Model.AuthorizedPhone).MaximumLength(15).WithMessage(Strings.DynamicMaxLength, [$"{Strings.Authorized} {Strings.OfPhone}", "15"]);
         RuleFor(x => x.Model.AuthorizedPhone).Must(x => double.TryParse(x, out _)).WithMessage(Strings.DynamicOnlyDigit, [$"{Strings.Authorized} {Strings.OfPhone}"]);
 
-        RuleFor(x => x.Model.UserCount).GreaterThan(0).WithMessage(Strings.DynamicGratherThan, [Strings.UserCount, "0"]);
+        RuleFor(x => x.Model.UserCount).GreaterThan(0).WithMessage(Strings.DynamicGreaterThan, [Strings.UserCount, "0"]);
 
-        RuleFor(x => x.Model.LicenseEndDate).GreaterThan(DateTime.Now).WithMessage(Strings.DynamicGratherThan, [Strings.LicenseEndDate, $"{DateTime.Today:dd/MM/yyyy}"]);
+        RuleFor(x => x.Model.LicenseEndDate).GreaterThan(DateTime.Now).WithMessage(Strings.DynamicGreaterThan, [Strings.LicenseEndDate, $"{DateTime.Today:dd/MM/yyyy}"]);
     }
 }

@@ -17,6 +17,7 @@ public class Lesson : BaseEntity<short>
     public virtual ICollection<Gain> Gains { get; set; } = [];
     public virtual ICollection<Quiz> Quizzes { get; set; } = [];
     public virtual ICollection<Homework> Homeworks { get; set; } = [];
+    public virtual ICollection<Book> Books { get; set; } = [];
 
     public Lesson() : base()
     { }

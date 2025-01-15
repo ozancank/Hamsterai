@@ -7,8 +7,6 @@ using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System.Reflection;
@@ -31,7 +29,7 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
 
     public UserTypes HttpUserType =>
         Enum.TryParse(httpContextAccessor.HttpContext?.User.Claims
-            .FirstOrDefault(x => x.Type == ClaimTypes.UserType)?.Value, out UserTypes userType) ? userType : UserTypes.Student;
+            .FirstOrDefault(x => x.Type == ClaimTypes.UserType)?.Value, out UserTypes userType) ? userType : UserTypes.None;
 
     public int? HttpSchoolId =>
         int.TryParse(httpContextAccessor.HttpContext?.User.Claims

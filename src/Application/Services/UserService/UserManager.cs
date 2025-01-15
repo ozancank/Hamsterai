@@ -87,7 +87,7 @@ public class UserManager(IUserDal userDal,
 
                 var licenseEndDate = schoolUser!.PackageUsers.DefaultIfEmpty().Max(x => x != null ? x.EndDate : AppStatics.MilleniumDate);
 
-                await SchoolRules.SchoolShouldExistsAndIsActive(schoolUser.IsActive);
+                await SchoolRules.SchoolShouldExistsAndActive(schoolUser.IsActive);
                 await SchoolRules.AccessStudentEnabled(schoolUser.AccessStundents, userType);
                 await UserRules.LicenceIsValid(licenseEndDate);
 

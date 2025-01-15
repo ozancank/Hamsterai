@@ -14,6 +14,7 @@ public class AppOptions
     public static string PackagePicturePath { get; set; } = string.Empty;
     public static string HomeworkPath { get; set; } = string.Empty;
     public static string HomeworkAnswerPath { get; set; } = string.Empty;
+    public static string BookPath { get; set; } = string.Empty;
     public static string? ForgetPasswordUrl { get; set; } = string.Empty;
     public static int QuestionMonthLimitForStudent { get; set; } = 300;
     public static int SimilarMonthLimitForStudent { get; set; } = 300;
@@ -31,10 +32,9 @@ public class AppOptions
     public static int AIGainSendSecond { get; set; } = 20;
     public static int AIGainSenderCapacity { get; set; } = 1;
     public static int AIGainQueueCapacity { get; set; } = 1;
+    public static string[] AIDefaultUrls { get; set; } = [];
     public static int QuestionMaxLimit { get; set; } = 30;
     public static int QuizMaxLimit { get; set; } = 30;
-
-    public static string[] AIDefaultUrls { get; set; } = [];
 
     public static string ProfilePictureFolderPath { get; set; } = string.Empty;
     public static string QuestionPictureFolderPath { get; set; } = string.Empty;
@@ -48,6 +48,7 @@ public class AppOptions
     public static string PackagePictureFolderPath { get; set; } = string.Empty;
     public static string HomeworkFolderPath { get; set; } = string.Empty;
     public static string HomeworkAnswerFolderPath { get; set; } = string.Empty;
+    public static string BookFolderPath { get; set; } = string.Empty;
 
     public static void CreateFolder()
     {
@@ -86,5 +87,8 @@ public class AppOptions
 
         HomeworkAnswerFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, HomeworkAnswerPath);
         if (!Directory.Exists(HomeworkAnswerFolderPath)) Directory.CreateDirectory(HomeworkAnswerFolderPath);
+
+        BookFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, BookPath);
+        if (!Directory.Exists(BookFolderPath)) Directory.CreateDirectory(BookFolderPath);
     }
 }

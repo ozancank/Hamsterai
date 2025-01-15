@@ -29,7 +29,7 @@ public class LessonRules(ILessonDal lessonDal) : IBusinessRule
         if (!lesson) throw new BusinessException(Strings.DynamicNotFound, Strings.Lesson);
     }
 
-    internal async Task LessonShouldExistsAndActiveById(short id)
+    internal async Task LessonShouldExistsAndActive(short id)
     {
         var lesson = await lessonDal.IsExistsAsync(predicate: x => x.Id == id && x.IsActive, enableTracking: false);
         if (!lesson) throw new BusinessException(Strings.DynamicNotFound, Strings.Lesson);

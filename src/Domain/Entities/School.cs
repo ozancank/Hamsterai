@@ -18,6 +18,7 @@ public class School : BaseEntity<int>
     public virtual ICollection<Teacher> Teachers { get; set; } = [];
     public virtual ICollection<ClassRoom> ClassRooms { get; set; } = [];
     public virtual ICollection<Homework> Homeworks { get; set; } = [];
+    public virtual ICollection<Book> Books { get; set; } = [];
 
     public School() : base()
     { }

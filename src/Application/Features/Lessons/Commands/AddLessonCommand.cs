@@ -49,6 +49,6 @@ public class AddLessonCommandValidator : AbstractValidator<AddLessonModel>
         RuleFor(x => x.Name).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Name, "2"]);
         RuleFor(x => x.Name).MaximumLength(50).WithMessage(Strings.DynamicMaxLength, [Strings.Name, "50"]);
 
-        RuleFor(x => x.SortNo).GreaterThan((byte)0).WithMessage(Strings.DynamicGratherThan, [Strings.SortNo, "0"]);
+        RuleFor(x => x.SortNo).GreaterThan((byte)0).WithMessage(Strings.DynamicGreaterThan, [Strings.SortNo, "0"]);
     }
 }

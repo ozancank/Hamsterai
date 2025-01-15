@@ -54,6 +54,7 @@ public class HamsteraiDbContext : DbContext
 
     #endregion Core
 
+    public required DbSet<Book> Books { get; set; }
     public required DbSet<ClassRoom> ClassRooms { get; set; }
     public required DbSet<Gain> Gains { get; set; }
     public required DbSet<Homework> Homeworks { get; set; }
@@ -69,9 +70,11 @@ public class HamsteraiDbContext : DbContext
     public required DbSet<PasswordToken> PasswordTokens { get; set; }
     public required DbSet<Payment> Payments { get; set; }
     public required DbSet<PaymentSipay> PaymentSipays { get; set; }
+    public required DbSet<Publisher> Publisher { get; set; }
     public required DbSet<Question> Questions { get; set; }
     public required DbSet<Quiz> Quizzes { get; set; }
     public required DbSet<QuizQuestion> QuizQuestions { get; set; }
+    public required DbSet<RBookClassRoom> BookClassRooms { get; set; }
     public required DbSet<RPackageLesson> RPackageLesson { get; set; }
     public required DbSet<RTeacherClassRoom> RTeacherClassRooms { get; set; }
     public required DbSet<RTeacherLesson> RTeacherLessons { get; set; }

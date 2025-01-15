@@ -1,19 +1,24 @@
 ﻿using Application;
+using Application.Services.CommonService;
 using Application.Services.QuestionService;
 using Application.Services.UserService;
+using DataAccess.EF;
 using Domain.Constants;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OCK.Core.Caching;
 using OCK.Core.Caching.Microsoft;
 using OCK.Core.Exceptions;
+using OCK.Core.Extensions;
 using OCK.Core.Security.Encryption;
 using OCK.Core.Security.Headers;
 using OCK.Core.Security.JWT;
@@ -111,10 +116,10 @@ static async Task Middlewares(WebApplicationBuilder builder, WebApplication app,
 
     app.UseCors("AllowEveryThing");
 
-    //app.UseForwardedHeaders(new ForwardedHeadersOptions
-    //{
-    //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-    //});
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    });
 
     if (!app.Environment.IsDevelopment())
         app.UseMiddleware<HeaderAuthMiddleware>([Strings.XApiKey, Strings.SwaggerPath, AppStatics.Domains, AppStatics.EndPoints]);
@@ -149,13 +154,13 @@ static async Task Middlewares(WebApplicationBuilder builder, WebApplication app,
         }
     });
 
-    StaticFiles(app);
-
     app.UseRequestId();
 
     app.UseAuthentication();
 
     app.UseAuthorization();
+
+    StaticFiles(app);
 
     app.MapControllers();
 
@@ -265,6 +270,67 @@ static void StaticFiles(WebApplication app)
             //}
         });
     }
+
+    app.Use(async (context, next) =>
+    {
+        var pathMarked = "/Books/";
+        var requestPath = context.Request.Path.Value;
+
+        if (!requestPath.StartsWith(pathMarked, StringComparison.OrdinalIgnoreCase)) goto next;
+
+        var pathArray = requestPath.Replace(pathMarked, string.Empty, StringComparison.OrdinalIgnoreCase).Split('/');
+        if (pathArray.Length != 2) goto next;
+
+        var isNumber = int.TryParse(pathArray[0], out var bookId);
+        if (!isNumber) goto next;
+
+        var commonService = ServiceTools.GetService<ICommonService>();
+        var userTypes = commonService.HttpUserType;
+        if (userTypes == UserTypes.Administator) goto file;
+        if (!userTypes.IsIn(UserTypes.School, UserTypes.Teacher, UserTypes.Student)) goto next;
+
+        var dbContext = ServiceTools.GetService<IDbContextFactory<HamsteraiDbContext>>().CreateDbContext();
+        try
+        {
+            var bookInfo = await dbContext.Books.Where(x => x.Id == bookId).Select(x => new { x.CreateUser, x.SchoolId }).DefaultIfEmpty().FirstOrDefaultAsync();
+            if (bookInfo == null) goto next;
+            if (!await ControlUserStatusAsync(commonService.HttpUserId)) goto next;
+            if (bookInfo.SchoolId != commonService.HttpSchoolId) goto next;
+        }
+        finally
+        {
+            dbContext.Dispose();
+            commonService = null;
+        }
+
+    file:
+        var fileName = pathArray[1];
+
+        var fullPath = Path.Combine(Domain.Constants.AppOptions.BookFolderPath, $"{bookId}", fileName);
+
+        if (!File.Exists(fullPath)) goto next;
+
+        switch (Path.GetExtension(fileName)?.ToLowerInvariant())
+        {
+            case ".pdf":
+                context.Response.ContentType = "application/pdf";
+                break;
+
+            case ".jpg":
+            case ".jpeg":
+                context.Response.ContentType = "image/jpeg";
+                break;
+
+            default:
+                goto next;
+        }
+
+        await context.Response.SendFileAsync(fullPath);
+        return;
+
+    next:
+        await next();
+    });
 }
 
 static void Delegates()

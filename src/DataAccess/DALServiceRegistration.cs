@@ -29,6 +29,7 @@ public static class DALServiceRegistration
         services.AddScoped<IUserDal, UserDal>();
         services.AddScoped<IUserOperationClaimDal, UserOperationClaimDal>();
 
+        services.AddScoped<IBookDal, BookDal>();
         services.AddScoped<IClassRoomDal, ClassRoomDal>();
         services.AddScoped<IGainDal, GainDal>();
         services.AddScoped<IHomeworkDal, HomeworkDal>();
@@ -45,9 +46,11 @@ public static class DALServiceRegistration
         services.AddScoped<IPasswordTokenDal, PasswordTokenDal>();
         services.AddScoped<IPaymentDal, PaymentDal>();
         services.AddScoped<IPaymentSipayDal, PaymentSipayDal>();
+        services.AddScoped<IPublisherDal, PublisherDal>();
         services.AddScoped<IQuestionDal, QuestionDal>();
         services.AddScoped<IQuizDal, QuizDal>();
         services.AddScoped<IQuizQuestionDal, QuizQuestionDal>();
+        services.AddScoped<IRBookClassRoomDal, RBookClassRoomDal>();
         services.AddScoped<IRPackageLessonDal, RPackageLessonDal>();
         services.AddScoped<IRTeacherClassRoomDal, RTeacherClassRoomDal>();
         services.AddScoped<IRTeacherLessonDal, RTeacherLessonDal>();

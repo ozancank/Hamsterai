@@ -51,12 +51,12 @@ public class UpdateClassRoomCommandValidator : AbstractValidator<UpdateClassRoom
 
         RuleFor(x => x.Model).NotNull().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.Model.No).GreaterThan((short)0).WithMessage(Strings.DynamicGratherThan, [$"{Strings.ClassRoom} {Strings.OfNumber}", "0"]);
+        RuleFor(x => x.Model.No).GreaterThan((short)0).WithMessage(Strings.DynamicGreaterThan, [$"{Strings.ClassRoom} {Strings.OfNumber}", "0"]);
 
         RuleFor(x => x.Model.Branch).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.ClassRoom} {Strings.OfBranch}"]);
         RuleFor(x => x.Model.Branch).MinimumLength(1).WithMessage(Strings.DynamicMinLength, [$"{Strings.ClassRoom} {Strings.OfBranch}", "1"]);
         RuleFor(x => x.Model.Branch).MaximumLength(10).WithMessage(Strings.DynamicMaxLength, [$"{Strings.ClassRoom} {Strings.OfBranch}", "10"]);
 
-        RuleFor(x => x.Model.SchoolId).GreaterThan(0).WithMessage(Strings.DynamicGratherThan, [Strings.School, "0"]);
+        RuleFor(x => x.Model.SchoolId).GreaterThan(0).WithMessage(Strings.DynamicGreaterThan, [Strings.School, "0"]);
     }
 }

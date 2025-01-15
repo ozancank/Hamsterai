@@ -23,7 +23,7 @@ public class SchoolRules(ISchoolDal schoolDal) : IBusinessRule
         return Task.CompletedTask;
     }
 
-    internal static Task SchoolShouldExistsAndIsActive(bool isActive)
+    internal static Task SchoolShouldExistsAndActive(bool isActive)
     {
         if (!isActive) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.School);
         return Task.CompletedTask;
@@ -33,6 +33,12 @@ public class SchoolRules(ISchoolDal schoolDal) : IBusinessRule
     {
         var exists = await schoolDal.IsExistsAsync(x => x.Id == id, enableTracking: false);
         if (exists) throw new BusinessException(Strings.DynamicNotFound, Strings.School);
+    }
+
+    internal async Task SchoolShouldExistsAndActive(int id)
+    {
+        var exists = await schoolDal.IsExistsAsync(x => x.Id == id && x.IsActive, enableTracking: false);
+        if (!exists) throw new BusinessException(Strings.DynamicNotFoundOrActive, Strings.School);
     }
 
     internal async Task SchoolShouldExists(string taxNumber)

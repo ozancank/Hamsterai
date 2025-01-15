@@ -229,7 +229,7 @@ public class AddManuelCommandValidator : AbstractValidator<AddManuelCommand>
 
         RuleFor(x => x.Model.QuestionType).IsInEnum().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Question} {Strings.OfType}"]);
 
-        RuleFor(x => x.Model.UserId).GreaterThan(0).WithMessage(Strings.DynamicGratherThan, [Strings.User, "0"]);
+        RuleFor(x => x.Model.UserId).GreaterThan(0).WithMessage(Strings.DynamicGreaterThan, [Strings.User, "0"]);
 
         RuleFor(x => x.Model.LessonId).InclusiveBetween((short)1, short.MaxValue).WithMessage(Strings.DynamicBetween, [Strings.Lesson, "1", short.MaxValue.ToString()]);
 

@@ -23,7 +23,7 @@ public struct Strings
     public const string DynamicLength = "{0} {1} karakter olmalıdır.";
     public const string DynamicMinLength = "{0} en az {1} karakter olmalıdır.";
     public const string DynamicMaxLength = "{0} en fazla {1} karakter olmalıdır.";
-    public const string DynamicGratherThan = "{0} {1} büyük olmalıdır.";
+    public const string DynamicGreaterThan = "{0} {1} büyük olmalıdır.";
     public const string DynamicGratherThanOrEqual = "{0} {1} büyük veya eşit olmalıdır.";
     public const string DynamicLessThan = "{0} {1} küçük olmalıdır.";
     public const string DynamicLessThanOrEquals = "{0} {1} küçük veya eşit olmalıdır.";
@@ -44,6 +44,10 @@ public struct Strings
     public const string DynamicLessonTestPreparedForYou = "Hamster AI sizin için {0} testi hazırlandı. İyi çalışmalar :)\nTest No: {1}";
     public const string DynamicUserTypeShouldBe = "Kullanıcı tipi {0} olmalıdır.";
     public const string DynamicNotVerified = "{0} doğrulanamadı.";
+    public const string DynamicExtension = "{0} dosya uzantısı {1} olmalıdır.";
+    public const string DynamicFileType = "{0} dosya tipi {1} olmalıdır.";
+    public const string DynamicFileSize = "{0} dosya boyutu {1} olmalıdır.";
+    public const string DynamicMaximumFileSize = "{0} dosya boyutu en fazla {1} olmalıdır.";
 
     public const string Second = "Saniye";
     public const string Minute = "Dakika";
@@ -144,6 +148,7 @@ public struct Strings
     public const string Options = "Seçenekler";
     public const string Control = "Kontrol";
     public const string NotUse = "Kullanılmıyor";
+    public const string Publisher = "Yayınevi";
 
     //public const string LessonGroup = "Ders Grubu";
     public const string NoQuestionCredit = "Soru krediniz bulunmamaktadır.";

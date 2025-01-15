@@ -8,7 +8,6 @@ using Application.Features.Users.Rules;
 using Application.Services.CommonService;
 using Application.Services.NotificationService;
 using MediatR;
-using OCK.Core.Interfaces;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 
@@ -40,7 +39,7 @@ public class AddHomeworkCommandHandler(IMapper mapper,
     public async Task<GetHomeworkModel> Handle(AddHomeworkCommand request, CancellationToken cancellationToken)
     {
         await HomeworkRules.HomeworkSendUserShouldBeTeacher(commonService.HttpUserType);
-        await lessonRules.LessonShouldExistsAndActiveById(request.Model.LessonId);
+        await lessonRules.LessonShouldExistsAndActive(request.Model.LessonId);
         await HomeworkRules.OnlyOneShouldBeFilled(request.Model.ClassRoomId, request.Model.StudentIds, request.Model.UserIds, request.Model.PackageIds);
 
         List<int> studentIds = [];
@@ -101,6 +100,8 @@ public class AddHomeworkCommandHandler(IMapper mapper,
             LessonId = request.Model.LessonId,
             FilePath = fileName,
             ClassRoomId = request.Model.ClassRoomId,
+            Title = request.Model.Title,
+            Description = request.Model.Description,
             SchoolId = commonService.HttpSchoolId.IfNullEmpty(null),
             TeacherId = commonService.HttpConnectionId.IfNullEmpty(null),
         };
@@ -200,5 +201,9 @@ public class AddHomeworkCommandValidator : AbstractValidator<AddHomeworkCommand>
         RuleFor(x => x.Model.LessonId).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Lesson]);
 
         RuleFor(x => x.Model.File).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.File]);
+
+        RuleFor(x => x.Model.Title.EmptyOrTrim()).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Title]);
+        RuleFor(x => x.Model.Title.EmptyOrTrim()).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Title, "2"]);
+        RuleFor(x => x.Model.Title.EmptyOrTrim()).MaximumLength(200).WithMessage(Strings.DynamicMaxLength, [Strings.Title, "200"]);
     }
 }

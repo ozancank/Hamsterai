@@ -334,7 +334,7 @@ public class AddOrderCommandValidator : AbstractValidator<AddOrderCommand>
 
         RuleFor(x => x.Model.Payment).NotNull().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.Model.Payment!.Amount).GreaterThan(0.0).WithMessage(Strings.DynamicGratherThan, [Strings.Amount, "0"]);
+        RuleFor(x => x.Model.Payment!.Amount).GreaterThan(0.0).WithMessage(Strings.DynamicGreaterThan, [Strings.Amount, "0"]);
     }
 }
 
@@ -344,12 +344,12 @@ public class AddOrderDetailForAddOrderModelValidator : AbstractValidator<AddOrde
     {
         RuleFor(x => x).NotEmpty().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.PackageId).GreaterThan((short)0).WithMessage(Strings.DynamicGratherThan, [Strings.Package, "0"]);
+        RuleFor(x => x.PackageId).GreaterThan((short)0).WithMessage(Strings.DynamicGreaterThan, [Strings.Package, "0"]);
 
-        RuleFor(x => x.Quantity).GreaterThan((byte)0).WithMessage(Strings.DynamicGratherThan, [Strings.Quantity, "0"]);
+        RuleFor(x => x.Quantity).GreaterThan((byte)0).WithMessage(Strings.DynamicGreaterThan, [Strings.Quantity, "0"]);
 
         RuleFor(x => x.DiscountRatio).InclusiveBetween(0.0, 100.0).WithMessage(Strings.DynamicBetween, [$"{Strings.Discount} {Strings.OfRatio}", "0", "100"]);
 
-        RuleFor(x => x.Amount).GreaterThan(0.0).WithMessage(Strings.DynamicGratherThan, [Strings.Amount, "0"]);
+        RuleFor(x => x.Amount).GreaterThan(0.0).WithMessage(Strings.DynamicGreaterThan, [Strings.Amount, "0"]);
     }
 }
