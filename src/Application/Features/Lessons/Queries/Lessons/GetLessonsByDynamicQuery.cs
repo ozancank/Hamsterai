@@ -2,11 +2,8 @@
 using Application.Features.Students.Rules;
 using Application.Features.Teachers.Rules;
 using Application.Services.CommonService;
-using DataAccess.Abstract;
-using DataAccess.EF.Concrete;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
-using OneOf.Types;
 
 namespace Application.Features.Lessons.Queries.Lessons;
 
@@ -59,7 +56,7 @@ public class GetLessonsByDynamicQueryHandler(IMapper mapper,
             enableTracking: false,
             cancellationToken: cancellationToken);
 
-            result.Items = result.Items.Where(x => lessonIds.Any(a => a.LessonId == x.Id)).ToList();
+            result.Items = [.. result.Items.Where(x => lessonIds.Any(a => a.LessonId == x.Id))];
         }
 
         if (commonService.HttpUserType == UserTypes.Teacher)
@@ -72,7 +69,7 @@ public class GetLessonsByDynamicQueryHandler(IMapper mapper,
                 cancellationToken: cancellationToken);
             await TeacherRules.TeacherShouldExists(teacher);
 
-            result.Items = result.Items.Where(x => teacher.LessonIds.Any(a => a == x.Id)).ToList();
+            result.Items = [.. result.Items.Where(x => teacher.LessonIds.Any(a => a == x.Id))];
         }
 
         return result;

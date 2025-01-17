@@ -7,13 +7,12 @@ using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 
-
 namespace Application.Features.Books.Commands.Books;
 
 public class AddBookCommand : IRequest<GetBookModel>, ISecuredRequest<UserTypes>, ILoggableRequest
 {
     public required AddBookModel Model { get; set; }
-    public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School];
+    public UserTypes[] Roles { get; } = [UserTypes.School];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = ["AddBookModel.File"];
 }
@@ -40,6 +39,7 @@ public class AddBookCommandHandler(IMapper mapper,
         var folderPath = Path.Combine(AppOptions.BookFolderPath, $"{bookId}");
         if (Directory.Exists(folderPath)) Directory.Delete(folderPath, true);
         Directory.CreateDirectory(folderPath);
+        var thumbPath = Path.Combine(folderPath, Strings.ThumbnailName);
 
         var pageCount = 0;
         using (var stream = request.Model.File!.OpenReadStream())
@@ -47,7 +47,7 @@ public class AddBookCommandHandler(IMapper mapper,
             pageCount = PdfTools.PdfPageCount(stream);
             PdfTools.SplitPdf(stream, folderPath);
             var base64 = await PdfTools.PdfToImageBase64(stream, 0);
-            await commonService.PictureConvertWithResize(base64, "thumb.jpg", folderPath, cancellationToken: cancellationToken);
+            await ImageTools.Base64ToImageFile(base64, thumbPath, cancellationToken: cancellationToken);
         }
 
         var book = mapper.Map<Book>(request.Model);
@@ -85,11 +85,7 @@ public class AddBookCommandHandler(IMapper mapper,
         {
             await bookDal.AddAsync(book, cancellationToken: cancellationToken);
             if (bookClassRooms.Count != 0)
-            {
-                var oldIds = bookClassRooms.Select(x => x.Id).ToList();
-                await bookClassRoomDal.DeleteRangeAsync(oldIds, cancellationToken: cancellationToken);
                 await bookClassRoomDal.AddRangeAsync(bookClassRooms, cancellationToken: cancellationToken);
-            }
         }, cancellationToken: cancellationToken);
 
         var result = await bookDal.GetAsyncAutoMapper<GetBookModel>(

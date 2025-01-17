@@ -46,7 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Features\Auths\Dtos\" />
-    <Folder Include="Features\Books\Queries\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SixLabors.ImageSharp.Drawing">

@@ -21,4 +21,11 @@ public class PublisherRules(IPublisherDal publisherDal) : IBusinessRule
         var control = await publisherDal.IsExistsAsync(predicate: x => x.Id == id && x.IsActive, enableTracking: false);
         if (!control) throw new BusinessException(Strings.DynamicNotFoundOrActive, [Strings.Publisher]);
     }
+
+    internal async Task PublisherNameCanNotBeDuplicated(string name, short? publisherId = null)
+    {
+        var publisher = await publisherDal.GetAsync(predicate: x => PostgresqlFunctions.TrLower(x.Name) == PostgresqlFunctions.TrLower(name));
+        if (publisherId == null && publisher != null) throw new BusinessException(Strings.DynamicExists, name);
+        if (publisherId != null && publisher != null && publisher.Id != publisherId) throw new BusinessException(Strings.DynamicExists, name);
+    }
 }

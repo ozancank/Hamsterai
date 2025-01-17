@@ -14,5 +14,6 @@ public class BookMappingProfiles : Profile
         CreateMap<IPaginate<GetBookModel>, PageableModel<GetBookModel>>();
 
         CreateMap<AddBookModel, Book>();
+        CreateMap<UpdateBookModel, Book>();
     }
 }

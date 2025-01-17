@@ -71,7 +71,7 @@ public class GetLessonsQueryHandler(IMapper mapper,
                 enableTracking: false,
                 cancellationToken: cancellationToken);
 
-            result.Items = result.Items.Where(x => lessonIds.Any(a => a.LessonId == x.Id)).ToList();
+            result.Items = [.. result.Items.Where(x => lessonIds.Any(a => a.LessonId == x.Id))];
         }
 
         if (commonService.HttpUserType == UserTypes.Teacher)
@@ -84,7 +84,7 @@ public class GetLessonsQueryHandler(IMapper mapper,
                 cancellationToken: cancellationToken);
             await TeacherRules.TeacherShouldExists(teacher);
 
-            result.Items = result.Items.Where(x => teacher.LessonIds.Any(a => a == x.Id)).ToList();
+            result.Items = [.. result.Items.Where(x => teacher.LessonIds.Any(a => a == x.Id))];
         }
 
         return result;

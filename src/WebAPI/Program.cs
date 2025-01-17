@@ -271,7 +271,62 @@ static void StaticFiles(WebApplication app)
         });
     }
 
-    app.Use(async (context, next) =>
+    
+}
+
+static void Delegates()
+{
+    ControlUserStatusAsync = ServiceTools.GetService<IUserService>().UserStatusAndLicense;
+    UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateQuestion;
+    AddSimilarAnswer = ServiceTools.GetService<IQuestionService>().AddSimilar;
+}
+
+static void RunLinuxCommands()
+{
+    string[] commands =
+    [
+            $"sudo chown -R root:root {Directory.GetParent(Domain.Constants.AppOptions.ProfilePictureFolderPath).FullName}",
+            $"sudo chown -R root:root {Domain.Constants.AppOptions.HomeworkFolderPath}",
+            $"sudo chown -R root:root {Domain.Constants.AppOptions.HomeworkAnswerFolderPath}",
+            $"sudo chown -R root:root {Domain.Constants.AppOptions.BookPath}",
+            $"sudo chmod -R 755 {Directory.GetParent(Domain.Constants.AppOptions.ProfilePictureFolderPath).FullName}",
+            $"sudo chmod -R 755 {Domain.Constants.AppOptions.HomeworkFolderPath}",
+            $"sudo chmod -R 755 {Domain.Constants.AppOptions.HomeworkAnswerFolderPath}",
+            $"sudo chmod -R 755 {Domain.Constants.AppOptions.BookPath}"
+    ];
+
+    foreach (var command in commands)
+    {
+        ExecuteBashCommand(command);
+    }
+}
+
+static void ExecuteBashCommand(string command)
+{
+    var processInfo = new ProcessStartInfo("bash", $"-c \"{command}\"")
+    {
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        UseShellExecute = false,
+        CreateNoWindow = true
+    };
+
+    using var process = new Process { StartInfo = processInfo };
+    process.Start();
+    process.WaitForExit();
+
+    string output = process.StandardOutput.ReadToEnd();
+    string error = process.StandardError.ReadToEnd();
+
+    if (!string.IsNullOrEmpty(error))
+    {
+        Console.WriteLine($"Error: {error}");
+    }
+}
+
+
+/*
+app.Use(async (context, next) =>
     {
         var pathMarked = "/Books/";
         var requestPath = context.Request.Path.Value;
@@ -331,52 +386,4 @@ static void StaticFiles(WebApplication app)
     next:
         await next();
     });
-}
-
-static void Delegates()
-{
-    ControlUserStatusAsync = ServiceTools.GetService<IUserService>().UserStatusAndLicense;
-    UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateQuestion;
-    AddSimilarAnswer = ServiceTools.GetService<IQuestionService>().AddSimilar;
-}
-
-static void RunLinuxCommands()
-{
-    string[] commands =
-    [
-            $"sudo chown -R root:root {Directory.GetParent(Domain.Constants.AppOptions.ProfilePictureFolderPath).FullName}",
-            $"sudo chown -R root:root {Domain.Constants.AppOptions.HomeworkFolderPath}",
-            $"sudo chown -R root:root {Domain.Constants.AppOptions.HomeworkAnswerFolderPath}",
-            $"sudo chmod -R 755 {Directory.GetParent(Domain.Constants.AppOptions.ProfilePictureFolderPath).FullName}",
-            $"sudo chmod -R 755 {Domain.Constants.AppOptions.HomeworkFolderPath}",
-            $"sudo chmod -R 755 {Domain.Constants.AppOptions.HomeworkAnswerFolderPath}",
-    ];
-
-    foreach (var command in commands)
-    {
-        ExecuteBashCommand(command);
-    }
-}
-
-static void ExecuteBashCommand(string command)
-{
-    var processInfo = new ProcessStartInfo("bash", $"-c \"{command}\"")
-    {
-        RedirectStandardOutput = true,
-        RedirectStandardError = true,
-        UseShellExecute = false,
-        CreateNoWindow = true
-    };
-
-    using var process = new Process { StartInfo = processInfo };
-    process.Start();
-    process.WaitForExit();
-
-    string output = process.StandardOutput.ReadToEnd();
-    string error = process.StandardError.ReadToEnd();
-
-    if (!string.IsNullOrEmpty(error))
-    {
-        Console.WriteLine($"Error: {error}");
-    }
-}
+ */

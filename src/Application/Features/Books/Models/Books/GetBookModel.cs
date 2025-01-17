@@ -15,7 +15,6 @@ public class GetBookModel : IResponseModel
     public short PublisherId { get; set; }
     public string? PublisherName { get; set; }
     public string? Name { get; set; }
-    public short PageCount { get; set; }
     public short? Year { get; set; }
 
     public List<string> ClassRoomNames { get; set; } = [];

@@ -15,6 +15,7 @@ public struct Strings
     public const string SwaggerPath = "/swagger";
     public const string XApiKey = "HaMsTerAI-Security";
     public const string AuthorizationDenied = "Bu işlem için yetkiniz bulunmamaktadır.";
+    public const string ThumbnailName = "thumb.jpg";
 
     public const string CacheStatusAndLicence = "CacheStatusAndLicence";
 
@@ -149,6 +150,7 @@ public struct Strings
     public const string Control = "Kontrol";
     public const string NotUse = "Kullanılmıyor";
     public const string Publisher = "Yayınevi";
+    public const string Book = "Kitap";
 
     //public const string LessonGroup = "Ders Grubu";
     public const string NoQuestionCredit = "Soru krediniz bulunmamaktadır.";
