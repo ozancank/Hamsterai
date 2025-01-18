@@ -71,6 +71,14 @@ public class BookController : BaseController
         return Ok(result);
     }
 
+    [HttpPost("UpdateBookClassRoom")]
+    public async Task<IActionResult> UpdateBookClassRoom([FromForm] UpdateBookClassRoomModel model)
+    {
+        var command = new UpdateBookClassRoomCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
     [HttpPost("PassiveBook")]
     public async Task<IActionResult> PassiveBook([FromQuery] int id)
     {

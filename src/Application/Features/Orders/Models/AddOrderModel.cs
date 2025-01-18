@@ -36,7 +36,7 @@ public sealed class AddPaymentSipayModelForAddOrderModel : IRequestModel
     public AddPaymentSipayModelForAddOrderModel()
     {
         OrderStatics.AddPaymentSipayModelForAddOrderModelStringProperties ??=
-            GetType().GetProperties().Where(p => p.PropertyType == typeof(string)).ToArray();
+            [.. GetType().GetProperties().Where(p => p.PropertyType == typeof(string))];
     }
 
     public double Amount { get; set; }

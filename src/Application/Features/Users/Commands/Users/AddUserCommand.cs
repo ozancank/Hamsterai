@@ -17,7 +17,11 @@ public class AddUserCommand : IRequest<GetUserModel>, ISecuredRequest<UserTypes>
     public required AddUserModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher];
     public bool AllowByPass => false;
-    public string[] HidePropertyNames { get; } = ["AddUserModel.Password", "AddUserModel.ProfilePictureBase64"];
+    public string[] HidePropertyNames { get; } =
+        [
+            $"{nameof(Model)}.{nameof(Model.Password)}",
+            $"{nameof(Model)}.{nameof(Model.ProfilePictureBase64)}"
+        ];
     public string[] CacheKey { get; } = [$"^{Strings.CacheStatusAndLicence}"];
 }
 

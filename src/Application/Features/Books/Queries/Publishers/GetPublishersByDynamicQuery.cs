@@ -15,7 +15,6 @@ public class GetPublishersByDynamicQuery : IRequest<PageableModel<GetPublisherMo
 }
 
 public class GetPublishersByDynamicQueryHandler(IMapper mapper,
-                                                IUserDal userDal,
                                                 IPublisherDal publisherDal) : IRequestHandler<GetPublishersByDynamicQuery, PageableModel<GetPublisherModel>>
 {
     public async Task<PageableModel<GetPublisherModel>> Handle(GetPublishersByDynamicQuery request, CancellationToken cancellationToken)

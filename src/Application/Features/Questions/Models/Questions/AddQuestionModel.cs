@@ -7,4 +7,5 @@ public class AddQuestionModel : IRequestModel
     public string? QuestionSmallPictureBase64 { get; set; }
     public string? QuestionPictureFileName { get; set; }
     public bool IsVisual { get; set; }
+    public QuestionType Type { get; set; } = QuestionType.Question;
 }

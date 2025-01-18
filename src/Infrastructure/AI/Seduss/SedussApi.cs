@@ -67,7 +67,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             var data = new QuestionRequestModel
             {
                 Question = model.Base64,
-                LessonName = model.LessonName?.ToSlug('_').Replace("__", "_") ?? string.Empty
+                LessonName = model.LessonName?.ToSlug('_').Replace("__", "_") ?? string.Empty,
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, url)
@@ -91,6 +91,8 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
                     if (!_answersOptions.Contains(answer.RightOption, StringComparer.OrdinalIgnoreCase))
                         throw new ExternalApiException(Strings.DynamicBetween.Format(Strings.RightOption, "A", "E"));
                 }
+
+                if (answer.QuestionText.IsEmpty()) answer.QuestionText = answer.QuestionText2;
 
                 if (answer.AnswerText.IsEmpty()) answer.AnswerText = answer.AnswerText2;
                 if (answer.AnswerText.IsEmpty()) answer.AnswerText = answer.AnswerText3;

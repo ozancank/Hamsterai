@@ -14,7 +14,11 @@ public class AddQuestionCommand : IRequest<GetQuestionModel>, ISecuredRequest<Us
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.Student, UserTypes.Person];
     public bool AllowByPass => false;
-    public string[] HidePropertyNames { get; } = ["Model.QuestionPictureBase64"];
+    public string[] HidePropertyNames { get; } =
+        [
+            $"{nameof(Model)}.{nameof(Model.QuestionPictureBase64)}",
+            $"{nameof(Model)}.{nameof(Model.QuestionSmallPictureBase64)}"
+        ];
 }
 
 public class AddQuestionCommandHandler(IMapper mapper,
@@ -69,6 +73,7 @@ public class AddQuestionCommandHandler(IMapper mapper,
             RightOption = null,
             ExcludeQuiz = false,
             ExistsVisualContent = request.Model.IsVisual,
+            Type = request.Model.Type.IfValue(QuestionType.None, QuestionType.Question),
         };
 
         var added = await questionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);

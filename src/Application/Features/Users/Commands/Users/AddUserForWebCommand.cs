@@ -15,7 +15,7 @@ public class AddUserForWebCommand : IRequest<GetUserModel>, ISecuredRequest<User
     public required AddUserForWebModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public bool AllowByPass => true;
-    public string[] HidePropertyNames { get; } = ["AddUserModel.Password"];
+    public string[] HidePropertyNames { get; } = [$"{nameof(Model)}.{nameof(Model.Password)}"];
     public string[] CacheKey { get; } = [$"^{Strings.CacheStatusAndLicence}"];
 }
 

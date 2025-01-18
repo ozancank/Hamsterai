@@ -15,7 +15,11 @@ public class AddSimilarCommand : IRequest<GetSimilarModel>, ISecuredRequest<User
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.Student, UserTypes.Person];
     public bool AllowByPass => false;
-    public string[] HidePropertyNames { get; } = ["Model.QuestionPictureBase64"];
+    public string[] HidePropertyNames { get; } =
+    [
+        $"{nameof(Model)}.{nameof(Model.QuestionPictureBase64)}",
+        $"{nameof(Model)}.{nameof(Model.QuestionSmallPictureBase64)}"
+    ];
 }
 
 public class AddSimilarCommandHandler(IMapper mapper,

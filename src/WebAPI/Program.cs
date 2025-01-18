@@ -50,7 +50,6 @@ static void SetAppOptions(WebApplicationBuilder builder, out CultureInfo default
     builder.Configuration.GetSection("ByPassOptions").Get<ByPassOptions>();
     builder.Configuration.GetSection("AppOptions").Get<Domain.Constants.AppOptions>();
     Domain.Constants.AppOptions.CreateFolder();
-    if (Environment.OSVersion.Platform == PlatformID.Unix) RunLinuxCommands();
 }
 
 static void Services(WebApplicationBuilder builder)
@@ -92,9 +91,14 @@ static void Services(WebApplicationBuilder builder)
 
     builder.Services.Configure<FormOptions>(options =>
     {
-        options.MultipartBodyLengthLimit = 524288000;
+        options.MultipartBodyLengthLimit = 512 * 1024 * 1024;
         options.ValueLengthLimit = 1024 * 1024 * 1024;
         options.MemoryBufferThreshold = 1024 * 1024 * 1024;
+    });
+
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.Limits.MaxRequestBodySize = 512 * 1024 * 1024;
     });
 
     SwaggerAndToken(builder);
@@ -280,50 +284,6 @@ static void Delegates()
     UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateQuestion;
     AddSimilarAnswer = ServiceTools.GetService<IQuestionService>().AddSimilar;
 }
-
-static void RunLinuxCommands()
-{
-    string[] commands =
-    [
-            $"sudo chown -R root:root {Directory.GetParent(Domain.Constants.AppOptions.ProfilePictureFolderPath).FullName}",
-            $"sudo chown -R root:root {Domain.Constants.AppOptions.HomeworkFolderPath}",
-            $"sudo chown -R root:root {Domain.Constants.AppOptions.HomeworkAnswerFolderPath}",
-            $"sudo chown -R root:root {Domain.Constants.AppOptions.BookPath}",
-            $"sudo chmod -R 755 {Directory.GetParent(Domain.Constants.AppOptions.ProfilePictureFolderPath).FullName}",
-            $"sudo chmod -R 755 {Domain.Constants.AppOptions.HomeworkFolderPath}",
-            $"sudo chmod -R 755 {Domain.Constants.AppOptions.HomeworkAnswerFolderPath}",
-            $"sudo chmod -R 755 {Domain.Constants.AppOptions.BookPath}"
-    ];
-
-    foreach (var command in commands)
-    {
-        ExecuteBashCommand(command);
-    }
-}
-
-static void ExecuteBashCommand(string command)
-{
-    var processInfo = new ProcessStartInfo("bash", $"-c \"{command}\"")
-    {
-        RedirectStandardOutput = true,
-        RedirectStandardError = true,
-        UseShellExecute = false,
-        CreateNoWindow = true
-    };
-
-    using var process = new Process { StartInfo = processInfo };
-    process.Start();
-    process.WaitForExit();
-
-    string output = process.StandardOutput.ReadToEnd();
-    string error = process.StandardError.ReadToEnd();
-
-    if (!string.IsNullOrEmpty(error))
-    {
-        Console.WriteLine($"Error: {error}");
-    }
-}
-
 
 /*
 app.Use(async (context, next) =>

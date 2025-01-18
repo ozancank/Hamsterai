@@ -210,7 +210,6 @@ public class AddManuelCommandHandler(IQuestionDal questionDal,
                     }, cancellationToken: cancellationToken);
                     return result;
                 }
-            case QuestionType.None:
             default:
                 break;
         }

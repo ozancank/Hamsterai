@@ -15,7 +15,7 @@ public sealed class UpdateUserCommand : IRequest<GetUserModel>, ISecuredRequest<
 {
     public required UpdateUserModel Model { get; set; }
     public UserTypes[] Roles { get; } = [];
-    public string[] HidePropertyNames { get; } = ["UpdateUserModel.Password", "UpdateUserModel.ProfilePictureBase64"];
+    public string[] HidePropertyNames { get; } = [$"{nameof(Model)}.{nameof(Model.ProfilePictureBase64)}"];
     public bool AllowByPass => false;
     public string[] CacheKey { get; } = [$"^{Strings.CacheStatusAndLicence}"];
 }

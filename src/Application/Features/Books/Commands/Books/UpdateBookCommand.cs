@@ -14,7 +14,7 @@ public class UpdateBookCommand : IRequest<GetBookModel>, ISecuredRequest<UserTyp
     public required UpdateBookModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School];
     public bool AllowByPass => false;
-    public string[] HidePropertyNames { get; } = ["UpdateBookModel.File"];
+    public string[] HidePropertyNames { get; } = [$"{nameof(Model)}.{nameof(Model.File)}"];
 }
 
 public class UpdateBookCommandHandler(IMapper mapper,
@@ -32,7 +32,7 @@ public class UpdateBookCommandHandler(IMapper mapper,
 
         var book = await bookDal.GetAsync(x => x.Id == request.Model.Id && x.SchoolId == request.Model.SchoolId, cancellationToken: cancellationToken);
 
-        BookRules.BookShouldExistsAndActive(book);
+        await BookRules.BookShouldExistsAndActive(book);
 
         await schoolRules.SchoolShouldExistsAndActive(request.Model.SchoolId);
         await lessonRules.LessonShouldExistsAndActive(request.Model.LessonId);
@@ -61,7 +61,6 @@ public class UpdateBookCommandHandler(IMapper mapper,
         book.UpdateDate = date;
         book.UpdateUser = commonService.HttpUserId;
         book.PageCount = pageCount;
-        book.Year = book.Year == 0 ? null : book.Year;
 
         var deleteList = await bookClassRoomDal.GetListAsync(predicate: x => x.BookId == book.Id, cancellationToken: cancellationToken);
 
@@ -126,7 +125,7 @@ public class UpdateBookCommandValidator : AbstractValidator<UpdateBookCommand>
         RuleFor(x => x.Model.Name.EmptyOrTrim()).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Name, "2"]);
         RuleFor(x => x.Model.Name.EmptyOrTrim()).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Name, "100"]);
 
-        RuleFor(x => x.Model.Year).InclusiveBetween((short)1900, (short)3000).When(x => x.Model.Year != 0).WithMessage(Strings.DynamicBetween, [Strings.Year, "1900", "3000"]);
+        RuleFor(x => x.Model.Year).InclusiveBetween((short)1900, (short)3000).WithMessage(Strings.DynamicBetween, [Strings.Year, "1900", "3000"]);
 
         RuleFor(x => Path.GetExtension(x.Model.File != null ? x.Model.File.FileName.ToLowerInvariant() : string.Empty)).Equal(".pdf").When(x => x.Model.File != null).WithMessage(Strings.DynamicExtension, [Strings.File, ".pdf"]);
         RuleFor(x => x.Model.File != null ? x.Model.File.ContentType : string.Empty).Equal("application/pdf").When(x => x.Model.File != null).WithMessage(Strings.DynamicFileType, [Strings.File, "pdf"]);

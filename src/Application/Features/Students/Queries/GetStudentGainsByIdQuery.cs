@@ -11,7 +11,7 @@ public class GetStudentGainsByIdQuery : IRequest<GetStudentGainsModel>, ISecured
 {
     public required StudentGainsRequestModel Model { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher, UserTypes.Person];
+    public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.School, UserTypes.Teacher, UserTypes.Student, UserTypes.Person];
     public bool AllowByPass => false;
 }
 
@@ -30,7 +30,9 @@ public class GetStudentGainsByIdQueryHandler(ICommonService commonService,
                 ? x => x.Id == request.Model.UserId
                 : userType == UserTypes.Person
                     ? x => x.Type == UserTypes.Person && x.Id == commonService.HttpUserId
-                    : x => x.Type == UserTypes.Student && (x.ConnectionId == request.Model.StudentId || x.Id == request.Model.UserId) && x.SchoolId == commonService.HttpSchoolId,
+                    : userType == UserTypes.Student
+                        ? x => x.Type == UserTypes.Student && x.Id == commonService.HttpUserId
+                        : x => x.Type == UserTypes.Student && (x.ConnectionId == request.Model.StudentId || x.Id == request.Model.UserId) && x.SchoolId == commonService.HttpSchoolId,
             cancellationToken: cancellationToken);
         await UserRules.UserShouldExistsAndActive(user);
 

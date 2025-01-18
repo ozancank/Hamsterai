@@ -8,6 +8,9 @@ public class QuestionResponseModel : IResponseModel
     [JsonPropertyName("Soru_OCR")]
     public string? QuestionText { get; set; }
 
+    [JsonPropertyName("extracted_text")]
+    public string? QuestionText2 { get; set; }
+
     [JsonPropertyName("Cevap_Text")]
     public string? AnswerText { get; set; }
 

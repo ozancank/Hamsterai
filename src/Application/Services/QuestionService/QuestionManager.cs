@@ -60,8 +60,9 @@ public class QuestionManager(ICommonService commonService,
                         LessonName = question.Lesson!.Name,
                         UserId = question.CreateUser,
                         ExcludeQuiz = question.ExcludeQuiz,
-                        AIUrl = tryLessonIds.Contains(question.LessonId) ? "http://16.170.214.30:8000" : aiUrl
-                        //AIUrl = aiUrl
+                        AIUrl = tryLessonIds.Contains(question.LessonId) ? "http://16.170.214.30:8000" : aiUrl,
+                        //AIUrl = aiUrl,
+                        QuestionType = question.Type
                     };
 
                     if (question.Status == QuestionStatus.ControlledForOcr)

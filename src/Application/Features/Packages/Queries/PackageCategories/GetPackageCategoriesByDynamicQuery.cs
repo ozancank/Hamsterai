@@ -45,7 +45,7 @@ public class GetPackageCategoriesByDynamicQueryHandler(IMapper mapper,
                 configurationProvider: mapper.ConfigurationProvider,
                 cancellationToken: cancellationToken);
 
-            item.SubCategoryIds = item.SubCategories.Select(x => x.Id).ToList();
+            item.SubCategoryIds = [.. item.SubCategories.Select(x => x.Id)];
         }
 
         return list;

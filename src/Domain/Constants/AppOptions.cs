@@ -1,4 +1,8 @@
-﻿namespace Domain.Constants;
+﻿using OCK.Core.Extensions;
+using OCK.Core.Utilities;
+using System.Diagnostics;
+
+namespace Domain.Constants;
 
 public class AppOptions
 {
@@ -52,43 +56,29 @@ public class AppOptions
 
     public static void CreateFolder()
     {
-        ProfilePictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ProfilePicturePath);
-        if (!Directory.Exists(ProfilePictureFolderPath)) Directory.CreateDirectory(ProfilePictureFolderPath);
+        var properties = typeof(AppOptions).GetProperties()
+            .Where(p => p.Name.EndsWith("FolderPath") && p.PropertyType == typeof(string));
 
-        AnswerPictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, AnswerPicturePath);
-        if (!Directory.Exists(AnswerPictureFolderPath)) Directory.CreateDirectory(AnswerPictureFolderPath);
+        foreach (var property in properties)
+        {
+            var pathPropertyName = property.Name.Replace("FolderPath", "Path");
+            var pathProperty = typeof(AppOptions).GetProperty(pathPropertyName);
 
-        QuestionPictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, QuestionPicturePath);
-        if (!Directory.Exists(QuestionPictureFolderPath)) Directory.CreateDirectory(QuestionPictureFolderPath);
+            if (pathProperty != null)
+            {
+                var relativePath = pathProperty.GetValue(null)?.ToString() ?? string.Empty;
+                var fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath);
+                property.SetValue(null, fullPath);
 
-        QuestionSmallPictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, QuestionSmallPicturePath);
-        if (!Directory.Exists(QuestionSmallPictureFolderPath)) Directory.CreateDirectory(QuestionSmallPictureFolderPath);
+                if (!Directory.Exists(fullPath)) Directory.CreateDirectory(fullPath);
 
-        QuestionThumbnailFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, QuestionThumbnailPath);
-        if (!Directory.Exists(QuestionThumbnailFolderPath)) Directory.CreateDirectory(QuestionThumbnailFolderPath);
+                if (Environment.OSVersion.IsUnix())
+                {
+                    UnixHelper.ExecuteBashCommand($"sudo chown -R root:root {fullPath}");
+                    UnixHelper.ExecuteBashCommand($"sudo chmod -R 755 {fullPath}");
+                }
+            }
+        }
 
-        SimilarQuestionPictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SimilarQuestionPicturePath);
-        if (!Directory.Exists(SimilarQuestionPictureFolderPath)) Directory.CreateDirectory(SimilarQuestionPictureFolderPath);
-
-        SimilarAnswerPictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SimilarAnswerPicturePath);
-        if (!Directory.Exists(SimilarAnswerPictureFolderPath)) Directory.CreateDirectory(SimilarAnswerPictureFolderPath);
-
-        QuizQuestionPictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, QuizQuestionPicturePath);
-        if (!Directory.Exists(QuizQuestionPictureFolderPath)) Directory.CreateDirectory(QuizQuestionPictureFolderPath);
-
-        QuizAnswerPictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, QuizAnswerPicturePath);
-        if (!Directory.Exists(QuizAnswerPictureFolderPath)) Directory.CreateDirectory(QuizAnswerPictureFolderPath);
-
-        PackagePictureFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, PackagePicturePath);
-        if (!Directory.Exists(PackagePictureFolderPath)) Directory.CreateDirectory(PackagePictureFolderPath);
-
-        HomeworkFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, HomeworkPath);
-        if (!Directory.Exists(HomeworkFolderPath)) Directory.CreateDirectory(HomeworkFolderPath);
-
-        HomeworkAnswerFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, HomeworkAnswerPath);
-        if (!Directory.Exists(HomeworkAnswerFolderPath)) Directory.CreateDirectory(HomeworkAnswerFolderPath);
-
-        BookFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, BookPath);
-        if (!Directory.Exists(BookFolderPath)) Directory.CreateDirectory(BookFolderPath);
     }
 }

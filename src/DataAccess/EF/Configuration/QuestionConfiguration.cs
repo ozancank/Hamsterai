@@ -34,6 +34,7 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
         builder.Property(e => e.SendQuizDate).HasColumnName("SendQuizDate").HasDefaultValue(AppStatics.MilleniumDate).HasColumnOrder(25).IsRequired();
         builder.Property(e => e.SimilarId).HasColumnName("SimilarId").HasColumnOrder(26);
         builder.Property(e => e.ManuelSendAgain).HasColumnName("ManuelSendAgain").HasDefaultValue(false).HasColumnOrder(27).IsRequired();
+        builder.Property(e => e.Type).HasColumnName("Type").HasDefaultValue(QuestionType.Question).HasColumnOrder(28).IsRequired();
 
         builder.HasOne(x => x.User).WithMany(x => x.Questions).HasForeignKey(x => x.CreateUser).HasPrincipalKey(x => x.Id);
         builder.HasOne(x => x.Lesson).WithMany(x => x.Questions).HasForeignKey(x => x.LessonId).HasPrincipalKey(x => x.Id);

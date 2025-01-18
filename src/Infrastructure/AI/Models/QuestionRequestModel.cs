@@ -1,4 +1,5 @@
-﻿using OCK.Core.Interfaces;
+﻿using Domain.Constants;
+using OCK.Core.Interfaces;
 using System.Text.Json.Serialization;
 
 namespace Infrastructure.AI.Models;

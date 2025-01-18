@@ -6,4 +6,5 @@ public enum QuestionType : byte
     Question = 1,
     Similar = 2,
     Quiz = 3,
+    FindMistake = 4,
 }

@@ -1,4 +1,5 @@
-﻿using OCK.Core.Interfaces;
+﻿using Domain.Constants;
+using OCK.Core.Interfaces;
 
 namespace Infrastructure.AI;
 
@@ -12,4 +13,5 @@ public sealed class QuestionApiModel : IRequestModel
     public string? QuestionText { get; set; }
     public bool ExcludeQuiz { get; set; }
     public string? AIUrl { get; set; }
+    public QuestionType QuestionType { get; set; } = QuestionType.Question;
 }

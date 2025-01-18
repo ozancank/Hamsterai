@@ -15,7 +15,7 @@ public class AddRangeQuestionCommand : IRequest<List<GetQuestionModel>>, ISecure
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator];
     public bool AllowByPass => false;
-    public string[] HidePropertyNames { get; } = ["Model.QuestionPictureBase64"];
+    public string[] HidePropertyNames { get; } = [$"{nameof(Models)}"];
 }
 
 public class AddRangeQuestionCommandHandler(IMapper mapper,
@@ -74,6 +74,7 @@ public class AddRangeQuestionCommandHandler(IMapper mapper,
                 RightOption = null,
                 ExcludeQuiz = false,
                 ExistsVisualContent = item.IsVisual,
+                Type = item.Type.IfValue(QuestionType.None, QuestionType.Question),
             };
 
             questions.Add(question);

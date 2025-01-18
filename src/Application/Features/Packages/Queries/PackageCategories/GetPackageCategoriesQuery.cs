@@ -33,7 +33,7 @@ public class GetPackageCategoriesQueryHandler(IMapper mapper,
 
         foreach (var item in list.Items)
         {
-            item.Packages = item.Packages.Where(x => x.IsActive && (!request.ForWeb || x.IsWebVisible)).ToList();
+            item.Packages = [.. item.Packages.Where(x => x.IsActive && (!request.ForWeb || x.IsWebVisible))];
 
             if (item.ParentId > 0) continue;
             {
@@ -50,7 +50,7 @@ public class GetPackageCategoriesQueryHandler(IMapper mapper,
                 configurationProvider: mapper.ConfigurationProvider,
                 cancellationToken: cancellationToken);
 
-            item.SubCategoryIds = item.SubCategories.Where(x => !request.ForWeb || (x.IsWebVisible && x.IsActive)).Select(x => x.Id).ToList();
+            item.SubCategoryIds = [.. item.SubCategories.Where(x => !request.ForWeb || (x.IsWebVisible && x.IsActive)).Select(x => x.Id)];
         }
 
         return list;

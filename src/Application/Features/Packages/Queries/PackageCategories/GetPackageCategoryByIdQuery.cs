@@ -31,7 +31,7 @@ public class GetPackageCategoryByIdQueryHandler(IMapper mapper,
         if (request.ThrowException) await PackageRules.PackageShouldExists(entity);
 
         if (request.ForWeb)
-            entity.Packages = entity.Packages.Where(x => x.IsActive && x.IsWebVisible).ToList();
+            entity.Packages = [.. entity.Packages.Where(x => x.IsActive && x.IsWebVisible)];
 
         if (entity.ParentId > 0)
         {
@@ -48,7 +48,7 @@ public class GetPackageCategoryByIdQueryHandler(IMapper mapper,
                 configurationProvider: mapper.ConfigurationProvider,
                 cancellationToken: cancellationToken);
 
-        entity.SubCategoryIds = entity.SubCategories.Where(x => !request.ForWeb || (x.IsWebVisible && x.IsActive)).Select(x => x.Id).ToList();
+        entity.SubCategoryIds = [.. entity.SubCategories.Where(x => !request.ForWeb || (x.IsWebVisible && x.IsActive)).Select(x => x.Id)];
 
         return entity;
     }

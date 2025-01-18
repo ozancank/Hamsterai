@@ -14,7 +14,7 @@ public class AddBookCommand : IRequest<GetBookModel>, ISecuredRequest<UserTypes>
     public required AddBookModel Model { get; set; }
     public UserTypes[] Roles { get; } = [UserTypes.School];
     public bool AllowByPass => false;
-    public string[] HidePropertyNames { get; } = ["AddBookModel.File"];
+    public string[] HidePropertyNames { get; } = [$"{nameof(Model)}.{nameof(Model.File)}"];
 }
 
 public class AddBookCommandHandler(IMapper mapper,
@@ -58,7 +58,6 @@ public class AddBookCommandHandler(IMapper mapper,
         book.UpdateDate = date;
         book.UpdateUser = commonService.HttpUserId;
         book.PageCount = (short)pageCount;
-        book.Year = book.Year == 0 ? null : book.Year;
 
         List<RBookClassRoom> bookClassRooms = [];
 
@@ -119,7 +118,7 @@ public class AddBookCommandValidator : AbstractValidator<AddBookCommand>
         RuleFor(x => x.Model.Name.EmptyOrTrim()).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Name, "2"]);
         RuleFor(x => x.Model.Name.EmptyOrTrim()).MaximumLength(100).WithMessage(Strings.DynamicMaxLength, [Strings.Name, "100"]);
 
-        RuleFor(x => x.Model.Year).InclusiveBetween((short)1900, (short)3000).When(x => x.Model.Year != 0).WithMessage(Strings.DynamicBetween, [Strings.Year, "1900", "3000"]);
+        RuleFor(x => x.Model.Year).InclusiveBetween((short)1900, (short)3000).WithMessage(Strings.DynamicBetween, [Strings.Year, "1900", "3000"]);
 
         RuleFor(x => x.Model.File).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.File]);
         RuleFor(x => Path.GetExtension(x.Model.File != null ? x.Model.File.FileName.ToLowerInvariant() : string.Empty)).Equal(".pdf").WithMessage(Strings.DynamicExtension, [Strings.File, ".pdf"]);

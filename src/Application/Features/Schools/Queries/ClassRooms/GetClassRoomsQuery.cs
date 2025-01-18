@@ -45,7 +45,7 @@ public class GetClassRoomsQueryHandler(IMapper mapper,
                 cancellationToken: cancellationToken);
             await TeacherRules.TeacherShouldExists(teacher);
 
-            result.Items = result.Items.Where(x => teacher.ClassRoomId.Any(a => a == x.Id)).ToList();
+            result.Items = [.. result.Items.Where(x => teacher.ClassRoomId.Any(a => a == x.Id))];
         }
 
         return result;
