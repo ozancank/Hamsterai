@@ -80,6 +80,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                if (content.Contains("\"error\"")) throw new ExternalApiException((content.Trim("{", "}") ?? string.Empty));
                 answer = JsonSerializer.Deserialize<QuestionResponseModel>(content, _options) ?? throw new ExternalApiException(Strings.DynamicNotNull, nameof(answer));
                 if (baseUrl.Contains("16.170.214.30")) answer.RightOption = "A";
                 if (!model.ExcludeQuiz)

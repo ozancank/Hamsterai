@@ -13,7 +13,7 @@ public class GetStudentByIdQuery : IRequest<GetStudentModel?>, ISecuredRequest<U
     public bool ThrowException { get; set; } = true;
     public bool Tracking { get; set; } = false;
 
-    public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher];
+    public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher, UserTypes.Student];
     public bool AllowByPass => false;
 }
 
@@ -24,6 +24,10 @@ public class GetStudentByIdQueryHandler(IMapper mapper,
 {
     public async Task<GetStudentModel?> Handle(GetStudentByIdQuery request, CancellationToken cancellationToken)
     {
+        var studentId = request.Id;
+        if (commonService.HttpUserType == UserTypes.Student) studentId = commonService.HttpConnectionId!.Value;
+
+
         var student = await studentDal.GetAsyncAutoMapper<GetStudentModel>(
             enableTracking: request.Tracking,
             predicate: x => x.Id == request.Id && (commonService.HttpUserType == UserTypes.Administator || x.ClassRoom!.SchoolId == commonService.HttpSchoolId),

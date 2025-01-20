@@ -19,5 +19,6 @@ public class GetStudentModel : IResponseModel
     public string? ClassName { get; set; }
     public List<string> TeacherNames { get; set; } = [];
     public long UserId { get; set; }
-    public int SchoolId { get; set; }    
+    public int SchoolId { get; set; }
+    public string? SchoolName { get; set; }
 }
