@@ -10,7 +10,7 @@ public class PassiveBookCommand : IRequest<bool>, ISecuredRequest<UserTypes>, IL
 {
     public required int BookId { get; set; }
 
-    public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.Teacher];
+    public UserTypes[] Roles { get; } = [UserTypes.School];
     public bool AllowByPass => false;
     public string[] HidePropertyNames { get; } = [];
 }

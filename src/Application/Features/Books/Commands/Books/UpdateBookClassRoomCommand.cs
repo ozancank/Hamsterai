@@ -22,9 +22,9 @@ public class UpdateBookClassRoomCommandHandler(IMapper mapper,
                                                IRBookClassRoomDal bookClassRoomDal,
                                                ClassRoomRules classRoomRules,
                                                SchoolRules schoolRules,
-                                               BookRules bookRules) : IRequestHandler<UpdateBookCommand, GetBookModel>
+                                               BookRules bookRules) : IRequestHandler<UpdateBookClassRoomCommand, GetBookModel>
 {
-    public async Task<GetBookModel> Handle(UpdateBookCommand request, CancellationToken cancellationToken)
+    public async Task<GetBookModel> Handle(UpdateBookClassRoomCommand request, CancellationToken cancellationToken)
     {
         if (commonService.HttpUserType == UserTypes.School) request.Model.SchoolId = commonService.HttpSchoolId ?? 0;
 

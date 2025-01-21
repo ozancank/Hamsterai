@@ -253,7 +253,7 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
             enableTracking: false,
             selector: x => x.Name,
             cancellationToken: cancellationToken);
-        var result = lessonNames.Select(x => x.ToSlug('_'))!;
+        var result = lessonNames.Select(x => x.ToSlug('_', true))!;
         return string.Join(",", result);
     }
 }

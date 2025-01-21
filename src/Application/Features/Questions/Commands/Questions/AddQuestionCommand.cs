@@ -3,6 +3,7 @@ using Application.Features.Questions.Models.Questions;
 using Application.Features.Questions.Rules;
 using Application.Services.CommonService;
 using MediatR;
+using Newtonsoft.Json;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 
@@ -71,10 +72,10 @@ public class AddQuestionCommandHandler(IMapper mapper,
             TryCount = 0,
             GainId = null,
             RightOption = null,
-            ExcludeQuiz = false,
             ExistsVisualContent = request.Model.IsVisual,
             Type = request.Model.Type.IfValue(QuestionType.None, QuestionType.Question),
         };
+        question.ExcludeQuiz = !AppStatics.QuestionTypesForSender.Contains(question.Type);
 
         var added = await questionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
         var result = mapper.Map<GetQuestionModel>(added);

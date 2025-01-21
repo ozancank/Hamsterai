@@ -13,6 +13,8 @@ public class GetHomeworkStudentModel : IResponseModel
     public string? StudentName { get; set; }
     public string? HomeworkId { get; set; }
     public string? AnswerPath { get; set; }
+    public string? Title { get; set; }
+    public string? Description { get; set; }
     public HomeworkStatus Status { get; set; }
 
     public GetHomeworkForStudentModel? Homework { get; set; }

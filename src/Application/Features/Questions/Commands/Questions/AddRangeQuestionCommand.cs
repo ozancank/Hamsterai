@@ -2,7 +2,6 @@
 using Application.Features.Questions.Models.Questions;
 using Application.Features.Questions.Rules;
 using Application.Services.CommonService;
-using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
@@ -72,10 +71,10 @@ public class AddRangeQuestionCommandHandler(IMapper mapper,
                 TryCount = 0,
                 GainId = null,
                 RightOption = null,
-                ExcludeQuiz = false,
                 ExistsVisualContent = item.IsVisual,
                 Type = item.Type.IfValue(QuestionType.None, QuestionType.Question),
             };
+            question.ExcludeQuiz = !AppStatics.QuestionTypesForSender.Contains(question.Type);
 
             questions.Add(question);
         }

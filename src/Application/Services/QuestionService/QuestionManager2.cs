@@ -11,13 +11,13 @@ using OneOf;
 
 namespace Application.Services.QuestionService;
 
-public class QuestionManager(ICommonService commonService,
-                             INotificationService notificationService,
-                             IDbContextFactory<HamsteraiDbContext> contextFactory,
-                             IGainService gainService,
-                             IQuestionApi questionApi,
-                             ISimilarDal similarDal,
-                             QuizRules quizRules) : IQuestionService
+public class QuestionManager2(ICommonService commonService,
+                              INotificationService notificationService,
+                              IDbContextFactory<HamsteraiDbContext> contextFactory,
+                              IGainService gainService,
+                              IQuestionApi questionApi,
+                              ISimilarDal similarDal,
+                              QuizRules quizRules) : IQuestionService
 {
     public async Task SendQuestions(CancellationToken cancellationToken)
     {
@@ -50,6 +50,9 @@ public class QuestionManager(ICommonService commonService,
                 await AppStatics.QuestionSemaphore.WaitAsync(cancellationToken);
                 try
                 {
+                    var aiUrl = AppOptions.AIDefaultUrls.Length <= question.Lesson!.AIUrlIndex ? AppOptions.AIDefaultUrls[0] : AppOptions.AIDefaultUrls[question.Lesson!.AIUrlIndex];
+                    int[] tryLessonIds = [49,58];
+                    
                     var model = new QuestionApiModel
                     {
                         Id = question.Id,
@@ -57,8 +60,18 @@ public class QuestionManager(ICommonService commonService,
                         LessonName = question.Lesson!.Name,
                         UserId = question.CreateUser,
                         ExcludeQuiz = question.ExcludeQuiz,
+                        AIUrl = tryLessonIds.Contains(question.LessonId) ? "http://16.170.214.30:8000" : aiUrl,
+                        //AIUrl = aiUrl,
                         QuestionType = question.Type
                     };
+
+                    if (question.Status == QuestionStatus.ControlledForOcr)
+                    {
+                        model.QuestionText = question.QuestionText;
+                        Console.WriteLine($"{methodName} - SendText: {DateTime.Now} -- {model.Id} -- QuestionText:{question.QuestionText.EmptyOrTrim().Length} -- AI:{model.AIUrl}");
+                        await questionApi.AskQuestionWithText(model);
+                        return;
+                    }
 
                     var base64 = string.Empty;
                     var questionPicturePath = Path.Combine(AppOptions.QuestionSmallPictureFolderPath, question.QuestionPictureFileName.EmptyOrTrim());
@@ -78,28 +91,15 @@ public class QuestionManager(ICommonService commonService,
 
                     model.Base64 = base64;
 
-                    var aiUrl = AppOptions.AIDefaultUrls.Length <= question.Lesson!.AIUrlIndex ? AppOptions.AIDefaultUrls[0] : AppOptions.AIDefaultUrls[question.Lesson!.AIUrlIndex];
-                    int[] tryLessonIds = [49, 58];
-
-                    Console.WriteLine($"{methodName} - SendQuestion: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
-                    switch (question.Type)
+                    if (question.Status == QuestionStatus.WaitingForOcr && question.ExistsVisualContent)
                     {
-                        case QuestionType.Question:
-                        case QuestionType.FindMistake:
-                            model.AIUrl = tryLessonIds.Contains(question.LessonId) ? "http://16.170.214.30:8000" : aiUrl;
-                            await questionApi.AskQuestionWithImage(model);
-                            break;
-                        case QuestionType.MakeDescription:
-                            model.AIUrl = AppOptions.AIDefaultUrls[1];
-                            await questionApi.MakeDescriptionWithImage(model);
-                            break;
-                        case QuestionType.MakeSummary:
-                            model.AIUrl = AppOptions.AIDefaultUrls[1];
-                            await questionApi.MakeSummaryWithImage(model);
-                            break;
-                        default:
-                            throw new BusinessException(Strings.DynamicNotFound.Format($"{Strings.Question} {Strings.OfType}"));
+                        Console.WriteLine($"{methodName} - SendOcr: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl}");
+                        await questionApi.AskOcr(model);
+                        return;
                     }
+
+                    Console.WriteLine($"{methodName} - SendImage: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl}");
+                    await questionApi.AskQuestionWithImage(model);
 
                     model.AIUrl = AppOptions.AIDefaultUrls[2];
                     var visual = await questionApi.IsExistsVisualContent(model, cancellationToken);
@@ -228,8 +228,7 @@ public class QuestionManager(ICommonService commonService,
                           && x.Status == QuestionStatus.Answered
                           && x.QuestionText != string.Empty
                           && x.TryCount < AppOptions.AITryCount
-                          && x.CreateDate > AppOptions.ChangeDate
-                          && (x.Type == QuestionType.Question || x.Type == QuestionType.FindMistake))
+                          && x.CreateDate > AppOptions.ChangeDate)
                 .ToListAsync(cancellationToken);
 
             if (allQuestions.Count == 0) goto Quiz;
@@ -550,12 +549,7 @@ public class QuestionManager(ICommonService commonService,
             var questions = await context.Questions
                 .AsNoTracking()
                 .Include(x => x.Lesson)
-                .Where(x => x.Status == QuestionStatus.Answered
-                            && x.GainId == null
-                            && x.TryCount < AppOptions.AITryCount
-                            && x.CreateDate > AppOptions.ChangeDate
-                            && x.QuestionText != string.Empty
-                            && (x.Type == QuestionType.Question || x.Type == QuestionType.FindMistake))
+                .Where(x => x.Status == QuestionStatus.Answered && x.GainId == null && x.TryCount < AppOptions.AITryCount && x.CreateDate > AppOptions.ChangeDate && x.QuestionText != string.Empty)
                 .ToListAsync(cancellationToken);
 
             var similarQuestions = await context.Similars

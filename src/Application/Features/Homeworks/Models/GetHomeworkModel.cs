@@ -17,6 +17,8 @@ public class GetHomeworkModel : IResponseModel
     public string? FilePath { get; set; }
     public int? ClassRoomId { get; set; }
     public string? ClassName { get; set; }
+    public string? Title { get; set; }
+    public string? Description { get; set; }
 
     public List<GetHomeworkStudentModel> HomeworkStudents { get; set; } = [];
 }

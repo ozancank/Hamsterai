@@ -67,7 +67,8 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             var data = new QuestionRequestModel
             {
                 Question = model.Base64,
-                LessonName = model.LessonName?.ToSlug('_').Replace("__", "_") ?? string.Empty,
+                LessonName = model.LessonName.ToSlug('_', true),
+                QuestionType = model.QuestionType
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, url)
@@ -134,7 +135,8 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             var data = new QuestionRequestModel
             {
                 Question = model.QuestionText,
-                LessonName = model.LessonName?.ToSlug('_').Replace("__", "_") ?? string.Empty
+                LessonName = model.LessonName.ToSlug('_', true),
+                QuestionType = model.QuestionType
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, url)
@@ -153,7 +155,6 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
                 answer.AnswerImage = string.Empty;
                 answer.GainName = string.Empty;
                 answer.RightOption = "A";
-                answer.IsExistsVisualContent = true;
                 answer.OcrMethod = string.Empty;
 
                 if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
@@ -191,7 +192,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             var data = new QuestionRequestModel
             {
                 Question = model.Base64,
-                LessonName = model.LessonName?.ToSlug('_').Replace("__", "_") ?? string.Empty
+                LessonName = model.LessonName.ToSlug('_', true)
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, url)
@@ -248,7 +249,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             var data = new SimilarRequestModel
             {
                 QuestionText = model.QuestionText,
-                PackageName = model.LessonName?.ToSlug('_').Replace("__", "_") ?? string.Empty
+                PackageName = model.LessonName.ToSlug('_', true)
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, url)
@@ -311,7 +312,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             var data = new GainRequestModel
             {
                 QuestionText = model.QuestionText,
-                LessonName = model.LessonName?.ToSlug('_').Replace("__", "_") ?? string.Empty
+                LessonName = model.LessonName.ToSlug('_', true)
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, url)
@@ -361,7 +362,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             var data = new QuestionRequestModel
             {
                 Question = model.Base64,
-                LessonName = model.LessonName?.ToSlug('_').Replace("__", "_") ?? string.Empty
+                LessonName = model.LessonName.ToSlug('_', true)
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, url)
@@ -389,6 +390,123 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
         }
 
         return visual;
+    }
+
+    public async Task<QuestionResponseModel> MakeDescriptionWithImage(QuestionApiModel model, CancellationToken cancellationToken = default)
+    {
+        var methodName = nameof(MakeDescriptionWithImage);
+        var baseUrl = GetBaseUrl(model.AIUrl);
+        var answer = new QuestionResponseModel();
+        try
+        {
+            using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
+
+            var url = $"{baseUrl}/benzer/soraciklama";
+
+            var data = new QuestionRequestModel
+            {
+                Question = model.Base64,
+                LessonName = model.LessonName.ToSlug('_', true),
+                QuestionType = model.QuestionType
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"),
+            };
+
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                if (content.Contains("\"error\"")) throw new ExternalApiException((content.Trim("{", "}") ?? string.Empty));
+
+                answer.QuestionText = string.Empty;
+                answer.AnswerText = content.EmptyOrTrim();
+                answer.AnswerImage = string.Empty;
+                answer.GainName = string.Empty;
+                answer.RightOption = null;
+                answer.IsExistsVisualContent = false;
+                answer.OcrMethod = string.Empty;
+
+                if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
+                    await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId, model.LessonId, baseUrl));
+            }
+            else
+            {
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                throw new ExternalApiException(content.Trim("{", "}") ?? string.Empty);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{methodName} - Error: {ex.Message}");
+            var status = GetErrorQuestionStatus(ex);
+            await InfrastructureDelegates.UpdateQuestionOcrImage?.Invoke(answer, new(model.Id, status, model.UserId, model.LessonId, baseUrl, ex.Message))!;
+            LogError(loggerServiceBase, ex, model.UserId);
+        }
+
+        return answer;
+    }
+
+    public async Task<QuestionResponseModel> MakeSummaryWithImage(QuestionApiModel model, CancellationToken cancellationToken = default)
+    {
+        var methodName = nameof(MakeSummaryWithImage);
+        var baseUrl = GetBaseUrl(model.AIUrl);
+        var answer = new QuestionResponseModel();
+        try
+        {
+            using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
+
+            var url = $"{baseUrl}/benzer/sorozet";
+
+            var data = new QuestionRequestModel
+            {
+                Question = model.Base64,
+                LessonName = model.LessonName.ToSlug('_', true),
+                QuestionType = model.QuestionType
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"),
+            };
+
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                if (content.Contains("\"error\"")) throw new ExternalApiException((content.Trim("{", "}") ?? string.Empty));
+
+                answer.QuestionText = string.Empty;
+                answer.AnswerText = content.EmptyOrTrim();
+                answer.AnswerImage = string.Empty;
+                answer.GainName = string.Empty;
+                answer.RightOption = null;
+                answer.OcrMethod = string.Empty;
+
+                if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
+                    await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId, model.LessonId, baseUrl));
+            }
+            else
+            {
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                throw new ExternalApiException(content.Trim("{", "}") ?? string.Empty);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{methodName} - Error: {ex.Message}");
+            var status = GetErrorQuestionStatus(ex);
+            await InfrastructureDelegates.UpdateQuestionOcrImage?.Invoke(answer, new(model.Id, status, model.UserId, model.LessonId, baseUrl, ex.Message))!;
+            LogError(loggerServiceBase, ex, model.UserId);
+        }
+
+        return answer;
     }
 
     //public async Task<QuizResponseModel> GetQuizQuestions(QuizApiModel model)

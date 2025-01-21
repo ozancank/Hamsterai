@@ -11,4 +11,7 @@ public class QuestionRequestModel : IRequestModel
 
     [JsonPropertyName("ders")]
     public string? LessonName { get; set; }
+
+    [JsonPropertyName("question_type")]
+    public QuestionType QuestionType { get; set; }
 }

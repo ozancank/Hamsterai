@@ -29,7 +29,8 @@ public class GetQuestionsQueryHandler(IMapper mapper,
 
         var questions = await questionDal.GetPageListAsyncAutoMapper<GetQuestionModel>(
             predicate: x => x.CreateUser == commonService.HttpUserId && x.IsActive && (x.SendQuizDate <= DateTime.Now.AddDays(1) || !x.IsRead)
-                            && (request.Model.LessonId <= 0 || x.LessonId == request.Model.LessonId),
+                            && (request.Model.LessonId <= 0 || x.LessonId == request.Model.LessonId)
+                            && (request.Model.Type==QuestionType.None || x.Type==request.Model.Type),
             //&& x.CreateDate.Date >= request.Model.StartDate.Value.Date
             //&& x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddSeconds(-1),
             enableTracking: false,

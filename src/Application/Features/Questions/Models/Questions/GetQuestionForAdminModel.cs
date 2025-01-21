@@ -21,4 +21,5 @@ public class GetQuestionForAdminModel : IResponseModel
     public string? QuestionText { get; set; }
     public string? AnswerText { get; set; }
     public string? ErrorDescription { get; set; }
+    public QuestionType QuestionType { get; set; }
 }

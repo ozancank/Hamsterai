@@ -16,6 +16,10 @@ public interface IQuestionApi : IArtificialIntelligenceApi
 
     Task<bool> IsExistsVisualContent(QuestionApiModel model, CancellationToken cancellationToken = default);
 
+    Task<QuestionResponseModel> MakeDescriptionWithImage(QuestionApiModel model, CancellationToken cancellationToken = default);
+
+    Task<QuestionResponseModel> MakeSummaryWithImage(QuestionApiModel model, CancellationToken cancellationToken = default);
+
     //Task<QuizResponseModel> GetQuizQuestions(QuizApiModel model);
 
     //Task<QuizResponseModel> GetSimilarForQuiz(QuizApiModel model);

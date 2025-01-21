@@ -49,9 +49,9 @@ public class AddManuelCommandHandler(IQuestionDal questionDal,
             cancellationToken: cancellationToken);
         await LessonRules.LessonShouldExists(lessonName);
 
-        switch (request.Model.QuestionType)
+        switch (request.Model.Type)
         {
-            case QuestionType.Question:
+            case 1:
                 {
                     var requestQuestion = request.Model.Questions.First();
                     var fileNameQuestion = $"Q_{userId}_{lessonId}_{id}{extension}";
@@ -93,7 +93,7 @@ public class AddManuelCommandHandler(IQuestionDal questionDal,
                     var result = await questionDal.AddAsyncCallback(question, cancellationToken: cancellationToken);
                     return result;
                 }
-            case QuestionType.Similar:
+            case 2:
                 {
                     var requestQuestion = request.Model.Questions.First();
                     var fileNameSimilarQuestion = $"RQ_{userId}_{lessonId}_{id}{extension}";
@@ -132,7 +132,7 @@ public class AddManuelCommandHandler(IQuestionDal questionDal,
                     var result = await similarDal.AddAsyncCallback(similar, cancellationToken: cancellationToken);
                     return result;
                 }
-            case QuestionType.Quiz:
+            case 3:
                 {
                     var idPrefix = $"T-{lessonId}-{userId}-";
                     var quizId = $"{idPrefix}{date:yyddMMHHmmssfff}";
@@ -226,7 +226,7 @@ public class AddManuelCommandValidator : AbstractValidator<AddManuelCommand>
 
         RuleFor(x => x.Model).NotEmpty().WithMessage(Strings.InvalidValue);
 
-        RuleFor(x => x.Model.QuestionType).IsInEnum().WithMessage(Strings.DynamicNotEmpty, [$"{Strings.Question} {Strings.OfType}"]);
+        RuleFor(x => x.Model.Type).InclusiveBetween((byte)1, (byte)3).WithMessage(Strings.DynamicBetween, [Strings.Type, "1", "3"]);
 
         RuleFor(x => x.Model.UserId).GreaterThan(0).WithMessage(Strings.DynamicGreaterThan, [Strings.User, "0"]);
 

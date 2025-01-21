@@ -2,7 +2,7 @@
 
 public class AddManuelModel : IRequestModel
 {
-    public QuestionType QuestionType { get; set; }
+    public byte Type { get; set; }
     public long UserId { get; set; }
     public short LessonId { get; set; }
     public List<AddManuelQuestionModel> Questions { get; set; } = [];
