@@ -116,6 +116,6 @@ public class UpdatePackageCommandValidator : AbstractValidator<UpdatePackageComm
 
         RuleFor(x => x.Model.CategoryId).InclusiveBetween((byte)0, byte.MaxValue).WithMessage(Strings.DynamicBetween, [$"{Strings.Main} {Strings.Category}", "0", "255"]);
 
-        RuleFor(x => x.Model.QuestionCredit).GreaterThanOrEqualTo(0).WithMessage(Strings.DynamicGratherThanOrEqual, [$"{Strings.Question} {Strings.OfCount}", "0"]);
+        RuleFor(x => x.Model.QuestionCredit).GreaterThanOrEqualTo(0).WithMessage(Strings.DynamicGreaterThanOrEqual, [$"{Strings.Question} {Strings.OfCount}", "0"]);
     }
 }

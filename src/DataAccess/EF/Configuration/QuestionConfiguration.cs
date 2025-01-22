@@ -18,7 +18,7 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
         builder.Property(e => e.QuestionPictureExtension).HasColumnName("QuestionPictureExtension").HasMaxLength(10).HasColumnOrder(9).IsRequired();
         builder.Property(e => e.AnswerText).HasColumnName("AnswerText").HasColumnOrder(10).IsRequired();
         builder.Property(e => e.Status).HasColumnName("Status").HasColumnOrder(11).IsRequired();
-        builder.Property(e => e.AnswerPictureFileName).HasColumnName("AnswerPictureFileName").HasDefaultValue("").HasColumnOrder(12).IsRequired();
+        builder.Property(e => e.AnswerPictureFileName).HasColumnName("AnswerPictureFileName").HasDefaultValue(string.Empty).HasColumnOrder(12).IsRequired();
         builder.Property(e => e.AnswerPictureExtension).HasColumnName("AnswerPictureExtension").HasMaxLength(10).HasDefaultValue("").HasColumnOrder(13).IsRequired();
         builder.Property(e => e.IsRead).HasColumnName("IsRead").HasDefaultValue(false).HasColumnOrder(14).IsRequired();
         builder.Property(e => e.SendForQuiz).HasColumnName("SendForQuiz").HasDefaultValue(false).HasColumnOrder(15).IsRequired();

@@ -16,6 +16,7 @@ public struct Strings
     public const string XApiKey = "HaMsTerAI-Security";
     public const string AuthorizationDenied = "Bu işlem için yetkiniz bulunmamaktadır.";
     public const string ThumbnailName = "thumb.jpg";
+    public const string PostitDefaultColor = "F7DD00";
 
     public const string CacheStatusAndLicence = "CacheStatusAndLicence";
 
@@ -25,7 +26,7 @@ public struct Strings
     public const string DynamicMinLength = "{0} en az {1} karakter olmalıdır.";
     public const string DynamicMaxLength = "{0} en fazla {1} karakter olmalıdır.";
     public const string DynamicGreaterThan = "{0} {1} büyük olmalıdır.";
-    public const string DynamicGratherThanOrEqual = "{0} {1} büyük veya eşit olmalıdır.";
+    public const string DynamicGreaterThanOrEqual = "{0} {1} büyük veya eşit olmalıdır.";
     public const string DynamicLessThan = "{0} {1} küçük olmalıdır.";
     public const string DynamicLessThanOrEquals = "{0} {1} küçük veya eşit olmalıdır.";
     public const string DynamicBetween = "{0} {1} - {2} arasında olmalıdır.";
@@ -151,6 +152,9 @@ public struct Strings
     public const string NotUse = "Kullanılmıyor";
     public const string Publisher = "Yayınevi";
     public const string Book = "Kitap";
+    public const string Postit = "Post-it";
+    public const string Color = "Renk";
+    public const string Description = "Açıklama";
 
     //public const string LessonGroup = "Ders Grubu";
     public const string NoQuestionCredit = "Soru krediniz bulunmamaktadır.";

@@ -46,6 +46,7 @@ public static class DALServiceRegistration
         services.AddScoped<IPasswordTokenDal, PasswordTokenDal>();
         services.AddScoped<IPaymentDal, PaymentDal>();
         services.AddScoped<IPaymentSipayDal, PaymentSipayDal>();
+        services.AddScoped<IPostitDal, PostitDal>();
         services.AddScoped<IPublisherDal, PublisherDal>();
         services.AddScoped<IQuestionDal, QuestionDal>();
         services.AddScoped<IQuizDal, QuizDal>();

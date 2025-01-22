@@ -16,6 +16,7 @@ public class AppOptions
     public static string QuizQuestionPicturePath { get; set; } = string.Empty;
     public static string QuizAnswerPicturePath { get; set; } = string.Empty;
     public static string PackagePicturePath { get; set; } = string.Empty;
+    public static string PostitPicturePath { get; set; } = string.Empty;
     public static string HomeworkPath { get; set; } = string.Empty;
     public static string HomeworkAnswerPath { get; set; } = string.Empty;
     public static string BookPath { get; set; } = string.Empty;
@@ -50,6 +51,7 @@ public class AppOptions
     public static string QuizQuestionPictureFolderPath { get; set; } = string.Empty;
     public static string QuizAnswerPictureFolderPath { get; set; } = string.Empty;
     public static string PackagePictureFolderPath { get; set; } = string.Empty;
+    public static string PostitPictureFolderPath { get; set; } = string.Empty;
     public static string HomeworkFolderPath { get; set; } = string.Empty;
     public static string HomeworkAnswerFolderPath { get; set; } = string.Empty;
     public static string BookFolderPath { get; set; } = string.Empty;
