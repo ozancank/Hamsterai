@@ -45,7 +45,7 @@ public class PostitController : BaseController
     }
 
     [HttpPost("AddPostit")]
-    public async Task<IActionResult> AddPostit([FromForm] AddPostitModel model)
+    public async Task<IActionResult> AddPostit([FromBody] AddPostitModel model)
     {
         var command = new AddPostitCommand { Model = model };
         var result = await Mediator.Send(command);
@@ -53,7 +53,7 @@ public class PostitController : BaseController
     }
 
     [HttpPost("UpdatePostit")]
-    public async Task<IActionResult> UpdatePostit([FromForm] UpdatePostitModel model)
+    public async Task<IActionResult> UpdatePostit([FromBody] UpdatePostitModel model)
     {
         var command = new UpdatePostitCommand { Model = model };
         var result = await Mediator.Send(command);
