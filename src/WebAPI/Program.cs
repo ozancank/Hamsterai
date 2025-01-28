@@ -122,7 +122,8 @@ static async Task Middlewares(WebApplicationBuilder builder, WebApplication app,
 
     app.UseForwardedHeaders(new ForwardedHeadersOptions
     {
-        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+        //KnownProxies = { System.Net.IPAddress.Parse("185.195.255.123") }
     });
 
     if (!app.Environment.IsDevelopment())
@@ -275,7 +276,7 @@ static void StaticFiles(WebApplication app)
         });
     }
 
-    
+
 }
 
 static void Delegates()

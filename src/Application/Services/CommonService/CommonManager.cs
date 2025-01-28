@@ -56,21 +56,21 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         return filePath;
     }
 
-    public async Task<string> PictureConvertWithResize(string? base64, string? fileName, string? folder, int maxDimension = 512, CancellationToken cancellationToken = default)
+    public async Task<string> PictureConvertWithResize(string? base64, string? fileName, string? folder, int dimension = 512, CancellationToken cancellationToken = default)
     {
         if (base64.IsEmpty() || fileName.IsEmpty() || folder.IsEmpty()) return string.Empty;
-        if (maxDimension < 1) maxDimension = 512;
+        if (dimension < 1) dimension = 512;
 
         await UserRules.PictureShouldAllowedType(fileName!);
         var filePath = System.IO.Path.Combine(folder!, fileName!);
         var imageBytes = Convert.FromBase64String(base64!);
         await using var inputStream = new MemoryStream(imageBytes);
         var image = await Image.LoadAsync(inputStream, cancellationToken);
-        if (image.Width > maxDimension || image.Height > maxDimension)
+        if (image.Width > dimension || image.Height > dimension)
         {
             var (newWidth, newHeight) = image.Width > image.Height
-                ? (maxDimension, (int)(image.Height * (maxDimension / (float)image.Width)))
-                : ((int)(image.Width * (maxDimension / (float)image.Height)), maxDimension);
+                ? (dimension, (int)(image.Height * (dimension / (float)image.Width)))
+                : ((int)(image.Width * (dimension / (float)image.Height)), dimension);
 
             image.Mutate(x => x.Resize(newWidth, newHeight));
         }
@@ -134,7 +134,7 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         return filePath;
     }
 
-    public async Task<string> ImageToBase64WithResize(string? path, int maxDimension = 512, CancellationToken cancellationToken = default)
+    public async Task<string> ImageToBase64WithResize(string? path, int dimension = 512, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -142,27 +142,27 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
             await using var inputStream = File.OpenRead(path!);
             var image = await Image.LoadAsync(inputStream, cancellationToken);
 
-            if (image.Width > maxDimension || image.Height > maxDimension)
+            if (image.Width > dimension || image.Height > dimension)
             {
                 int newWidth, newHeight;
                 if (image.Width > image.Height)
                 {
-                    newWidth = maxDimension;
-                    newHeight = (int)(image.Height * (maxDimension / (float)image.Width));
+                    newWidth = dimension;
+                    newHeight = (int)(image.Height * (dimension / (float)image.Width));
                 }
                 else
                 {
-                    newHeight = maxDimension;
-                    newWidth = (int)(image.Width * (maxDimension / (float)image.Height));
+                    newHeight = dimension;
+                    newWidth = (int)(image.Width * (dimension / (float)image.Height));
                 }
 
                 image.Mutate(x => x.Resize(newWidth, newHeight));
             }
-            if (image.Width > maxDimension || image.Height > maxDimension)
+            if (image.Width > dimension || image.Height > dimension)
             {
                 var (newWidth, newHeight) = image.Width > image.Height
-                    ? (maxDimension, (int)(image.Height * (maxDimension / (float)image.Width)))
-                    : ((int)(image.Width * (maxDimension / (float)image.Height)), maxDimension);
+                    ? (dimension, (int)(image.Height * (dimension / (float)image.Width)))
+                    : ((int)(image.Width * (dimension / (float)image.Height)), dimension);
 
                 image.Mutate(x => x.Resize(newWidth, newHeight));
             }

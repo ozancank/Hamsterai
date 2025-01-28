@@ -2,7 +2,7 @@
 
 public class AppStatics
 {
-    public static readonly string[] Domains = [Strings.Domain, Strings.Domain2, "213.254.134.109"];
+    public static readonly string[] Domains = [Strings.Domain, Strings.Domain2, "213.254.134.109", "185.195.255.123"];
     public static readonly string[] EndPoints = ["/Payment/AddPaymentSipay", "/Common/GetCulture"];
 
     public static readonly SemaphoreSlim QuestionSemaphore = new(AppOptions.AIQuestionSenderCapacity);

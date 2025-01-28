@@ -4,8 +4,10 @@ using Application.Features.Lessons.Rules;
 using Application.Features.Schools.Rules;
 using Application.Services.CommonService;
 using MediatR;
+using OCK.Core.Constants;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
+using SixLabors.ImageSharp.Formats;
 
 namespace Application.Features.Books.Commands.Books;
 
@@ -46,8 +48,14 @@ public class AddBookCommandHandler(IMapper mapper,
         {
             pageCount = PdfTools.PdfPageCount(stream);
             PdfTools.SplitPdf(stream, folderPath);
-            var base64 = await PdfTools.PdfToImageBase64(stream, 0);
+            var base64 = await PdfTools.PdfToImageBase64(stream, 0, cancellationToken: cancellationToken);
             await ImageTools.Base64ToImageFile(base64, thumbPath, cancellationToken: cancellationToken);
+            for (var i = 0; i < pageCount; i++)
+            {
+                base64 = await PdfTools.PdfToImageBase64(stream, i, ImageTools.CreateEncoder(".webp"), cancellationToken);
+                await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i + 1}_.webp"), 288, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
+                await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i + 1}.webp"), 1298, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
+            }
         }
 
         var book = mapper.Map<Book>(request.Model);

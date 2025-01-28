@@ -30,10 +30,15 @@ public class AddPostitCommandHandler(IMapper mapper,
         var id = Guid.NewGuid();
         var date = DateTime.Now;
         var userId = commonService.HttpUserId;
-        var extension = Path.GetExtension(request.Model.PictureFileName);
-        var fileName = $"PT_{userId}_{request.Model.LessonId}_{id}{extension}";
-        var filePath = Path.Combine(AppOptions.PostitPictureFolderPath, fileName);
-        await ImageTools.Base64ToImageFile(request.Model.PictureBase64, filePath, cancellationToken);
+        var fileName = string.Empty;
+
+        if (request.Model.PictureBase64.IsNotEmpty() && request.Model.PictureFileName.IsNotEmpty())
+        {
+            var extension = Path.GetExtension(request.Model.PictureFileName);
+            fileName = $"PT_{userId}_{request.Model.LessonId}_{id}{extension}";
+            var filePath = Path.Combine(AppOptions.PostitPictureFolderPath, fileName);
+            await ImageTools.Base64ToImageFile(request.Model.PictureBase64, filePath, cancellationToken);
+        }
 
         var postit = new Postit
         {
@@ -66,8 +71,6 @@ public class AddPostitCommandValidator : AbstractValidator<AddPostitCommand>
         RuleFor(x => x.Model).NotEmpty().WithMessage(Strings.InvalidValue);
 
         RuleFor(x => x.Model.LessonId).InclusiveBetween((short)1, short.MaxValue).WithMessage(Strings.DynamicBetween, [Strings.Lesson, "1", short.MaxValue.ToString()]);
-
-        RuleFor(x => x.Model.PictureBase64).MustBeValidBase64().WithMessage(Strings.DynamicNotEmpty, [Strings.Postit]);
 
         RuleFor(x => x.Model.SortNo).GreaterThanOrEqualTo((short)0).WithMessage(Strings.DynamicGreaterThanOrEqual, [Strings.SortNo, "0"]);
     }

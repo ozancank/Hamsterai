@@ -4,6 +4,7 @@ using Application.Features.Lessons.Rules;
 using Application.Features.Schools.Rules;
 using Application.Services.CommonService;
 using MediatR;
+using OCK.Core.Constants;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 
@@ -48,12 +49,16 @@ public class UpdateBookCommandHandler(IMapper mapper,
             Directory.CreateDirectory(folderPath);
             var thumbPath = Path.Combine(folderPath, Strings.ThumbnailName);
 
-            using (var stream = request.Model.File!.OpenReadStream())
+            using var stream = request.Model.File!.OpenReadStream();
+            pageCount = (short)PdfTools.PdfPageCount(stream);
+            PdfTools.SplitPdf(stream, folderPath);
+            var base64 = await PdfTools.PdfToImageBase64(stream, 0, cancellationToken: cancellationToken);
+            await ImageTools.Base64ToImageFile(base64, thumbPath, cancellationToken: cancellationToken);
+            for (var i = 0; i < pageCount; i++)
             {
-                pageCount = (short)PdfTools.PdfPageCount(stream);
-                PdfTools.SplitPdf(stream, folderPath);
-                var base64 = await PdfTools.PdfToImageBase64(stream, 0);
-                await ImageTools.Base64ToImageFile(base64, thumbPath, cancellationToken: cancellationToken);
+                base64 = await PdfTools.PdfToImageBase64(stream, i, ImageTools.CreateEncoder(".webp"), cancellationToken);
+                await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i + 1}_.webp"), 288, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
+                await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i + 1}.webp"), 1298, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
             }
         }
 

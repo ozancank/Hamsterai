@@ -23,12 +23,28 @@ public class BookController : BaseController
         return result != null ? File(result, "application/pdf") : NotFound();
     }
 
+    [HttpGet("GetBookPageImage/{bookId}/{page}")]
+    public async Task<IActionResult> GetBookPageImage([FromRoute] int bookId, [FromRoute] short page)
+    {
+        var query = new GetBookPageImageQuery { BookId = bookId, Page = page, Extension = ".webp" };
+        var result = await Mediator.Send(query);
+        return result != null ? File(result, "image/webp") : NotFound();
+    }
+
     [HttpGet("GetBookThumb/{bookId}")]
     public async Task<IActionResult> GetBookThumb([FromRoute] int bookId)
     {
         var query = new GetBookThumbQuery { BookId = bookId };
         var result = await Mediator.Send(query);
         return result != null ? File(result, "image/jpeg") : NotFound();
+    }
+
+    [HttpGet("GetBookThumbSmall/{bookId}/{page}")]
+    public async Task<IActionResult> GetBookThumbSmall([FromRoute] int bookId, [FromRoute] short page)
+    {
+        var query = new GetBookThumbSmallQuery { BookId = bookId, Page = page, Extension=".webp" };
+        var result = await Mediator.Send(query);
+        return result != null ? File(result, "image/webp") : NotFound();
     }
 
     [HttpGet("GetBookById/{id}")]
