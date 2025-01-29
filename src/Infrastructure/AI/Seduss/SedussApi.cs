@@ -63,6 +63,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             var url = $"{baseUrl}/question/sor";
             if (baseUrl.Contains("185.195.255.124")) url = $"{baseUrl}/Soru_ITO";
             if (baseUrl.Contains("16.170.214.30")) url = $"{baseUrl}/matcher";
+            if (model.LessonId == 80) url = $"{baseUrl}/solve-geometry";
 
             var data = new QuestionRequestModel
             {
@@ -98,6 +99,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
 
                 if (answer.AnswerText.IsEmpty()) answer.AnswerText = answer.AnswerText2;
                 if (answer.AnswerText.IsEmpty()) answer.AnswerText = answer.AnswerText3;
+                if (answer.AnswerText.IsEmpty()) answer.AnswerText = answer.AnswerText4;
                 answer.AnswerText = answer.AnswerText.EmptyOrTrim().Replace("Cevap X", string.Empty, StringComparison.OrdinalIgnoreCase);
 
                 if (InfrastructureDelegates.UpdateQuestionOcrImage != null)

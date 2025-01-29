@@ -79,14 +79,17 @@ public class QuestionManager(ICommonService commonService,
                     model.Base64 = base64;
 
                     var aiUrl = AppOptions.AIDefaultUrls.Length <= question.Lesson!.AIUrlIndex ? AppOptions.AIDefaultUrls[0] : AppOptions.AIDefaultUrls[question.Lesson!.AIUrlIndex];
-                    int[] tryLessonIds = [49, 58];
+                    int[] tryLessonIds = [49, 58, 80]; // 49: LGS Matematik, 58: LGS Fen Bilimleri
 
                     Console.WriteLine($"{methodName} - SendQuestion: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                     switch (question.Type)
                     {
                         case QuestionType.Question:
-                        case QuestionType.FindMistake:
                             model.AIUrl = tryLessonIds.Contains(question.LessonId) ? "http://16.170.214.30:8000" : aiUrl;
+                            await questionApi.AskQuestionWithImage(model);
+                            break;
+                        case QuestionType.FindMistake:
+                            model.AIUrl = "http://16.170.214.30:8000";
                             await questionApi.AskQuestionWithImage(model);
                             break;
                         case QuestionType.MakeDescription:

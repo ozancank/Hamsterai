@@ -81,11 +81,13 @@ public class AddHomeworkCommandHandler(IMapper mapper,
 
         await homeworkRules.HomeworkShouldNotExistsById(homeworkId);
 
-        var fileName = $"{homeworkId}_{Guid.NewGuid()}{Path.GetExtension(request.Model.File!.FileName)}";
-        var filePath = Path.Combine(AppOptions.HomeworkFolderPath, fileName);
-
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        var fileName = string.Empty;
+        if (request.Model.File != null)
         {
+            fileName = $"{homeworkId}_{Guid.NewGuid()}{Path.GetExtension(request.Model.File!.FileName)}";
+            var filePath = Path.Combine(AppOptions.HomeworkFolderPath, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
             await request.Model.File.CopyToAsync(stream, cancellationToken);
         }
 
@@ -199,8 +201,6 @@ public class AddHomeworkCommandValidator : AbstractValidator<AddHomeworkCommand>
         RuleFor(x => x.Model).NotNull().WithMessage(Strings.InvalidValue);
 
         RuleFor(x => x.Model.LessonId).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Lesson]);
-
-        RuleFor(x => x.Model.File).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.File]);
 
         RuleFor(x => x.Model.Title.EmptyOrTrim()).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.Title]);
         RuleFor(x => x.Model.Title.EmptyOrTrim()).MinimumLength(2).WithMessage(Strings.DynamicMinLength, [Strings.Title, "2"]);

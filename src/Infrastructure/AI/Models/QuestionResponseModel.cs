@@ -20,8 +20,14 @@ public class QuestionResponseModel : IResponseModel
     [JsonPropertyName("ai_solution")]
     public string? AnswerText3 { get; set; }
 
+    [JsonPropertyName("explanation")]
+    public string? AnswerText4 { get; set; }
+
     [JsonPropertyName("Cevap_Image")]
     public string? AnswerImage { get; set; }
+
+    [JsonPropertyName("content")]
+    public string? AnswerImageGeo { get; set; }    
 
     [JsonPropertyName("Kazanim")]
     public string? GainName { get; set; }
