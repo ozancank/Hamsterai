@@ -7,7 +7,6 @@ using MediatR;
 using OCK.Core.Constants;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
-using SixLabors.ImageSharp.Formats;
 
 namespace Application.Features.Books.Commands.Books;
 
@@ -50,13 +49,17 @@ public class AddBookCommandHandler(IMapper mapper,
             PdfTools.SplitPdf(stream, folderPath);
             var base64 = await PdfTools.PdfToImageBase64(stream, 0, cancellationToken: cancellationToken);
             await ImageTools.Base64ToImageFile(base64, thumbPath, cancellationToken: cancellationToken);
-            for (var i = 0; i < pageCount; i++)
-            {
-                base64 = await PdfTools.PdfToImageBase64(stream, i, ImageTools.CreateEncoder(".webp"), cancellationToken);
-                await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i + 1}_.webp"), 288, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
-                await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i + 1}.webp"), 1298, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
-            }
+            Console.WriteLine($"Pdf {bookId} is converted to image.");
         }
+
+        for (var i = 1; i <= pageCount; i++)
+        {
+            var base64 = await PdfTools.PdfToImageBase64(Path.Combine(folderPath, $"{i}.pdf"), 0, ImageTools.CreateEncoder(".webp"), cancellationToken);
+            await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i}_.webp"), 288, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
+            await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i}.webp"), 1298, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
+            Console.WriteLine($"Pdf {bookId}: Page {i} is converted to image.");
+        }
+        Console.WriteLine($"Pdf {bookId} is splitted to images.");
 
         var book = mapper.Map<Book>(request.Model);
         book.Id = bookId;

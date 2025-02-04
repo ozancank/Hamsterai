@@ -49,17 +49,22 @@ public class UpdateBookCommandHandler(IMapper mapper,
             Directory.CreateDirectory(folderPath);
             var thumbPath = Path.Combine(folderPath, Strings.ThumbnailName);
 
-            using var stream = request.Model.File!.OpenReadStream();
-            pageCount = (short)PdfTools.PdfPageCount(stream);
-            PdfTools.SplitPdf(stream, folderPath);
-            var base64 = await PdfTools.PdfToImageBase64(stream, 0, cancellationToken: cancellationToken);
-            await ImageTools.Base64ToImageFile(base64, thumbPath, cancellationToken: cancellationToken);
-            for (var i = 0; i < pageCount; i++)
+            using (var stream = request.Model.File!.OpenReadStream())
             {
-                base64 = await PdfTools.PdfToImageBase64(stream, i, ImageTools.CreateEncoder(".webp"), cancellationToken);
-                await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i + 1}_.webp"), 288, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
-                await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i + 1}.webp"), 1298, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
+                pageCount = (short)PdfTools.PdfPageCount(stream);
+                PdfTools.SplitPdf(stream, folderPath);
+                var base64 = await PdfTools.PdfToImageBase64(stream, 0, cancellationToken: cancellationToken);
+                await ImageTools.Base64ToImageFile(base64, thumbPath, cancellationToken: cancellationToken);
+                Console.WriteLine($"Pdf {book.Id} is converted to image.");
             }
+            for (var i = 1; i <= pageCount; i++)
+            {
+                var base64 = await PdfTools.PdfToImageBase64(Path.Combine(folderPath, $"{i}.pdf"), 0, ImageTools.CreateEncoder(".webp"), cancellationToken);
+                await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i}_.webp"), 288, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
+                await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i}.webp"), 1298, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
+                Console.WriteLine($"Pdf {book.Id}: Page {i} is converted to image.");
+            }
+            Console.WriteLine($"Pdf {book.Id} is splitted to images.");
         }
 
         mapper.Map(request.Model, book);
