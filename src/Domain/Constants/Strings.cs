@@ -17,6 +17,7 @@ public struct Strings
     public const string AuthorizationDenied = "Bu işlem için yetkiniz bulunmamaktadır.";
     public const string ThumbnailName = "thumb.jpg";
     public const string PostitDefaultColor = "F7DD00";
+    public const string ReceiverBook = "ReceiveBookPageImage";
 
     public const string CacheStatusAndLicence = "CacheStatusAndLicence";
 

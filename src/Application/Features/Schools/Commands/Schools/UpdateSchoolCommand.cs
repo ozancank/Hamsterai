@@ -25,6 +25,7 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
                                         ISchoolDal schoolDal,
                                         ICommonService commonService,
                                         IUserDal userDal,
+                                        IPackageDal packageDal,
                                         IPackageUserDal packageUserDal,
                                         UserRules userRules,
                                         SchoolRules schoolRules,
@@ -72,6 +73,8 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
 
         var deleteList = await packageUserDal.GetListAsync(predicate: x => x.UserId == user.Id || usersInSchool.Contains(x.UserId), cancellationToken: cancellationToken);
 
+        var packages = await packageDal.GetListAsync(predicate: x => request.Model.PackageIds.Contains(x.Id), cancellationToken: cancellationToken);
+
         var packageUsers = request.Model.PackageIds.Select(x => new PackageUser
         {
             Id = Guid.NewGuid(),
@@ -83,11 +86,10 @@ public class UpdateSchoolCommandHandler(IMapper mapper,
             UserId = user.Id,
             PackageId = x,
             EndDate = request.Model.LicenseEndDate,
-            QuestionCredit = request.Model.QuestionCredit,
+            QuestionCredit = packages.FirstOrDefault(p => p.Id == x)?.QuestionCredit ?? 0,
         }).ToList();
 
         var updateList = new List<User>();
-
 
         //foreach (var studentUser in usersInSchool)
         //{

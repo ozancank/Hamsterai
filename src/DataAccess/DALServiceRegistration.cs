@@ -30,6 +30,8 @@ public static class DALServiceRegistration
         services.AddScoped<IUserOperationClaimDal, UserOperationClaimDal>();
 
         services.AddScoped<IBookDal, BookDal>();
+        services.AddScoped<IBookQuizDal, BookQuizDal>();
+        services.AddScoped<IBookQuizUserDal, BookQuizUserDal>();
         services.AddScoped<IClassRoomDal, ClassRoomDal>();
         services.AddScoped<IGainDal, GainDal>();
         services.AddScoped<IHomeworkDal, HomeworkDal>();

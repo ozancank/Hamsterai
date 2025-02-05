@@ -26,6 +26,7 @@ public class AddSchoolCommandHandler(IMapper mapper,
                                      ISchoolDal schoolDal,
                                      ICommonService commonService,
                                      IUserDal userDal,
+                                     IPackageDal packageDal,
                                      IPackageUserDal packageUserDal,
                                      UserRules userRules,
                                      SchoolRules schoolRules,
@@ -74,6 +75,8 @@ public class AddSchoolCommandHandler(IMapper mapper,
             TaxNumber = school.TaxNumber!.Trim(),
         };
 
+        var packages = await packageDal.GetListAsync(predicate: x => request.Model.PackageIds.Contains(x.Id), cancellationToken: cancellationToken);
+
         var packageUsers = request.Model.PackageIds.Select(x => new PackageUser
         {
             Id = Guid.NewGuid(),
@@ -85,7 +88,7 @@ public class AddSchoolCommandHandler(IMapper mapper,
             UserId = user.Id,
             PackageId = x,
             EndDate = request.Model.LicenseEndDate,
-            QuestionCredit = request.Model.QuestionCredit,
+            QuestionCredit = packages.FirstOrDefault(p => p.Id == x)?.QuestionCredit ?? 0,
         }).ToList();
 
         var result = await schoolDal.ExecuteWithTransactionAsync(async () =>

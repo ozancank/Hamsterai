@@ -33,6 +33,7 @@ public class User : Security.User
     public virtual ICollection<Payment> Payments { get; set; } = [];
     public virtual ICollection<HomeworkUser> HomeworkUsers { get; set; } = [];
     public virtual ICollection<Postit> Postits { get; set; } = [];
+    public virtual ICollection<BookQuizUser> BookQuizUsers { get; set; } = [];
 
     public User() : base()
     {

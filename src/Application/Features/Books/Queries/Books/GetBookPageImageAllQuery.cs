@@ -1,13 +1,15 @@
 ﻿using Application.Services.CommonService;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
+using System.Runtime.CompilerServices;
 
 namespace Application.Features.Books.Queries.Books;
 
-public sealed class GetBookPageImageAllQuery : IRequest<List<byte[]>>, ISecuredRequest<UserTypes>
+public sealed record PageResponse(short PageNumber, string ImageData);
+
+public sealed class GetBookPageImageAllQuery : IRequest<IAsyncEnumerable<PageResponse>>, ISecuredRequest<UserTypes>
 {
     public int BookId { get; set; }
-    public short PageCount { get; set; } = 0;
     public string Extension { get; set; } = ".jpg";
 
     public UserTypes[] Roles { get; } = [UserTypes.School, UserTypes.Teacher, UserTypes.Student];
@@ -15,9 +17,9 @@ public sealed class GetBookPageImageAllQuery : IRequest<List<byte[]>>, ISecuredR
 }
 
 public sealed class GetBookPageImageAllQueryHandler(IBookDal bookDal,
-                                                    ICommonService commonService) : IRequestHandler<GetBookPageImageAllQuery, List<byte[]>>
+                                                    ICommonService commonService) : IRequestHandler<GetBookPageImageAllQuery, IAsyncEnumerable<PageResponse>>
 {
-    public async Task<List<byte[]>> Handle(GetBookPageImageAllQuery request, CancellationToken cancellationToken)
+    public async Task<IAsyncEnumerable<PageResponse>> Handle(GetBookPageImageAllQuery request, CancellationToken cancellationToken)
     {
         var userType = commonService.HttpUserType;
         var schoolId = commonService.HttpSchoolId;
@@ -32,27 +34,32 @@ public sealed class GetBookPageImageAllQueryHandler(IBookDal bookDal,
             },
             include: x => x.Include(x => x.BookClassRooms).ThenInclude(x => x.ClassRoom).ThenInclude(x => x!.Students),
             cancellationToken: cancellationToken);
-        if (book == null) return [null];
-
-        if (request.PageCount <= 0 || request.PageCount >= book.PageCount) request.PageCount = book.PageCount;
+        if (book == null) return GetEmptyAsyncEnumerable();
 
         var folderPath = Path.Combine(AppOptions.BookFolderPath, $"{request.BookId}");
-        if (!Directory.Exists(folderPath)) return [];
+        if (!Directory.Exists(folderPath)) return GetEmptyAsyncEnumerable();
 
-        var result = new List<byte[]>();
+        return GetPagesAsync(folderPath, book.PageCount, request.Extension, cancellationToken);
+    }
 
-        for (int i = 1; i <= request.PageCount; i++)
+    private static async IAsyncEnumerable<PageResponse> GetPagesAsync(string folderPath, short pageCount, string extension, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        for (short i = 1; i <= pageCount; i++)
         {
-            var fileName = $"{i}{request.Extension}";
+            var fileName = $"{i}{extension}";
             var filePath = Path.Combine(folderPath, fileName);
             if (!File.Exists(filePath)) continue;
 
-            await using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            using var memoryStream = new MemoryStream();
-            stream.CopyTo(memoryStream);
-            result.Add(memoryStream.ToArray());
-        }
+            var imageBytes = await File.ReadAllBytesAsync(filePath, cancellationToken);
+            yield return new PageResponse(i, Convert.ToBase64String(imageBytes));
 
-        return result;
+            await Task.Delay(100, cancellationToken);
+        }
+    }
+
+    private static async IAsyncEnumerable<PageResponse> GetEmptyAsyncEnumerable()
+    {
+        await Task.CompletedTask; 
+        yield break;
     }
 }

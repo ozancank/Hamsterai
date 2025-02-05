@@ -5,6 +5,11 @@ using Application.Features.Books.Models.Publisher;
 using Application.Features.Books.Queries.Books;
 using Application.Features.Books.Queries.Publishers;
 using Asp.Versioning;
+using Domain.Constants;
+using Domain.Entities;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
 
 namespace WebAPI.Controllers.V1;
 
@@ -32,12 +37,33 @@ public class BookController : BaseController
     }
 
 
-    [HttpGet("GetBookPageImageAll/{bookId}/{pageCount}")]
-    public async Task<IActionResult> GetBookPageImageAll([FromRoute] int bookId, [FromRoute] short pageCount)
+    [HttpGet("GetBookPageImageAll/{bookId}")]
+    public async Task GetBookPageImageAll([FromRoute] int bookId, CancellationToken cancellationToken = default)
     {
-        var query = new GetBookPageImageAllQuery { BookId = bookId, PageCount = pageCount, Extension = ".webp" };
-        var result = await Mediator.Send(query);
-        return Ok(result);
+        var query = new GetBookByIdQuery { Id = bookId };
+        var book = await Mediator.Send(query, cancellationToken);
+        var folderPath = Path.Combine(AppOptions.BookFolderPath, $"{bookId}");
+        if (book == null || !Directory.Exists(folderPath))
+        {
+            Response.StatusCode = 404;
+            return;
+        }
+
+        Response.ContentType = "application/octet-stream";
+        var streamWriter = new StreamWriter(Response.Body, Encoding.UTF8);
+
+        for (int i = 1; i <= book.PageCount; i++)
+        {
+            var fileName = $"{i}.webp";
+            var filePath = Path.Combine(folderPath, fileName);
+            if (!System.IO.File.Exists(filePath)) continue;
+
+            var imageBytes = await System.IO.File.ReadAllBytesAsync(filePath, cancellationToken);
+            var response = $"{i}^#^{Convert.ToBase64String(imageBytes)}\n";
+
+            await streamWriter.WriteAsync(response);
+            await streamWriter.FlushAsync(cancellationToken);
+        }
     }
 
     [HttpGet("GetBookThumb/{bookId}")]
@@ -57,11 +83,32 @@ public class BookController : BaseController
     }
 
     [HttpGet("GetBookThumbSmallAll/{bookId}")]
-    public async Task<IActionResult> GetBookThumbSmallAll([FromRoute] int bookId)
+    public async Task GetBookThumbSmallAll([FromRoute] int bookId, CancellationToken cancellationToken = default)
     {
-        var query = new GetBookThumbSmallAllQuery { BookId = bookId, PageCount = 0, Extension = ".webp" };
-        var result = await Mediator.Send(query);
-        return Ok(result);
+        var query = new GetBookByIdQuery { Id = bookId };
+        var book = await Mediator.Send(query, cancellationToken);
+        var folderPath = Path.Combine(AppOptions.BookFolderPath, $"{bookId}");
+        if (book == null || !Directory.Exists(folderPath))
+        {
+            Response.StatusCode = 404;
+            return;
+        }
+
+        Response.ContentType = "application/octet-stream";
+        var streamWriter = new StreamWriter(Response.Body, Encoding.UTF8);
+
+        for (int i = 1; i <= book.PageCount; i++)
+        {
+            var fileName = $"{i}_.webp";
+            var filePath = Path.Combine(folderPath, fileName);
+            if (!System.IO.File.Exists(filePath)) continue;
+
+            var imageBytes = await System.IO.File.ReadAllBytesAsync(filePath, cancellationToken);
+            var response = $"{i}^#^{Convert.ToBase64String(imageBytes)}\n";
+
+            await streamWriter.WriteAsync(response);
+            await streamWriter.FlushAsync(cancellationToken);
+        }
     }
 
     [HttpGet("GetBookById/{id}")]

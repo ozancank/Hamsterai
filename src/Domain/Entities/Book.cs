@@ -15,6 +15,7 @@ public class Book : BaseEntity<int>
     public virtual Lesson? Lesson { get; set; }
     public virtual Publisher? Publisher { get; set; }
     public virtual ICollection<RBookClassRoom> BookClassRooms { get; set; } = [];
+    public virtual ICollection<BookQuiz> BookQuizzes { get; set; } = [];
 
     public Book() : base()
     {

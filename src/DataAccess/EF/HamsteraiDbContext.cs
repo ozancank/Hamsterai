@@ -55,6 +55,8 @@ public class HamsteraiDbContext : DbContext
     #endregion Core
 
     public required DbSet<Book> Books { get; set; }
+    public required DbSet<BookQuiz> BookQuizzes { get; set; }
+    public required DbSet<BookQuizUser> BookQuizUsers { get; set; }
     public required DbSet<ClassRoom> ClassRooms { get; set; }
     public required DbSet<Gain> Gains { get; set; }
     public required DbSet<Homework> Homeworks { get; set; }
