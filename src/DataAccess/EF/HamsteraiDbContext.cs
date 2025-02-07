@@ -1,6 +1,7 @@
 ﻿using Domain.Entities.Core;
 using Microsoft.Extensions.Configuration;
 using OCK.Core.Utilities;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace DataAccess.EF;
@@ -10,49 +11,22 @@ public class HamsteraiDbContext : DbContext
     private static bool IsMigration = false;
     protected IConfiguration Configuration { get; set; }
 
-    #region Core
-
-    public DbSet<User> Users { get; set; }
-    public DbSet<OperationClaim> OperationClaims { get; set; }
-    public DbSet<UserOperationClaim> UserOperationClaims { get; set; }
-    public DbSet<RefreshToken> RefreshTokens { get; set; }
-
-    #endregion Core
-
-    public DbSet<ClassRoom> ClassRooms { get; set; }
-    public DbSet<Gain> Gains { get; set; }
-    public DbSet<Group> Groups { get; set; }
-    public DbSet<Homework> Homeworks { get; set; }
-    public DbSet<HomeworkStudent> HomeworkStudents { get; set; }
-    public DbSet<Lesson> Lessons { get; set; }
-    public DbSet<LessonGroup> LessonGroups { get; set; }
-    public DbSet<NotificationDeviceToken> NotificationDeviceTokens { get; set; }
-    public DbSet<PasswordToken> PasswordTokens { get; set; }
-    public DbSet<Question> Questions { get; set; }
-    public DbSet<Quiz> Quizzes { get; set; }
-    public DbSet<QuizQuestion> QuizQuestions { get; set; }
-    public DbSet<School> Schools { get; set; }
-    public DbSet<Similar> Similars { get; set; }
-    public DbSet<Student> Students { get; set; }
-    public DbSet<Teacher> Teachers { get; set; }
-    public DbSet<TeacherClassRoom> TeacherClassRooms { get; set; }
-    public DbSet<TeacherLesson> TeacherLessons { get; set; }
-    public DbSet<Notification> Notifications { get; set; }
-
     public HamsteraiDbContext(DbContextOptions<HamsteraiDbContext> options)
         : base(options)
-    {        
-        Configuration=ServiceTools.GetService<IConfiguration>();
+    {
+        Configuration = ServiceTools.GetService<IConfiguration>();
         if (!IsMigration)
         {
-            Database.Migrate();
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+                Database.Migrate();
             IsMigration = true;
-        }      
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresExtension("citext");
+        modelBuilder.RegisterDbFunctions<PostgresqlFunctions>();
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         foreach (var item in modelBuilder.Model.GetEntityTypes())
         {
@@ -71,72 +45,119 @@ public class HamsteraiDbContext : DbContext
         }
     }
 
-    //protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-    //{
-    //    configurationBuilder.Properties<DateTime>()
-    //        .HaveConversion(typeof(DateTimeToDateTimeUtc));
-    //}
+    #region Core
 
-    //private class DateTimeToDateTimeUtc : ValueConverter<DateTime, DateTime>
-    //{
-    //    public DateTimeToDateTimeUtc() : base(c => DateTime.SpecifyKind(c, DateTimeKind.Utc), c => c)
-    //    {
-    //    }
-    //}
+    public required DbSet<User> Users { get; set; }
+    public required DbSet<OperationClaim> OperationClaims { get; set; }
+    public required DbSet<UserOperationClaim> UserOperationClaims { get; set; }
+    public required DbSet<RefreshToken> RefreshTokens { get; set; }
 
-    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //{
-    //    optionsBuilder.ReplaceService<IMigrationsSqlGenerator, CustomNpgsqlMigrationsSqlGenerator>();
-    //}
+    #endregion Core
 
-    //private class CustomSqlServerMigrationsSqlGenerator
-    //    (MigrationsSqlGeneratorDependencies dependencies, ICommandBatchPreparer commandBatchPreparer)
-    //    : SqlServerMigrationsSqlGenerator(dependencies, commandBatchPreparer)
-    //{
-    //    protected override void Generate(SqlServerCreateDatabaseOperation operation, Microsoft.EntityFrameworkCore.Metadata.IModel model, MigrationCommandListBuilder builder)
-    //    {
-    //        base.Generate(operation, model, builder);
+    public required DbSet<Book> Books { get; set; }
+    public required DbSet<BookQuiz> BookQuizzes { get; set; }
+    public required DbSet<BookQuizUser> BookQuizUsers { get; set; }
+    public required DbSet<ClassRoom> ClassRooms { get; set; }
+    public required DbSet<Gain> Gains { get; set; }
+    public required DbSet<Homework> Homeworks { get; set; }
+    public required DbSet<HomeworkStudent> HomeworkStudents { get; set; }
+    public required DbSet<Lesson> Lessons { get; set; }
+    public required DbSet<Notification> Notifications { get; set; }
+    public required DbSet<NotificationDeviceToken> NotificationDeviceTokens { get; set; }
+    public required DbSet<Order> Orders { get; set; }
+    public required DbSet<OrderDetail> OrderDetails { get; set; }
+    public required DbSet<PackageCategory> PackageCategories { get; set; }
+    public required DbSet<Package> Package { get; set; }
+    public required DbSet<PackageUser> PackageUsers { get; set; }
+    public required DbSet<PasswordToken> PasswordTokens { get; set; }
+    public required DbSet<Payment> Payments { get; set; }
+    public required DbSet<PaymentSipay> PaymentSipays { get; set; }
+    public required DbSet<Postit> Postits { get; set; }
+    public required DbSet<Publisher> Publisher { get; set; }
+    public required DbSet<Question> Questions { get; set; }
+    public required DbSet<Quiz> Quizzes { get; set; }
+    public required DbSet<QuizQuestion> QuizQuestions { get; set; }
+    public required DbSet<RBookClassRoom> BookClassRooms { get; set; }
+    public required DbSet<RPackageLesson> RPackageLesson { get; set; }
+    public required DbSet<RTeacherClassRoom> RTeacherClassRooms { get; set; }
+    public required DbSet<RTeacherLesson> RTeacherLessons { get; set; }
+    public required DbSet<School> Schools { get; set; }
+    public required DbSet<Similar> Similars { get; set; }
+    public required DbSet<Student> Students { get; set; }
+    public required DbSet<Teacher> Teachers { get; set; }
 
-    //        builder
-    //            .Append("ALTER DATABASE ")
-    //            .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-    //            .Append(" COLLATE ")
-    //            .Append("Turkish_CI_AS")
-    //            .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator)
-    //            .EndCommand(suppressTransaction: true);
-    //    }
-    //}
+    //modelBuilder.HasDbFunction(() => Microsoft.EntityFrameworkCore.EF.Functions.TrLower(default))
+    //            .HasTranslation(args => new SqlFunctionExpression("tr_lower", true, typeof(string), null));
 
-    //private class CustomNpgsqlMigrationsSqlGenerator : NpgsqlMigrationsSqlGenerator
-    //{
-    //    public CustomNpgsqlMigrationsSqlGenerator(
-    //        MigrationsSqlGeneratorDependencies dependencies,
-    //        INpgsqlSingletonOptions npgsqlSingletonOptions)
-    //        : base(dependencies, npgsqlSingletonOptions)
-    //    {
-    //    }
-
-    //    protected override void Generate(NpgsqlCreateDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
-    //    {
-    //        base.Generate(operation, model, builder);
-
-    //        builder
-    //            .Append("ALTER DATABASE ")
-    //            .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-    //            .Append(" SET LC_COLLATE TO 'tr_TR.UTF-8'")
-    //            .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator)
-    //            .EndCommand(suppressTransaction: true);
-
-    //        builder
-    //            .Append("ALTER DATABASE ")
-    //            .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
-    //            .Append(" SET LC_CTYPE TO 'tr_TR.UTF-8'")
-    //            .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator)
-    //            .EndCommand(suppressTransaction: true);
-    //    }
-
-    //}
+    //modelBuilder.HasDbFunction(() => Microsoft.EntityFrameworkCore.EF.Functions.TrUpper(default))
+    //    .HasTranslation(args => new SqlFunctionExpression("tr_upper", true, typeof(string), null));
 }
+
+//protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+//{
+//    configurationBuilder.Properties<DateTime>()
+//        .HaveConversion(typeof(DateTimeToDateTimeUtc));
+//}
+
+//private class DateTimeToDateTimeUtc : ValueConverter<DateTime, DateTime>
+//{
+//    public DateTimeToDateTimeUtc() : base(c => DateTime.SpecifyKind(c, DateTimeKind.Utc), c => c)
+//    {
+//    }
+//}
+
+//protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//{
+//    optionsBuilder.ReplaceService<IMigrationsSqlGenerator, CustomNpgsqlMigrationsSqlGenerator>();
+//}
+
+//private class CustomSqlServerMigrationsSqlGenerator
+//    (MigrationsSqlGeneratorDependencies dependencies, ICommandBatchPreparer commandBatchPreparer)
+//    : SqlServerMigrationsSqlGenerator(dependencies, commandBatchPreparer)
+//{
+//    protected override void Generate(SqlServerCreateDatabaseOperation operation, Microsoft.EntityFrameworkCore.Metadata.IModel model, MigrationCommandListBuilder builder)
+//    {
+//        base.Generate(operation, model, builder);
+
+//        builder
+//            .Append("ALTER DATABASE ")
+//            .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+//            .Append(" COLLATE ")
+//            .Append("Turkish_CI_AS")
+//            .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator)
+//            .EndCommand(suppressTransaction: true);
+//    }
+//}
+
+//private class CustomNpgsqlMigrationsSqlGenerator : NpgsqlMigrationsSqlGenerator
+//{
+//    public CustomNpgsqlMigrationsSqlGenerator(
+//        MigrationsSqlGeneratorDependencies dependencies,
+//        INpgsqlSingletonOptions npgsqlSingletonOptions)
+//        : base(dependencies, npgsqlSingletonOptions)
+//    {
+//    }
+
+//    protected override void Generate(NpgsqlCreateDatabaseOperation operation, IModel model, MigrationCommandListBuilder builder)
+//    {
+//        base.Generate(operation, model, builder);
+
+//        builder
+//            .Append("ALTER DATABASE ")
+//            .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+//            .Append(" SET LC_COLLATE TO 'tr_TR.UTF-8'")
+//            .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator)
+//            .EndCommand(suppressTransaction: true);
+
+//        builder
+//            .Append("ALTER DATABASE ")
+//            .Append(Dependencies.SqlGenerationHelper.DelimitIdentifier(operation.Name))
+//            .Append(" SET LC_CTYPE TO 'tr_TR.UTF-8'")
+//            .AppendLine(Dependencies.SqlGenerationHelper.StatementTerminator)
+//            .EndCommand(suppressTransaction: true);
+//    }
+
+//}
 
 /*
  *

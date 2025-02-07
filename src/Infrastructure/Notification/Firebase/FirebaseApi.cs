@@ -22,9 +22,9 @@ public sealed class FirebaseApi : INotificationApi
         if (IsNullable.Value && notificationModel.List == null)
             throw new BusinessException(Strings.InvalidValue);
 
-        var tokens = notificationModel.List.ToList();
+        var tokens = notificationModel.List?.ToList();
 
-        if (tokens.Count == 0) throw new BusinessException(Strings.DynamicNotEmpty, Strings.Token);
+        if (tokens?.Count == 0) throw new BusinessException(Strings.DynamicNotEmpty, Strings.Token);
 
         var message = new MulticastMessage()
         {
@@ -33,8 +33,9 @@ public sealed class FirebaseApi : INotificationApi
                 Title = notificationModel.Title,
                 Body = notificationModel.Body,
             },
+            Data = notificationModel.Datas,
             Tokens = tokens as List<string>,
-        };        
+        };
 
         var messaging = FirebaseMessaging.DefaultInstance;
         _ = await messaging.SendEachForMulticastAsync(message);

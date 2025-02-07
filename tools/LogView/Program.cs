@@ -1,6 +1,4 @@
-﻿using System.Timers;
-
-class Program
+﻿internal class Program
 {
     private static readonly HttpClient client = new();
     private static readonly System.Timers.Timer timer = new(10000);
@@ -28,7 +26,7 @@ class Program
             Console.Clear();
             foreach (var log in logs)
             {
-                Console.WriteLine(log.Length > 300 ? log.Substring(0, 300) : log);
+                Console.WriteLine(log.Length > 300 ? log[..300] : log);
             }
             await Task.Delay(1000);
         }

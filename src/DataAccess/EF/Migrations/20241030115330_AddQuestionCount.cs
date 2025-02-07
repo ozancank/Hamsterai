@@ -16,7 +16,7 @@ namespace DataAccess.EF.Migrations
                 type: "integer",
                 nullable: false,
                 defaultValue: 0)
-                .Annotation("Relational:ColumnOrder", 16);           
+                .Annotation("Relational:ColumnOrder", 16);
         }
 
         /// <inheritdoc />

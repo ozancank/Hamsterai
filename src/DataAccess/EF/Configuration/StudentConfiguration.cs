@@ -15,10 +15,8 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
         builder.Property(e => e.Name).HasColumnName("Name").HasMaxLength(50).HasColumnOrder(6).IsRequired();
         builder.Property(e => e.Surname).HasColumnName("Surname").HasMaxLength(50).HasColumnOrder(7).IsRequired();
         builder.Property(e => e.StudentNo).HasColumnName("StudentNo").HasMaxLength(15).HasColumnOrder(8).IsRequired();
-        builder.Property(e => e.TcNo).HasColumnName("TcNo").HasMaxLength(11).HasColumnOrder(9);
-        builder.HasIndex(e => e.TcNo).HasDatabaseName("UK_Students_TcNo").IsUnique();
-        builder.Property(e => e.Phone).HasColumnName("Phone").HasMaxLength(15).HasColumnOrder(10).IsRequired();
-        builder.HasIndex(e => e.Phone).HasDatabaseName("UK_Students_Phone").IsUnique();
+        builder.Property(e => e.Phone).HasColumnName("Phone").HasMaxLength(15).HasColumnOrder(10);
+        //builder.HasIndex(e => e.Phone).HasDatabaseName("UK_Students_Phone").IsUnique();
         builder.Property(e => e.Email).HasColumnName("Email").HasMaxLength(100).HasColumnOrder(11).IsRequired();
         builder.HasIndex(e => e.Email).HasDatabaseName("UK_Students_Email").IsUnique();
         builder.Property(e => e.ClassRoomId).HasColumnName("ClassRoomId").HasColumnOrder(12).IsRequired();
@@ -32,7 +30,6 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
                 Name = "Öğrenci 1",
                 Surname = "Kullanıcı",
                 StudentNo = "001",
-                TcNo = "33333333333",
                 Phone = "5000000006",
                 Email = "ogrenci1@mail.com",
                 ClassRoomId = 1,
@@ -42,7 +39,6 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
                 Name = "Öğrenci 2",
                 Surname = "Kullanıcı",
                 StudentNo = "002",
-                TcNo = "44444444444",
                 Phone = "5000000007",
                 Email = "ogrenci2@mail.com",
                 ClassRoomId = 1,
@@ -52,7 +48,6 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
                 Name = "Öğrenci 3",
                 Surname = "Kullanıcı",
                 StudentNo = "003",
-                TcNo = "55555555555",
                 Phone = "5000000008",
                 Email = "ogrenci3@mail.com",
                 ClassRoomId = 2,
@@ -62,7 +57,6 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
                 Name = "Öğrenci 4",
                 Surname = "Kullanıcı",
                 StudentNo = "004",
-                TcNo = "66666666666",
                 Phone = "5000000009",
                 Email = "ogrenci4@mail.com",
                 ClassRoomId = 2,
@@ -72,7 +66,6 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
                 Name = "Öğrenci 5",
                 Surname = "Kullanıcı",
                 StudentNo = "005",
-                TcNo = "77777777777",
                 Phone = "5000000010",
                 Email = "ogrenci5@mail.com",
                 ClassRoomId = 3,
@@ -82,7 +75,6 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
                 Name = "Öğrenci 6",
                 Surname = "Kullanıcı",
                 StudentNo = "006",
-                TcNo = "88888888888",
                 Phone = "5000000011",
                 Email = "ogrenci6@mail.com",
                 ClassRoomId = 3,
@@ -92,7 +84,6 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
                 Name = "Ozan Can",
                 Surname = "Kösemez",
                 StudentNo = "007",
-                TcNo = "12312312399",
                 Phone = "5069151010",
                 Email = "ozancank@gmail.com",
                 ClassRoomId = 1,
@@ -102,7 +93,6 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
                 Name = "Alican",
                 Surname = "Kesen",
                 StudentNo = "008",
-                TcNo = "12312312388",
                 Phone = "5313914388",
                 Email = "942alicankesen@gmail.com",
                 ClassRoomId = 1,
@@ -112,7 +102,6 @@ public class StudentConfiguration : IEntityTypeConfiguration<Student>
                 Name = "Eyüp",
                 Surname = "Balcan",
                 StudentNo = "009",
-                TcNo = "12312312377",
                 Phone = "5550593005",
                 Email = "balcan1905@gmail.com",
                 ClassRoomId = 1,

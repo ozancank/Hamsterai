@@ -17,9 +17,6 @@ public static class DALServiceRegistration
         {
             if (!options.IsConfigured)
             {
-                //options.UseSqlServer(ServiceTools.Configuration.GetConnectionString("HamsteraiConnectionString"),
-                //    o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
-                //);
                 options.UseNpgsql(ServiceTools.Configuration.GetConnectionString("HamsteraiConnectionString"),
                     o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
             );
@@ -32,26 +29,38 @@ public static class DALServiceRegistration
         services.AddScoped<IUserDal, UserDal>();
         services.AddScoped<IUserOperationClaimDal, UserOperationClaimDal>();
 
+        services.AddScoped<IBookDal, BookDal>();
+        services.AddScoped<IBookQuizDal, BookQuizDal>();
+        services.AddScoped<IBookQuizUserDal, BookQuizUserDal>();
         services.AddScoped<IClassRoomDal, ClassRoomDal>();
         services.AddScoped<IGainDal, GainDal>();
-        services.AddScoped<IGroupDal, GroupDal>();
         services.AddScoped<IHomeworkDal, HomeworkDal>();
         services.AddScoped<IHomeworkStudentDal, HomeworkStudentDal>();
+        services.AddScoped<IHomeworkUserDal, HomeworkUserDal>();
         services.AddScoped<ILessonDal, LessonDal>();
-        services.AddScoped<ILessonGroupDal, LessonGroupDal>();
         services.AddScoped<INotificationDal, NotificationDal>();
         services.AddScoped<INotificationDeviceTokenDal, NotificationDeviceTokenDal>();
+        services.AddScoped<IOrderDal, OrderDal>();
+        services.AddScoped<IOrderDetailDal, OrderDetailDal>();
+        services.AddScoped<IPackageCategoryDal, PackageCategoryDal>();
+        services.AddScoped<IPackageDal, PackageDal>();
+        services.AddScoped<IPackageUserDal, PackageUserDal>();
         services.AddScoped<IPasswordTokenDal, PasswordTokenDal>();
+        services.AddScoped<IPaymentDal, PaymentDal>();
+        services.AddScoped<IPaymentSipayDal, PaymentSipayDal>();
+        services.AddScoped<IPostitDal, PostitDal>();
+        services.AddScoped<IPublisherDal, PublisherDal>();
         services.AddScoped<IQuestionDal, QuestionDal>();
         services.AddScoped<IQuizDal, QuizDal>();
         services.AddScoped<IQuizQuestionDal, QuizQuestionDal>();
+        services.AddScoped<IRBookClassRoomDal, RBookClassRoomDal>();
+        services.AddScoped<IRPackageLessonDal, RPackageLessonDal>();
+        services.AddScoped<IRTeacherClassRoomDal, RTeacherClassRoomDal>();
+        services.AddScoped<IRTeacherLessonDal, RTeacherLessonDal>();
         services.AddScoped<ISchoolDal, SchoolDal>();
-        services.AddScoped<ISchoolGroupDal, SchoolGroupDal>();
         services.AddScoped<ISimilarDal, SimilarDal>();
         services.AddScoped<IStudentDal, StudentDal>();
-        services.AddScoped<ITeacherClassRoomDal, TeacherClassRoomDal>();
         services.AddScoped<ITeacherDal, TeacherDal>();
-        services.AddScoped<ITeacherLessonDal, TeacherLessonDal>();
 
         services.AddCoreServices();
         return services;

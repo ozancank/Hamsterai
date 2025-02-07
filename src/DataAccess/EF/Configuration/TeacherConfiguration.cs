@@ -14,10 +14,7 @@ public class TeacherConfiguration : IEntityTypeConfiguration<Teacher>
         builder.Property(e => e.UpdateDate).HasColumnName("UpdateDate").HasColumnOrder(5).IsRequired();
         builder.Property(e => e.Name).HasColumnName("Name").HasMaxLength(100).HasColumnOrder(6).IsRequired();
         builder.Property(e => e.Surname).HasColumnName("Surname").HasMaxLength(100).HasColumnOrder(7).IsRequired();
-        builder.Property(e => e.TcNo).HasColumnName("TcNo").HasMaxLength(11).HasColumnOrder(8);
-        builder.HasIndex(e => e.TcNo).HasDatabaseName("UK_Teachers_TcNo").IsUnique();
-        builder.Property(e => e.Phone).HasColumnName("Phone").HasMaxLength(15).HasColumnOrder(9).IsRequired();
-        builder.HasIndex(e => e.Phone).HasDatabaseName("UK_Teachers_Phone").IsUnique();
+        builder.Property(e => e.Phone).HasColumnName("Phone").HasMaxLength(15).HasColumnOrder(9);
         builder.Property(e => e.Email).HasColumnName("Email").HasMaxLength(100).HasColumnOrder(10).IsRequired();
         builder.HasIndex(e => e.Email).HasDatabaseName("UK_Teachers_Email").IsUnique();
         builder.Property(e => e.Branch).HasColumnName("Branch").HasMaxLength(50).HasColumnOrder(11).IsRequired();
@@ -31,7 +28,6 @@ public class TeacherConfiguration : IEntityTypeConfiguration<Teacher>
             {
                 Name="Öğretmen 1",
                 Surname="Kullanıcı",
-                TcNo="11111111111",
                 Phone="5000000004",
                 Email="hoca1@mail.com",
                 Branch="Matematik",
@@ -41,7 +37,6 @@ public class TeacherConfiguration : IEntityTypeConfiguration<Teacher>
             {
                 Name="Öğretmen 2",
                 Surname="Kullanıcı",
-                TcNo="22222222222",
                 Phone="5000000005",
                 Email="hoca2@mail.com",
                 Branch="Türkçe",

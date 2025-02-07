@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Features\Lessons\Models\Commands\**" />
+    <EmbeddedResource Remove="Features\Lessons\Models\Commands\**" />
+    <None Remove="Features\Lessons\Models\Commands\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FirebaseAdmin" Version="3.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="AutoMapper" />
+    <Using Include="DataAccess.Abstract" />
+    <Using Include="Domain.Constants" />
+    <Using Include="Domain.Entities" />
+    <Using Include="FluentValidation" />
+    <Using Include="Microsoft.AspNetCore.Http" />
+    <Using Include="Microsoft.EntityFrameworkCore" />
+    <Using Include="Microsoft.Extensions.Configuration" />
+    <Using Include="OCK.Core.Dynamic" />
+    <Using Include="OCK.Core.Exceptions.CustomExceptions" />
+    <Using Include="OCK.Core.Extensions" />
+    <Using Include="OCK.Core.Interfaces" />
+    <Using Include="OCK.Core.Paging" />
+    <Using Include="OCK.Core.Utilities" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Fonts\Arial.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\ForgetPassword.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\Test.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Features\Auths\Dtos\" />
+    <Folder Include="Features\Auths\Queries\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SixLabors.ImageSharp.Drawing">
+      <HintPath>..\..\..\..\Nuget\sixlabors.imagesharp.drawing\2.1.4\lib\net6.0\SixLabors.ImageSharp.Drawing.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

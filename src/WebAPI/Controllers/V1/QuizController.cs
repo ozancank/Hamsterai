@@ -1,7 +1,7 @@
+using Application.Features.Questions.Commands.Quizzes;
+using Application.Features.Questions.Models.Quizzes;
+using Application.Features.Questions.Queries.Quizzes;
 using Asp.Versioning;
-using Business.Features.Questions.Commands.Quizzes;
-using Business.Features.Questions.Models.Quizzes;
-using Business.Features.Questions.Queries.Quizzes;
 
 namespace WebAPI.Controllers.V1;
 
@@ -26,21 +26,21 @@ public class QuizController : BaseController
         return Ok(result);
     }
 
-    [HttpPost("AddQuiz")]
-    public async Task<IActionResult> AddQuiz([FromBody] AddQuizModel model)
-    {
-        var command = new AddQuizTextCommand { Model = model };
-        var result = await Mediator.Send(command);
-        return Ok(result);
-    }
+    //[HttpPost("AddQuiz")]
+    //public async Task<IActionResult> AddQuiz([FromBody] AddQuizModel model)
+    //{
+    //    var command = new AddQuizCommand { Model = model };
+    //    var result = await Mediator.Send(command);
+    //    return Ok(result);
+    //}
 
-    [HttpPost("AddQuizForAll")]
-    public async Task<IActionResult> AddQuizForAll()
-    {
-        var command = new AddQuizTextForAllCommand();
-        await Mediator.Send(command);
-        return Ok();
-    }
+    //[HttpPost("AddQuizForAll")]
+    //public async Task<IActionResult> AddQuizForAll()
+    //{
+    //    var command = new AddQuizForAllCommand();
+    //    await Mediator.Send(command);
+    //    return Ok();
+    //}
 
     [HttpPost("UpdateQuiz")]
     public async Task<IActionResult> UpdateQuiz([FromBody] UpdateQuizModel model)

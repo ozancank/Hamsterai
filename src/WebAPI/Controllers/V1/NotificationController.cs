@@ -1,9 +1,9 @@
+using Application.Features.Notifications.Commands.DeviceToken;
+using Application.Features.Notifications.Commands.Notifications;
+using Application.Features.Notifications.Models.DeviceToken;
+using Application.Features.Notifications.Models.Notification;
+using Application.Features.Notifications.Queries;
 using Asp.Versioning;
-using Business.Features.Notifications.Commands.DeviceToken;
-using Business.Features.Notifications.Commands.Notifications;
-using Business.Features.Notifications.Models.DeviceToken;
-using Business.Features.Notifications.Models.Notification;
-using Business.Features.Notifications.Queries;
 
 namespace WebAPI.Controllers.V1;
 

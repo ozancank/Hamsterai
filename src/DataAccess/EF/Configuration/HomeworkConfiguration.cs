@@ -17,6 +17,8 @@ public class HomeworkConfiguration : IEntityTypeConfiguration<Homework>
         builder.Property(e => e.LessonId).HasColumnName("LessonId").HasColumnOrder(8).IsRequired();
         builder.Property(e => e.FilePath).HasColumnName("FilePath").HasColumnOrder(9).IsRequired();
         builder.Property(e => e.ClassRoomId).HasColumnName("ClassRoomId").HasColumnOrder(10);
+        builder.Property(e => e.Title).HasColumnName("Title").HasMaxLength(200).HasColumnOrder(11).IsRequired();
+        builder.Property(e => e.Description).HasColumnName("Description").HasColumnOrder(12);
 
         builder.HasOne(x => x.User).WithMany(x => x.Homeworks).HasForeignKey(x => x.CreateUser).HasPrincipalKey(x => x.Id);
         builder.HasOne(x => x.School).WithMany(x => x.Homeworks).HasForeignKey(x => x.SchoolId).HasPrincipalKey(x => x.Id);

@@ -4,36 +4,26 @@ namespace Domain.Entities;
 
 public class School : BaseEntity<int>
 {
-    public string Name { get; set; }
-    public string TaxNumber { get; set; }
-    public string Address { get; set; }
-    public string City { get; set; }
-    public string AuthorizedName { get; set; }
-    public string AuthorizedPhone { get; set; }
-    public string AuthorizedEmail { get; set; }
-    public DateTime LicenseEndDate { get; set; }
+    public string? Name { get; set; }
+    public string? TaxNumber { get; set; }
+    public string? Address { get; set; }
+    public string? City { get; set; }
+    public string? AuthorizedName { get; set; }
+    public string? AuthorizedPhone { get; set; }
+    public string? AuthorizedEmail { get; set; }
     public int UserCount { get; set; }
+    public bool AccessStundents { get; set; }
 
-    public virtual ICollection<User> Users { get; set; }
-    public virtual ICollection<Teacher> Teachers { get; set; }
-    public virtual ICollection<ClassRoom> ClassRooms { get; set; }
-    public virtual ICollection<Homework> Homeworks { get; set; }
-    public virtual ICollection<SchoolGroup> SchoolGroups { get; set; }
+    public virtual ICollection<User> Users { get; set; } = [];
+    public virtual ICollection<Teacher> Teachers { get; set; } = [];
+    public virtual ICollection<ClassRoom> ClassRooms { get; set; } = [];
+    public virtual ICollection<Homework> Homeworks { get; set; } = [];
+    public virtual ICollection<Book> Books { get; set; } = [];
 
     public School() : base()
-    {
-        Users = [];
-        Teachers = [];
-        ClassRooms = [];
-        Homeworks = [];
-    }
+    { }
 
     public School(byte id, bool isActive, long createUser, DateTime createDate, long updateUser, DateTime updateDate)
         : base(id, isActive, createUser, createDate, updateUser, updateDate)
-    {
-        Users = [];
-        Teachers = [];
-        ClassRooms = [];
-        Homeworks = [];
-    }
+    { }
 }

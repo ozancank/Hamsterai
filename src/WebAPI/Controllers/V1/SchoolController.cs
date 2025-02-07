@@ -1,13 +1,13 @@
+using Application.Features.Schools.Commands.ClassRooms;
+using Application.Features.Schools.Commands.Schools;
+using Application.Features.Schools.Models.ClassRooms;
+using Application.Features.Schools.Models.Schools;
+using Application.Features.Schools.Queries.ClassRooms;
+using Application.Features.Schools.Queries.Schools;
+using Application.Features.Teachers.Commands;
+using Application.Features.Teachers.Models;
+using Application.Features.Teachers.Queries;
 using Asp.Versioning;
-using Business.Features.Schools.Commands.ClassRooms;
-using Business.Features.Schools.Commands.Schools;
-using Business.Features.Schools.Models.ClassRooms;
-using Business.Features.Schools.Models.Schools;
-using Business.Features.Schools.Queries.ClassRooms;
-using Business.Features.Schools.Queries.Schools;
-using Business.Features.Teachers.Commands;
-using Business.Features.Teachers.Models;
-using Business.Features.Teachers.Queries;
 
 namespace WebAPI.Controllers.V1;
 
@@ -90,12 +90,28 @@ public class SchoolController : BaseController
         return Ok();
     }
 
-    [HttpGet("GetSchoolGroups")]
-    public async Task<IActionResult> GetSchoolGroups()
+    [HttpGet("GetPackageSchools")]
+    public async Task<IActionResult> GetPackageSchools()
     {
-        var command = new GetSchoolGroupsQuery();
+        var command = new GetPackageSchoolsQuery();
         var result = await Mediator.Send(command);
         return Ok(result);
+    }
+
+    [HttpPost("PassiveAccessStudent")]
+    public async Task<IActionResult> PassiveAccessStudent()
+    {
+        var command = new PassiveAccessStudentCommand();
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    [HttpPost("ActiveAccessStudent")]
+    public async Task<IActionResult> ActiveAccessStudent()
+    {
+        var command = new ActiveAccessStudentCommand();
+        await Mediator.Send(command);
+        return Ok();
     }
 
     #endregion School
@@ -122,6 +138,14 @@ public class SchoolController : BaseController
     public async Task<IActionResult> GetClassRoomsDynamic([FromQuery] PageRequest model, [FromBody] Dynamic dynamicModel)
     {
         var command = new GetClassRoomsByDynamicQuery { PageRequest = model, Dynamic = dynamicModel };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("GetClassRoomsGains")]
+    public async Task<IActionResult> GetClassRoomsGains([FromBody] ClassRoomGainsRequestModel model)
+    {
+        var command = new GetClassRoomsGainsByIdQuery { Model = model };
         var result = await Mediator.Send(command);
         return Ok(result);
     }

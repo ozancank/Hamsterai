@@ -1,48 +1,63 @@
-﻿using Business;
-using Business.Services.QuestionService;
-using Business.Services.UserService;
+﻿using Application;
+using Application.Services.CommonService;
+using Application.Services.QuestionService;
+using Application.Services.UserService;
+using DataAccess.EF;
 using Domain.Constants;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OCK.Core.Caching;
 using OCK.Core.Caching.Microsoft;
 using OCK.Core.Exceptions;
+using OCK.Core.Extensions;
 using OCK.Core.Security.Encryption;
+using OCK.Core.Security.Headers;
 using OCK.Core.Security.JWT;
 using OCK.Core.Utilities;
 using OCK.Core.Versioning;
 using System.Diagnostics;
-using WebAPI;
+using System.Globalization;
+using WebAPI.HostedServices;
 using static Infrastructure.Constants.InfrastructureDelegates;
 using static OCK.Core.Constants.Delegates;
 
 var builder = WebApplication.CreateBuilder(args);
 
-SetAppOptions(builder);
+SetAppOptions(builder, out CultureInfo defaultCulture);
 
 Services(builder);
 
 Delegates();
 
 var app = builder.Build();
-await Middlewares(builder, app);
+await Middlewares(builder, app, defaultCulture);
 app.Run();
 
-static void SetAppOptions(WebApplicationBuilder builder)
+static void SetAppOptions(WebApplicationBuilder builder, out CultureInfo defaultCulture)
 {
+    defaultCulture = new CultureInfo("tr-TR");
+    CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
     AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+    builder.Configuration.GetSection("ByPassOptions").Get<ByPassOptions>();
     builder.Configuration.GetSection("AppOptions").Get<Domain.Constants.AppOptions>();
-    Domain.Constants.AppOptions.CreateFolder();
+    Domain.Constants.AppOptions.InitOptions();
 }
 
 static void Services(WebApplicationBuilder builder)
 {
+    Console.WriteLine("API Starting...");
+    Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
+    Console.WriteLine(Directory.GetCurrentDirectory());
+
     builder.Services.AddSingleton(FirebaseApp.Create(new FirebaseAdmin.AppOptions()
     {
         Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hamster-private-key.json")),
@@ -51,12 +66,12 @@ static void Services(WebApplicationBuilder builder)
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddHealthChecks();
-    builder.Services.AddMemoryCache();
+    builder.Services.AddDistributedMemoryCache();
     builder.Services.AddHttpClient();
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddSingleton<Stopwatch>();
     builder.Services.AddSingleton<ITokenHelper, JwtHelper>();
-    builder.Services.AddSingleton<ICacheManager, MemoryCacheManager>();
+    builder.Services.AddSingleton<ICacheManager, DistributedCacheManager>();
     builder.Services.AddCustomApiVersioning(x =>
     {
         x.AddUrlSegmentApiVersionReader();
@@ -70,14 +85,20 @@ static void Services(WebApplicationBuilder builder)
         });
     });
     //if (!builder.Environment.IsDevelopment())
-    builder.Services.AddHostedService<SenderHostedService>();
-    builder.Services.AddHostedService<QuizHostedService>();
+    builder.Services.AddHostedService<QuestionHostedService>();
+    builder.Services.AddHostedService<SimilarHostedService>();
+    builder.Services.AddHostedService<GainHostedService>();
 
     builder.Services.Configure<FormOptions>(options =>
     {
-        options.MultipartBodyLengthLimit = 5242880;
+        options.MultipartBodyLengthLimit = 512 * 1024 * 1024;
         options.ValueLengthLimit = 1024 * 1024 * 1024;
         options.MemoryBufferThreshold = 1024 * 1024 * 1024;
+    });
+
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.Limits.MaxRequestBodySize = 512 * 1024 * 1024;
     });
 
     SwaggerAndToken(builder);
@@ -87,12 +108,26 @@ static void Services(WebApplicationBuilder builder)
     ServiceTools.Create(builder);
 }
 
-static async Task Middlewares(WebApplicationBuilder builder, WebApplication app)
+static async Task Middlewares(WebApplicationBuilder builder, WebApplication app, CultureInfo defaultCulture)
 {
+    var localizationOptions = new RequestLocalizationOptions
+    {
+        DefaultRequestCulture = new RequestCulture("tr-TR"),
+        SupportedCultures = [defaultCulture],
+        SupportedUICultures = [defaultCulture]
+    };
+    app.UseRequestLocalization(localizationOptions);
+
     app.UseCors("AllowEveryThing");
 
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+        //KnownProxies = { System.Net.IPAddress.Parse("185.195.255.123") }
+    });
+
     if (!app.Environment.IsDevelopment())
-        app.UseMiddleware<HeaderAuthMiddleware>([Strings.XApiKey, Strings.SwaggerPath, Strings.Domain]);
+        app.UseMiddleware<HeaderAuthMiddleware>([Strings.XApiKey, Strings.SwaggerPath, AppStatics.Domains, AppStatics.EndPoints]);
 
     app.UseSwagger();
 
@@ -124,19 +159,21 @@ static async Task Middlewares(WebApplicationBuilder builder, WebApplication app)
         }
     });
 
-    StaticFiles(app);
-
     app.UseRequestId();
 
     app.UseAuthentication();
 
     app.UseAuthorization();
 
+    StaticFiles(app);
+
     app.MapControllers();
 
-    Console.WriteLine("API çalışıyor...");
-    Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
-    Console.WriteLine(Directory.GetCurrentDirectory());
+    Console.WriteLine("API Started...");
+    app.Lifetime.ApplicationStarted.Register(() =>
+    {
+        foreach (var url in app.Urls) Console.WriteLine(url.Replace("[::]", "localhost"));
+    });
 }
 
 static void SwaggerAndToken(WebApplicationBuilder builder)
@@ -214,11 +251,14 @@ static void StaticFiles(WebApplication app)
     {
         { "/ProfilePicture", Domain.Constants.AppOptions.ProfilePictureFolderPath },
         { "/QuestionPicture", Domain.Constants.AppOptions.QuestionPictureFolderPath },
+        { "/QuestionSmallPicture", Domain.Constants.AppOptions.QuestionSmallPictureFolderPath },
+        { "/QuestionThumbnail", Domain.Constants.AppOptions.QuestionThumbnailFolderPath },
         { "/AnswerPicture", Domain.Constants.AppOptions.AnswerPictureFolderPath },
         { "/SimilarQuestionPicture", Domain.Constants.AppOptions.SimilarQuestionPictureFolderPath },
         { "/SimilarAnswerPicture", Domain.Constants.AppOptions.SimilarAnswerPictureFolderPath },
         { "/QuizQuestionPicture", Domain.Constants.AppOptions.QuizQuestionPictureFolderPath },
         { "/QuizAnswerPicture", Domain.Constants.AppOptions.QuizAnswerPictureFolderPath },
+        { "/PackagePicture", Domain.Constants.AppOptions.PackagePictureFolderPath },
         { "/Homework", Domain.Constants.AppOptions.HomeworkFolderPath },
         { "/HomeworkAnswer", Domain.Constants.AppOptions.HomeworkAnswerFolderPath }
     };
@@ -228,17 +268,83 @@ static void StaticFiles(WebApplication app)
         app.UseStaticFiles(new StaticFileOptions
         {
             FileProvider = new PhysicalFileProvider(path.Value),
-            RequestPath = path.Key
+            RequestPath = path.Key,
+            //OnPrepareResponse = context =>
+            //{
+            //    Console.WriteLine($"Dosya sunuluyor: {DateTime.Now} - {context.File.PhysicalPath}");
+            //}
         });
     }
+
+
 }
 
 static void Delegates()
 {
     ControlUserStatusAsync = ServiceTools.GetService<IUserService>().UserStatusAndLicense;
-    UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
-    UpdateSimilarAnswer = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
-    //UpdateQuestionText = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
-    //UpdateSimilarText = ServiceTools.GetService<IQuestionService>().UpdateSimilarAnswer;
-    //UpdateQuestionVisual = ServiceTools.GetService<IQuestionService>().UpdateAnswer;
+    UpdateQuestionOcrImage = ServiceTools.GetService<IQuestionService>().UpdateQuestion;
+    AddSimilarAnswer = ServiceTools.GetService<IQuestionService>().AddSimilar;
 }
+
+/*
+app.Use(async (context, next) =>
+    {
+        var pathMarked = "/Books/";
+        var requestPath = context.Request.Path.Value;
+
+        if (!requestPath.StartsWith(pathMarked, StringComparison.OrdinalIgnoreCase)) goto next;
+
+        var pathArray = requestPath.Replace(pathMarked, string.Empty, StringComparison.OrdinalIgnoreCase).Split('/');
+        if (pathArray.Length != 2) goto next;
+
+        var isNumber = int.TryParse(pathArray[0], out var bookId);
+        if (!isNumber) goto next;
+
+        var commonService = ServiceTools.GetService<ICommonService>();
+        var userTypes = commonService.HttpUserType;
+        if (userTypes == UserTypes.Administator) goto file;
+        if (!userTypes.IsIn(UserTypes.School, UserTypes.Teacher, UserTypes.Student)) goto next;
+
+        var dbContext = ServiceTools.GetService<IDbContextFactory<HamsteraiDbContext>>().CreateDbContext();
+        try
+        {
+            var bookInfo = await dbContext.Books.Where(x => x.Id == bookId).Select(x => new { x.CreateUser, x.SchoolId }).DefaultIfEmpty().FirstOrDefaultAsync();
+            if (bookInfo == null) goto next;
+            if (!await ControlUserStatusAsync(commonService.HttpUserId)) goto next;
+            if (bookInfo.SchoolId != commonService.HttpSchoolId) goto next;
+        }
+        finally
+        {
+            dbContext.Dispose();
+            commonService = null;
+        }
+
+    file:
+        var fileName = pathArray[1];
+
+        var fullPath = Path.Combine(Domain.Constants.AppOptions.BookFolderPath, $"{bookId}", fileName);
+
+        if (!File.Exists(fullPath)) goto next;
+
+        switch (Path.GetExtension(fileName)?.ToLowerInvariant())
+        {
+            case ".pdf":
+                context.Response.ContentType = "application/pdf";
+                break;
+
+            case ".jpg":
+            case ".jpeg":
+                context.Response.ContentType = "image/jpeg";
+                break;
+
+            default:
+                goto next;
+        }
+
+        await context.Response.SendFileAsync(fullPath);
+        return;
+
+    next:
+        await next();
+    });
+ */

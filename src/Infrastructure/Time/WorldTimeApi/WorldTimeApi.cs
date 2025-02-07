@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Domain.Constants;
+using Newtonsoft.Json;
+using OCK.Core.Exceptions.CustomExceptions;
 
 namespace Infrastructure.Time.WorldTimeApi;
 
@@ -13,7 +15,7 @@ public sealed class WorldTimeApi(HttpClient httpClient) : ITimeApi
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<WorldTimeApiModel>(content);
+        var result = JsonConvert.DeserializeObject<WorldTimeApiModel>(content) ?? throw new ExternalApiException(Strings.DynamicNotNull, nameof(content));
         return result.DateTime;
     }
 }

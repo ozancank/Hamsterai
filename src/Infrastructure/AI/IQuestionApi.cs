@@ -1,25 +1,26 @@
-﻿using Infrastructure.AI.Seduss.Models;
+﻿using Infrastructure.AI.Models;
 
 namespace Infrastructure.AI;
 
 public interface IQuestionApi : IArtificialIntelligenceApi
 {
-    Task<QuestionITOResponseModel> AskQuestionOcrImage(QuestionApiModel model);
+    Task<QuestionResponseModel> AskQuestionWithImage(QuestionApiModel model, CancellationToken cancellationToken = default);
 
-    [Obsolete(message: "Currently Not Available")]
-    Task<QuestionTextResponseModel> AskQuestionText(QuestionApiModel model);
+    Task<QuestionResponseModel> AskQuestionWithText(QuestionApiModel model, CancellationToken cancellationToken = default);
 
-    [Obsolete(message: "Currently Not Available")]
-    Task<QuestionVisualResponseModel> AskQuestionVisual(QuestionApiModel model);
+    Task<QuestionResponseModel> AskOcr(QuestionApiModel model, CancellationToken cancellationToken = default);
 
-    Task<SimilarResponseModel> GetSimilar(QuestionApiModel model);
+    Task<SimilarResponseModel> GetSimilar(QuestionApiModel model, CancellationToken cancellationToken = default);
 
-    [Obsolete(message: "Currently Not Available")]
-    Task<SimilarTextResponseModel> GetSimilarText(QuestionApiModel model);
+    Task<GainResponseModel> GetGain(QuestionApiModel model, CancellationToken cancellationToken = default);
 
-    Task<QuizResponseModel> GetQuizQuestions(QuizApiModel model);
+    Task<bool> IsExistsVisualContent(QuestionApiModel model, CancellationToken cancellationToken = default);
 
-    Task<QuizResponseModel> GetSimilarForQuiz(QuizApiModel model);
+    Task<QuestionResponseModel> MakeDescriptionWithImage(QuestionApiModel model, CancellationToken cancellationToken = default);
 
-    Task<QuizTextResponseModel> GetSimilarTextForQuiz(QuizApiModel model);
+    Task<QuestionResponseModel> MakeSummaryWithImage(QuestionApiModel model, CancellationToken cancellationToken = default);
+
+    //Task<QuizResponseModel> GetQuizQuestions(QuizApiModel model);
+
+    //Task<QuizResponseModel> GetSimilarForQuiz(QuizApiModel model);
 }

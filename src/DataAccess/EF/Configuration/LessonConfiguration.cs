@@ -13,8 +13,10 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
         builder.Property(e => e.UpdateUser).HasColumnName("UpdateUser").HasColumnOrder(4).IsRequired();
         builder.Property(e => e.UpdateDate).HasColumnName("UpdateDate").HasColumnOrder(5).IsRequired();
         builder.Property(e => e.Name).HasColumnName("Name").HasMaxLength(50).HasColumnOrder(6).IsRequired();
-        builder.HasAlternateKey(e => e.Name).HasName("UK_Lessons_Name");
+        builder.HasIndex(e => e.Name).HasDatabaseName("IX_Lesson_Name").IsUnique();
         builder.Property(e => e.SortNo).HasColumnName("SortNo").HasColumnOrder(7).IsRequired();
+        builder.Property(e => e.AIUrlIndex).HasColumnName("AIUrlIndex").HasDefaultValue(0).HasColumnOrder(8).IsRequired();
+        builder.Property(e => e.Type).HasColumnName("Type").HasDefaultValue(LessonTypes.None).HasColumnOrder(9).IsRequired();
 
         builder.HasData([
                 new(1, true, 2, new DateTime(2000, 01, 01), 2, new DateTime(2000, 01, 01), "Türkçe",1),

@@ -15,7 +15,7 @@ public sealed class GeminiApi(IHttpClientFactory httpClientFactory, LoggerServic
 
     public async Task<OcrResponseModel> GetTextFromImage(OcrRequestModel model)
     {
-        var baseUrl = AppOptions.OCR_Url;
+        var baseUrl = string.Empty;//AppOptions.OCR_Url;
         var result = new OcrResponseModel();
         try
         {
@@ -36,11 +36,11 @@ public sealed class GeminiApi(IHttpClientFactory httpClientFactory, LoggerServic
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            var responseJson = JsonSerializer.Deserialize<GeminiOcrResponseModel>(content, _options);
+            var responseJson = JsonSerializer.Deserialize<GeminiOcrResponseModel>(content, _options) ?? throw new ExternalApiException(Strings.DynamicNotNull, nameof(content));
 
-            var isClassic = responseJson.Message.Contains("##classic##", StringComparison.OrdinalIgnoreCase);
+            var isClassic = responseJson.Message.EmptyOrTrim().Contains("##classic##", StringComparison.OrdinalIgnoreCase);
 
-            var lines = responseJson.Message.Trim('\r').Split("\n").ToList();
+            var lines = responseJson.Message.EmptyOrTrim().Trim('\r').Split("\n").ToList();
 
             if (lines.Contains("Görselde metin veya yazı yok", StringComparer.OrdinalIgnoreCase)
                 || lines.Contains("Görselde metin yok", StringComparer.OrdinalIgnoreCase)

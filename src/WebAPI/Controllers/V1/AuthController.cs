@@ -1,7 +1,7 @@
+﻿using Application.Features.Auths.Commands.Logins;
+using Application.Features.Auths.Commands.RefreshTokens;
+using Application.Features.Auths.Models;
 using Asp.Versioning;
-using Business.Features.Auths.Commands.Logins;
-using Business.Features.Auths.Commands.RefreshTokens;
-using Business.Features.Auths.Models;
 using OCK.Core.Security.JWT;
 
 namespace WebAPI.Controllers.V1;
@@ -51,6 +51,7 @@ public class AuthController(IConfiguration configuration) : BaseController
         if (Request.Cookies.ContainsKey(_tokenCookieOptions.RefreshTokenCookieName!)) Response.Cookies.Delete(_tokenCookieOptions.RefreshTokenCookieName!);
         return Ok();
     }
+
     private string GetRefreshTokenFromCookies() => Request.Cookies[_tokenCookieOptions.RefreshTokenCookieName];
 
     private void SetTokensToCookie(AccessTokenModel accessToken, RefreshTokenModel refreshToken)

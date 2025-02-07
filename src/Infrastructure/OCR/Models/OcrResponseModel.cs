@@ -4,5 +4,5 @@ namespace Infrastructure.OCR.Models;
 
 public sealed class OcrResponseModel : IResponseModel
 {
-    public string Text { get; set; }
+    public string? Text { get; set; }
 }

@@ -1,17 +1,20 @@
+﻿using Application.Features.Questions.Commands;
+using Application.Features.Questions.Commands.Questions;
+using Application.Features.Questions.Commands.Similars;
+using Application.Features.Questions.Models;
+using Application.Features.Questions.Models.Questions;
+using Application.Features.Questions.Models.Similars;
+using Application.Features.Questions.Queries.Questions;
+using Application.Features.Questions.Queries.Similars;
 using Asp.Versioning;
-using Business.Features.Questions.Commands.Questions;
-using Business.Features.Questions.Commands.Similars;
-using Business.Features.Questions.Models.Questions;
-using Business.Features.Questions.Models.Similars;
-using Business.Features.Questions.Queries.Questions;
-using Business.Features.Questions.Queries.Similars;
+using Domain.Constants;
 
 namespace WebAPI.Controllers.V1;
 
 [ApiController]
 [Route(ApiVersioningConfig.ControllerRouteWithoutApi)]
 [ApiVersion("1")]
-public class QuestionController() : BaseController
+public class QuestionController : BaseController
 {
     #region Question
 
@@ -31,10 +34,26 @@ public class QuestionController() : BaseController
         return Ok(result);
     }
 
+    [HttpPost("GetQuestionsForAdmin")]
+    public async Task<IActionResult> GetQuestionsForAdmin([FromQuery] PageRequest pageRequest, [FromBody] QuestionForAdminRequestModel model)
+    {
+        var query = new GetQuestionsForAdminQuery { PageRequest = pageRequest, Model = model };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
     [HttpPost("AddQuestion")]
     public async Task<IActionResult> AddQuestion([FromBody] AddQuestionModel model)
     {
         var command = new AddQuestionCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("AddRangeQuestion")]
+    public async Task<IActionResult> AddRangeQuestion([FromBody] List<AddQuestionModel> models)
+    {
+        var command = new AddRangeQuestionCommand { Models = models };
         var result = await Mediator.Send(command);
         return Ok(result);
     }
@@ -63,10 +82,43 @@ public class QuestionController() : BaseController
         return Ok(result);
     }
 
+    [HttpPost("ManuelSendAgain")]
+    public async Task<IActionResult> UpdateQuestionManuelSend([FromQuery] Guid questionId)
+    {
+        var command = new UpdateQuestionManuelSendCommand { Id = questionId};
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("UpdateQuestionText")]
+    public async Task<IActionResult> UpdateQuestionText([FromBody] UpdateQuestionTextRequestModel model)
+    {
+        var command = new UpdateQuestionTextCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpGet("GetRemainigQuestionCreditByUserId/{userId}")]
+    public async Task<IActionResult> GetRemainigQuestionCreditByUserId([FromRoute] long userId)
+    {
+        var query = new GetRemainigQuestionCreditByUserIdQuery { UserId = userId };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpGet("GetValidTotalQuestionByUserId/{userId}")]
+    public async Task<IActionResult> GetValidTotalQuestionByUserId([FromRoute] long userId)
+    {
+        var query = new GetValidTotalQuestionByUserIdQuery { UserId = userId };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
     #endregion Question
 
     #region SimilarQuestion
 
+    [Obsolete(Strings.NotUse)]
     [HttpGet("GetSimilarQuestionById/{id}")]
     public async Task<IActionResult> GetSimilarQuestionById([FromRoute] Guid id)
     {
@@ -75,6 +127,7 @@ public class QuestionController() : BaseController
         return Ok(result);
     }
 
+    [Obsolete(Strings.NotUse)]
     [HttpPost("GetSimilarQuestions")]
     public async Task<IActionResult> GetSimilarQuestions([FromQuery] PageRequest pageRequest, [FromBody] SimilarRequestModel model)
     {
@@ -83,6 +136,7 @@ public class QuestionController() : BaseController
         return Ok(result);
     }
 
+    [Obsolete(Strings.NotUse)]
     [HttpPost("AddSimilarQuestion")]
     public async Task<IActionResult> AddSimilarQuestion([FromBody] AddSimilarModel model)
     {
@@ -91,6 +145,7 @@ public class QuestionController() : BaseController
         return Ok(result);
     }
 
+    [Obsolete(Strings.NotUse)]
     [HttpPost("PassiveSimilarQuestion")]
     public async Task<IActionResult> PassiveSimilarQuestion([FromBody] Guid similarQuestionId)
     {
@@ -99,6 +154,7 @@ public class QuestionController() : BaseController
         return Ok(result);
     }
 
+    [Obsolete(Strings.NotUse)]
     [HttpPost("ActiveSimilarQuestion")]
     public async Task<IActionResult> ActiveSimilarQuestion([FromBody] Guid similarQuestionId)
     {
@@ -107,6 +163,7 @@ public class QuestionController() : BaseController
         return Ok(result);
     }
 
+    [Obsolete(Strings.NotUse)]
     [HttpPost("IsReadSimilarQuestion")]
     public async Task<IActionResult> IsReadSimilarQuestion([FromBody] Guid similarQuestionId)
     {
@@ -116,4 +173,12 @@ public class QuestionController() : BaseController
     }
 
     #endregion SimilarQuestion
+
+    [HttpPost("AddManuel")]
+    public async Task<IActionResult> AddManuel([FromBody] AddManuelModel model)
+    {
+        var command = new AddManuelCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
 }
