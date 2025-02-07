@@ -135,12 +135,19 @@ public class UserController() : BaseController
         return Ok(result);
     }
 
-
-    [HttpPost("ExitPass")]
-    public async Task<IActionResult> ExitPass([FromBody] UpdateExitPasswordModel model)
+    [HttpPost("ExitPasswordChangeByManager")]
+    public async Task<IActionResult> ExitPasswordChangeByManager([FromBody] UpdateExitPasswordModel model)
     {
-        var query = new ControlExitPassQuery { Model = model };
-        var result = await Mediator.Send(query);
+        var command = new ExitPasswordChangeByManagerCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("ExitPasswordChangeByUser")]
+    public async Task<IActionResult> ExitPasswordChangeByUser([FromBody] UpdateExitPasswordModel model)
+    {
+        var command = new ExitPasswordChangeByUserCommand { Model = model };
+        var result = await Mediator.Send(command);
         return Ok(result);
     }
 }

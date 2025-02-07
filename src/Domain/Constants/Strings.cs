@@ -18,6 +18,8 @@ public struct Strings
     public const string ThumbnailName = "thumb.jpg";
     public const string PostitDefaultColor = "F7DD00";
     public const string ReceiverBook = "ReceiveBookPageImage";
+    public const string DefaultExitPass = "1";
+    public const string DefaultExitPassCipher = "GNRs5RnuzaVEvCHRi9ZC8g==";
 
     public const string CacheStatusAndLicence = "CacheStatusAndLicence";
 
@@ -73,6 +75,7 @@ public struct Strings
     public const string Website = "Websitesi";
     public const string UserName = "Kullanıcı Adı";
     public const string Password = "Şifre";
+    public const string OldPassword = "Eski Şifre";
     public const string Phone = "Telefon";
     public const string OfPhone = "Telefonu";
     public const string PhoneNumber = "Telefon Numarası";
@@ -210,4 +213,9 @@ public struct Strings
 
     public const string AdditionalPackageShouldBeWithBasePackage = "Ek paketler sadece ana paket ile birlikte alınabilir.";
     public const string AnswerBePausedOrCompleted  = "Cevap durumu ara ver veya tamamla olmalıdır.";
+    public const string BookPreparingTitle = "Kitabınız Hazırlanıyor";
+    public const string BookPreparingMessage = "Kitabınız kullanım için hazırlanıyor. İşlem tamamlandığında bilgi vereceğim.";
+    public const string BookReadyTitle = "Kitabınız Hazırlandı";
+    public const string BookReadyMessage = "Kitabınız kullanıma hazır. Sınıf ataması yapabilirsiniz.";
+
 }

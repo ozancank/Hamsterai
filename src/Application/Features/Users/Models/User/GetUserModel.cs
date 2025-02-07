@@ -23,6 +23,7 @@ public class GetUserModel : IResponseModel
     public bool AutomaticPayment { get; set; }
     public string? TaxNumber { get; set; }
     public DateTime LicenceEndDate { get; set; }
+    public string? ExitPassword { get; set; }
 
     public List<GetPackageModel> Packages { get; set; } = [];
     public List<string> OperationClaims { get; set; } = [];

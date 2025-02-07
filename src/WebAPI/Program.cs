@@ -49,7 +49,7 @@ static void SetAppOptions(WebApplicationBuilder builder, out CultureInfo default
     AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     builder.Configuration.GetSection("ByPassOptions").Get<ByPassOptions>();
     builder.Configuration.GetSection("AppOptions").Get<Domain.Constants.AppOptions>();
-    Domain.Constants.AppOptions.CreateFolder();
+    Domain.Constants.AppOptions.InitOptions();
 }
 
 static void Services(WebApplicationBuilder builder)

@@ -125,7 +125,7 @@ public class UserRules(IUserDal userDal,
         return Task.CompletedTask;
     }
 
-    internal Task UserTypeAllowed(UserTypes type, long? userId = null, bool schoolChange=false)
+    internal Task UserTypeAllowed(UserTypes type, long? userId = null, bool schoolChange = false)
     {
         var control = commonService.HttpUserType switch
         {
@@ -152,6 +152,13 @@ public class UserRules(IUserDal userDal,
     {
         var control = HashingHelper.VerifyPasswordHash(oldPassword, user.PasswordHash, user.PasswordSalt);
         if (!control) throw new AuthenticationException(Strings.OldPasswordWrong);
+        return Task.CompletedTask;
+    }
+
+    internal static Task ExitPasswordShouldVerifiedWhenPasswordChange(string dbPassword, string oldPassword)
+    {
+        var cipher = CryptographyTools.EncryptWithAes256(oldPassword, AppOptions.ExitPassKeyword, AppOptions.ExitPassVector);
+        if (dbPassword != cipher) throw new AuthenticationException(Strings.OldPasswordWrong);
         return Task.CompletedTask;
     }
 

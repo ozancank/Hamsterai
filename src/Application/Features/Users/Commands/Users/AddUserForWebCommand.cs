@@ -53,6 +53,7 @@ public class AddUserForWebCommandHandler(IMapper mapper,
             ConnectionId = null,
             SchoolId = null,
             TaxNumber = request.Model.TaxNumber,
+            ExitPassword = Strings.DefaultExitPassCipher,
         };
 
         var result = await userDal.ExecuteWithTransactionAsync(async () =>

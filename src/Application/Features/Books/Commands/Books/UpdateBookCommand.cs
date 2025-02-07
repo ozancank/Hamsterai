@@ -1,8 +1,11 @@
 ﻿using Application.Features.Books.Models.Books;
 using Application.Features.Books.Rules;
 using Application.Features.Lessons.Rules;
+using Application.Features.Notifications.Dto;
 using Application.Features.Schools.Rules;
+using Application.Services.BookService;
 using Application.Services.CommonService;
+using Application.Services.NotificationService;
 using MediatR;
 using OCK.Core.Constants;
 using OCK.Core.Pipelines.Authorization;
@@ -22,6 +25,8 @@ public class UpdateBookCommandHandler(IMapper mapper,
                                       ICommonService commonService,
                                       IBookDal bookDal,
                                       IRBookClassRoomDal bookClassRoomDal,
+                                      IBookService bookService,
+                                      INotificationService notificationService,
                                       LessonRules lessonRules,
                                       ClassRoomRules classRoomRules,
                                       SchoolRules schoolRules,
@@ -55,19 +60,12 @@ public class UpdateBookCommandHandler(IMapper mapper,
                 PdfTools.SplitPdf(stream, folderPath);
                 var base64 = await PdfTools.PdfToImageBase64(stream, 0, cancellationToken: cancellationToken);
                 await ImageTools.Base64ToImageFile(base64, thumbPath, cancellationToken: cancellationToken);
-                Console.WriteLine($"Pdf {book.Id} is converted to image.");
+                Console.WriteLine($"Pdf {book.Id} is splitted.");
             }
-            for (var i = 1; i <= pageCount; i++)
-            {
-                var base64 = await PdfTools.PdfToImageBase64(Path.Combine(folderPath, $"{i}.pdf"), 0, ImageTools.CreateEncoder(".webp"), cancellationToken);
-                await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i}_.webp"), 288, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
-                await ImageTools.Base64ToImageFileWithResize(base64, Path.Combine(folderPath, $"{i}.webp"), 1298, ImageResizeType.Height, ImageTools.CreateEncoder(".webp"), cancellationToken);
-                Console.WriteLine($"Pdf {book.Id}: Page {i} is converted to image.");
-            }
-            Console.WriteLine($"Pdf {book.Id} is splitted to images.");
         }
 
         mapper.Map(request.Model, book);
+        book.IsActive = false;
         book.UpdateDate = date;
         book.UpdateUser = commonService.HttpUserId;
         book.PageCount = pageCount;
@@ -101,6 +99,22 @@ public class UpdateBookCommandHandler(IMapper mapper,
             await bookClassRoomDal.DeleteRangeAsync(deleteList, cancellationToken: cancellationToken);
             await bookClassRoomDal.AddRangeAsync(bookClassRooms, cancellationToken: cancellationToken);
         }, cancellationToken: cancellationToken);
+
+        if (request.Model.File != null)
+        {
+            var datas = new Dictionary<string, string> {
+                { "id", book.Id.ToString() },
+                { "type", NotificationTypes.BookPreparing.ToString()},
+            };
+
+            var notification = new NotificationUserDto(
+                Strings.BookPreparingTitle, Strings.BookPreparingMessage,
+                NotificationTypes.BookReady, [book.CreateUser], datas, book.Id.ToString(), 1);
+
+            await notificationService.PushNotificationByUserId(notification);
+
+            _ = bookService.BookToWebp(book.Id, cancellationToken);
+        }
 
         var result = await bookDal.GetAsyncAutoMapper<GetBookModel>(
             enableTracking: false,

@@ -9,5 +9,6 @@ public enum NotificationTypes : byte
     Everbody = 4,
     HomeWork = 5,
     QuestionOcr = 6,
-    Book = 7
+    BookPreparing = 7,
+    BookReady = 8,
 }

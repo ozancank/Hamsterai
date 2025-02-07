@@ -31,6 +31,7 @@ public static class ApplicationServiceRegistration
         services.AddSingleton<OCK.Core.Mailing.IMailService, OCK.Core.Mailing.MailKitImplementations.MailKitMailService>();
 
         services.AddScoped<Services.AuthService.IAuthService, Services.AuthService.AuthManager>();
+        services.AddScoped<Services.BookService.IBookService, Services.BookService.BookManager>();
         services.AddScoped<Services.CommonService.ICommonService, Services.CommonService.CommonManager>();
         services.AddScoped<Services.EmailService.IEmailService, Services.EmailService.EmailManager>();
         services.AddScoped<Services.GainService.IGainService, Services.GainService.GainManager>();

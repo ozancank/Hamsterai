@@ -52,6 +52,10 @@ public class AddUserCommandHandler(IMapper mapper,
         }
 
         HashingHelper.CreatePasswordHash(request.Model.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+        if (request.Model.ExitPassword.IsNotEmpty())
+            request.Model.ExitPassword = CryptographyTools.EncryptWithAes256(request.Model.ExitPassword, AppOptions.ExitPassKeyword, AppOptions.ExitPassVector);
+
         var user = new User
         {
             Id = id,
@@ -70,6 +74,7 @@ public class AddUserCommandHandler(IMapper mapper,
             ConnectionId = request.Model.ConnectionId,
             SchoolId = request.Model.SchoolId,
             TaxNumber = request.Model.TaxNumber,
+            ExitPassword = request.Model.ExitPassword.IfNullEmptyString(Strings.DefaultExitPassCipher),
         };
 
         var packageUsers = new List<PackageUser>();

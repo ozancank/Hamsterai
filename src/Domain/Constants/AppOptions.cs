@@ -56,8 +56,10 @@ public class AppOptions
     public static string HomeworkFolderPath { get; set; } = string.Empty;
     public static string HomeworkAnswerFolderPath { get; set; } = string.Empty;
     public static string BookFolderPath { get; set; } = string.Empty;
+    public static string ExitPassKeyword { get; set; } =  string.Empty;
+    public static string ExitPassVector { get; set; } = string.Empty;
 
-    public static void CreateFolder()
+    public static void InitOptions()
     {
         var properties = typeof(AppOptions).GetProperties()
             .Where(p => p.Name.EndsWith("FolderPath") && p.PropertyType == typeof(string));
@@ -83,5 +85,8 @@ public class AppOptions
             }
         }
 
+        var exitPassArray = ExitPassKey.Split(";;");
+        ExitPassKeyword = exitPassArray[0];
+        ExitPassVector = exitPassArray[1];
     }
 }

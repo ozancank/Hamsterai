@@ -16,6 +16,7 @@ public sealed class AddUserModel : IRequestModel
     public string? TaxNumber { get; set; }
     public DateTime LicenceEndDate { get; set; }
     public int QuestionCredit { get; set; }
+    public string? ExitPassword { get; set; }
 
     public string? ProfilePictureBase64 { get; set; }
     public string? ProfilePictureFileName { get; set; }
