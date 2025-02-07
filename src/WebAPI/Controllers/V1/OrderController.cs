@@ -1,4 +1,4 @@
-using Application.Features.Orders.Commands;
+﻿using Application.Features.Orders.Commands;
 using Application.Features.Orders.Models;
 using Application.Features.Orders.Queries;
 using Asp.Versioning;
@@ -29,7 +29,7 @@ public class OrderController : BaseController
     [HttpGet("GetOrders")]
     public async Task<IActionResult> GetOrders([FromQuery] PageRequest model)
     {
-        var command = new GetOrdersQuery { PageRequest = model };
+        var command = new ControlExitPassQuery { PageRequest = model };
         var result = await Mediator.Send(command);
         return Ok(result);
     }

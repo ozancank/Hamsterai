@@ -5,7 +5,7 @@ using OCK.Core.Pipelines.Authorization;
 
 namespace Application.Features.Orders.Queries;
 
-public class GetOrdersQuery : IRequest<PageableModel<GetOrderModel>>, ISecuredRequest<UserTypes>
+public class ControlExitPassQuery : IRequest<PageableModel<GetOrderModel>>, ISecuredRequest<UserTypes>
 {
     public required PageRequest PageRequest { get; set; }
 
@@ -15,9 +15,9 @@ public class GetOrdersQuery : IRequest<PageableModel<GetOrderModel>>, ISecuredRe
 
 public class GetOrdersQueryHandler(IMapper mapper,
                                    ICommonService commonService,
-                                   IOrderDal orderDal) : IRequestHandler<GetOrdersQuery, PageableModel<GetOrderModel>>
+                                   IOrderDal orderDal) : IRequestHandler<ControlExitPassQuery, PageableModel<GetOrderModel>>
 {
-    public async Task<PageableModel<GetOrderModel>> Handle(GetOrdersQuery request, CancellationToken cancellationToken)
+    public async Task<PageableModel<GetOrderModel>> Handle(ControlExitPassQuery request, CancellationToken cancellationToken)
     {
         request.PageRequest ??= new PageRequest();
 

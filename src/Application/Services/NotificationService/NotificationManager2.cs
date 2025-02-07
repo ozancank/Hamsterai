@@ -5,15 +5,13 @@ using Infrastructure.Notification;
 
 namespace Application.Services.NotificationService;
 
-public class NotificationManager(INotificationApi notificationApi,
+public class NotificationManager2(INotificationApi notificationApi,
                                  ICommonService commonService,
                                  IDbContextFactory<HamsteraiDbContext> contextFactory) : INotificationService
 {
     public async Task<bool> PushNotificationAll(string title, string body, IReadOnlyDictionary<string, string> datas)
     {
         using var context = contextFactory.CreateDbContext();
-
-        var date = DateTime.Now;
 
         datas ??= new Dictionary<string, string>();
 
@@ -32,6 +30,8 @@ public class NotificationManager(INotificationApi notificationApi,
         };
 
         await notificationApi.PushNotification(message);
+
+        var date = DateTime.Now;
 
         var notifications = tokens.Select(x => new Notification
         {
@@ -60,11 +60,26 @@ public class NotificationManager(INotificationApi notificationApi,
     {
         using var context = contextFactory.CreateDbContext();
 
+        var tokens = await context.NotificationDeviceTokens.AsNoTracking()
+            .Include(x => x.User)
+            .Where(x => dto.ReceivedUserId.Contains(x.UserId) && x.IsActive && x.User!.IsActive)
+            .Select(x => new { x.User!.Id, x.DeviceToken })
+            .ToListAsync();
+
+        if (tokens.Count == 0) return false;
+
+        var message = new NotificationModel<string>()
+        {
+            Title = dto.Title,
+            Body = dto.Body,
+            List = tokens.Select(x => x.DeviceToken)
+        };
+
+        await notificationApi.PushNotification(message);
+
         var date = DateTime.Now;
 
-        var users = await context.Users.Where(x => x.IsActive && dto.ReceivedUserId.Contains(x.Id)).ToListAsync();
-
-        var notifications = users.Select(x => new Notification
+        var notifications = tokens.Select(x => new Notification
         {
             Id = Guid.NewGuid(),
             IsActive = true,
@@ -83,23 +98,6 @@ public class NotificationManager(INotificationApi notificationApi,
 
         await context.Notifications.AddRangeAsync(notifications);
         await context.SaveChangesAsync();
-
-        var tokens = await context.NotificationDeviceTokens.AsNoTracking()
-            .Include(x => x.User)
-            .Where(x => dto.ReceivedUserId.Contains(x.UserId) && x.IsActive && x.User!.IsActive)
-            .Select(x => new { x.User!.Id, x.DeviceToken })
-            .ToListAsync();
-
-        if (tokens.Count == 0) return false;
-
-        var message = new NotificationModel<string>()
-        {
-            Title = dto.Title,
-            Body = dto.Body,
-            List = tokens.Select(x => x.DeviceToken)
-        };
-
-        await notificationApi.PushNotification(message);
 
         return true;
     }

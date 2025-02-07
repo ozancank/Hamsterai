@@ -1,15 +1,15 @@
-﻿using Application.Features.Books.Commands.Books;
+﻿using Application.Features.Books.Commands.BookQuizzes;
+using Application.Features.Books.Commands.Books;
 using Application.Features.Books.Commands.Publishers;
+using Application.Features.Books.Models.BookQuizzes;
 using Application.Features.Books.Models.Books;
 using Application.Features.Books.Models.Publisher;
+using Application.Features.Books.Queries.BookQuizzes;
 using Application.Features.Books.Queries.Books;
 using Application.Features.Books.Queries.Publishers;
 using Asp.Versioning;
 using Domain.Constants;
-using Domain.Entities;
 using System.Text;
-using System.Text.Json;
-using System.Threading;
 
 namespace WebAPI.Controllers.V1;
 
@@ -35,7 +35,6 @@ public class BookController : BaseController
         var result = await Mediator.Send(query);
         return result != null ? File(result, "image/webp") : NotFound();
     }
-
 
     [HttpGet("GetBookPageImageAll/{bookId}")]
     public async Task GetBookPageImageAll([FromRoute] int bookId, CancellationToken cancellationToken = default)
@@ -236,4 +235,72 @@ public class BookController : BaseController
     }
 
     #endregion Publisher
+
+    #region BookQuiz
+
+    [HttpGet("GetBookQuizById/{bookId}/{id}")]
+    public async Task<IActionResult> GetBookQuizById([FromRoute] int bookId, [FromRoute] Guid id)
+    {
+        var query = new GetBookQuizByIdQuery { BookId = bookId, BookQuizId = id };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("GetBookQuizzes")]
+    public async Task<IActionResult> GetBookQuizzes([FromQuery] PageRequest pageRequest, [FromBody] BookQuizRequestModel model)
+    {
+        var query = new GetBookQuizzesQuery { PageRequest = pageRequest, Model = model };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("GetBookQuizzesDynamic")]
+    public async Task<IActionResult> GetBookQuizzesDynamic([FromQuery] PageRequest pageRequest, [FromQuery] int bookId, [FromBody] Dynamic dynamic)
+    {
+        var query = new GetBookQuizzesByDynamicQuery { PageRequest = pageRequest, BookId = bookId, Dynamic = dynamic };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPost("AddBookQuiz")]
+    public async Task<IActionResult> AddBookQuiz([FromBody] AddBookQuizModel model)
+    {
+        var command = new AddBookQuizCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("UpdateBookQuiz")]
+    public async Task<IActionResult> UpdateBookQuiz([FromBody] UpdateBookQuizModel model)
+    {
+        var command = new UpdateBookQuizCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("PassiveBookQuiz")]
+    public async Task<IActionResult> PassiveBookQuiz([FromQuery] Guid id)
+    {
+        var command = new PassiveBookQuizCommand { BookQuizId = id };
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    [HttpPost("ActiveBookQuiz")]
+    public async Task<IActionResult> ActiveBookQuiz([FromQuery] Guid id)
+    {
+        var command = new ActiveBookQuizCommand { BookQuizId = id };
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    [HttpPost("SendBookQuiz")]
+    public async Task<IActionResult> SendBookQuiz([FromBody] UpdateBookQuizUserModel model)
+    {
+        var command = new UpdateBookQuizUserCommand { Model = model };
+        await Mediator.Send(command);
+        return Ok();
+    }
+
+    #endregion BookQuiz
 }

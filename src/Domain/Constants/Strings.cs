@@ -26,6 +26,7 @@ public struct Strings
     public const string DynamicLength = "{0} {1} karakter olmalıdır.";
     public const string DynamicMinLength = "{0} en az {1} karakter olmalıdır.";
     public const string DynamicMaxLength = "{0} en fazla {1} karakter olmalıdır.";
+    public const string DynamicEqual = "{0} ve {1} eşit olmalıdır.";
     public const string DynamicGreaterThan = "{0} {1} büyük olmalıdır.";
     public const string DynamicGreaterThanOrEqual = "{0} {1} büyük veya eşit olmalıdır.";
     public const string DynamicLessThan = "{0} {1} küçük olmalıdır.";
@@ -51,6 +52,8 @@ public struct Strings
     public const string DynamicFileType = "{0} dosya tipi {1} olmalıdır.";
     public const string DynamicFileSize = "{0} dosya boyutu {1} olmalıdır.";
     public const string DynamicMaximumFileSize = "{0} dosya boyutu en fazla {1} olmalıdır.";
+    public const string DynamicUnique = "{0} bir tane olmalıdır.";
+    public const string DynamicAlreadyCompleted = "{0} zaten tamamlandı.";
 
     public const string Second = "Saniye";
     public const string Minute = "Dakika";
@@ -104,7 +107,9 @@ public struct Strings
     public const string Message = "Mesaj";
     public const string Gain = "Kazanım";
     public const string Quiz = "Test";
+    public const string OfQuiz = "Testi";
     public const string RightOption = "Doğru Cevap";
+    public const string RightOptions = "Doğru Cevaplar";
     public const string Status = "Durum";
     public const string ClassRoom = "Sınıf";
     public const string No = "No";
@@ -156,6 +161,7 @@ public struct Strings
     public const string Postit = "Post-it";
     public const string Color = "Renk";
     public const string Description = "Açıklama";
+    public const string OfDescription = "Açıklaması";
 
     //public const string LessonGroup = "Ders Grubu";
     public const string NoQuestionCredit = "Soru krediniz bulunmamaktadır.";
@@ -203,4 +209,5 @@ public struct Strings
     public const string NoResponseFromOCR = "OCR'dan yanıt alınamadı.";
 
     public const string AdditionalPackageShouldBeWithBasePackage = "Ek paketler sadece ana paket ile birlikte alınabilir.";
+    public const string AnswerBePausedOrCompleted  = "Cevap durumu ara ver veya tamamla olmalıdır.";
 }

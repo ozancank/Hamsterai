@@ -40,6 +40,7 @@ public class AppOptions
     public static string[] AIDefaultUrls { get; set; } = [];
     public static int QuestionMaxLimit { get; set; } = 30;
     public static int QuizMaxLimit { get; set; } = 30;
+    public static string ExitPassKey { get; set; } = string.Empty;
 
     public static string ProfilePictureFolderPath { get; set; } = string.Empty;
     public static string QuestionPictureFolderPath { get; set; } = string.Empty;
@@ -76,8 +77,8 @@ public class AppOptions
 
                 if (Environment.OSVersion.IsUnix())
                 {
-                    UnixHelper.ExecuteBashCommand($"sudo chown -R root:root {fullPath}");
-                    UnixHelper.ExecuteBashCommand($"sudo chmod -R 755 {fullPath}");
+                    UnixTools.ExecuteBashCommand($"sudo chown -R root:root {fullPath}");
+                    UnixTools.ExecuteBashCommand($"sudo chmod -R 755 {fullPath}");
                 }
             }
         }

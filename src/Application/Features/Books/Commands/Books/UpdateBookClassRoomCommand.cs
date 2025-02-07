@@ -28,7 +28,7 @@ public class UpdateBookClassRoomCommandHandler(IMapper mapper,
     {
         if (commonService.HttpUserType == UserTypes.School) request.Model.SchoolId = commonService.HttpSchoolId ?? 0;
 
-        await bookRules.BookShouldExistsAndActiveById(request.Model.Id);
+        await bookRules.BookShouldExistsAndActive(request.Model.Id);
         await schoolRules.SchoolShouldExistsAndActive(request.Model.SchoolId);
 
         var date = DateTime.Now;

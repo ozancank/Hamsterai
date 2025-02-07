@@ -130,7 +130,7 @@ internal class Program
                                           s.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase))
                               .ToList();
 
-        var selectedImages = images.OrderBy(x => new Guid()).ToList().Take(questionCount).ToList();
+        var selectedImages = images.OrderBy(x => Guid.NewGuid()).ToList().Take(questionCount).ToList();
 
         var base64Images = new List<(string, string)>();
         foreach (var imagePath in selectedImages)

@@ -61,8 +61,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
 
             var url = $"{baseUrl}/question/sor";
-            if (baseUrl.Contains("185.195.255.124")) url = $"{baseUrl}/Soru_ITO";
-            if (baseUrl.Contains("16.170.214.30")) url = $"{baseUrl}/matcher";
+            if (baseUrl.Contains("api5")) url = $"{baseUrl}/matcher";
             if (model.LessonId == 80) url = $"{baseUrl}/solve-geometry";
 
             var data = new QuestionRequestModel
@@ -84,7 +83,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
                 if (content.Contains("\"error\"")) throw new ExternalApiException((content.Trim("{", "}") ?? string.Empty));
                 answer = JsonSerializer.Deserialize<QuestionResponseModel>(content, _options) ?? throw new ExternalApiException(Strings.DynamicNotNull, nameof(answer));
-                if (baseUrl.Contains("16.170.214.30")) answer.RightOption = "A";
+                if (baseUrl.Contains("api5")) answer.RightOption = "A";
                 if (!model.ExcludeQuiz)
                 {
                     answer.RightOption = answer.RightOption.IsNotEmpty()
@@ -246,7 +245,6 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
 
             var url = $"{baseUrl}/benzer/sor";
-            if (baseUrl.Contains("185.195.255.124")) url = $"{baseUrl}/Benzer";
 
             var data = new SimilarRequestModel
             {

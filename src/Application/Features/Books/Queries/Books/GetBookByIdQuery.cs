@@ -26,7 +26,7 @@ public sealed class GetBookByIdQueryHandler(IMapper mapper,
         var schoolId = commonService.HttpSchoolId;
 
         var book = await bookDal.GetAsyncAutoMapper<GetBookModel>(
-            enableTracking: false,
+            enableTracking: request.Tracking,
             predicate: userType switch
             {
                 UserTypes.Administator => x => x.Id == request.Id,

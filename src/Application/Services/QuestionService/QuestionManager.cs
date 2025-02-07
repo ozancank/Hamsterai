@@ -79,32 +79,34 @@ public class QuestionManager(ICommonService commonService,
                     model.Base64 = base64;
 
                     var aiUrl = AppOptions.AIDefaultUrls.Length <= question.Lesson!.AIUrlIndex ? AppOptions.AIDefaultUrls[0] : AppOptions.AIDefaultUrls[question.Lesson!.AIUrlIndex];
-                    int[] tryLessonIds = [49, 58, 80]; // 49: LGS Matematik, 58: LGS Fen Bilimleri
 
-                    Console.WriteLine($"{methodName} - SendQuestion: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                     switch (question.Type)
                     {
                         case QuestionType.Question:
-                            model.AIUrl = tryLessonIds.Contains(question.LessonId) ? "http://16.170.214.30:8000" : aiUrl;
+                            model.AIUrl = aiUrl;
+                            Console.WriteLine($"{methodName} - SendQuestion: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                             await questionApi.AskQuestionWithImage(model);
                             break;
                         case QuestionType.FindMistake:
-                            model.AIUrl = "http://16.170.214.30:8000";
+                            model.AIUrl = AppOptions.AIDefaultUrls[2];
+                            Console.WriteLine($"{methodName} - SendFindMistake: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                             await questionApi.AskQuestionWithImage(model);
                             break;
                         case QuestionType.MakeDescription:
                             model.AIUrl = AppOptions.AIDefaultUrls[1];
+                            Console.WriteLine($"{methodName} - SendMakeDescription: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                             await questionApi.MakeDescriptionWithImage(model);
                             break;
                         case QuestionType.MakeSummary:
                             model.AIUrl = AppOptions.AIDefaultUrls[1];
+                            Console.WriteLine($"{methodName} - SendMakeSummary: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                             await questionApi.MakeSummaryWithImage(model);
                             break;
                         default:
                             throw new BusinessException(Strings.DynamicNotFound.Format($"{Strings.Question} {Strings.OfType}"));
                     }
 
-                    model.AIUrl = AppOptions.AIDefaultUrls[2];
+                    model.AIUrl = AppOptions.AIDefaultUrls[3];
                     var visual = await questionApi.IsExistsVisualContent(model, cancellationToken);
                     _ = await context.Questions
                         .Where(x => x.Id == question.Id)

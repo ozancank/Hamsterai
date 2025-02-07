@@ -28,6 +28,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.AutomaticPayment).HasColumnName("AutomaticPayment").HasDefaultValue(false).HasColumnOrder(18).IsRequired();
         builder.Property(e => e.TaxNumber).HasColumnName("TaxNumber").HasMaxLength(11).HasColumnOrder(19);
         builder.Property(e => e.AIUrl).HasColumnName("AIUrl").HasColumnOrder(21);
+        builder.Property(e => e.ExitPassword).HasColumnName("ExitPassword").HasDefaultValue("GNRs5RnuzaVEvCHRi9ZC8g==").HasColumnOrder(22).IsRequired();
 
         builder.HasOne(e => e.School).WithMany(e => e.Users).HasForeignKey(e => e.SchoolId).HasPrincipalKey(e => e.Id);
 

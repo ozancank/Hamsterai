@@ -15,6 +15,11 @@ public class BookQuizUserConfiguration : IEntityTypeConfiguration<BookQuizUser>
         builder.Property(e => e.BookQuizId).HasColumnName("BookQuizId").HasColumnOrder(6).IsRequired();
         builder.Property(e => e.UserId).HasColumnName("UserId").HasColumnOrder(7).IsRequired();
         builder.Property(e => e.Answers).HasColumnName("Answers").HasColumnType("citext").HasColumnOrder(8).IsRequired();
+        builder.Property(e => e.Status).HasColumnName("Status").HasDefaultValue(QuizStatus.Undifined).HasColumnOrder(9).IsRequired();
+        builder.Property(e => e.CorrectCount).HasColumnName("CorrectCount").HasDefaultValue(0).HasColumnOrder(10).IsRequired();
+        builder.Property(e => e.WrongCount).HasColumnName("WrongCount").HasDefaultValue(0).HasColumnOrder(11).IsRequired();
+        builder.Property(e => e.EmptyCount).HasColumnName("EmptyCount").HasDefaultValue(0).HasColumnOrder(12).IsRequired();
+        builder.Property(e => e.SuccessRate).HasColumnName("SuccessRate").HasDefaultValue(0).HasColumnOrder(13).IsRequired();
 
         builder.HasOne(d => d.BookQuiz).WithMany(p => p.BookQuizUsers).HasForeignKey(d => d.BookQuizId).HasPrincipalKey(x => x.Id);
         builder.HasOne(d => d.User).WithMany(p => p.BookQuizUsers).HasForeignKey(d => d.UserId).HasPrincipalKey(x => x.Id);

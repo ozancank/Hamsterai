@@ -1,4 +1,4 @@
-using Application.Features.Users.Commands.Claim;
+﻿using Application.Features.Users.Commands.Claim;
 using Application.Features.Users.Commands.Password;
 using Application.Features.Users.Commands.Users;
 using Application.Features.Users.Models.Claim;
@@ -132,6 +132,15 @@ public class UserController() : BaseController
     {
         var command = new PasswordChangeByEmailCommand { Password = model.Password, Token = model.Token };
         var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
+
+    [HttpPost("ExitPass")]
+    public async Task<IActionResult> ExitPass([FromBody] UpdateExitPasswordModel model)
+    {
+        var query = new ControlExitPassQuery { Model = model };
+        var result = await Mediator.Send(query);
         return Ok(result);
     }
 }

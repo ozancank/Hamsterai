@@ -3,6 +3,7 @@ using System;
 using DataAccess.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.EF.Migrations
 {
     [DbContext(typeof(HamsteraiDbContext))]
-    partial class HamsteraiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250207090150_AddSuccessRate")]
+    partial class AddSuccessRate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -516,14 +519,6 @@ namespace DataAccess.EF.Migrations
                         .HasColumnType("citext")
                         .HasColumnName("Email")
                         .HasColumnOrder(11);
-
-                    b.Property<string>("ExitPassword")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("citext")
-                        .HasDefaultValue("GNRs5RnuzaVEvCHRi9ZC8g==")
-                        .HasColumnName("ExitPassword")
-                        .HasColumnOrder(22);
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
