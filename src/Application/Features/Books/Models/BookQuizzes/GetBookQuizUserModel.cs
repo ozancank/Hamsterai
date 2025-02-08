@@ -13,5 +13,8 @@ public class GetBookQuizUserModel : IResponseModel
     public string? QuizName { get; set; }
     public byte QuestionCount { get; set; }
     public byte OptionCount { get; set; }
+    public QuizStatus Status { get; set; }
+
     public OptionDto[] UserAnswers { get; set; } = [];
+    public OptionDto[] RightAnswers { get; set; } = [];
 }

@@ -302,5 +302,13 @@ public class BookController : BaseController
         return Ok();
     }
 
+    [HttpGet("GetBookQuizUserById")]
+    public async Task<IActionResult> GetBookQuizUserById([FromQuery] int bookId, [FromQuery] Guid bookQuizId, [FromQuery] long userId)
+    {
+        var query = new GetBookQuizUserByIdQuery { BookId = bookId, BookQuizId = bookQuizId, UserId = userId };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
     #endregion BookQuiz
 }

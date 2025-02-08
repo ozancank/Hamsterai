@@ -14,5 +14,12 @@ public class BookQuizMappingProfiles : Profile
 
         CreateMap<AddBookQuizModel, BookQuiz>();
         CreateMap<UpdateBookQuizModel, BookQuiz>();
+
+        CreateMap<BookQuizUser, GetBookQuizUserModel>()
+            .ForMember(dest => dest.BookName, opt => opt.MapFrom(src => src.BookQuiz != null && src.BookQuiz.Book != null ? src.BookQuiz.Book.Name : string.Empty))
+            .ForMember(dest => dest.LessonName, opt => opt.MapFrom(src => src.BookQuiz != null && src.BookQuiz.Lesson != null ? src.BookQuiz.Lesson.Name : string.Empty))
+            .ForMember(dest => dest.QuizName, opt => opt.MapFrom(src => src.BookQuiz != null ? src.BookQuiz.Name : string.Empty))
+            .ForMember(dest => dest.OptionCount, opt => opt.MapFrom(src => src.BookQuiz != null ? src.BookQuiz.OptionCount : 0))
+            .ForMember(dest => dest.QuestionCount, opt => opt.MapFrom(src => src.BookQuiz != null ? src.BookQuiz.QuestionCount : 0));
     }
 }

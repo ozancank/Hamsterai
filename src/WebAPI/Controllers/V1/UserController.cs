@@ -135,6 +135,14 @@ public class UserController() : BaseController
         return Ok(result);
     }
 
+    [HttpGet("GetExitPassword")]
+    public async Task<IActionResult> GetExitPassword([FromQuery] long userId)
+    {
+        var query = new GetExitPasswordQuery { UserId = userId };
+        var result = await Mediator.Send(query);
+        return Ok(result);
+    }
+
     [HttpPost("ExitPasswordChangeByManager")]
     public async Task<IActionResult> ExitPasswordChangeByManager([FromBody] UpdateExitPasswordModel model)
     {

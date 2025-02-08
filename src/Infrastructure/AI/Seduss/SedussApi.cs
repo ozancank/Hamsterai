@@ -62,7 +62,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
 
             var url = $"{baseUrl}/question/sor";
             if (baseUrl.Contains("api5")) url = $"{baseUrl}/matcher";
-            if (model.LessonId == 80) url = $"{baseUrl}/solve-geometry";
+            if (model.LessonName.ToSlug('_', true) == "geometri") url = $"{baseUrl}/solve-geometry";
 
             var data = new QuestionRequestModel
             {
