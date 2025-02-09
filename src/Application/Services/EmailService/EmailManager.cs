@@ -39,7 +39,7 @@ public class EmailManager(IUserDal userDal, IMailService mailService) : IEmailSe
             Subject = "Şifre Yenileme",
             TextBody = emailTextBody,
             HtmlBody = emailHtmlBody,
-            UnscribeLink = "https://hamsterai.com.tr"
+            UnscribeLink = "https://seduss.com"
         };
 
         await mailService.SendEmailAsync(emails);
