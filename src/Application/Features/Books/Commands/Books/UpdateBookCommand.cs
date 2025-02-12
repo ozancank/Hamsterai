@@ -46,6 +46,8 @@ public class UpdateBookCommandHandler(IMapper mapper,
 
         var date = DateTime.Now;
 
+        mapper.Map(request.Model, book);
+
         var pageCount = book.PageCount;
         if (request.Model.File != null)
         {
@@ -62,10 +64,9 @@ public class UpdateBookCommandHandler(IMapper mapper,
                 await ImageTools.Base64ToImageFile(base64, thumbPath, cancellationToken: cancellationToken);
                 Console.WriteLine($"Pdf {book.Id} is splitted.");
             }
+            book.IsActive = false;
         }
 
-        mapper.Map(request.Model, book);
-        book.IsActive = false;
         book.UpdateDate = date;
         book.UpdateUser = commonService.HttpUserId;
         book.PageCount = pageCount;

@@ -27,8 +27,8 @@ public class GetHomeworksQueryHandler(IMapper mapper,
         request.PageRequest ??= new PageRequest();
         request.Model ??= new HomeworkRequestModel();
 
-        if (request.Model.StartDate == null) request.Model.StartDate = DateTime.Today.AddDays(-7);
-        if (request.Model.EndDate == null) request.Model.EndDate = DateTime.Today;
+        //if (request.Model.StartDate == null) request.Model.StartDate = DateTime.Today.AddDays(-7);
+        //if (request.Model.EndDate == null) request.Model.EndDate = DateTime.Today;
 
         if (userType == UserTypes.Teacher)
         {
@@ -36,9 +36,9 @@ public class GetHomeworksQueryHandler(IMapper mapper,
             enableTracking: false,
             predicate: x => x.IsActive
                             && x.TeacherId == connectionId
-                            && x.IsActive
-                            && x.CreateDate.Date >= request.Model.StartDate.Value.Date
-                            && x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddSeconds(-1),
+                            && x.IsActive,
+                            //&& x.CreateDate.Date >= request.Model.StartDate.Value.Date
+                            //&& x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddSeconds(-1),
             include: x => x.Include(u => u.User)
                            .Include(u => u.School)
                            .Include(u => u.Teacher)
@@ -58,9 +58,9 @@ public class GetHomeworksQueryHandler(IMapper mapper,
             enableTracking: false,
             predicate: x => x.IsActive
                             && x.CreateUser == userId
-                            && x.IsActive
-                            && x.CreateDate.Date >= request.Model.StartDate.Value.Date
-                            && x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddSeconds(-1),
+                            && x.IsActive,
+                            //&& x.CreateDate.Date >= request.Model.StartDate.Value.Date
+                            //&& x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddSeconds(-1),
             include: x => x.Include(u => u.User)
                            .Include(u => u.School)
                            .Include(u => u.Teacher)

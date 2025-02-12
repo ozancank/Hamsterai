@@ -105,7 +105,7 @@ public class UpdateBookQuizCommandValidator : AbstractValidator<UpdateBookQuizCo
             foreach (var option in value)
             {
                 if (option.Option != null && !ValidOptions.Contains(option.Option.Value)) return context.AddErrorMessage(Strings.DynamicBetween.Format($"{Strings.RightOption}", "A", "E"));
-                if (option!.QuestionNumber.Between((byte)1, context.InstanceToValidate.Model.QuestionCount)) return context.AddErrorMessage(Strings.DynamicBetween.Format($"{Strings.Question} {Strings.Number}", "1", context.InstanceToValidate.Model.QuestionCount));
+                if (!option!.QuestionNumber.Between((byte)1, context.InstanceToValidate.Model.QuestionCount)) return context.AddErrorMessage(Strings.DynamicBetween.Format($"{Strings.Question} {Strings.Number}", "1", context.InstanceToValidate.Model.QuestionCount));
                 if (value.Count(x => x.QuestionNumber == option.QuestionNumber) != 1) return context.AddErrorMessage(Strings.DynamicUnique.Format($"{Strings.Question} {Strings.Number}"));
             }
 
