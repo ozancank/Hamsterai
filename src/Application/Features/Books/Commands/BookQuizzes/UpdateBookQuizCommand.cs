@@ -36,7 +36,7 @@ public class UpdateBookQuizCommandHandler(IMapper mapper,
 
         await bookRules.CanAccessBook(request.Model.BookId);
         await lessonRules.LessonShouldExistsAndActive(request.Model.LessonId);
-        await bookQuizRules.QuizNameCanNotBeDuplicated(request.Model.BookId, request.Model.LessonId, request.Model.Name!);
+        await bookQuizRules.QuizNameCanNotBeDuplicated(request.Model.BookId, request.Model.LessonId, request.Model.Name!, request.Model.Id);
 
         var date = DateTime.Now;
 
@@ -45,7 +45,7 @@ public class UpdateBookQuizCommandHandler(IMapper mapper,
         bookQuiz.UpdateUser = commonService.HttpUserId;
         bookQuiz.Answers = JsonSerializer.Serialize(request.Model.RightAnswers);
 
-        var deleteList = await bookQuizUserDal.GetListAsync(predicate:x => x.BookQuizId == bookQuiz.Id, cancellationToken: cancellationToken);
+        var deleteList = await bookQuizUserDal.GetListAsync(predicate: x => x.BookQuizId == bookQuiz.Id, cancellationToken: cancellationToken);
 
         await bookQuizDal.ExecuteWithTransactionAsync(async () =>
         {
