@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Core;
+﻿using Domain.Constants;
+using Domain.Entities.Core;
 
 namespace Domain.Entities;
 
@@ -10,6 +11,9 @@ public class Book : BaseEntity<int>
     public string? Name { get; set; }
     public short PageCount { get; set; }
     public short? Year { get; set; }
+    public string? ThumbBase64 { get; set; }
+    public byte TryPrepareCount { get; set; }
+    public BookStatus Status { get; set; }
 
     public virtual School? School { get; set; }
     public virtual Lesson? Lesson { get; set; }

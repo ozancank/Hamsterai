@@ -7,7 +7,6 @@ using Application.Services.BookService;
 using Application.Services.CommonService;
 using Application.Services.NotificationService;
 using MediatR;
-using OCK.Core.Constants;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 
@@ -52,17 +51,13 @@ public class UpdateBookCommandHandler(IMapper mapper,
         if (request.Model.File != null)
         {
             var folderPath = Path.Combine(AppOptions.BookFolderPath, $"{request.Model.Id}");
+            var originalPath = Path.Combine(folderPath, Strings.OriginalPdf);
             if (Directory.Exists(folderPath)) Directory.Delete(folderPath, true);
             Directory.CreateDirectory(folderPath);
-            var thumbPath = Path.Combine(folderPath, Strings.ThumbnailName);
 
-            using (var stream = request.Model.File!.OpenReadStream())
+            using (var stream = new FileStream(originalPath, FileMode.Create))
             {
-                pageCount = (short)PdfTools.PdfPageCount(stream);
-                PdfTools.SplitPdf(stream, folderPath);
-                var base64 = await PdfTools.PdfToImageBase64(stream, 0, cancellationToken: cancellationToken);
-                await ImageTools.Base64ToImageFile(base64, thumbPath, cancellationToken: cancellationToken);
-                Console.WriteLine($"Pdf {book.Id} is splitted.");
+                await request.Model.File!.CopyToAsync(stream, cancellationToken);
             }
             book.IsActive = false;
         }
@@ -70,6 +65,9 @@ public class UpdateBookCommandHandler(IMapper mapper,
         book.UpdateDate = date;
         book.UpdateUser = commonService.HttpUserId;
         book.PageCount = pageCount;
+        book.ThumbBase64 = string.Empty;
+        book.TryPrepareCount = 0;
+        book.Status = BookStatus.Updated;
 
         var deleteList = await bookClassRoomDal.GetListAsync(predicate: x => x.BookId == book.Id, cancellationToken: cancellationToken);
 
@@ -114,7 +112,7 @@ public class UpdateBookCommandHandler(IMapper mapper,
 
             await notificationService.PushNotificationByUserId(notification);
 
-            _ = bookService.BookToWebp(book.Id, cancellationToken);
+            _ = bookService.BookPrepare(book.Id, cancellationToken);
         }
 
         var result = await bookDal.GetAsyncAutoMapper<GetBookModel>(
@@ -154,6 +152,6 @@ public class UpdateBookCommandValidator : AbstractValidator<UpdateBookCommand>
 
         RuleFor(x => Path.GetExtension(x.Model.File != null ? x.Model.File.FileName.ToLowerInvariant() : string.Empty)).Equal(".pdf").When(x => x.Model.File != null).WithMessage(Strings.DynamicExtension, [Strings.File, ".pdf"]);
         RuleFor(x => x.Model.File != null ? x.Model.File.ContentType : string.Empty).Equal("application/pdf").When(x => x.Model.File != null).WithMessage(Strings.DynamicFileType, [Strings.File, "pdf"]);
-        RuleFor(x => x.Model.File != null ? x.Model.File.Length : 0).LessThanOrEqualTo(268_435_456).When(x => x.Model.File != null).WithMessage(Strings.DynamicMaximumFileSize, [Strings.File, "256 MB"]);
+        RuleFor(x => x.Model.File != null ? x.Model.File.Length : 0).LessThanOrEqualTo(629_145_600).WithMessage(Strings.DynamicMaximumFileSize, [Strings.File, "600 MB"]);
     }
 }

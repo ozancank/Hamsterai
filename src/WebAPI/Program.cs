@@ -1,8 +1,6 @@
 ﻿using Application;
-using Application.Services.CommonService;
 using Application.Services.QuestionService;
 using Application.Services.UserService;
-using DataAccess.EF;
 using Domain.Constants;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
@@ -11,7 +9,6 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -91,14 +88,14 @@ static void Services(WebApplicationBuilder builder)
 
     builder.Services.Configure<FormOptions>(options =>
     {
-        options.MultipartBodyLengthLimit = 512 * 1024 * 1024;
+        options.MultipartBodyLengthLimit = 600 * 1024 * 1024;
         options.ValueLengthLimit = 1024 * 1024 * 1024;
         options.MemoryBufferThreshold = 1024 * 1024 * 1024;
     });
 
     builder.WebHost.ConfigureKestrel(options =>
     {
-        options.Limits.MaxRequestBodySize = 512 * 1024 * 1024;
+        options.Limits.MaxRequestBodySize = 600 * 1024 * 1024;
     });
 
     SwaggerAndToken(builder);

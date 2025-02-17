@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OCK.Core;
 using OCK.Core.Utilities;
-using System.Diagnostics;
 
 namespace DataAccess;
 
@@ -21,7 +20,7 @@ public static class DALServiceRegistration
                     o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
             );
             }
-            if (Debugger.IsAttached) options.EnableSensitiveDataLogging();
+            //if (Debugger.IsAttached) options.EnableSensitiveDataLogging();
         });
 
         services.AddScoped<IOperationClaimDal, OperationClaimDal>();

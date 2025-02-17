@@ -83,6 +83,7 @@ public class QuestionManager(ICommonService commonService,
                     switch (question.Type)
                     {
                         case QuestionType.Question:
+
                             //model.AIUrl = aiUrl;
                             model.AIUrl = model.LessonId == 75 ? AppOptions.AIDefaultUrls[3] : aiUrl;
                             Console.WriteLine($"{methodName} - SendQuestion: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");

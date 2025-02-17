@@ -3,6 +3,7 @@ using System;
 using DataAccess.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.EF.Migrations
 {
     [DbContext(typeof(HamsteraiDbContext))]
-    partial class HamsteraiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250214094551_AddBookThumbBase64")]
+    partial class AddBookThumbBase64
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,24 +75,10 @@ namespace DataAccess.EF.Migrations
                         .HasColumnName("SchoolId")
                         .HasColumnOrder(11);
 
-                    b.Property<byte>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((byte)0)
-                        .HasColumnName("Status")
-                        .HasColumnOrder(14);
-
                     b.Property<string>("ThumbBase64")
                         .HasColumnType("citext")
                         .HasColumnName("citext")
                         .HasColumnOrder(12);
-
-                    b.Property<byte>("TryPrepareCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((byte)0)
-                        .HasColumnName("TryPrepareCount")
-                        .HasColumnOrder(13);
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp without time zone")

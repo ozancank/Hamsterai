@@ -76,7 +76,7 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         }
         await using var outputStream = new MemoryStream();
         var extension = System.IO.Path.GetExtension(fileName)!.ToLowerInvariant();
-        var encoder = ImageTools.CreateEncoder(extension);
+        var encoder = ImageTools.CreateEncoderForImageSharp(extension);
         await image.SaveAsync(outputStream, encoder, cancellationToken: cancellationToken);
         await File.WriteAllBytesAsync(filePath, outputStream.ToArray(), cancellationToken);
         return filePath;
@@ -102,7 +102,7 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         if (text.IsEmpty() || fileName.IsEmpty() || folder.IsEmpty()) return string.Empty;
 
         var extension = System.IO.Path.GetExtension(fileName)!.ToLowerInvariant();
-        var imageEncoder = ImageTools.CreateEncoder(extension);
+        var imageEncoder = ImageTools.CreateEncoderForImageSharp(extension);
 
         text = text.TextSplitLine();
 

@@ -29,6 +29,24 @@ public class BookRules(IBookDal bookDal,
         await BookShouldExistsAndActive(book);
     }
 
+    internal static Task BookShouldBeReady(Book book)
+    {
+        if (book.Status != BookStatus.Ready) throw new BusinessException(Strings.DynamicNotReady, Strings.Book);
+        return Task.CompletedTask;
+    }
+
+    internal async Task BookShouldBeReady(int id)
+    {
+        var book = await bookDal.GetAsync(x => x.Id == id && x.Status == BookStatus.Ready, enableTracking: false);
+        await BookShouldBeReady(book);
+    }
+
+    internal async Task BookShouldBeReadyById(int id, int schoolId)
+    {
+        var book = await bookDal.GetAsync(x => x.Id == id && x.SchoolId == schoolId && x.Status == BookStatus.Ready, enableTracking: false);
+        await BookShouldBeReady(book);
+    }
+
     internal async Task CanAccessBook(int id)
     {
         var userType = commonService.HttpUserType;

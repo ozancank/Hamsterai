@@ -28,6 +28,7 @@ public class ActiveBookCommandHandler(IBookDal bookDal,
 
         var book = await bookDal.GetAsync(predicate: x => x.Id == request.BookId && (userType == UserTypes.Administator || x.SchoolId == schoolId), cancellationToken: cancellationToken);
         await BookRules.BookShouldExists(book);
+        await BookRules.BookShouldBeReady(book);
 
         var bookClassRooms = await bookClassRoomDal.GetListAsync(predicate: x => x.BookId == request.BookId, cancellationToken: cancellationToken);
 

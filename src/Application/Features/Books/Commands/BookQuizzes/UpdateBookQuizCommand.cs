@@ -1,10 +1,8 @@
 ﻿using Application.Features.Books.Dto;
 using Application.Features.Books.Models.BookQuizzes;
-using Application.Features.Books.Models.Books;
 using Application.Features.Books.Rules;
 using Application.Features.Lessons.Rules;
 using Application.Services.CommonService;
-using DataAccess.EF.Concrete;
 using FluentValidation.Validators;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;

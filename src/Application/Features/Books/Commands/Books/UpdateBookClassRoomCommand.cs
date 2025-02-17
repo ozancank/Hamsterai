@@ -30,6 +30,7 @@ public class UpdateBookClassRoomCommandHandler(IMapper mapper,
 
         await bookRules.BookShouldExistsAndActive(request.Model.Id);
         await schoolRules.SchoolShouldExistsAndActive(request.Model.SchoolId);
+        await bookRules.BookShouldBeReadyById(request.Model.Id, request.Model.SchoolId);
 
         var date = DateTime.Now;
 

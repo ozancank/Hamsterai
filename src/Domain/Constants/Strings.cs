@@ -15,7 +15,8 @@ public struct Strings
     public const string SwaggerPath = "/swagger";
     public const string XApiKey = "HaMsTerAI-Security";
     public const string AuthorizationDenied = "Bu işlem için yetkiniz bulunmamaktadır.";
-    public const string ThumbnailName = "thumb.jpg";
+    public const string ThumbJpg = "thumb.jpg";
+    public const string OriginalPdf = "original.pdf";
     public const string PostitDefaultColor = "F7DD00";
     public const string ReceiverBook = "ReceiveBookPageImage";
     public const string DefaultExitPass = "1";
@@ -56,6 +57,7 @@ public struct Strings
     public const string DynamicMaximumFileSize = "{0} dosya boyutu en fazla {1} olmalıdır.";
     public const string DynamicUnique = "{0} bir tane olmalıdır.";
     public const string DynamicAlreadyCompleted = "{0} zaten tamamlandı.";
+    public const string DynamicNotReady = "{0} hazır değil.";
 
     public const string Second = "Saniye";
     public const string Minute = "Dakika";

@@ -17,6 +17,8 @@ public class GetBookModel : IResponseModel
     public string? Name { get; set; }
     public short PageCount { get; set; }
     public short? Year { get; set; }
+    public string? ThumbBase64 { get; set; }
+    public BookStatus Status { get; set; }
 
     public List<int> ClassRoomIds { get; set; } = [];
     public List<string> ClassRoomNames { get; set; } = [];

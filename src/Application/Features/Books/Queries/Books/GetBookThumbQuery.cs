@@ -31,7 +31,7 @@ public sealed class GetBookThumbQueryHandler(IBookDal bookDal,
             cancellationToken: cancellationToken);
         if (book == null) return null;
 
-        var filePath = Path.Combine(AppOptions.BookFolderPath, $"{request.BookId}", Strings.ThumbnailName);
+        var filePath = Path.Combine(AppOptions.BookFolderPath, $"{request.BookId}", Strings.ThumbJpg);
         if (!File.Exists(filePath)) return null;
 
         var memory = new MemoryStream();

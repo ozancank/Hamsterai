@@ -9,5 +9,5 @@ namespace Application.Services.BookService;
 
 public interface IBookService : IBusinessService
 {
-    Task BookToWebp(int bookId, CancellationToken cancellationToken = default);
+    Task BookPrepare(int bookId, CancellationToken cancellationToken = default);
 }
