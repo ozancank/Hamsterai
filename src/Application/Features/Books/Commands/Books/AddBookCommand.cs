@@ -91,17 +91,6 @@ public class AddBookCommandHandler(IMapper mapper,
                 await bookClassRoomDal.AddRangeAsync(bookClassRooms, cancellationToken: cancellationToken);
         }, cancellationToken: cancellationToken);
 
-        var datas = new Dictionary<string, string> {
-                { "id", book.Id.ToString() },
-                { "type", NotificationTypes.BookPreparing.ToString()},
-            };
-
-        var notification = new NotificationUserDto(
-            Strings.BookPreparingTitle, Strings.BookPreparingMessage,
-            NotificationTypes.BookReady, [book.CreateUser], datas, book.Id.ToString(), 1);
-
-        await notificationService.PushNotificationByUserId(notification);
-
         _ = bookService.BookPrepare(book.Id, cancellationToken);
 
         var result = await bookDal.GetAsyncAutoMapper<GetBookModel>(
@@ -112,6 +101,17 @@ public class AddBookCommandHandler(IMapper mapper,
                            .Include(u => u.School),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
+
+        var datas = new Dictionary<string, string> {
+                { "id", result.Id.ToString() },
+                { "type", NotificationTypes.BookPreparing.ToString()},
+            };
+
+        var notification = new NotificationUserDto(
+            Strings.BookPreparingTitle, Strings.BookPreparingMessage,
+            NotificationTypes.BookReady, [result.CreateUser], datas, result.Id.ToString(), 1);
+
+        _ = notificationService.PushNotificationByUserId(notification);
 
         return result;
     }

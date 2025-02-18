@@ -51,15 +51,17 @@ public class UpdateBookCommandHandler(IMapper mapper,
         if (request.Model.File != null)
         {
             var folderPath = Path.Combine(AppOptions.BookFolderPath, $"{request.Model.Id}");
-            var originalPath = Path.Combine(folderPath, Strings.OriginalPdf);
             if (Directory.Exists(folderPath)) Directory.Delete(folderPath, true);
             Directory.CreateDirectory(folderPath);
+            var originalPath = Path.Combine(folderPath, Strings.OriginalPdf);
 
             using (var stream = new FileStream(originalPath, FileMode.Create))
             {
                 await request.Model.File!.CopyToAsync(stream, cancellationToken);
             }
+
             book.IsActive = false;
+            book.Status = BookStatus.Updated;
         }
 
         book.UpdateDate = date;
@@ -67,7 +69,6 @@ public class UpdateBookCommandHandler(IMapper mapper,
         book.PageCount = pageCount;
         book.ThumbBase64 = string.Empty;
         book.TryPrepareCount = 0;
-        book.Status = BookStatus.Updated;
 
         var deleteList = await bookClassRoomDal.GetListAsync(predicate: x => x.BookId == book.Id, cancellationToken: cancellationToken);
 
@@ -99,22 +100,6 @@ public class UpdateBookCommandHandler(IMapper mapper,
             await bookClassRoomDal.AddRangeAsync(bookClassRooms, cancellationToken: cancellationToken);
         }, cancellationToken: cancellationToken);
 
-        if (request.Model.File != null)
-        {
-            var datas = new Dictionary<string, string> {
-                { "id", book.Id.ToString() },
-                { "type", NotificationTypes.BookPreparing.ToString()},
-            };
-
-            var notification = new NotificationUserDto(
-                Strings.BookPreparingTitle, Strings.BookPreparingMessage,
-                NotificationTypes.BookReady, [book.CreateUser], datas, book.Id.ToString(), 1);
-
-            await notificationService.PushNotificationByUserId(notification);
-
-            _ = bookService.BookPrepare(book.Id, cancellationToken);
-        }
-
         var result = await bookDal.GetAsyncAutoMapper<GetBookModel>(
             enableTracking: false,
             predicate: x => x.Id == book.Id,
@@ -123,6 +108,22 @@ public class UpdateBookCommandHandler(IMapper mapper,
                            .Include(u => u.School),
             configurationProvider: mapper.ConfigurationProvider,
             cancellationToken: cancellationToken);
+
+        var datas = new Dictionary<string, string> {
+                { "id", result.Id.ToString() },
+                { "type", NotificationTypes.BookPreparing.ToString()},
+            };
+
+        if (request.Model.File != null)
+        {
+            _ = bookService.BookPrepare(book.Id, cancellationToken);
+
+            var notification = new NotificationUserDto(
+                Strings.BookPreparingTitle, Strings.BookPreparingMessage,
+                NotificationTypes.BookReady, [result.CreateUser], datas, result.Id.ToString(), 1);
+
+            _ = notificationService.PushNotificationByUserId(notification);
+        }
 
         return result;
     }
