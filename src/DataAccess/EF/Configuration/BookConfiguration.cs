@@ -18,7 +18,7 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         builder.Property(e => e.PublisherId).HasColumnName("PublisherId").HasColumnOrder(9).IsRequired();
         builder.Property(e => e.Year).HasColumnName("Year").HasColumnOrder(10);
         builder.Property(e => e.SchoolId).HasColumnName("SchoolId").HasColumnOrder(11).IsRequired();
-        builder.Property(e => e.ThumbBase64).HasColumnName("ThumbBase64").HasColumnName("citext").HasColumnOrder(12);
+        builder.Property(e => e.ThumbBase64).HasColumnName("ThumbBase64").HasColumnType("citext").HasColumnOrder(12);
         builder.Property(e => e.TryPrepareCount).HasColumnName("TryPrepareCount").HasDefaultValue((byte)0).HasColumnOrder(13).IsRequired();
         builder.Property(e => e.Status).HasColumnName("Status").HasDefaultValue(BookStatus.Unknown).HasColumnOrder(14).IsRequired();
 
