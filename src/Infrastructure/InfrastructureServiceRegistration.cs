@@ -9,7 +9,7 @@ public static class InfrastructureServiceRegistration
         //services.AddScoped<ILicenceApi, LicenceApi>();
         services.AddScoped<Time.ITimeApi, Time.WorldTimeApi.WorldTimeApi>();
         services.AddTransient<AI.IQuestionApi, AI.Seduss.SedussApi>();
-        services.AddSingleton<Notification.INotificationApi, Notification.Firebase.FirebaseApi>();
+        services.AddSingleton<Notification.INotificationApi, Notification.OneSignal.OneSignalApi>();
         services.AddTransient<Payment.IPaymentApi, Payment.Sipay.SipayApi>();
         //services.AddTransient<OCR.IOcrApi, OCR.Gemini.GeminiApi>();
 

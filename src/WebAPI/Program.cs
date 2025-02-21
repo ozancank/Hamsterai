@@ -57,7 +57,7 @@ static void Services(WebApplicationBuilder builder)
 
     builder.Services.AddSingleton(FirebaseApp.Create(new FirebaseAdmin.AppOptions()
     {
-        Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hamster-private-key.json")),
+        Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sedusssoru-private-key.json")),
     }));
 
     builder.Services.AddControllers();

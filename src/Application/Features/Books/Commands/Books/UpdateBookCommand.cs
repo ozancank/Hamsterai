@@ -62,12 +62,12 @@ public class UpdateBookCommandHandler(IMapper mapper,
 
             book.IsActive = false;
             book.Status = BookStatus.Updated;
+            book.ThumbBase64 = string.Empty;
         }
 
         book.UpdateDate = date;
         book.UpdateUser = commonService.HttpUserId;
         book.PageCount = pageCount;
-        book.ThumbBase64 = string.Empty;
         book.TryPrepareCount = 0;
 
         var deleteList = await bookClassRoomDal.GetListAsync(predicate: x => x.BookId == book.Id, cancellationToken: cancellationToken);

@@ -17,23 +17,9 @@ public class NotificationManager(INotificationApi notificationApi,
 
         datas ??= new Dictionary<string, string>();
 
-        var tokens = await context.NotificationDeviceTokens.AsNoTracking().Include(x => x.User)
-            .Where(x => x.IsActive && x.User!.IsActive)
-            .Select(x => new { x.User!.Id, x.DeviceToken }).ToListAsync();
+        var users = await context.Users.Where(x => x.IsActive).ToListAsync();
 
-        if (tokens.Count == 0) return false;
-
-        var message = new NotificationModel<string>()
-        {
-            Title = title,
-            Body = body,
-            Datas = datas,
-            List = tokens.Select(x => x.DeviceToken)
-        };
-
-        await notificationApi.PushNotification(message);
-
-        var notifications = tokens.Select(x => new Notification
+        var notifications = users.Select(x => new Notification
         {
             Id = Guid.NewGuid(),
             IsActive = true,
@@ -53,6 +39,32 @@ public class NotificationManager(INotificationApi notificationApi,
         await context.Notifications.AddRangeAsync(notifications);
         await context.SaveChangesAsync();
 
+        List<string> list = [];
+
+        if (notificationApi is Infrastructure.Notification.OneSignal.OneSignalApi)
+        {
+            list = [.. users.Select(x => x.Id.ToString())];
+        }
+        else
+        {
+            list = await context.NotificationDeviceTokens.AsNoTracking()
+                .Include(x => x.User)
+                .Where(x => x.IsActive && x.User!.IsActive && !string.IsNullOrWhiteSpace(x.DeviceToken))
+                .Select(x => x.DeviceToken!).ToListAsync() ?? [];
+        }
+
+        if (list.Count == 0) return false;
+
+        var message = new NotificationModel<string>()
+        {
+            Title = title,
+            Body = body,
+            Datas = datas,
+            List = list,
+        };
+
+        await notificationApi.PushNotification(message);
+
         return true;
     }
 
@@ -61,6 +73,8 @@ public class NotificationManager(INotificationApi notificationApi,
         using var context = contextFactory.CreateDbContext();
 
         var date = DateTime.Now;
+
+        var datas = dto.Datas ?? new Dictionary<string, string>();
 
         var users = await context.Users.Where(x => x.IsActive && dto.ReceivedUserId.Contains(x.Id)).ToListAsync();
 
@@ -84,19 +98,30 @@ public class NotificationManager(INotificationApi notificationApi,
         await context.Notifications.AddRangeAsync(notifications);
         await context.SaveChangesAsync();
 
-        var tokens = await context.NotificationDeviceTokens.AsNoTracking()
-            .Include(x => x.User)
-            .Where(x => dto.ReceivedUserId.Contains(x.UserId) && x.IsActive && x.User!.IsActive)
-            .Select(x => new { x.User!.Id, x.DeviceToken })
-            .ToListAsync();
+        List<string> list = [];
 
-        if (tokens.Count == 0) return false;
+        if (notificationApi is Infrastructure.Notification.OneSignal.OneSignalApi)
+        {
+            list = [.. users.Select(x => x.Id.ToString())];
+        }
+        else
+        {
+            list = await context.NotificationDeviceTokens.AsNoTracking()
+                .Include(x => x.User)
+                .Where(x => dto.ReceivedUserId.Contains(x.UserId) && x.IsActive && x.User!.IsActive && !string.IsNullOrWhiteSpace(x.DeviceToken))
+                .Select(x => x.DeviceToken!)
+                .ToListAsync() ?? [];
+        }
+
+
+        if (list.Count == 0) return false;
 
         var message = new NotificationModel<string>()
         {
             Title = dto.Title,
             Body = dto.Body,
-            List = tokens.Select(x => x.DeviceToken)
+            Datas = datas,
+            List = list,
         };
 
         await notificationApi.PushNotification(message);

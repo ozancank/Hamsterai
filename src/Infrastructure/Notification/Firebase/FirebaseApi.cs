@@ -7,19 +7,19 @@ namespace Infrastructure.Notification.Firebase;
 
 public sealed class FirebaseApi : INotificationApi
 {
-    private static bool? IsNullable = null;
-    private static bool? IsString = null;
+    private static bool? _isNullable = null;
+    private static bool? _isString = null;
 
     public async Task<bool> PushNotification<T>(NotificationModel<T> notificationModel)
     {
         ArgumentNullException.ThrowIfNull(notificationModel);
 
-        IsNullable ??= ReflectionTools.IsNullableType(typeof(T));
-        IsString ??= typeof(T) == typeof(string);
+        _isNullable ??= ReflectionTools.IsNullableType(typeof(T));
+        _isString ??= typeof(T) == typeof(string);
 
-        if (!IsString.Value) throw new BusinessException(Strings.InvalidValue);
+        if (!_isString.Value) throw new BusinessException(Strings.InvalidValue);
 
-        if (IsNullable.Value && notificationModel.List == null)
+        if (_isNullable.Value && notificationModel.List == null)
             throw new BusinessException(Strings.InvalidValue);
 
         var tokens = notificationModel.List?.ToList();

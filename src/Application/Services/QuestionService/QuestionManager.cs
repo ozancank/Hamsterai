@@ -8,7 +8,6 @@ using Infrastructure.AI;
 using Infrastructure.AI.Models;
 using Infrastructure.AI.Seduss.Dtos;
 using OneOf;
-using System.Net.Sockets;
 
 namespace Application.Services.QuestionService;
 
@@ -84,28 +83,29 @@ public class QuestionManager(ICommonService commonService,
                     switch (question.Type)
                     {
                         case QuestionType.Question:
-                            if (NetTools.GetLocalIpAddressesV4.Contains("185.195.255.125"))
-                                model.AIUrl = model.LessonId == 75 ? AppOptions.AIDefaultUrls[3] : aiUrl;
-                            else
-                                model.AIUrl = aiUrl;
+                            model.AIUrl = aiUrl;
                             Console.WriteLine($"{methodName} - SendQuestion: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                             await questionApi.AskQuestionWithImage(model);
                             break;
+
                         case QuestionType.FindMistake:
                             model.AIUrl = AppOptions.AIDefaultUrls[2];
                             Console.WriteLine($"{methodName} - SendFindMistake: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                             await questionApi.AskQuestionWithImage(model);
                             break;
+
                         case QuestionType.MakeDescription:
                             model.AIUrl = AppOptions.AIDefaultUrls[1];
                             Console.WriteLine($"{methodName} - SendMakeDescription: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                             await questionApi.MakeDescriptionWithImage(model);
                             break;
+
                         case QuestionType.MakeSummary:
                             model.AIUrl = AppOptions.AIDefaultUrls[1];
                             Console.WriteLine($"{methodName} - SendMakeSummary: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                             await questionApi.MakeSummaryWithImage(model);
                             break;
+
                         default:
                             throw new BusinessException(Strings.DynamicNotFound.Format($"{Strings.Question} {Strings.OfType}"));
                     }
