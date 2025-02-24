@@ -24,13 +24,21 @@ public class GetQuestionsQueryHandler(IMapper mapper,
         request.PageRequest = new PageRequest(0, AppOptions.QuestionMaxLimit);
         request.Model ??= new QuestionRequestModel();
 
+        List<QuestionType> questionTypes = [request.Model.Type];
+
+        if (request.Model.Type == QuestionType.MakeDescription) questionTypes.Add(QuestionType.MakeDescriptionWithText);
+        else if (request.Model.Type == QuestionType.MakeDescriptionWithText) questionTypes.Add(QuestionType.MakeDescription);
+        else if (request.Model.Type == QuestionType.MakeSummary) questionTypes.Add(QuestionType.MakeSummaryWithText);
+        else if (request.Model.Type == QuestionType.MakeSummaryWithText) questionTypes.Add(QuestionType.MakeSummary);
+
+
         //if (request.Model.StartDate == null) request.Model.StartDate = DateTime.Today.AddDays(-7);
         //if (request.Model.EndDate == null) request.Model.EndDate = DateTime.Today;
 
         var questions = await questionDal.GetPageListAsyncAutoMapper<GetQuestionModel>(
             predicate: x => x.CreateUser == commonService.HttpUserId && x.IsActive && (x.SendQuizDate <= DateTime.Now.AddDays(1) || !x.IsRead)
                             && (request.Model.LessonId <= 0 || x.LessonId == request.Model.LessonId)
-                            && (request.Model.Type==QuestionType.None || x.Type==request.Model.Type),
+                            && (request.Model.Type == QuestionType.None || questionTypes.Contains(x.Type)),
             //&& x.CreateDate.Date >= request.Model.StartDate.Value.Date
             //&& x.CreateDate.Date <= request.Model.EndDate.Value.Date.AddDays(1).AddSeconds(-1),
             enableTracking: false,
