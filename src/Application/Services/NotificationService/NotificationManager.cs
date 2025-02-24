@@ -115,7 +115,6 @@ public class NotificationManager(INotificationApi notificationApi,
 
 
         if (list.Count == 0) return false;
-
         var message = new NotificationModel<string>()
         {
             Title = dto.Title,

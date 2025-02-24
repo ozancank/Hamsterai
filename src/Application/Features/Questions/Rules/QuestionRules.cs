@@ -68,4 +68,16 @@ public class QuestionRules(IQuestionDal questionDal,
 
         if (remainingCredit <= 0) throw new BusinessException(Strings.NoQuestionCredit);
     }
+
+    internal static Task QuestionTypeShouldBeText(QuestionType type)
+    {
+        if(!AppStatics.QuestionTypesOnlyText.Contains(type)) throw new BusinessException(Strings.QuestionTypeText);
+        return Task.CompletedTask;
+    }
+
+    internal static Task QuestionStatusShouldBeAnswered(QuestionStatus status)
+    {
+        if (status != QuestionStatus.Answered) throw new BusinessException(Strings.DynamicMustBe, [$"{Strings.Question} {Strings.OfStatus} {Strings.Answered}"]);
+        return Task.CompletedTask;
+    }
 }

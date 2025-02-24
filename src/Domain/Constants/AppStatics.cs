@@ -14,6 +14,7 @@ public class AppStatics
     public static readonly QuestionStatus[] QuestionStatusesForAdmin = [QuestionStatus.Waiting, QuestionStatus.Answered, QuestionStatus.SendAgain];
     public static readonly QuestionStatus[] QuestionStatusesForSender = [QuestionStatus.Waiting, QuestionStatus.Error, QuestionStatus.SendAgain, QuestionStatus.ConnectionError, QuestionStatus.Timeout, QuestionStatus.WaitingForOcr, QuestionStatus.ControlledForOcr];
     public static readonly QuestionType[] QuestionTypesForSender = [QuestionType.Question, QuestionType.FindMistake];
+    public static readonly QuestionType[] QuestionTypesOnlyText = [QuestionType.MakeSummaryWithText, QuestionType.MakeDescriptionWithText];
 
     public static readonly char[] OptionChars = ['A', 'B', 'C', 'D', 'E'];
     public static readonly string[] OptionStrings = ["A", "B", "C", "D", "E"];

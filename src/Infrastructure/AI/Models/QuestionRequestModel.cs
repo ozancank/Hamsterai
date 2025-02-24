@@ -14,4 +14,7 @@ public class QuestionRequestModel : IRequestModel
 
     [JsonPropertyName("question_type")]
     public QuestionType QuestionType { get; set; }
+
+    [JsonPropertyName("isText")]
+    public bool IsText { get; set; }
 }

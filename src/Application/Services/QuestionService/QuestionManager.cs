@@ -4,10 +4,12 @@ using Application.Services.CommonService;
 using Application.Services.GainService;
 using Application.Services.NotificationService;
 using DataAccess.EF;
+using Domain.Entities;
 using Infrastructure.AI;
 using Infrastructure.AI.Models;
 using Infrastructure.AI.Seduss.Dtos;
 using OneOf;
+using System.Threading;
 
 namespace Application.Services.QuestionService;
 
@@ -19,6 +21,35 @@ public class QuestionManager(ICommonService commonService,
                              ISimilarDal similarDal,
                              QuizRules quizRules) : IQuestionService
 {
+    private async Task<string> ImageToBase64ForSendQuestion(Question question, CancellationToken cancellationToken = default)
+    {
+        var base64 = string.Empty;
+        var questionPicturePath = Path.Combine(AppOptions.QuestionSmallPictureFolderPath, question.QuestionPictureFileName.EmptyOrTrim());
+        var questionSmallPicturePath = Path.Combine(AppOptions.QuestionSmallPictureFolderPath, question.QuestionPictureFileName.EmptyOrTrim());
+
+        if (File.Exists(questionSmallPicturePath))
+            base64 = await commonService.ImageToBase64WithResize(questionPicturePath, 512, cancellationToken);
+        else if (File.Exists(questionPicturePath))
+            base64 = await commonService.ImageToBase64WithResize(questionPicturePath, 512, cancellationToken);
+
+        if (base64.IsEmpty())
+        {
+            Console.WriteLine($"{question.Id},{QuestionStatus.NotFoundImage}, {question.CreateUser}, {string.Empty}, {Strings.DynamicNotFound.Format(Strings.Picture)}");
+            await UpdateQuestion(new QuestionResponseModel(), new UpdateQuestionDto(question.Id, QuestionStatus.NotFoundImage, question.CreateUser, question.LessonId, Strings.DynamicNotFound.Format(Strings.Picture)));
+            return string.Empty;
+        }
+        return base64;
+    }
+
+    private async Task IsExistsVisualContent(QuestionApiModel model, Question question, HamsteraiDbContext context, CancellationToken cancellationToken = default)
+    {
+        model.AIUrl = AppOptions.AIDefaultUrls[3];
+        var visual = await questionApi.IsExistsVisualContent(model, cancellationToken);
+        _ = await context.Questions
+            .Where(x => x.Id == question.Id)
+            .ExecuteUpdateAsync(x => x.SetProperty(p => p.ExistsVisualContent, visual), cancellationToken);
+    }
+
     public async Task SendQuestions(CancellationToken cancellationToken)
     {
         var methodName = nameof(SendQuestions);
@@ -60,61 +91,58 @@ public class QuestionManager(ICommonService commonService,
                         QuestionType = question.Type
                     };
 
-                    var base64 = string.Empty;
-                    var questionPicturePath = Path.Combine(AppOptions.QuestionSmallPictureFolderPath, question.QuestionPictureFileName.EmptyOrTrim());
-                    var questionSmallPicturePath = Path.Combine(AppOptions.QuestionSmallPictureFolderPath, question.QuestionPictureFileName.EmptyOrTrim());
-
-                    if (File.Exists(questionSmallPicturePath))
-                        base64 = await commonService.ImageToBase64WithResize(questionPicturePath, 512, cancellationToken);
-                    else if (File.Exists(questionPicturePath))
-                        base64 = await commonService.ImageToBase64WithResize(questionPicturePath, 512, cancellationToken);
-
-                    if (base64.IsEmpty())
-                    {
-                        Console.WriteLine($"{question.Id},{QuestionStatus.NotFoundImage}, {question.CreateUser}, {string.Empty}, {Strings.DynamicNotFound.Format(Strings.Picture)}");
-                        await UpdateQuestion(new QuestionResponseModel(), new UpdateQuestionDto(question.Id, QuestionStatus.NotFoundImage, question.CreateUser, question.LessonId, Strings.DynamicNotFound.Format(Strings.Picture)));
-                        return;
-                    }
-
-                    model.Base64 = base64;
-
                     var aiUrl = AppOptions.AIDefaultUrls.Length <= question.Lesson!.AIUrlIndex ? AppOptions.AIDefaultUrls[0] : AppOptions.AIDefaultUrls[question.Lesson!.AIUrlIndex];
 
                     switch (question.Type)
                     {
                         case QuestionType.Question:
                             model.AIUrl = aiUrl;
-                            Console.WriteLine($"{methodName} - SendQuestion: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
+                            model.Base64 = await ImageToBase64ForSendQuestion(question, cancellationToken);
+                            Console.WriteLine($"{methodName} - SendQuestion: {DateTime.Now} -- {model.Id} -- Base64:{model.Base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                             await questionApi.AskQuestionWithImage(model);
+                            await IsExistsVisualContent(model,question,context,cancellationToken);
                             break;
 
                         case QuestionType.FindMistake:
                             model.AIUrl = AppOptions.AIDefaultUrls[2];
-                            Console.WriteLine($"{methodName} - SendFindMistake: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
+                            model.Base64 = await ImageToBase64ForSendQuestion(question, cancellationToken);
+                            Console.WriteLine($"{methodName} - SendFindMistake: {DateTime.Now} -- {model.Id} -- Base64:{model.Base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                             await questionApi.AskQuestionWithImage(model);
+                            await IsExistsVisualContent(model,question,context,cancellationToken);
                             break;
 
                         case QuestionType.MakeDescription:
                             model.AIUrl = AppOptions.AIDefaultUrls[1];
-                            Console.WriteLine($"{methodName} - SendMakeDescription: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
+                            model.Base64 = await ImageToBase64ForSendQuestion(question, cancellationToken);
+                            Console.WriteLine($"{methodName} - SendMakeDescription: {DateTime.Now} -- {model.Id} -- Base64:{model.Base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                             await questionApi.MakeDescriptionWithImage(model);
+                            await IsExistsVisualContent(model,question,context,cancellationToken);
                             break;
 
                         case QuestionType.MakeSummary:
                             model.AIUrl = AppOptions.AIDefaultUrls[1];
-                            Console.WriteLine($"{methodName} - SendMakeSummary: {DateTime.Now} -- {model.Id} -- Base64:{base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
+                            model.Base64 = await ImageToBase64ForSendQuestion(question, cancellationToken);
+                            Console.WriteLine($"{methodName} - SendMakeSummary: {DateTime.Now} -- {model.Id} -- Base64:{model.Base64.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
                             await questionApi.MakeSummaryWithImage(model);
+                            break;
+
+                        case QuestionType.MakeDescriptionWithText:
+                            model.AIUrl = AppOptions.AIDefaultUrls[1];
+                            model.QuestionText = question.QuestionText ?? string.Empty;
+                            Console.WriteLine($"{methodName} - SendMakeDescriptionWithText: {DateTime.Now} -- {model.Id} -- Question:{model.QuestionText.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
+                            await questionApi.MakeDescriptionWithText(model);
+                            break;
+
+                        case QuestionType.MakeSummaryWithText:
+                            model.AIUrl = AppOptions.AIDefaultUrls[1];
+                            model.QuestionText = question.QuestionText ?? string.Empty;
+                            Console.WriteLine($"{methodName} - SendMakeSummaryWithText: {DateTime.Now} -- {model.Id} -- Question:{model.QuestionText.Length} -- AI:{model.AIUrl} -- Type:{question.Type}");
+                            await questionApi.MakeSummaryWithText(model);
                             break;
 
                         default:
                             throw new BusinessException(Strings.DynamicNotFound.Format($"{Strings.Question} {Strings.OfType}"));
                     }
-
-                    model.AIUrl = AppOptions.AIDefaultUrls[3];
-                    var visual = await questionApi.IsExistsVisualContent(model, cancellationToken);
-                    _ = await context.Questions
-                        .Where(x => x.Id == question.Id)
-                        .ExecuteUpdateAsync(x => x.SetProperty(p => p.ExistsVisualContent, visual), cancellationToken);
                 }
                 finally
                 {

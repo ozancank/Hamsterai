@@ -50,6 +50,14 @@ public class QuestionController : BaseController
         return Ok(result);
     }
 
+    [HttpPost("AddQuestionText")]
+    public async Task<IActionResult> AddQuestionText([FromBody] AddQuestionTextModel model)
+    {
+        var command = new AddQuestionTextCommand { Model = model };
+        var result = await Mediator.Send(command);
+        return Ok(result);
+    }
+
     [HttpPost("AddRangeQuestion")]
     public async Task<IActionResult> AddRangeQuestion([FromBody] List<AddQuestionModel> models)
     {

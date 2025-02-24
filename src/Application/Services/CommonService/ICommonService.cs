@@ -18,6 +18,8 @@ public interface ICommonService : IBusinessService
 
     Task<string> TextToImage(string? text, string? fileName, string? folder, CancellationToken cancellationToken = default);
 
+    Task<string> TextToImageWithResize(string? text, string? fileName, string? folder, int dimension=512,CancellationToken cancellationToken = default);
+
     Task<string> ImageToBase64(string? path, CancellationToken cancellationToken = default);
 
     Task<string> ImageToBase64WithResize(string? path, int dimension = 512, CancellationToken cancellationToken = default);

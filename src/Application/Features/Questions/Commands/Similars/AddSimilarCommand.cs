@@ -2,7 +2,6 @@
 using Application.Features.Questions.Models.Similars;
 using Application.Features.Questions.Rules;
 using Application.Services.CommonService;
-using DataAccess.Abstract.Core;
 using MediatR;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
@@ -15,6 +14,7 @@ public class AddSimilarCommand : IRequest<GetSimilarModel>, ISecuredRequest<User
 
     public UserTypes[] Roles { get; } = [UserTypes.Administator, UserTypes.Student, UserTypes.Person];
     public bool AllowByPass => false;
+
     public string[] HidePropertyNames { get; } =
     [
         $"{nameof(Model)}.{nameof(Model.QuestionPictureBase64)}",
@@ -46,11 +46,8 @@ public class AddSimilarCommandHandler(IMapper mapper,
         var userId = commonService.HttpUserId;
         var extension = Path.GetExtension(request.Model.QuestionPictureFileName);
         var fileName = $"Q_{userId}_{request.Model.LessonId}_{id}{extension}";
-        await commonService.PictureConvert(request.Model.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath);
-        await commonService.PictureConvert(request.Model.QuestionSmallPictureBase64.IfNullEmptyString(request.Model.QuestionPictureBase64),
-            fileName, AppOptions.QuestionSmallPictureFolderPath);
-
-
+        await commonService.PictureConvert(request.Model.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath, cancellationToken);
+        await commonService.PictureConvert(request.Model.QuestionSmallPictureBase64.IfNullEmptyString(request.Model.QuestionPictureBase64), fileName, AppOptions.QuestionSmallPictureFolderPath, cancellationToken);
 
         var question = new Similar
         {

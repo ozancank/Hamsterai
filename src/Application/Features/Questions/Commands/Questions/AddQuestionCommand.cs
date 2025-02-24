@@ -3,7 +3,6 @@ using Application.Features.Questions.Models.Questions;
 using Application.Features.Questions.Rules;
 using Application.Services.CommonService;
 using MediatR;
-using Newtonsoft.Json;
 using OCK.Core.Pipelines.Authorization;
 using OCK.Core.Pipelines.Logging;
 
@@ -25,7 +24,7 @@ public class AddQuestionCommand : IRequest<GetQuestionModel>, ISecuredRequest<Us
 public class AddQuestionCommandHandler(IMapper mapper,
                                        IQuestionDal questionDal,
                                        ICommonService commonService,
-                                       ILessonDal lessonDal,
+                                       LessonRules lessonRules,
                                        QuestionRules questionRules) : IRequestHandler<AddQuestionCommand, GetQuestionModel>
 {
     public async Task<GetQuestionModel> Handle(AddQuestionCommand request, CancellationToken cancellationToken)
@@ -33,16 +32,12 @@ public class AddQuestionCommandHandler(IMapper mapper,
         await questionRules.QuestionLimitControl();
         await questionRules.UserShouldHaveCredit(commonService.HttpUserId);
 
-        var lessonName = await lessonDal.GetAsync(
-            predicate: x => x.Id == request.Model.LessonId,
-            enableTracking: false,
-            selector: x => x.Name,
-            cancellationToken: cancellationToken);
-        await LessonRules.LessonShouldExists(lessonName);
+        await lessonRules.LessonShouldExistsAndActive(request.Model.LessonId);
 
         var id = Guid.NewGuid();
         var date = DateTime.Now;
         var userId = commonService.HttpUserId;
+                
         var extension = Path.GetExtension(request.Model.QuestionPictureFileName);
         var fileName = $"Q_{userId}_{request.Model.LessonId}_{id}{extension}";
         await commonService.PictureConvert(request.Model.QuestionPictureBase64, fileName, AppOptions.QuestionPictureFolderPath, cancellationToken);
@@ -97,5 +92,7 @@ public class AddQuestionCommandValidator : AbstractValidator<AddQuestionCommand>
 
         RuleFor(x => x.Model.QuestionPictureFileName).NotEmpty().WithMessage(Strings.DynamicNotEmpty, [Strings.FileName]);
         RuleFor(x => x.Model.QuestionPictureFileName).Must(x => x.EmptyOrTrim().Contains('.')).WithMessage(Strings.FileNameExtension);
+
+        RuleFor(x=>x.Model.Type).Must(x=>!AppStatics.QuestionTypesOnlyText.Contains(x)).WithMessage(Strings.QuestionTypeImage);
     }
 }

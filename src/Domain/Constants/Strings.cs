@@ -58,6 +58,8 @@ public struct Strings
     public const string DynamicUnique = "{0} bir tane olmalıdır.";
     public const string DynamicAlreadyCompleted = "{0} zaten tamamlandı.";
     public const string DynamicNotReady = "{0} hazır değil.";
+    public const string DynamicMustBe = "{0} olmalıdır.";
+    public const string DynamicMustBeNot = "{0} olmamalıdır.";
 
     public const string Second = "Saniye";
     public const string Minute = "Dakika";
@@ -116,6 +118,7 @@ public struct Strings
     public const string RightOption = "Doğru Cevap";
     public const string RightOptions = "Doğru Cevaplar";
     public const string Status = "Durum";
+    public const string OfStatus = "Durumu";
     public const string ClassRoom = "Sınıf";
     public const string No = "No";
     public const string Number = "Numara";
@@ -199,6 +202,8 @@ public struct Strings
     public const string AccessDeniedBySchool = "Bu işlem okul tarafından engellenmiştir.";
     public const string WaitingControl = "Kontrol Bekliyor";
     public const string MustBeControlForOcr = "Soru kontrolü yapılmalıdır.";
+    public const string QuestionTypeText = "Sadece metin olarak soru gönderilebilir.";
+    public const string QuestionTypeImage = "Sadece resim olarak soru gönderilebilir.";
 
     public const string ModelBusy = "Model meşgul!";
     public const string QuestionLimitForStudentAndLesson = "Bu ders için günlük soru limitinize ulaştınız.";

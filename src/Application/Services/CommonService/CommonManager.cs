@@ -82,21 +82,6 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         return filePath;
     }
 
-    public async Task<string> ImageToBase64(string? path, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (path.IsEmpty()) return string.Empty;
-            if (!File.Exists(path)) return string.Empty;
-            var imageBytes = await File.ReadAllBytesAsync(path, cancellationToken);
-            return Convert.ToBase64String(imageBytes);
-        }
-        catch
-        {
-            return string.Empty;
-        }
-    }
-
     public async Task<string> TextToImage(string? text, string? fileName, string? folder, CancellationToken cancellationToken = default)
     {
         if (text.IsEmpty() || fileName.IsEmpty() || folder.IsEmpty()) return string.Empty;
@@ -132,6 +117,60 @@ public class CommonManager(IHttpContextAccessor httpContextAccessor,
         await image.SaveAsync(filePath, imageEncoder, cancellationToken);
 
         return filePath;
+    }
+
+    public async Task<string> TextToImageWithResize(string? text, string? fileName, string? folder, int dimension = 512, CancellationToken cancellationToken = default)
+    {
+        if (text.IsEmpty() || fileName.IsEmpty() || folder.IsEmpty()) return string.Empty;
+
+        var extension = System.IO.Path.GetExtension(fileName)!.ToLowerInvariant();
+        var imageEncoder = ImageTools.CreateEncoderForImageSharp(extension);
+
+        text = text.TextSplitLine();
+
+        var collection = new FontCollection();
+        var family = collection.Add(System.IO.Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location)!.FullName, "Fonts", "Arial.ttf"));
+        var font = family.CreateFont(20);
+
+        var textOptions = new RichTextOptions(font)
+        {
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            WrappingLength = 600,
+        };
+
+        using var tempImage = new Image<Rgba32>(1, 1);
+        var glyphs = TextBuilder.GenerateGlyphs(text, textOptions);
+        var textSize = glyphs.Bounds;
+
+        using var image = new Image<Rgba32>((int)textSize.Width + 10, (int)textSize.Height + 10);
+        image.Mutate(ctx =>
+        {
+            ctx.Fill(Color.White);
+            ctx.DrawText(textOptions, text, Color.Black);
+        });
+
+        var filePath = System.IO.Path.Combine(folder!, fileName!);
+        await image.SaveAsync(filePath, imageEncoder, cancellationToken);
+        await Task.Delay(100, cancellationToken);
+        await ImageToBase64WithResize(filePath, dimension, cancellationToken);
+
+        return filePath;
+    }
+
+    public async Task<string> ImageToBase64(string? path, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (path.IsEmpty()) return string.Empty;
+            if (!File.Exists(path)) return string.Empty;
+            var imageBytes = await File.ReadAllBytesAsync(path, cancellationToken);
+            return Convert.ToBase64String(imageBytes);
+        }
+        catch
+        {
+            return string.Empty;
+        }
     }
 
     public async Task<string> ImageToBase64WithResize(string? path, int dimension = 512, CancellationToken cancellationToken = default)

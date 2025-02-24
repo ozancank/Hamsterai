@@ -44,6 +44,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
         {
             var _ when ex.Message.Contains("Soru algılanamadı. Lütfen tekrar deneyiniz.", StringComparison.OrdinalIgnoreCase) => QuestionStatus.OcrError,
             var _ when ex.Message.Contains("HttpClient.Timeout", StringComparison.OrdinalIgnoreCase) => QuestionStatus.Timeout,
+            var _ when ex.Message.Contains(Strings.DynamicNotFound.Format(Strings.Picture), StringComparison.OrdinalIgnoreCase) => QuestionStatus.NotFoundImage,
             _ => QuestionStatus.Error
         };
         if (ex is HttpRequestException) status = QuestionStatus.ConnectionError;
@@ -57,6 +58,8 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
         var answer = new QuestionResponseModel();
         try
         {
+            model.Base64.IfEmptyThrow(new BusinessException(Strings.DynamicNotFound.Format(Strings.Picture)));
+
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
 
@@ -128,6 +131,8 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
         var answer = new QuestionResponseModel();
         try
         {
+            model.QuestionText.IfEmptyThrow(new BusinessException(Strings.DynamicNotEmpty.Format(Strings.Question)));
+
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
 
@@ -185,6 +190,8 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
         var answer = new QuestionResponseModel();
         try
         {
+            model.Base64.IfEmptyThrow(new BusinessException(Strings.DynamicNotFound.Format(Strings.Picture)));
+
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
 
@@ -241,6 +248,8 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
         var similar = new SimilarResponseModel();
         try
         {
+            model.QuestionText.IfEmptyThrow(new BusinessException(Strings.DynamicNotEmpty.Format(Strings.Question)));
+
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
 
@@ -305,6 +314,8 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
         var gain = new GainResponseModel();
         try
         {
+            model.QuestionText.IfEmptyThrow(new BusinessException(Strings.DynamicNotEmpty.Format(Strings.Question)));
+
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
             var url = $"{baseUrl}/kazanimResponse/sorKazanim";
@@ -354,6 +365,8 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
         var visual = false;
         try
         {
+            model.Base64.IfEmptyThrow(new BusinessException(Strings.DynamicNotFound.Format(Strings.Picture)));
+
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
 
@@ -399,6 +412,8 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
         var answer = new QuestionResponseModel();
         try
         {
+            model.Base64.IfEmptyThrow(new BusinessException(Strings.DynamicNotFound.Format(Strings.Picture)));
+
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
 
@@ -408,7 +423,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             {
                 Question = model.Base64,
                 LessonName = model.LessonName.ToSlug('_', true),
-                QuestionType = model.QuestionType
+                QuestionType = model.QuestionType,
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, url)
@@ -458,6 +473,8 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
         var answer = new QuestionResponseModel();
         try
         {
+            model.Base64.IfEmptyThrow(new BusinessException(Strings.DynamicNotFound.Format(Strings.Picture)));
+
             using var client = httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
 
@@ -467,7 +484,7 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
             {
                 Question = model.Base64,
                 LessonName = model.LessonName.ToSlug('_', true),
-                QuestionType = model.QuestionType
+                QuestionType = model.QuestionType,
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, url)
@@ -483,6 +500,129 @@ public sealed class SedussApi(IHttpClientFactory httpClientFactory, LoggerServic
                 if (content.Contains("\"error\"")) throw new ExternalApiException((content.Trim("{", "}") ?? string.Empty));
 
                 answer.QuestionText = string.Empty;
+                answer.AnswerText = content.EmptyOrTrim();
+                answer.AnswerImage = string.Empty;
+                answer.GainName = string.Empty;
+                answer.RightOption = null;
+                answer.OcrMethod = string.Empty;
+
+                if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
+                    await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId, model.LessonId, baseUrl));
+            }
+            else
+            {
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                throw new ExternalApiException(content.Trim("{", "}") ?? string.Empty);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{methodName} - Error: {ex.Message}");
+            var status = GetErrorQuestionStatus(ex);
+            await InfrastructureDelegates.UpdateQuestionOcrImage?.Invoke(answer, new(model.Id, status, model.UserId, model.LessonId, baseUrl, ex.Message))!;
+            LogError(loggerServiceBase, ex, model.UserId);
+        }
+
+        return answer;
+    }
+
+    public async Task<QuestionResponseModel> MakeDescriptionWithText(QuestionApiModel model, CancellationToken cancellationToken = default)
+    {
+        var methodName = nameof(MakeDescriptionWithImage);
+        var baseUrl = GetBaseUrl(model.AIUrl);
+        var answer = new QuestionResponseModel();
+        try
+        {
+            model.QuestionText.IfEmptyThrow(new BusinessException(Strings.DynamicNotEmpty.Format(Strings.Question)));
+
+            using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
+
+            var url = $"{baseUrl}/benzer/soraciklama";
+
+            var data = new QuestionRequestModel
+            {
+                Question = model.QuestionText,
+                LessonName = model.LessonName.ToSlug('_', true),
+                QuestionType = model.QuestionType,
+                IsText = true
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"),
+            };
+
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                if (content.Contains("\"error\"")) throw new ExternalApiException((content.Trim("{", "}") ?? string.Empty));
+
+                answer.QuestionText = model.QuestionText;
+                answer.AnswerText = content.EmptyOrTrim();
+                answer.AnswerImage = string.Empty;
+                answer.GainName = string.Empty;
+                answer.RightOption = null;
+                answer.IsExistsVisualContent = false;
+                answer.OcrMethod = string.Empty;
+
+                if (InfrastructureDelegates.UpdateQuestionOcrImage != null)
+                    await InfrastructureDelegates.UpdateQuestionOcrImage.Invoke(answer, new(model.Id, QuestionStatus.Answered, model.UserId, model.LessonId, baseUrl));
+            }
+            else
+            {
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                throw new ExternalApiException(content.Trim("{", "}") ?? string.Empty);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{methodName} - Error: {ex.Message}");
+            var status = GetErrorQuestionStatus(ex);
+            await InfrastructureDelegates.UpdateQuestionOcrImage?.Invoke(answer, new(model.Id, status, model.UserId, model.LessonId, baseUrl, ex.Message))!;
+            LogError(loggerServiceBase, ex, model.UserId);
+        }
+
+        return answer;
+    }
+
+    public async Task<QuestionResponseModel> MakeSummaryWithText(QuestionApiModel model, CancellationToken cancellationToken = default)
+    {
+        var methodName = nameof(MakeSummaryWithImage);
+        var baseUrl = GetBaseUrl(model.AIUrl);
+        var answer = new QuestionResponseModel();
+        try
+        {
+            model.QuestionText.IfEmptyThrow(new BusinessException(Strings.DynamicNotEmpty.Format(Strings.Question)));
+
+            using var client = httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromSeconds(AppOptions.AITimeoutSecond);
+
+            var url = $"{baseUrl}/benzer/sorozet";
+
+            var data = new QuestionRequestModel
+            {
+                Question = model.QuestionText,
+                LessonName = model.LessonName.ToSlug('_', true),
+                QuestionType = model.QuestionType,
+                IsText = true
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"),
+            };
+
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                if (content.Contains("\"error\"")) throw new ExternalApiException((content.Trim("{", "}") ?? string.Empty));
+
+                answer.QuestionText = model.QuestionText;
                 answer.AnswerText = content.EmptyOrTrim();
                 answer.AnswerImage = string.Empty;
                 answer.GainName = string.Empty;

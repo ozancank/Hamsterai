@@ -6,5 +6,7 @@ public enum QuestionType : byte
     Question = 1,
     FindMistake = 2,
     MakeDescription = 3,
-    MakeSummary = 4,    
+    MakeSummary = 4,
+    MakeDescriptionWithText = 5,
+    MakeSummaryWithText = 6,
 }

@@ -20,6 +20,12 @@ public interface IQuestionApi : IArtificialIntelligenceApi
 
     Task<QuestionResponseModel> MakeSummaryWithImage(QuestionApiModel model, CancellationToken cancellationToken = default);
 
+    Task<QuestionResponseModel> MakeDescriptionWithText(QuestionApiModel model, CancellationToken cancellationToken = default);
+
+    Task<QuestionResponseModel> MakeSummaryWithText(QuestionApiModel model, CancellationToken cancellationToken = default);
+
+
+
     //Task<QuizResponseModel> GetQuizQuestions(QuizApiModel model);
 
     //Task<QuizResponseModel> GetSimilarForQuiz(QuizApiModel model);

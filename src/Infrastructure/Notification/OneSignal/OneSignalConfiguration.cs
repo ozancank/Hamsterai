@@ -10,6 +10,7 @@ public sealed class OneSignalConfiguration
     public static string KeyId { get; private set; } = string.Empty;
     public static string SecretKey { get; private set; } = string.Empty;
     public static string UniqueTemplateEmailAddress { get; private set; } = string.Empty;
+    public static string TemplateId { get; private set; } = string.Empty;
 
     static OneSignalConfiguration()
     {
@@ -22,5 +23,6 @@ public sealed class OneSignalConfiguration
         KeyId = configs.GetValue<string>("KeyId") ?? string.Empty;
         SecretKey = configs.GetValue<string>("SecretKey") ?? string.Empty;
         UniqueTemplateEmailAddress = configs.GetValue<string>("UniqueTemplateEmailAddress") ?? string.Empty;
+        TemplateId = configs.GetValue<string>("TemplateId") ?? string.Empty;
     }
 }
